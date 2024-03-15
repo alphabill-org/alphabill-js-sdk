@@ -17,7 +17,11 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
       this.type,
       this.unitId.getBytes(),
       this.attributes.toOwnerProofData(),
-      [this.clientMetadata.timeout, this.clientMetadata.maxTransactionFee, this.clientMetadata.feeCreditRecordId?.getBytes()],
+      [
+        this.clientMetadata.timeout,
+        this.clientMetadata.maxTransactionFee,
+        this.clientMetadata.feeCreditRecordId?.getBytes(),
+      ],
     ];
   }
 
@@ -27,7 +31,11 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
       this.type,
       this.unitId.getBytes(),
       this.attributes.toArray(),
-      [this.clientMetadata.timeout, this.clientMetadata.maxTransactionFee, this.clientMetadata.feeCreditRecordId?.getBytes()],
+      [
+        this.clientMetadata.timeout,
+        this.clientMetadata.maxTransactionFee,
+        this.clientMetadata.feeCreditRecordId?.getBytes(),
+      ],
     ];
   }
 }

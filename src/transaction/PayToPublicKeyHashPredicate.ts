@@ -2,7 +2,6 @@ import { sha256 } from '@noble/hashes/sha256';
 import { IPredicate } from './IPredicate.js';
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 
-
 export class PayToPublicKeyHashPredicate implements IPredicate {
   private static readonly P2pkh256ID = 0x02;
 
