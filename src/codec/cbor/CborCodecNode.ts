@@ -12,7 +12,7 @@ export class CborCodecNode implements ICborCodec {
           return encoder.pushAny(data.buffer);
         },
       },
-    });
+    }) as Promise<Uint8Array>;
   }
 
   public decode(input: Uint8Array): Promise<unknown> {
