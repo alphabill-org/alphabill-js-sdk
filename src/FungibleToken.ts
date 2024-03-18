@@ -1,8 +1,8 @@
-import { Base16Converter } from './util/Base16Converter';
-import { Base64Converter } from './util/Base64Converter';
+import { Base16Converter } from './util/Base16Converter.js';
+import { Base64Converter } from './util/Base64Converter.js';
 import { IFungibleTokenDto } from './json-rpc/IFungibleTokenDto.js';
-import { IUnitId } from './IUnitId';
-import { UnitFactory } from './json-rpc/UnitFactory';
+import { IUnitId } from './IUnitId.js';
+import { UnitFactory } from './json-rpc/UnitFactory.js';
 
 export class FungibleToken {
   public constructor(

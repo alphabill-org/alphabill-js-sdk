@@ -6,8 +6,8 @@ import { IUnitId } from '../IUnitId.js';
 import { UnitFactory } from './UnitFactory.js';
 import { NonFungibleToken } from '../NonFungibleToken.js';
 import { INonFungibleTokenDto } from './INonFungibleTokenDto.js';
-import { FungibleToken } from '../FungibleToken';
-import { IFungibleTokenDto } from './IFungibleTokenDto';
+import { FungibleToken } from '../FungibleToken.js';
+import { IFungibleTokenDto } from './IFungibleTokenDto.js';
 
 export class TokenPartitionUnitFactory extends UnitFactory {
   private static readonly FUNGIBLE_TOKEN_HEX = Base16Converter.encode(
