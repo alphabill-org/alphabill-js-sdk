@@ -1,11 +1,11 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { IStateApiService } from './IStateApiService';
-import { IUnit } from './IUnit';
-import { TransactionOrder } from './transaction/TransactionOrder';
-import { TransactionPayload } from './transaction/TransactionPayload';
-import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes';
-import { TransactionProof } from './TransactionProof';
-import { IUnitId } from './IUnitId';
+import { IStateApiService } from './IStateApiService.js';
+import { IUnit } from './IUnit.js';
+import { TransactionOrder } from './transaction/TransactionOrder.js';
+import { TransactionPayload } from './transaction/TransactionPayload.js';
+import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
+import { TransactionProof } from './TransactionProof.js';
+import { IUnitId } from './IUnitId.js';
 
 export class StateApiClient {
   private readonly service: IStateApiService;

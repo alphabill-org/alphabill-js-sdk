@@ -1,5 +1,5 @@
-import { CborCodecNode } from '../../../src/codec/cbor/CborCodecNode';
-import { ICborCodec } from '../../../src/codec/cbor/ICborCodec';
+import { CborCodecNode } from '../../../src/codec/cbor/CborCodecNode.js';
+import { ICborCodec } from '../../../src/codec/cbor/ICborCodec.js';
 
 describe('Node Codec test - Valid input', () => {
   it('Decodes and encodes successfully', async () => {

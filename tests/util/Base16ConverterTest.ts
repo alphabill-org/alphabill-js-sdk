@@ -1,4 +1,4 @@
-import { Base16Converter } from '../../src/util/Base16Converter';
+import { Base16Converter } from '../../src/util/Base16Converter.js';
 
 describe('Hex coder', () => {
   it('encode works', () => {
