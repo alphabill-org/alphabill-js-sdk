@@ -1,4 +1,4 @@
-import { IUnitId } from './IUnitId';
+import { IUnitId } from './IUnitId.js';
 
 export class UnitId implements IUnitId {
   public constructor(
