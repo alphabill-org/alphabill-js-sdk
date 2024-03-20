@@ -1,14 +1,14 @@
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes';
 import { TokenIcon } from './TokenIcon';
 import { IPredicate } from './IPredicate';
-import { UnitId } from '../UnitId';
+import { IUnitId } from '../IUnitId';
 
 export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAttributes {
   public constructor(
     public readonly symbol: string,
     public readonly name: string,
     public readonly icon: TokenIcon,
-    public readonly parentTypeId: UnitId | null,
+    public readonly parentTypeId: IUnitId | null,
     public readonly decimalPlaces: number,
     public readonly subTypeCreationPredicate: IPredicate,
     public readonly tokenCreationPredicate: IPredicate,
@@ -25,7 +25,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
       this.symbol,
       this.name,
       this.icon.toArray(),
-      this.parentTypeId || null,
+      this.parentTypeId?.getBytes() || null,
       this.decimalPlaces,
       this.subTypeCreationPredicate.getBytes(),
       this.tokenCreationPredicate.getBytes(),

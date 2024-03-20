@@ -38,7 +38,7 @@ const transactionHash = await client.sendTransaction(
       new CreateFungibleTokenAttributes(
         await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
         new UnitIdWithType(new Uint8Array([1, 2, 3]), UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN_TYPE),
-        '10',
+        10n,
         [null],
       ),
       {

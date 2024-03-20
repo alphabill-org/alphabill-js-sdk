@@ -1,11 +1,11 @@
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes';
 import { IPredicate } from './IPredicate';
-import { UnitId } from '../UnitId';
+import { IUnitId } from '../IUnitId';
 
 export class CreateFungibleTokenAttributes implements ITransactionPayloadAttributes {
   public constructor(
     public readonly ownerPredicate: IPredicate,
-    public readonly typeId: UnitId,
+    public readonly typeId: IUnitId,
     public readonly value: bigint,
     public readonly tokenCreationPredicateSignatures: Uint8Array[] | null,
   ) {}
@@ -15,6 +15,6 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   }
 
   public toArray(): ReadonlyArray<unknown> {
-    return [this.ownerPredicate.getBytes(), this.typeId, this.value, this.tokenCreationPredicateSignatures];
+    return [this.ownerPredicate.getBytes(), this.typeId.getBytes(), this.value, this.tokenCreationPredicateSignatures];
   }
 }
