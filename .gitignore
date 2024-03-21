@@ -4,3 +4,4 @@ node_modules/
 out/
 coverage/
 examples/config.js
+.DS_Store

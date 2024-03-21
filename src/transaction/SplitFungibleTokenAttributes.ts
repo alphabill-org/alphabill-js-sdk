@@ -4,7 +4,7 @@ import { IUnitId } from '../IUnitId.js';
 
 export class SplitFungibleTokenAttributes implements ITransactionPayloadAttributes {
   public constructor(
-    public readonly newOwnerPredicate: IPredicate,
+    public readonly ownerPredicate: IPredicate,
     public readonly targetValue: bigint,
     public readonly nonce: Uint8Array | null,
     public readonly backlink: Uint8Array,
@@ -15,7 +15,7 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
 
   public toOwnerProofData(): ReadonlyArray<unknown> {
     return [
-      this.newOwnerPredicate.getBytes(),
+      this.ownerPredicate.getBytes(),
       this.targetValue,
       this.nonce,
       this.backlink,
@@ -27,7 +27,7 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
 
   public toArray(): ReadonlyArray<unknown> {
     return [
-      this.newOwnerPredicate.getBytes(),
+      this.ownerPredicate.getBytes(),
       this.targetValue,
       this.nonce,
       this.backlink,
