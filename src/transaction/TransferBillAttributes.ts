@@ -3,7 +3,7 @@ import { IPredicate } from './IPredicate.js';
 
 export class TransferBillAttributes implements ITransactionPayloadAttributes {
   public constructor(
-    public readonly targetPredicate: IPredicate,
+    public readonly ownerPredicate: IPredicate,
     public readonly targetValue: bigint,
     public readonly backlink: Uint8Array,
   ) {}
@@ -13,6 +13,6 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public toArray(): ReadonlyArray<unknown> {
-    return [this.targetPredicate.getBytes(), this.targetValue, this.backlink];
+    return [this.ownerPredicate.getBytes(), this.targetValue, this.backlink];
   }
 }
