@@ -1,4 +1,4 @@
-import { CreateFungibleTokenTypeAttributes } from './CreateFungibleTokenTypeAttributes';
+import { CreateFungibleTokenTypeAttributes } from './CreateFungibleTokenTypeAttributes.js';
 import { TransactionPayload } from './TransactionPayload.js';
 import { FeeCreditClientMetadata } from './FeeCreditClientMetadata.js';
 import { SystemIdentifier } from '../SystemIdentifier.js';
