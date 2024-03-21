@@ -98,4 +98,3 @@ const addFeeCreditTransactionHash = await tokenClient.sendTransaction(
 
 await getResponse(tokenClient, addFeeCreditTransactionHash);
 console.log(await tokenClient.getUnit(feeCreditUnitId));
-

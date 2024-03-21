@@ -49,5 +49,3 @@ const transactionHash = await client.sendTransaction(
     ),
   ),
 );
-
-
