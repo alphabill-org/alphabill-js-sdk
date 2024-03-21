@@ -1,7 +1,7 @@
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes';
-import { TokenIcon } from './TokenIcon';
-import { IPredicate } from './IPredicate';
-import { IUnitId } from '../IUnitId';
+import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
+import { TokenIcon } from './TokenIcon.js';
+import { IPredicate } from './IPredicate.js';
+import { IUnitId } from '../IUnitId.js';
 
 export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAttributes {
   public constructor(

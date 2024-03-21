@@ -17,7 +17,6 @@ import { MoneyPartitionUnitFactory } from '../../lib/json-rpc/MoneyPartitionUnit
 
 import config from '../config.js';
 
-
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
   transport: http(config.moneyPartitionUrl, new MoneyPartitionUnitFactory(), cborCodec)
@@ -56,5 +55,3 @@ const payload = new SplitBillPayload(
 
 const hash = await client.sendTransaction(await transactionOrderFactory.createTransaction(payload));
 console.log(hash);
-
-

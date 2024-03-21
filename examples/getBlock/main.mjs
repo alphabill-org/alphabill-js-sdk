@@ -14,4 +14,3 @@ console.log(
   Base16Converter.encode(
     await client.getBlock(
       await client.getRoundNumber())));
-

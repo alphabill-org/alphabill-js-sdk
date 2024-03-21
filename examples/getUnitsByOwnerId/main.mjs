@@ -7,7 +7,6 @@ import { Base16Converter } from '../../lib/util/Base16Converter.js';
 
 import config from '../config.js';
 
-
 const client = createPublicClient({
   transport: http(config.moneyPartitionUrl, new MoneyPartitionUnitFactory(), new CborCodecNode()),
 });

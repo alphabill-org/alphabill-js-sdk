@@ -7,14 +7,14 @@ import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.j
 import { TransactionOrderFactory } from '../../lib/transaction/TransactionOrderFactory.js';
 import { FeeCreditUnitId } from '../../lib/transaction/FeeCreditUnitId.js';
 import { SystemIdentifier } from '../../lib/SystemIdentifier.js';
-import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnitFactory.js';
 import { UnitIdWithType } from '../../lib/transaction/UnitIdWithType.js';
 import { UnitType } from '../../lib/transaction/UnitType.js';
-import { CreateFungibleTokenPayload } from '../../lib/transaction/CreateFungibleTokenPayload.js';
-import { CreateFungibleTokenAttributes } from '../../lib/transaction/CreateFungibleTokenAttributes.js';
 import { PayToPublicKeyHashPredicate } from '../../lib/transaction/PayToPublicKeyHashPredicate.js';
 
 import config from '../config.js';
+import { SplitFungibleTokenPayload } from '../../lib/transaction/SplitFungibleTokenPayload.js';
+import { SplitFungibleTokenAttributes } from '../../lib/transaction/SplitFungibleTokenAttributes.js';
+import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnitFactory.js';
 
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
@@ -26,26 +26,32 @@ const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingSe
 
 const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.TOKEN_PARTITION);
 const round = await client.getRoundNumber();
+
+// expects that the fungible token has already been created
 const unitId = new UnitIdWithType(
   new Uint8Array([1, 2, 3, 4, 5]),
   UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN,
 );
+const token = await client.getUnit(unitId, false);
+console.log(token)
 
-const transactionHash = await client.sendTransaction(
-  await transactionOrderFactory.createTransaction(
-    new CreateFungibleTokenPayload(
-      unitId,
-      new CreateFungibleTokenAttributes(
-        await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
-        new UnitIdWithType(new Uint8Array([1, 2, 3]), UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN_TYPE),
-        10n,
-        [null],
-      ),
-      {
-        maxTransactionFee: 5n,
-        timeout: round + 60n,
-        feeCreditRecordId: feeCreditUnitId,
-      },
-    ),
+const payload = new SplitFungibleTokenPayload(
+  new SplitFungibleTokenAttributes(
+    await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
+    3n,
+    null,
+    token.data.backlink,
+    new UnitIdWithType(new Uint8Array([1, 2, 3]), UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN_TYPE),
+    token.data.value - 3n,
+    [null]
   ),
+  token.unitId,
+  {
+    maxTransactionFee: 5n,
+    timeout: round + 60n,
+    feeCreditRecordId: feeCreditUnitId,
+  },
 );
+
+const hash = await client.sendTransaction(await transactionOrderFactory.createTransaction(payload));
+console.log(hash);

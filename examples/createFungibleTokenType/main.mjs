@@ -51,4 +51,3 @@ await client.sendTransaction(
     ),
   ),
 );
-

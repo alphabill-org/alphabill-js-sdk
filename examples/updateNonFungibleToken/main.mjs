@@ -16,8 +16,6 @@ import { UpdateNonFungibleTokenAttributes } from '../../lib/transaction/UpdateNo
 
 import config from '../config.js';
 
-
-
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
   transport: http(config.tokenPartitionUrl, new TokenPartitionUnitFactory(), cborCodec)
@@ -53,4 +51,3 @@ const transactionHash = await client.sendTransaction(
     )
   ),
 );
-
