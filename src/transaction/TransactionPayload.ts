@@ -2,6 +2,9 @@ import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { IUnitId } from '../IUnitId.js';
 
+/*
+ * TODO: Use only TransactionPayload class, move types to ITransactionPayloadAttributes
+ */
 export class TransactionPayload<T extends ITransactionPayloadAttributes> {
   public constructor(
     public readonly type: string,
