@@ -15,7 +15,6 @@ import { LockBillAttributes } from '../../lib/transaction/LockBillAttributes.js'
 
 import config from '../config.js';
 
-
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
   transport: http(config.moneyPartitionUrl, new MoneyPartitionUnitFactory(), cborCodec)
