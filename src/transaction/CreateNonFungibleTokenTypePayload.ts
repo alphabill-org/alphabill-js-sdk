@@ -1,8 +1,8 @@
 import { CreateNonFungibleTokenTypeAttributes } from './CreateNonFungibleTokenTypeAttributes.js';
 import { TransactionPayload } from './TransactionPayload.js';
-import { FeeCreditClientMetadata } from './FeeCreditClientMetadata.js';
 import { SystemIdentifier } from '../SystemIdentifier.js';
 import { IUnitId } from '../IUnitId.js';
+import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 
 export class CreateNonFungibleTokenTypePayload extends TransactionPayload<CreateNonFungibleTokenTypeAttributes> {
   public static readonly PAYLOAD_TYPE = 'createNType';
@@ -10,7 +10,7 @@ export class CreateNonFungibleTokenTypePayload extends TransactionPayload<Create
   public constructor(
     unitId: IUnitId,
     attributes: CreateNonFungibleTokenTypeAttributes,
-    clientMetadata: FeeCreditClientMetadata,
+    clientMetadata: ITransactionClientMetadata,
   ) {
     super(
       CreateNonFungibleTokenTypePayload.PAYLOAD_TYPE,

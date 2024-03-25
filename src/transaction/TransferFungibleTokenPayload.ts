@@ -1,8 +1,8 @@
 import { TransactionPayload } from './TransactionPayload.js';
-import { FeeCreditClientMetadata } from './FeeCreditClientMetadata.js';
 import { SystemIdentifier } from '../SystemIdentifier.js';
 import { TransferFungibleTokenAttributes } from './TransferFungibleTokenAttributes.js';
 import { IUnitId } from '../IUnitId.js';
+import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 
 export class TransferFungibleTokenPayload extends TransactionPayload<TransferFungibleTokenAttributes> {
   public static readonly PAYLOAD_TYPE = 'transFToken';
@@ -10,7 +10,7 @@ export class TransferFungibleTokenPayload extends TransactionPayload<TransferFun
   public constructor(
     unitId: IUnitId,
     attributes: TransferFungibleTokenAttributes,
-    clientMetadata: FeeCreditClientMetadata,
+    clientMetadata: ITransactionClientMetadata,
   ) {
     super(
       TransferFungibleTokenPayload.PAYLOAD_TYPE,
