@@ -15,10 +15,9 @@ import { UnitIdWithType } from '../../lib/transaction/UnitIdWithType.js';
 import { SwapBillsWithDustCollectorPayload } from '../../lib/transaction/SwapBillsWithDustCollectorPayload.js';
 import { SwapBillsWithDustCollectorAttributes } from '../../lib/transaction/SwapBillsWithDustCollectorAttributes.js';
 import { PayToPublicKeyHashPredicate } from '../../lib/transaction/PayToPublicKeyHashPredicate.js';
-import { getResponse } from '../getResponse.mjs';
+import { waitTransactionProof } from '../waitTransactionProof.mjs';
 
 import config from '../config.js';
-
 
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
@@ -66,16 +65,14 @@ const transactionHash =
       )
     ));
 
-await getResponse(client, transactionHash);
-
-const proof = await client.getTransactionProof(transactionHash);
+const transactionProof = await waitTransactionProof(client, transactionHash);
 
 await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new SwapBillsWithDustCollectorPayload(
       new SwapBillsWithDustCollectorAttributes(
         await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
-        [proof],
+        [transactionProof],
         targetBill.data.value + bill.data.value,
       ),
       targetBill.unitId,

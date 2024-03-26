@@ -1,4 +1,4 @@
-export function getResponse(client, transactionHash, timeout = 10000, interval = 1000) {
+export function waitTransactionProof(client, transactionHash, timeout = 10000, interval = 1000) {
   return new Promise((resolve, reject) => {
     const start = Date.now();
     const poller = async () => {
