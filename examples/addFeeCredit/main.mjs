@@ -15,28 +15,10 @@ import { AddFeeCreditPayload } from '../../lib/transaction/AddFeeCreditPayload.j
 import { AddFeeCreditAttributes } from '../../lib/transaction/AddFeeCreditAttributes.js';
 import { PayToPublicKeyHashPredicate } from '../../lib/transaction/PayToPublicKeyHashPredicate.js';
 import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnitFactory.js';
+import { waitTransactionProof } from '../waitTransactionProof.mjs';
 
 import config from '../config.js';
 
-function getResponse(client, transactionHash, timeout = 10000, interval = 1000) {
-  return new Promise((resolve, reject) => {
-    const start = Date.now();
-    const poller = async () => {
-      const proof = await client.getTransactionProof(transactionHash);
-      if (proof !== null) {
-        return resolve(proof);
-      }
-
-      if (Date.now() > start + timeout) {
-        return reject('Timeout');
-      }
-
-      setTimeout(poller, interval);
-    };
-
-    poller();
-  });
-}
 
 const cborCodec = new CborCodecNode();
 const moneyClient = createPublicClient({
@@ -80,14 +62,14 @@ const transferFeeCreditTransactionHash = await moneyClient.sendTransaction(
   )
 );
 
-const proof = await getResponse(moneyClient, transferFeeCreditTransactionHash);
+const transactionProof = await waitTransactionProof(moneyClient, transferFeeCreditTransactionHash);
 
 const addFeeCreditTransactionHash = await tokenClient.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new AddFeeCreditPayload(
       new AddFeeCreditAttributes(
         await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
-        proof,
+        transactionProof,
       ),
       SystemIdentifier.TOKEN_PARTITION,
       feeCreditUnitId,
@@ -96,5 +78,5 @@ const addFeeCreditTransactionHash = await tokenClient.sendTransaction(
   ),
 );
 
-await getResponse(tokenClient, addFeeCreditTransactionHash);
+await waitTransactionProof(tokenClient, addFeeCreditTransactionHash);
 console.log(await tokenClient.getUnit(feeCreditUnitId));
