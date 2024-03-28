@@ -18,4 +18,3 @@ if (unitIds.length > 0) {
 } else {
   console.log("No units available");
 }
-
