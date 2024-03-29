@@ -13,8 +13,11 @@ import { PayToPublicKeyHashPredicate } from '../../lib/transaction/PayToPublicKe
 import { SplitFungibleTokenPayload } from '../../lib/transaction/SplitFungibleTokenPayload.js';
 import { SplitFungibleTokenAttributes } from '../../lib/transaction/SplitFungibleTokenAttributes.js';
 import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnitFactory.js';
+import { BurnFungibleTokenPayload } from '../../lib/transaction/BurnFungibleTokenPayload.js';
+import { BurnFungibleTokenAttributes } from '../../lib/transaction/BurnFungibleTokenAttributes.js';
 
 import config from '../config.js';
+import { waitTransactionProof } from "../waitTransactionProof.mjs";
 
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
@@ -37,11 +40,12 @@ const fungibleTokenType = new UnitIdWithType(
   UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN_TYPE
 );
 const token = await client.getUnit(unitId, false);
-console.log(token);
 
-const targetValue = 3n;
+// 1. split the fungible token
+const targetValue = 1n;
+console.log('Original token\'s value before split: ' + token.data.value);
 const remainingValue = token.data.value - targetValue;
-const transactionHash = await client.sendTransaction(
+const splitTransactionHash = await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new SplitFungibleTokenPayload(
       new SplitFungibleTokenAttributes(
@@ -60,4 +64,38 @@ const transactionHash = await client.sendTransaction(
         feeCreditRecordId: feeCreditUnitId
       }
     )));
-console.log(transactionHash);
+
+// 1b. wait for transaction to finalize
+await waitTransactionProof(client, splitTransactionHash);
+
+// 2. find the token that was split, here as a hack to just take second token from list
+const unitIds = await client.getUnitsByOwnerId(signingService.publicKey);
+const splitTokenId = unitIds.at(1);
+const splitToken = await client.getUnit(splitTokenId)
+console.log('Split token ID: ' + Base16Converter.encode(splitTokenId.getBytes()));
+console.log('Split token value: ' + splitToken.data.value);
+
+// 3. check that the original tokens value has been reduced
+const originalTokenAfterSplit = await client.getUnit(unitId, false);
+console.log('Original token\'s value after split: ' + originalTokenAfterSplit.data.value);
+
+// 4. burn the split token using original fungible token as target
+const burnTransactionHash = await client.sendTransaction(
+  await transactionOrderFactory.createTransaction(
+    new BurnFungibleTokenPayload(
+      new BurnFungibleTokenAttributes(
+        fungibleTokenType,
+        splitToken.data.value,
+        originalTokenAfterSplit.unitId,
+        originalTokenAfterSplit.data.backlink,
+        splitToken.data.backlink,
+        [null]
+      ),
+      splitToken.unitId,
+      {
+        maxTransactionFee: 5n,
+        timeout: round + 60n,
+        feeCreditRecordId: feeCreditUnitId
+      }
+    )));
+console.log(burnTransactionHash);

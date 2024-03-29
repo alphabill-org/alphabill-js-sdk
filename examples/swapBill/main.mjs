@@ -28,7 +28,7 @@ const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingSe
 
 const unitIds = await client.getUnitsByOwnerId(signingService.publicKey);
 const targetUnitIdHex = '0x000000000000000000000000000000000000000000000000000000000000000100';
-const targetUnitId = new  UnitIdWithType(
+const targetUnitId = new UnitIdWithType(
   new Uint8Array(Base16Converter.decode(targetUnitIdHex)),
   UnitType.MONEY_PARTITION_BILL_DATA
 );
