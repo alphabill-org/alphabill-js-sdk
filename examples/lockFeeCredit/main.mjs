@@ -13,6 +13,7 @@ import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnit
 import { FeeCreditClientMetadata } from "../../lib/transaction/FeeCreditClientMetadata.js";
 
 import config from '../config.js';
+import { waitTransactionProof } from "../waitTransactionProof.mjs";
 
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
@@ -28,7 +29,9 @@ const feeCreditUnitId = new FeeCreditUnitId(
   SystemIdentifier.TOKEN_PARTITION
 );
 const feeCredit = await client.getUnit(feeCreditUnitId, false);
+console.log('Fee credit lock status: ' + feeCredit.data.locked);
 
+console.log('Locking fee credit...')
 const hash = await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new LockFeeCreditPayload(
@@ -36,11 +39,13 @@ const hash = await client.sendTransaction(
         5n,
         feeCredit.data.backlink,
       ),
-      feeCredit.unitId,
+      SystemIdentifier.TOKEN_PARTITION,
+      feeCreditUnitId,
       new FeeCreditClientMetadata(5n, round + 60n)
     )
   )
 );
-console.log(hash);
+
+await waitTransactionProof(client, hash);
 const feeCreditAfter = await client.getUnit(feeCreditUnitId, false);
-console.log(feeCreditAfter.data.locked)
+console.log('Fee credit lock status: ' + feeCreditAfter.data.locked);
