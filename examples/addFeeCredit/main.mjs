@@ -19,7 +19,6 @@ import { waitTransactionProof } from '../waitTransactionProof.mjs';
 
 import config from '../config.js';
 
-
 const cborCodec = new CborCodecNode();
 const moneyClient = createPublicClient({
   transport: http(config.moneyPartitionUrl, new MoneyPartitionUnitFactory(), cborCodec)
