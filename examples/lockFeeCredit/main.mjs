@@ -10,6 +10,7 @@ import { SystemIdentifier } from '../../lib/SystemIdentifier.js';
 import { LockFeeCreditPayload } from '../../lib/transaction/LockFeeCreditPayload.js';
 import { LockFeeCreditAttributes } from '../../lib/transaction/LockFeeCreditAttributes.js';
 import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnitFactory.js';
+import { FeeCreditClientMetadata } from "../../lib/transaction/FeeCreditClientMetadata.js";
 
 import config from '../config.js';
 
@@ -22,27 +23,24 @@ const signingService = new DefaultSigningService(Base16Converter.decode(config.p
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
 const round = await client.getRoundNumber();
-
 const feeCreditUnitId = new FeeCreditUnitId(
   sha256(signingService.publicKey),
   SystemIdentifier.TOKEN_PARTITION
 );
-const feeCredit = await tokenClient.getUnit(feeCreditUnitId, false);
+const feeCredit = await client.getUnit(feeCreditUnitId, false);
 
-const payload = new LockFeeCreditPayload(
-  new LockFeeCreditAttributes(
-    5n,
-    feeCredit.data.backlink,
-  ),
-  feeCredit.unitId,
-  {
-    maxTransactionFee: 5n,
-    timeout: round + 60n,
-    feeCreditRecordId: feeCreditUnitId,
-  },
+const hash = await client.sendTransaction(
+  await transactionOrderFactory.createTransaction(
+    new LockFeeCreditPayload(
+      new LockFeeCreditAttributes(
+        5n,
+        feeCredit.data.backlink,
+      ),
+      feeCredit.unitId,
+      new FeeCreditClientMetadata(5n, round + 60n)
+    )
+  )
 );
-
-const hash = await client.sendTransaction(await transactionOrderFactory.createTransaction(payload));
 console.log(hash);
-const feeCreditAfter = await tokenClient.getUnit(feeCreditUnitId, false);
-console.log(feeCreditAfter)
+const feeCreditAfter = await client.getUnit(feeCreditUnitId, false);
+console.log(feeCreditAfter.data.locked)
