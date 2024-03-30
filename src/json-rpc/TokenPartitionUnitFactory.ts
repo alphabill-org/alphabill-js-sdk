@@ -1,13 +1,13 @@
-import { Base16Converter } from '../util/Base16Converter.js';
-import { UnitType } from '../transaction/UnitType.js';
 import { FeeCreditRecord } from '../FeeCreditRecord.js';
-import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
-import { IUnitId } from '../IUnitId.js';
-import { UnitFactory } from './UnitFactory.js';
-import { NonFungibleToken } from '../NonFungibleToken.js';
-import { INonFungibleTokenDto } from './INonFungibleTokenDto.js';
 import { FungibleToken } from '../FungibleToken.js';
+import { IUnitId } from '../IUnitId.js';
+import { NonFungibleToken } from '../NonFungibleToken.js';
+import { UnitType } from '../transaction/UnitType.js';
+import { Base16Converter } from '../util/Base16Converter.js';
+import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
 import { IFungibleTokenDto } from './IFungibleTokenDto.js';
+import { INonFungibleTokenDto } from './INonFungibleTokenDto.js';
+import { UnitFactory } from './UnitFactory.js';
 
 export class TokenPartitionUnitFactory extends UnitFactory {
   private static readonly FUNGIBLE_TOKEN_HEX = Base16Converter.encode(

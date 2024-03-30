@@ -1,9 +1,9 @@
-import { createPublicClient } from '../../lib/StateApiClient.js';
+import { CborCodecNode } from '../../lib/codec/cbor/CborCodecNode.js';
 import { MoneyPartitionUnitFactory } from '../../lib/json-rpc/MoneyPartitionUnitFactory.js';
-import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnitFactory.js';
-import { CborCodecNode }  from '../../lib/codec/cbor/CborCodecNode.js';
 import { http } from '../../lib/json-rpc/StateApiJsonRpcService.js';
+import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnitFactory.js';
 import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
+import { createPublicClient } from '../../lib/StateApiClient.js';
 import { Base16Converter } from '../../lib/util/Base16Converter.js';
 
 import config from '../config.js';
@@ -18,7 +18,7 @@ const moneyClient = createPublicClient({
 
 const moneyUnitIds = await moneyClient.getUnitsByOwnerId(signingService.publicKey);
 if (moneyUnitIds.length > 0) {
-  console.log('Money partition units:')
+  console.log('Money partition units:');
   moneyUnitIds.map((id) => console.log(Base16Converter.encode(id.getBytes())));
 }
 
@@ -29,6 +29,6 @@ const tokenClient = createPublicClient({
 
 const tokenUnitIds = await tokenClient.getUnitsByOwnerId(signingService.publicKey);
 if (tokenUnitIds.length > 0) {
-  console.log('Token partition units:')
+  console.log('Token partition units:');
   tokenUnitIds.map((id) => console.log(Base16Converter.encode(id.getBytes())));
 }

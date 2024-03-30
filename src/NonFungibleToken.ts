@@ -1,8 +1,11 @@
+import { IUnitId } from './IUnitId.js';
+import { INonFungibleTokenDto } from './json-rpc/INonFungibleTokenDto.js';
+import { UnitFactory } from './json-rpc/UnitFactory.js';
+import { PredicateBytes } from './PredicateBytes.js';
+import { IPredicate } from './transaction/IPredicate.js';
 import { Base16Converter } from './util/Base16Converter.js';
 import { Base64Converter } from './util/Base64Converter.js';
-import { INonFungibleTokenDto } from './json-rpc/INonFungibleTokenDto.js';
-import { IUnitId } from './IUnitId.js';
-import { UnitFactory } from './json-rpc/UnitFactory.js';
+import { dedent } from './util/StringUtils.js';
 
 export class NonFungibleToken {
   public constructor(
@@ -10,7 +13,7 @@ export class NonFungibleToken {
     public readonly name: string,
     public readonly uri: string,
     public readonly data: Uint8Array,
-    public readonly dataUpdatePredicate: Uint8Array,
+    public readonly dataUpdatePredicate: IPredicate,
     public readonly blockNumber: bigint,
     public readonly backlink: Uint8Array,
     public readonly locked: boolean,
@@ -22,10 +25,23 @@ export class NonFungibleToken {
       data.Name,
       data.URI,
       Base64Converter.decode(data.Data),
-      Base64Converter.decode(data.DataUpdatePredicate),
+      new PredicateBytes(Base64Converter.decode(data.DataUpdatePredicate)),
       BigInt(data.T),
       Base64Converter.decode(data.Backlink),
       Boolean(Number(data.Locked)),
     );
+  }
+
+  public toString(): string {
+    return dedent`
+      NonFungibleToken
+        Token Type: ${this.tokenType.toString()}
+        Name: ${this.name}
+        URI: ${this.uri}
+        Data: ${Base16Converter.encode(this.data)}
+        Data Update Predicate: ${this.dataUpdatePredicate.toString()}
+        Block Number: ${this.blockNumber}
+        Backlink: ${Base16Converter.encode(this.backlink)}
+        Locked: ${this.locked}`;
   }
 }

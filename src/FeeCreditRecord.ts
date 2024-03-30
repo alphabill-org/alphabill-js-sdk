@@ -1,5 +1,7 @@
-import { Base64Converter } from './util/Base64Converter.js';
 import { IFeeCreditRecordDto } from './json-rpc/IFeeCreditRecordDto.js';
+import { Base16Converter } from './util/Base16Converter.js';
+import { Base64Converter } from './util/Base64Converter.js';
+import { dedent } from './util/StringUtils.js';
 
 export class FeeCreditRecord {
   public constructor(
@@ -16,5 +18,14 @@ export class FeeCreditRecord {
       BigInt(data.Timeout),
       Boolean(Number(data.Locked)),
     );
+  }
+
+  public toString(): string {
+    return dedent`
+      FeeCreditRecord
+        Balance: ${this.balance}
+        Backlink: ${Base16Converter.encode(this.backlink)}
+        Timeout: ${this.timeout}
+        Locked: ${this.locked}`;
   }
 }

@@ -1,14 +1,20 @@
+import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { IStateApiService } from '../IStateApiService.js';
+import { IUnit } from '../IUnit.js';
+import { IUnitId } from '../IUnitId.js';
+import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
+import { TransactionPayload } from '../transaction/TransactionPayload.js';
+import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
+import { Base16Converter } from '../util/Base16Converter.js';
+import { IJsonRpcService } from './IJsonRpcService.js';
+import { ITransactionProofFactory } from './ITransactionProofFactory.js';
+import { IUnitDto } from './IUnitDto.js';
+import { IUnitFactory } from './IUnitFactory.js';
 import { JsonRpcClient } from './JsonRpcClient.js';
 import { JsonRpcHttpService } from './JsonRpcHttpService.js';
-import { IJsonRpcService } from './IJsonRpcService.js';
-import { IUnit } from '../IUnit.js';
-import { Base16Converter } from '../util/Base16Converter.js';
-import { IUnitFactory } from './IUnitFactory.js';
-import { IUnitDto } from './IUnitDto.js';
-import { ICborCodec } from '../codec/cbor/ICborCodec.js';
-import { TransactionProof } from '../TransactionProof.js';
-import { IUnitId } from '../IUnitId.js';
+import { TransactionProofFactory } from './TransactionProofFactory.js';
+
+export type TransactionProofDto = { txRecord: string; txProof: string };
 
 export class StateApiJsonRpcService implements IStateApiService {
   private readonly client: JsonRpcClient;
@@ -16,7 +22,7 @@ export class StateApiJsonRpcService implements IStateApiService {
   public constructor(
     service: IJsonRpcService,
     private readonly unitFactory: IUnitFactory,
-    private readonly cborCodec: ICborCodec,
+    private readonly transactionProofFactory: ITransactionProofFactory,
   ) {
     this.client = new JsonRpcClient(service);
   }
@@ -59,18 +65,15 @@ export class StateApiJsonRpcService implements IStateApiService {
     return Base16Converter.decode(response);
   }
 
-  public async getTransactionProof(transactionHash: Uint8Array): Promise<TransactionProof | null> {
+  public async getTransactionProof(
+    transactionHash: Uint8Array,
+  ): Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null> {
     const response = (await this.client.request(
       'state_getTransactionProof',
       Base16Converter.encode(transactionHash),
-    )) as { txRecord: string; txProof: string } | null;
+    )) as TransactionProofDto | null;
 
-    return response
-      ? new TransactionProof(
-          await this.cborCodec.decode(Base16Converter.decode(response.txRecord)),
-          await this.cborCodec.decode(Base16Converter.decode(response.txProof)),
-        )
-      : null;
+    return response ? this.transactionProofFactory.create(response) : null;
   }
 
   public async sendTransaction(transactionBytes: Uint8Array): Promise<Uint8Array> {
@@ -83,5 +86,9 @@ export class StateApiJsonRpcService implements IStateApiService {
 }
 
 export function http(url: string, unitFactory: IUnitFactory, cborCodec: ICborCodec): IStateApiService {
-  return new StateApiJsonRpcService(new JsonRpcHttpService(url), unitFactory, cborCodec);
+  return new StateApiJsonRpcService(
+    new JsonRpcHttpService(url),
+    unitFactory,
+    new TransactionProofFactory(cborCodec, unitFactory),
+  );
 }

@@ -6,7 +6,10 @@
     "target": "es2020",
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
   },
   "exclude": [
     "node_modules",

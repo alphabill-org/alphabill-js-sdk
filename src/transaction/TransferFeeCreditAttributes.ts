@@ -1,6 +1,18 @@
 import { SystemIdentifier } from '../SystemIdentifier.js';
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
+import { Base16Converter } from '../util/Base16Converter.js';
+import { dedent } from '../util/StringUtils.js';
 import { FeeCreditUnitId } from './FeeCreditUnitId.js';
+import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
+
+export type TransferFeeCreditAttributesArray = readonly [
+  bigint,
+  SystemIdentifier,
+  Uint8Array,
+  bigint,
+  bigint,
+  Uint8Array | null,
+  Uint8Array,
+];
 
 export class TransferFeeCreditAttributes implements ITransactionPayloadAttributes {
   public constructor(
@@ -13,11 +25,11 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
     public readonly backlink: Uint8Array,
   ) {}
 
-  public toOwnerProofData(): ReadonlyArray<unknown> {
+  public toOwnerProofData(): TransferFeeCreditAttributesArray {
     return this.toArray();
   }
 
-  public toArray(): ReadonlyArray<unknown> {
+  public toArray(): TransferFeeCreditAttributesArray {
     return [
       this.amount,
       this.targetSystemIdentifier,
@@ -27,5 +39,19 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
       this.targetUnitBacklink,
       this.backlink,
     ];
+  }
+
+  public toString(): string {
+    return dedent`
+      TransferFeeCreditAttributes
+        Amount: ${this.amount}
+        Target System Identifier: ${this.targetSystemIdentifier.toString()}
+        Target Unit ID: ${this.targetUnitId.toString()}
+        Earliest Addition Time: ${this.earliestAdditionTime}
+        Latest Addition Time: ${this.latestAdditionTime}
+        Target Unit Backlink: ${
+          this.targetUnitBacklink === null ? 'null' : Base16Converter.encode(this.targetUnitBacklink)
+        }
+        Backlink: ${Base16Converter.encode(this.backlink)}`;
   }
 }

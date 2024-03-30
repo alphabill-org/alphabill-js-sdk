@@ -1,5 +1,5 @@
-import { UnitType } from './UnitType.js';
 import { UnitId } from '../UnitId.js';
+import { UnitType } from './UnitType.js';
 
 export class UnitIdWithType extends UnitId {
   public constructor(identifier: Uint8Array, type: UnitType) {

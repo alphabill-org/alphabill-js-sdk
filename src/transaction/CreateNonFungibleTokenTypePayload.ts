@@ -1,8 +1,8 @@
-import { CreateNonFungibleTokenTypeAttributes } from './CreateNonFungibleTokenTypeAttributes.js';
-import { TransactionPayload } from './TransactionPayload.js';
-import { SystemIdentifier } from '../SystemIdentifier.js';
 import { IUnitId } from '../IUnitId.js';
+import { SystemIdentifier } from '../SystemIdentifier.js';
+import { CreateNonFungibleTokenTypeAttributes } from './CreateNonFungibleTokenTypeAttributes.js';
 import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
+import { TransactionPayload } from './TransactionPayload.js';
 
 export class CreateNonFungibleTokenTypePayload extends TransactionPayload<CreateNonFungibleTokenTypeAttributes> {
   public static readonly PAYLOAD_TYPE = 'createNType';

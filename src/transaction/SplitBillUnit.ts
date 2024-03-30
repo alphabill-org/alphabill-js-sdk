@@ -1,4 +1,7 @@
+import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
+
+export type SplitBillUnitArray = readonly [bigint, Uint8Array];
 
 export class SplitBillUnit {
   public constructor(
@@ -6,7 +9,14 @@ export class SplitBillUnit {
     public readonly ownerPredicate: IPredicate,
   ) {}
 
-  public toArray(): ReadonlyArray<unknown> {
+  public toArray(): SplitBillUnitArray {
     return [this.value, this.ownerPredicate.getBytes()];
+  }
+
+  public toString(): string {
+    return dedent`
+      SplitBillUnit
+        Value: ${this.value}
+        Owner Predicate: ${this.ownerPredicate.toString()}`;
   }
 }
