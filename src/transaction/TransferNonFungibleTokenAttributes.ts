@@ -1,6 +1,16 @@
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { IPredicate } from './IPredicate.js';
 import { IUnitId } from '../IUnitId.js';
+import { Base16Converter } from '../util/Base16Converter.js';
+import { dedent } from '../util/StringUtils.js';
+import { IPredicate } from './IPredicate.js';
+import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
+
+export type TransferNonFungibleTokenAttributesArray = readonly [
+  Uint8Array,
+  Uint8Array | null,
+  Uint8Array,
+  Uint8Array,
+  Uint8Array[] | null,
+];
 
 export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
   public constructor(
@@ -11,11 +21,11 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
     public readonly invariantPredicateSignatures: Uint8Array[] | null,
   ) {}
 
-  public toOwnerProofData(): ReadonlyArray<unknown> {
+  public toOwnerProofData(): TransferNonFungibleTokenAttributesArray {
     return [this.ownerPredicate.getBytes(), this.nonce, this.backlink, this.typeId.getBytes(), null];
   }
 
-  public toArray(): ReadonlyArray<unknown> {
+  public toArray(): TransferNonFungibleTokenAttributesArray {
     return [
       this.ownerPredicate.getBytes(),
       this.nonce,
@@ -23,5 +33,17 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
       this.typeId.getBytes(),
       this.invariantPredicateSignatures,
     ];
+  }
+
+  public toString(): string {
+    return dedent`
+      TransferNonFungibleTokenAttributes
+        Owner Predicate: ${this.ownerPredicate.toString()}
+        Nonce: ${this.nonce ? Base16Converter.encode(this.nonce) : 'null'}
+        Backlink: ${Base16Converter.encode(this.backlink)}
+        Type ID: ${this.typeId.toString()}
+        Invariant Predicate Signatures: [
+          ${this.invariantPredicateSignatures?.map((signature) => Base16Converter.encode(signature)).join(',\n') ?? 'null'}
+        ]`;
   }
 }

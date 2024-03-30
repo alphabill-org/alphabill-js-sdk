@@ -1,4 +1,5 @@
 import { IUnitId } from './IUnitId.js';
+import { Base16Converter } from './util/Base16Converter.js';
 
 export class UnitId implements IUnitId {
   public constructor(
@@ -12,5 +13,9 @@ export class UnitId implements IUnitId {
 
   public getBytes(): Uint8Array {
     return new Uint8Array(this.bytes);
+  }
+
+  public toString(): string {
+    return `${Base16Converter.encode(this.bytes)}`;
   }
 }

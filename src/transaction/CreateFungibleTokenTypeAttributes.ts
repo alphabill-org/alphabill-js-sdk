@@ -1,7 +1,21 @@
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { TokenIcon } from './TokenIcon.js';
-import { IPredicate } from './IPredicate.js';
 import { IUnitId } from '../IUnitId.js';
+import { Base16Converter } from '../util/Base16Converter.js';
+import { dedent } from '../util/StringUtils.js';
+import { IPredicate } from './IPredicate.js';
+import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
+import { TokenIcon, TokenIconArray } from './TokenIcon.js';
+
+export type CreateFungibleTokenTypeAttributesArray = readonly [
+  string,
+  string,
+  TokenIconArray,
+  Uint8Array | null,
+  number,
+  Uint8Array,
+  Uint8Array,
+  Uint8Array,
+  Uint8Array[] | null,
+];
 
 export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAttributes {
   public constructor(
@@ -16,11 +30,11 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
     public readonly subTypeCreationPredicateSignatures: Uint8Array[] | null,
   ) {}
 
-  public toOwnerProofData(): ReadonlyArray<unknown> {
+  public toOwnerProofData(): CreateFungibleTokenTypeAttributesArray {
     return this.toArray();
   }
 
-  public toArray(): ReadonlyArray<unknown> {
+  public toArray(): CreateFungibleTokenTypeAttributesArray {
     return [
       this.symbol,
       this.name,
@@ -32,5 +46,21 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
       this.invariantPredicate.getBytes(),
       this.subTypeCreationPredicateSignatures,
     ];
+  }
+
+  public toString(): string {
+    return dedent`
+      CreateFungibleTokenTypeAttributes
+        Symbol: ${this.symbol}
+        Name: ${this.name}
+        Icon: ${this.icon.toString()}
+        Parent Type ID: ${this.parentTypeId?.toString() ?? 'null'}
+        Decimal Places: ${this.decimalPlaces}
+        Sub Type Creation Predicate: ${this.subTypeCreationPredicate.toString()}
+        Token Creation Predicate: ${this.tokenCreationPredicate.toString()}
+        Invariant Predicate: ${this.invariantPredicate.toString()}
+        Sub Type Creation Predicate Signatures: [
+          ${this.subTypeCreationPredicateSignatures?.map((signature) => Base16Converter.encode(signature)).join(',\n') ?? 'null'}
+        ]`;
   }
 }
