@@ -1,7 +1,7 @@
-import { TransactionPayload } from './TransactionPayload.js';
 import { IUnitId } from '../IUnitId.js';
-import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 import { SystemIdentifier } from '../SystemIdentifier.js';
+import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
+import { TransactionPayload } from './TransactionPayload.js';
 import { TransferBillToDustCollectorAttributes } from './TransferBillToDustCollectorAttributes.js';
 
 export class TransferBillToDustCollectorPayload extends TransactionPayload<TransferBillToDustCollectorAttributes> {

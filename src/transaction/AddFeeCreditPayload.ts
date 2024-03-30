@@ -1,8 +1,8 @@
-import { FeeCreditPayload } from './FeeCreditPayload.js';
-import { AddFeeCreditAttributes } from './AddFeeCreditAttributes.js';
-import { SystemIdentifier } from '../SystemIdentifier.js';
-import { FeeCreditClientMetadata } from './FeeCreditClientMetadata.js';
 import { IUnitId } from '../IUnitId.js';
+import { SystemIdentifier } from '../SystemIdentifier.js';
+import { AddFeeCreditAttributes } from './AddFeeCreditAttributes.js';
+import { FeeCreditClientMetadata } from './FeeCreditClientMetadata.js';
+import { FeeCreditPayload } from './FeeCreditPayload.js';
 
 export class AddFeeCreditPayload extends FeeCreditPayload<AddFeeCreditAttributes> {
   public static readonly PAYLOAD_TYPE = 'addFC';

@@ -1,5 +1,5 @@
-import { UnitIdWithType } from './UnitIdWithType.js';
 import { SystemIdentifier } from '../SystemIdentifier.js';
+import { UnitIdWithType } from './UnitIdWithType.js';
 import { UnitType } from './UnitType.js';
 
 type FeeCreditRecordPartition = SystemIdentifier.MONEY_PARTITION | SystemIdentifier.TOKEN_PARTITION;

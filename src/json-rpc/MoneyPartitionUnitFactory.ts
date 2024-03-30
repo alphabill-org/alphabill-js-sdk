@@ -1,10 +1,10 @@
 import { Bill } from '../Bill.js';
 import { FeeCreditRecord } from '../FeeCreditRecord.js';
-import { UnitType } from '../transaction/UnitType.js';
-import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
-import { IBillDataDto } from './IBillDataDto.js';
 import { IUnitId } from '../IUnitId.js';
+import { UnitType } from '../transaction/UnitType.js';
 import { Base16Converter } from '../util/Base16Converter.js';
+import { IBillDataDto } from './IBillDataDto.js';
+import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
 import { UnitFactory } from './UnitFactory.js';
 
 export class MoneyPartitionUnitFactory extends UnitFactory {

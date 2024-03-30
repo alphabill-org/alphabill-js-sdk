@@ -1,8 +1,9 @@
+import { IUnitId } from './IUnitId.js';
+import { IFungibleTokenDto } from './json-rpc/IFungibleTokenDto.js';
+import { UnitFactory } from './json-rpc/UnitFactory.js';
 import { Base16Converter } from './util/Base16Converter.js';
 import { Base64Converter } from './util/Base64Converter.js';
-import { IFungibleTokenDto } from './json-rpc/IFungibleTokenDto.js';
-import { IUnitId } from './IUnitId.js';
-import { UnitFactory } from './json-rpc/UnitFactory.js';
+import { dedent } from './util/StringUtils.js';
 
 export class FungibleToken {
   public constructor(
@@ -21,5 +22,15 @@ export class FungibleToken {
       Base64Converter.decode(data.Backlink),
       Boolean(Number(data.Locked)),
     );
+  }
+
+  public toString(): string {
+    return dedent`
+      FungibleToken
+        Token Type: ${this.tokenType.toString()}
+        Value: ${this.value}
+        Block Number: ${this.blockNumber}
+        Backlink: ${Base16Converter.encode(this.backlink)}
+        Locked: ${this.locked}`;
   }
 }

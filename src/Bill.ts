@@ -1,5 +1,6 @@
-import { Base16Converter } from './util/Base16Converter.js';
 import { IBillDataDto } from './json-rpc/IBillDataDto.js';
+import { Base16Converter } from './util/Base16Converter.js';
+import { dedent } from './util/StringUtils.js';
 
 export class Bill {
   public constructor(
@@ -16,5 +17,14 @@ export class Bill {
       Base16Converter.decode(data.backlink),
       Boolean(Number(data.locked)),
     );
+  }
+
+  public toString(): string {
+    return dedent`
+      Bill
+        Value: ${this.value}
+        Last Update: ${this.lastUpdate}
+        Backlink: ${Base16Converter.encode(this.backlink)}
+        Locked: ${this.locked}`;
   }
 }
