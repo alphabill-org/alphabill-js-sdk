@@ -1,5 +1,7 @@
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 
+export type UnlockFeeCreditAttributesArray = readonly [Uint8Array];
+
 export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes {
   public constructor(public readonly backlink: Uint8Array) {}
 

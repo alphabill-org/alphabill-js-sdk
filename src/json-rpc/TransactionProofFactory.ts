@@ -82,6 +82,8 @@ import {
 import { TransferNonFungibleTokenPayload } from '../transaction/TransferNonFungibleTokenPayload.js';
 import { UnlockBillAttributes, UnlockBillAttributesArray } from '../transaction/UnlockBillAttributes.js';
 import { UnlockBillPayload } from '../transaction/UnlockBillPayload.js';
+import { UnlockFeeCreditAttributes, UnlockFeeCreditAttributesArray } from '../transaction/UnlockFeeCreditAttributes.js';
+import { UnlockFeeCreditPayload } from '../transaction/UnlockFeeCreditPayload.js';
 import {
   UpdateNonFungibleTokenAttributes,
   UpdateNonFungibleTokenAttributesArray,
@@ -99,6 +101,7 @@ import { TransactionProofDto } from './StateApiJsonRpcService.js';
 export class TransactionProofFactory implements ITransactionProofFactory {
   private createPayloadAttributesMap = new Map<string, (data: unknown) => Promise<ITransactionPayloadAttributes>>([
     [AddFeeCreditPayload.PAYLOAD_TYPE, this.createAddFeeCreditAttributes.bind(this)],
+    [UnlockFeeCreditPayload.PAYLOAD_TYPE, this.createUnlockFeeCreditAttributes.bind(this)],
     [BurnFungibleTokenPayload.PAYLOAD_TYPE, this.createBurnFungibleTokenAttributes.bind(this)],
     [CloseFeeCreditPayload.PAYLOAD_TYPE, this.createCloseFeeCreditAttributes.bind(this)],
     [CreateFungibleTokenPayload.PAYLOAD_TYPE, this.createCreateFungibleTokenAttributes.bind(this)],
@@ -229,6 +232,12 @@ export class TransactionProofFactory implements ITransactionProofFactory {
         data[2],
       )) as TransactionRecordWithProof<TransferFeeCreditPayload>,
     );
+  }
+
+  private async createUnlockFeeCreditAttributes(
+    data: UnlockFeeCreditAttributesArray,
+  ): Promise<UnlockFeeCreditAttributes> {
+    return new UnlockFeeCreditAttributes(data[0]);
   }
 
   private async createBurnFungibleTokenAttributes(
