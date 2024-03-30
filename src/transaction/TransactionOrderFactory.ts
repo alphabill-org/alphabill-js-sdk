@@ -1,8 +1,8 @@
+import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { ISigningService } from '../signing/ISigningService.js';
+import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { TransactionOrder } from './TransactionOrder.js';
 import { TransactionPayload } from './TransactionPayload.js';
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 
 export class TransactionOrderFactory {
   public constructor(
@@ -14,10 +14,11 @@ export class TransactionOrderFactory {
   public async createTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
     payload: T,
   ): Promise<TransactionOrder<T>> {
-    return this.createTransactionOrder(
+    return TransactionOrderFactory.createTransactionOrder(
       payload,
       await this.createOwnerProof(payload),
       payload.clientMetadata.feeCreditRecordId ? await this.createFeeProof(payload) : null,
+      this.cborCoder,
     );
   }
 
@@ -37,12 +38,13 @@ export class TransactionOrderFactory {
     );
   }
 
-  protected async createTransactionOrder<T extends TransactionPayload<ITransactionPayloadAttributes>>(
+  public static async createTransactionOrder<T extends TransactionPayload<ITransactionPayloadAttributes>>(
     payload: T,
     ownerProof: Uint8Array,
-    feeProof: Uint8Array,
+    feeProof: Uint8Array | null,
+    cborCodec: ICborCodec,
   ): Promise<TransactionOrder<T>> {
-    const transactionOrderBytes = await this.cborCoder.encode([payload.toArray(), ownerProof, feeProof]);
+    const transactionOrderBytes = await cborCodec.encode([payload.toArray(), ownerProof, feeProof]);
     return new TransactionOrder<T>(payload, ownerProof, feeProof, transactionOrderBytes);
   }
 }

@@ -8,14 +8,16 @@ export class CborCodecNode implements ICborCodec {
       canonical: true,
       encodeUndefined: () => null,
       genTypes: {
-        Uint8Array: (encoder, data) => {
-          return encoder.pushAny(data.buffer);
+        Uint8Array: (encoder: cbor.Encoder, data: Uint8Array) => {
+          return encoder.pushAny(new Uint8Array(data).buffer);
         },
       },
     }) as Promise<Uint8Array>;
   }
 
   public decode(input: Uint8Array): Promise<unknown> {
-    return cbor.decodeFirst(input);
+    return cbor.decodeFirst(input, {
+      preferWeb: true,
+    });
   }
 }

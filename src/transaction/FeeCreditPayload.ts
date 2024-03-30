@@ -1,8 +1,8 @@
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { TransactionPayload } from './TransactionPayload.js';
+import { IUnitId } from '../IUnitId.js';
 import { SystemIdentifier } from '../SystemIdentifier.js';
 import { FeeCreditClientMetadata } from './FeeCreditClientMetadata.js';
-import { IUnitId } from '../IUnitId.js';
+import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
+import { TransactionPayload } from './TransactionPayload.js';
 
 export class FeeCreditPayload<T extends ITransactionPayloadAttributes> extends TransactionPayload<T> {
   protected constructor(

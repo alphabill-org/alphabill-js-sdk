@@ -2,51 +2,37 @@ export interface IUnitDto {
   readonly unitId: string;
   readonly data: unknown;
   readonly ownerPredicate: string;
-  readonly stateProof: {
+  readonly stateProof?: IStateProofDto;
+}
+
+export interface IStateProofDto {
+  readonly unitId: string;
+  readonly unitValue: bigint;
+  readonly unitLedgerHash: string;
+  readonly unitTreeCert: IUnitTreeCertDto;
+  readonly stateTreeCert: IStateTreeCertDto;
+  // TODO: uncityCert has data inconsistent with other data formats, keeping it as is for now
+  readonly unicityCert: unknown;
+}
+
+export interface IUnitTreeCertDto {
+  readonly txrHash: string;
+  readonly dataHash: string;
+  readonly path: IPathItem[] | null;
+}
+
+export interface IStateTreeCertDto {
+  readonly leftSummaryHash: string;
+  readonly leftSummaryValue: bigint;
+  readonly rightSummaryHash: string;
+  readonly rightSummaryValue: bigint;
+  readonly path: {
     readonly unitId: string;
-    readonly unitValue: string;
-    readonly unitLedgerHash: string;
-    readonly unitTreeCert: {
-      readonly transactionRecordHash: string;
-      readonly unitDataHash: string;
-      readonly path: IPathItem[];
-    };
-    readonly stateTreeCert: {
-      readonly leftSummaryHash: string;
-      readonly LeftSummaryValue: string;
-      readonly rightSummaryHash: string;
-      readonly rightSummaryValue: string;
-      readonly path: {
-        readonly unitId: string;
-        readonly logsHash: string;
-        readonly value: string;
-        readonly siblingSummaryHash: string;
-        readonly siblingSummaryValue: string;
-      };
-    };
-    readonly unicityCertificate: {
-      readonly inputRecord: {
-        readonly previousHash: string;
-        readonly hash: string;
-        readonly blockHash: string;
-        readonly summaryValue: string;
-        readonly roundNumber: string;
-        readonly sumOfEarnedFees: string;
-      };
-      readonly unicityTreeCertificate: {
-        readonly systemIdentifier: string;
-        readonly siblingHashes: IPathItem[];
-        readonly systemDescriptionHash: string;
-      };
-      readonly unicitySeal: {
-        readonly rootChainRoundNumber: string;
-        readonly timestamp: string;
-        readonly previousHash: string;
-        readonly hash: string;
-        readonly signatures: Map<string, string>;
-      };
-    };
-  };
+    readonly logsHash: string;
+    readonly value: bigint;
+    readonly siblingSummaryHash: string;
+    readonly siblingSummaryValue: bigint;
+  }[];
 }
 
 interface IPathItem {

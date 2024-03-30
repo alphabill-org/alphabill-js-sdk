@@ -47,11 +47,17 @@ export class Base16Converter {
     const result = [];
     for (let i = hex.startsWith('0X', 0) ? 2 : 0; i < hex.length; i += 2) {
       if (
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         typeof Base16Converter.HEX_BYTE_MAP[hex[i]] === 'undefined' ||
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         typeof Base16Converter.HEX_BYTE_MAP[hex[i + 1]] === 'undefined'
       ) {
         throw new Error('Invalid HEX');
       }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       result.push((Base16Converter.HEX_BYTE_MAP[hex[i]] << 4) + Base16Converter.HEX_BYTE_MAP[hex[i + 1]]);
     }
 

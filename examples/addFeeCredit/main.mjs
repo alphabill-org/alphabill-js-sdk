@@ -1,32 +1,30 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { createPublicClient } from '../../lib/StateApiClient.js';
-import { MoneyPartitionUnitFactory } from '../../lib/json-rpc/MoneyPartitionUnitFactory.js';
 import { CborCodecNode } from '../../lib/codec/cbor/CborCodecNode.js';
+import { MoneyPartitionUnitFactory } from '../../lib/json-rpc/MoneyPartitionUnitFactory.js';
 import { http } from '../../lib/json-rpc/StateApiJsonRpcService.js';
-import { Base16Converter } from '../../lib/util/Base16Converter.js';
-import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
-import { TransactionOrderFactory } from '../../lib/transaction/TransactionOrderFactory.js';
-import { FeeCreditUnitId } from '../../lib/transaction/FeeCreditUnitId.js';
-import { SystemIdentifier } from '../../lib/SystemIdentifier.js';
-import { TransferFeeCreditPayload } from '../../lib/transaction/TransferFeeCreditPayload.js';
-import { TransferFeeCreditAttributes } from '../../lib/transaction/TransferFeeCreditAttributes.js';
-import { FeeCreditClientMetadata } from '../../lib/transaction/FeeCreditClientMetadata.js';
-import { AddFeeCreditPayload } from '../../lib/transaction/AddFeeCreditPayload.js';
-import { AddFeeCreditAttributes } from '../../lib/transaction/AddFeeCreditAttributes.js';
-import { PayToPublicKeyHashPredicate } from '../../lib/transaction/PayToPublicKeyHashPredicate.js';
 import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnitFactory.js';
-import { waitTransactionProof } from '../waitTransactionProof.mjs';
-
+import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
+import { createPublicClient } from '../../lib/StateApiClient.js';
+import { SystemIdentifier } from '../../lib/SystemIdentifier.js';
+import { AddFeeCreditAttributes } from '../../lib/transaction/AddFeeCreditAttributes.js';
+import { AddFeeCreditPayload } from '../../lib/transaction/AddFeeCreditPayload.js';
+import { FeeCreditClientMetadata } from '../../lib/transaction/FeeCreditClientMetadata.js';
+import { FeeCreditUnitId } from '../../lib/transaction/FeeCreditUnitId.js';
+import { PayToPublicKeyHashPredicate } from '../../lib/transaction/PayToPublicKeyHashPredicate.js';
+import { TransactionOrderFactory } from '../../lib/transaction/TransactionOrderFactory.js';
+import { TransferFeeCreditAttributes } from '../../lib/transaction/TransferFeeCreditAttributes.js';
+import { TransferFeeCreditPayload } from '../../lib/transaction/TransferFeeCreditPayload.js';
+import { Base16Converter } from '../../lib/util/Base16Converter.js';
 import config from '../config.js';
-
+import { waitTransactionProof } from '../waitTransactionProof.mjs';
 
 const cborCodec = new CborCodecNode();
 const moneyClient = createPublicClient({
-  transport: http(config.moneyPartitionUrl, new MoneyPartitionUnitFactory(), cborCodec)
+  transport: http(config.moneyPartitionUrl, new MoneyPartitionUnitFactory(), cborCodec),
 });
 
 const tokenClient = createPublicClient({
-  transport: http(config.tokenPartitionUrl, new TokenPartitionUnitFactory(), cborCodec)
+  transport: http(config.tokenPartitionUrl, new TokenPartitionUnitFactory(), cborCodec),
 });
 
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
@@ -53,16 +51,16 @@ const transferFeeCreditTransactionHash = await moneyClient.sendTransaction(
         round,
         round + 60n,
         feeCreditUnit?.data.backlink,
-        unit.data.backlink
+        unit.data.backlink,
       ),
       SystemIdentifier.MONEY_PARTITION,
       unit.unitId,
-      new FeeCreditClientMetadata(5n, round + 60n)
-    )
-  )
+      new FeeCreditClientMetadata(5n, round + 60n),
+    ),
+  ),
 );
 
-const transactionProof = await waitTransactionProof(moneyClient, transferFeeCreditTransactionHash);
+let transactionProof = await waitTransactionProof(moneyClient, transferFeeCreditTransactionHash);
 
 const addFeeCreditTransactionHash = await tokenClient.sendTransaction(
   await transactionOrderFactory.createTransaction(
@@ -78,5 +76,5 @@ const addFeeCreditTransactionHash = await tokenClient.sendTransaction(
   ),
 );
 
-await waitTransactionProof(tokenClient, addFeeCreditTransactionHash);
-console.log(await tokenClient.getUnit(feeCreditUnitId));
+transactionProof = await waitTransactionProof(tokenClient, addFeeCreditTransactionHash);
+console.log(transactionProof.toString());
