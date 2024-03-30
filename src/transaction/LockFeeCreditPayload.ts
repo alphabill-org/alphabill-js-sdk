@@ -1,8 +1,8 @@
-import { SystemIdentifier } from '../SystemIdentifier.js';
 import { IUnitId } from '../IUnitId.js';
-import { TransactionPayload } from './TransactionPayload.js';
+import { SystemIdentifier } from '../SystemIdentifier.js';
 import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 import { LockFeeCreditAttributes } from './LockFeeCreditAttributes.js';
+import { TransactionPayload } from './TransactionPayload.js';
 
 export class LockFeeCreditPayload extends TransactionPayload<LockFeeCreditAttributes> {
   public static readonly PAYLOAD_TYPE = 'lockFC';
