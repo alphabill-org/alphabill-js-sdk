@@ -35,6 +35,8 @@ import { FeeCreditUnitId } from '../transaction/FeeCreditUnitId.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { LockBillAttributes, LockBillAttributesArray } from '../transaction/LockBillAttributes.js';
 import { LockBillPayload } from '../transaction/LockBillPayload.js';
+import { LockFeeCreditAttributes, LockFeeCreditAttributesArray } from '../transaction/LockFeeCreditAttributes.js';
+import { LockFeeCreditPayload } from '../transaction/LockFeeCreditPayload.js';
 import { NonFungibleTokenData } from '../transaction/NonFungibleTokenData.js';
 import {
   ReclaimFeeCreditAttributes,
@@ -101,6 +103,7 @@ import { TransactionProofDto } from './StateApiJsonRpcService.js';
 export class TransactionProofFactory implements ITransactionProofFactory {
   private createPayloadAttributesMap = new Map<string, (data: unknown) => Promise<ITransactionPayloadAttributes>>([
     [AddFeeCreditPayload.PAYLOAD_TYPE, this.createAddFeeCreditAttributes.bind(this)],
+    [LockFeeCreditPayload.PAYLOAD_TYPE, this.createLockFeeCreditAttributes.bind(this)],
     [UnlockFeeCreditPayload.PAYLOAD_TYPE, this.createUnlockFeeCreditAttributes.bind(this)],
     [BurnFungibleTokenPayload.PAYLOAD_TYPE, this.createBurnFungibleTokenAttributes.bind(this)],
     [CloseFeeCreditPayload.PAYLOAD_TYPE, this.createCloseFeeCreditAttributes.bind(this)],
@@ -232,6 +235,10 @@ export class TransactionProofFactory implements ITransactionProofFactory {
         data[2],
       )) as TransactionRecordWithProof<TransferFeeCreditPayload>,
     );
+  }
+
+  private async createLockFeeCreditAttributes(data: LockFeeCreditAttributesArray): Promise<LockFeeCreditAttributes> {
+    return new LockFeeCreditAttributes(BigInt(data[0]), data[1]);
   }
 
   private async createUnlockFeeCreditAttributes(

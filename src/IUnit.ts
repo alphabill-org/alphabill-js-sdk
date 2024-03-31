@@ -27,16 +27,18 @@ export interface IStateTreeCert {
   readonly leftSummaryValue: bigint;
   readonly rightSummaryHash: Uint8Array;
   readonly rightSummaryValue: bigint;
-  readonly path: {
-    readonly unitId: IUnitId;
-    readonly logsHash: Uint8Array;
-    readonly value: bigint;
-    readonly siblingSummaryHash: Uint8Array;
-    readonly siblingSummaryValue: bigint;
-  }[];
+  readonly path: IStateTreePathItem[] | null;
 }
 
 interface IPathItem {
   readonly hash: Uint8Array;
   readonly directionLeft: boolean;
+}
+
+interface IStateTreePathItem {
+  readonly unitId: IUnitId;
+  readonly logsHash: Uint8Array;
+  readonly value: bigint;
+  readonly siblingSummaryHash: Uint8Array;
+  readonly siblingSummaryValue: bigint;
 }
