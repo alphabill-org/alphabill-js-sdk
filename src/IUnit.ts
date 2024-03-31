@@ -19,7 +19,7 @@ export interface IStateProof {
 export interface IUnitTreeCert {
   readonly transactionRecordHash: Uint8Array;
   readonly unitDataHash: Uint8Array;
-  readonly path?: IPathItem[] | null;
+  readonly path: IPathItem[] | null;
 }
 
 export interface IStateTreeCert {
@@ -27,13 +27,15 @@ export interface IStateTreeCert {
   readonly leftSummaryValue: bigint;
   readonly rightSummaryHash: Uint8Array;
   readonly rightSummaryValue: bigint;
-  readonly path?: {
-    readonly unitId: IUnitId;
-    readonly logsHash: Uint8Array;
-    readonly value: bigint;
-    readonly siblingSummaryHash: Uint8Array;
-    readonly siblingSummaryValue: bigint;
-  }[];
+  readonly path:
+    | {
+        readonly unitId: IUnitId;
+        readonly logsHash: Uint8Array;
+        readonly value: bigint;
+        readonly siblingSummaryHash: Uint8Array;
+        readonly siblingSummaryValue: bigint;
+      }[]
+    | null;
 }
 
 interface IPathItem {
