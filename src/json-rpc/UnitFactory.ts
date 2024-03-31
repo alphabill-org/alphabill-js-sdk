@@ -44,15 +44,16 @@ export abstract class UnitFactory implements IUnitFactory {
       leftSummaryValue: BigInt(data.leftSummaryValue),
       rightSummaryHash: Base16Converter.decode(data.rightSummaryHash),
       rightSummaryValue: BigInt(data.rightSummaryValue),
-      path: data.path?.map((path) => {
-        return {
-          unitId: this.createUnitId(Base16Converter.decode(path.unitId)),
-          logsHash: Base16Converter.decode(path.logsHash),
-          value: BigInt(path.value),
-          siblingSummaryHash: Base16Converter.decode(path.siblingSummaryHash),
-          siblingSummaryValue: BigInt(path.siblingSummaryValue),
-        };
-      }),
+      path:
+        data.path?.map((path) => {
+          return {
+            unitId: this.createUnitId(Base16Converter.decode(path.unitId)),
+            logsHash: Base16Converter.decode(path.logsHash),
+            value: BigInt(path.value),
+            siblingSummaryHash: Base16Converter.decode(path.siblingSummaryHash),
+            siblingSummaryValue: BigInt(path.siblingSummaryValue),
+          };
+        }) || null,
     };
   }
 
