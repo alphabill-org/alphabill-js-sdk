@@ -8,6 +8,8 @@ import { SystemIdentifier } from '../../lib/SystemIdentifier.js';
 import { BurnFungibleTokenAttributes } from '../../lib/transaction/BurnFungibleTokenAttributes.js';
 import { BurnFungibleTokenPayload } from '../../lib/transaction/BurnFungibleTokenPayload.js';
 import { FeeCreditUnitId } from '../../lib/transaction/FeeCreditUnitId.js';
+import { JoinFungibleTokenAttributes } from '../../lib/transaction/JoinFungibleTokenAttributes.js';
+import { JoinFungibleTokenPayload } from '../../lib/transaction/JoinFungibleTokenPayload.js';
 import { PayToPublicKeyHashPredicate } from '../../lib/transaction/PayToPublicKeyHashPredicate.js';
 import { SplitFungibleTokenAttributes } from '../../lib/transaction/SplitFungibleTokenAttributes.js';
 import { SplitFungibleTokenPayload } from '../../lib/transaction/SplitFungibleTokenPayload.js';
@@ -15,7 +17,6 @@ import { TransactionOrderFactory } from '../../lib/transaction/TransactionOrderF
 import { UnitIdWithType } from '../../lib/transaction/UnitIdWithType.js';
 import { UnitType } from '../../lib/transaction/UnitType.js';
 import { Base16Converter } from '../../lib/util/Base16Converter.js';
-
 import config from '../config.js';
 import { waitTransactionProof } from '../waitTransactionProof.mjs';
 
@@ -96,4 +97,34 @@ const burnTransactionHash = await client.sendTransaction(
     ),
   ),
 );
-console.log(burnTransactionHash);
+
+const transactionRecordWithProof = await waitTransactionProof(client, burnTransactionHash);
+const burnTransactionRecord = transactionRecordWithProof.transactionRecord;
+const burnTransactionProof = transactionRecordWithProof.transactionProof;
+
+// 5. join the split token back into the original fungible token
+const joinTransactionHash = await client.sendTransaction(
+  await transactionOrderFactory.createTransaction(
+    new JoinFungibleTokenPayload(
+      new JoinFungibleTokenAttributes(
+        [burnTransactionRecord],
+        [burnTransactionProof],
+        originalTokenAfterSplit.data.backlink,
+        [null],
+      ),
+      originalTokenAfterSplit.unitId,
+      {
+        maxTransactionFee: 5n,
+        timeout: round + 60n,
+        feeCreditRecordId: feeCreditUnitId,
+      },
+    ),
+  ),
+);
+
+// 5b. wait for transaction to finalize
+await waitTransactionProof(client, joinTransactionHash);
+
+// 6. check that the original tokens value has been increased
+const originalTokenAfterJoin = await client.getUnit(unitId, false);
+console.log("Original token's value after join: " + originalTokenAfterJoin.data.value);
