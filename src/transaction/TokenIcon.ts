@@ -13,10 +13,10 @@ export class TokenIcon {
   }
 
   public toString(): string {
-    return `TokenIcon: ${this.type}; ${Base16Converter.Encode(this.data)}`;
+    return `TokenIcon: ${this.type}; ${Base16Converter.encode(this.data)}`;
   }
 
-  public static FromArray(data: TokenIconArray): TokenIcon {
+  public static fromArray(data: TokenIconArray): TokenIcon {
     return new TokenIcon(data[0], data[1]);
   }
 }

@@ -2,11 +2,11 @@ import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.j
 
 const payloadAttributesMap = new Map<string, (data: unknown) => ITransactionPayloadAttributes>();
 export function PayloadAttribute(
-  target: { FromArray: (data: unknown) => ITransactionPayloadAttributes; PAYLOAD_TYPE: string },
+  target: { fromArray: (data: unknown) => ITransactionPayloadAttributes; PAYLOAD_TYPE: string },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   context: ClassDecoratorContext,
 ): void {
-  payloadAttributesMap.set(target.PAYLOAD_TYPE, target.FromArray);
+  payloadAttributesMap.set(target.PAYLOAD_TYPE, target.fromArray);
 }
 
 export function createAttribute(type: string, data: unknown): ITransactionPayloadAttributes {

@@ -24,7 +24,7 @@ const client = createPublicClient({
   transport: http(config.tokenPartitionUrl, cborCodec),
 });
 
-const signingService = new DefaultSigningService(Base16Converter.Decode(config.privateKey));
+const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
 const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.TOKEN_PARTITION);
@@ -43,7 +43,7 @@ const splitTransactionHash = await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new SplitFungibleTokenPayload(
       new SplitFungibleTokenAttributes(
-        await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
+        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
         targetValue,
         null,
         token.data.backlink,
@@ -68,7 +68,7 @@ await waitTransactionProof(client, splitTransactionHash);
 const unitIds = await client.getUnitsByOwnerId(signingService.publicKey);
 const splitTokenId = unitIds.at(1);
 const splitToken = await client.getUnit(splitTokenId);
-console.log('Split token ID: ' + Base16Converter.Encode(splitTokenId.getBytes()));
+console.log('Split token ID: ' + Base16Converter.encode(splitTokenId.getBytes()));
 console.log('Split token value: ' + splitToken.data.value);
 
 // 3. check that the original tokens value has been reduced

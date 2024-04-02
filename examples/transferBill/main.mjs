@@ -18,16 +18,16 @@ const cborCodec = new CborCodecNode();
 const client = createPublicClient({
   transport: http(config.moneyPartitionUrl, cborCodec),
 });
-const signingService = new DefaultSigningService(Base16Converter.Decode(config.privateKey));
+const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
 const unitIds = await client.getUnitsByOwnerId(signingService.publicKey);
 const moneyUnitId = unitIds
   .filter((id) => {
     return (
-      Base16Converter.Encode(id.getType()) ===
-        Base16Converter.Encode(new Uint8Array([UnitType.MONEY_PARTITION_BILL_DATA])) &&
-      Base16Converter.Encode(id.getBytes()) !== '0x000000000000000000000000000000000000000000000000000000000000000100'
+      Base16Converter.encode(id.getType()) ===
+        Base16Converter.encode(new Uint8Array([UnitType.MONEY_PARTITION_BILL_DATA])) &&
+      Base16Converter.encode(id.getBytes()) !== '0x000000000000000000000000000000000000000000000000000000000000000100'
     );
   })
   .at(0);
@@ -44,7 +44,7 @@ const transactionHash = await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new TransferBillPayload(
       new TransferBillAttributes(
-        await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
+        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
         bill.data.value,
         bill.data.backlink,
       ),

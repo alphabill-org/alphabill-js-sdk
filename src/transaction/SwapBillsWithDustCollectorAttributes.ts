@@ -51,11 +51,11 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
       `;
   }
 
-  public static FromArray(data: SwapBillsWithDustCollectorAttributesArray): SwapBillsWithDustCollectorAttributes {
+  public static fromArray(data: SwapBillsWithDustCollectorAttributesArray): SwapBillsWithDustCollectorAttributes {
     const proofs = Array<TransactionRecordWithProof<TransferBillToDustCollectorPayload>>();
 
     for (let i = 0; i < data[1].length; i++) {
-      proofs.push(TransactionRecordWithProof.FromArray([data[1][i], data[2][i]]));
+      proofs.push(TransactionRecordWithProof.fromArray([data[1][i], data[2][i]]));
     }
 
     return new SwapBillsWithDustCollectorAttributes(

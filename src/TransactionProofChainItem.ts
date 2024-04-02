@@ -16,11 +16,11 @@ export class TransactionProofChainItem {
   public toString(): string {
     return dedent`
       TransactionProofChainItem
-        Hash: ${Base16Converter.Encode(this.hash)}
+        Hash: ${Base16Converter.encode(this.hash)}
         Left: ${this.left}`;
   }
 
-  public static FromArray(data: TransactionProofChainItemArray): TransactionProofChainItem {
+  public static fromArray(data: TransactionProofChainItemArray): TransactionProofChainItem {
     return new TransactionProofChainItem(data[0], data[1]);
   }
 }

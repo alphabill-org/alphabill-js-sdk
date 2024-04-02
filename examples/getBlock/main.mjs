@@ -10,4 +10,4 @@ const client = createPublicClient({
 });
 
 const round = await client.getRoundNumber();
-console.log(Base16Converter.Encode(await client.getBlock(round)));
+console.log(Base16Converter.encode(await client.getBlock(round)));

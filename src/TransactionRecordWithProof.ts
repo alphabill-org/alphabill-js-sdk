@@ -23,9 +23,9 @@ export class TransactionRecordWithProof<T extends TransactionPayload<ITransactio
         ${this.transactionProof.toString()}`;
   }
 
-  public static FromArray<T extends ITransactionPayloadAttributes>(
+  public static fromArray<T extends ITransactionPayloadAttributes>(
     data: TransactionRecordWithProofArray,
   ): TransactionRecordWithProof<TransactionPayload<T>> {
-    return new TransactionRecordWithProof(TransactionRecord.FromArray(data[0]), TransactionProof.FromArray(data[1]));
+    return new TransactionRecordWithProof(TransactionRecord.fromArray(data[0]), TransactionProof.fromArray(data[1]));
   }
 }

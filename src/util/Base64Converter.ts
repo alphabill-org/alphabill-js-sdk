@@ -6,7 +6,7 @@ export class Base64Converter {
    * @param {Uint8Array} data byte array
    * @returns string base64 string
    */
-  public static Encode(data: Uint8Array): string {
+  public static encode(data: Uint8Array): string {
     return fromByteArray(data);
   }
 
@@ -15,7 +15,7 @@ export class Base64Converter {
    * @param value base64 string
    * @returns {Uint8Array} byte array
    */
-  public static Decode(value: string): Uint8Array {
+  public static decode(value: string): Uint8Array {
     return toByteArray(value);
   }
 }

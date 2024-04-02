@@ -14,44 +14,44 @@ import { INonFungibleTokenDto } from './INonFungibleTokenDto.js';
 import { IStateProofDto, IStateTreeCertDto, IUnitDto, IUnitTreeCertDto } from './IUnitDto.js';
 
 export class UnitFactory {
-  private static readonly MONEY_PARTITION_BILL_DATA_HEX = Base16Converter.Encode(
+  private static readonly MONEY_PARTITION_BILL_DATA_HEX = Base16Converter.encode(
     new Uint8Array([UnitType.MONEY_PARTITION_BILL_DATA]),
   );
-  private static readonly MONEY_PARTITION_FEE_CREDIT_RECORD_HEX = Base16Converter.Encode(
+  private static readonly MONEY_PARTITION_FEE_CREDIT_RECORD_HEX = Base16Converter.encode(
     new Uint8Array([UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD]),
   );
-  private static readonly TOKEN_PARTITION_FUNGIBLE_TOKEN_HEX = Base16Converter.Encode(
+  private static readonly TOKEN_PARTITION_FUNGIBLE_TOKEN_HEX = Base16Converter.encode(
     new Uint8Array([UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN]),
   );
-  private static readonly TOKEN_PARTITION_NON_FUNGIBLE_TOKEN_HEX = Base16Converter.Encode(
+  private static readonly TOKEN_PARTITION_NON_FUNGIBLE_TOKEN_HEX = Base16Converter.encode(
     new Uint8Array([UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN]),
   );
-  private static readonly TOKEN_PARTITION_FEE_CREDIT_RECORD_HEX = Base16Converter.Encode(
+  private static readonly TOKEN_PARTITION_FEE_CREDIT_RECORD_HEX = Base16Converter.encode(
     new Uint8Array([UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD]),
   );
 
   public async createUnit(data: IUnitDto): Promise<IUnit<unknown>> {
-    const unitId = UnitId.FromBytes(Base16Converter.Decode(data.unitId));
+    const unitId = UnitId.fromBytes(Base16Converter.decode(data.unitId));
     return {
       unitId,
       data: await this.createUnitData(unitId, data.data),
-      ownerPredicate: Base16Converter.Decode(data.ownerPredicate),
+      ownerPredicate: Base16Converter.decode(data.ownerPredicate),
       stateProof: data.stateProof ? this.createStateProof(data.stateProof) : null,
     };
   }
 
   protected async createUnitData(unitId: IUnitId, input: unknown): Promise<unknown> {
-    switch (Base16Converter.Encode(unitId.getType())) {
+    switch (Base16Converter.encode(unitId.getType())) {
       case UnitFactory.MONEY_PARTITION_BILL_DATA_HEX:
-        return Bill.Create(input as IBillDataDto);
+        return Bill.create(input as IBillDataDto);
       case UnitFactory.MONEY_PARTITION_FEE_CREDIT_RECORD_HEX:
-        return FeeCreditRecord.Create(input as IFeeCreditRecordDto);
+        return FeeCreditRecord.create(input as IFeeCreditRecordDto);
       case UnitFactory.TOKEN_PARTITION_FUNGIBLE_TOKEN_HEX:
-        return FungibleToken.Create(input as IFungibleTokenDto);
+        return FungibleToken.create(input as IFungibleTokenDto);
       case UnitFactory.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN_HEX:
-        return NonFungibleToken.Create(input as INonFungibleTokenDto);
+        return NonFungibleToken.create(input as INonFungibleTokenDto);
       case UnitFactory.TOKEN_PARTITION_FEE_CREDIT_RECORD_HEX:
-        return FeeCreditRecord.Create(input as IFeeCreditRecordDto);
+        return FeeCreditRecord.create(input as IFeeCreditRecordDto);
     }
 
     return input;
@@ -60,9 +60,9 @@ export class UnitFactory {
   // TODO: Parse unicity cert
   private createStateProof(data: IStateProofDto): IStateProof {
     return {
-      unitId: UnitId.FromBytes(Base16Converter.Decode(data.unitId)),
+      unitId: UnitId.fromBytes(Base16Converter.decode(data.unitId)),
       unitValue: BigInt(data.unitValue),
-      unitLedgerHash: Base16Converter.Decode(data.unitLedgerHash),
+      unitLedgerHash: Base16Converter.decode(data.unitLedgerHash),
       unitTreeCert: this.createUnitTreeCert(data.unitTreeCert),
       stateTreeCert: this.createStateTreeCert(data.stateTreeCert),
       unicityCertificate: data.unicityCert,
@@ -71,17 +71,17 @@ export class UnitFactory {
 
   private createStateTreeCert(data: IStateTreeCertDto): IStateTreeCert {
     return {
-      leftSummaryHash: Base16Converter.Decode(data.leftSummaryHash),
+      leftSummaryHash: Base16Converter.decode(data.leftSummaryHash),
       leftSummaryValue: BigInt(data.leftSummaryValue),
-      rightSummaryHash: Base16Converter.Decode(data.rightSummaryHash),
+      rightSummaryHash: Base16Converter.decode(data.rightSummaryHash),
       rightSummaryValue: BigInt(data.rightSummaryValue),
       path:
         data.path?.map((path) => {
           return {
-            unitId: UnitId.FromBytes(Base16Converter.Decode(path.unitId)),
-            logsHash: Base16Converter.Decode(path.logsHash),
+            unitId: UnitId.fromBytes(Base16Converter.decode(path.unitId)),
+            logsHash: Base16Converter.decode(path.logsHash),
             value: BigInt(path.value),
-            siblingSummaryHash: Base16Converter.Decode(path.siblingSummaryHash),
+            siblingSummaryHash: Base16Converter.decode(path.siblingSummaryHash),
             siblingSummaryValue: BigInt(path.siblingSummaryValue),
           };
         }) || null,
@@ -90,11 +90,11 @@ export class UnitFactory {
 
   private createUnitTreeCert(data: IUnitTreeCertDto): IUnitTreeCert {
     return {
-      transactionRecordHash: Base16Converter.Decode(data.txrHash),
-      unitDataHash: Base16Converter.Decode(data.dataHash),
+      transactionRecordHash: Base16Converter.decode(data.txrHash),
+      unitDataHash: Base16Converter.decode(data.dataHash),
       path:
         data.path?.map((item) => ({
-          hash: Base16Converter.Decode(item.hash),
+          hash: Base16Converter.decode(item.hash),
           directionLeft: item.directionLeft,
         })) || null,
     };

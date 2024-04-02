@@ -12,13 +12,13 @@ export class PayToPublicKeyHashPredicate implements IPredicate {
     return new Uint8Array(this.bytes);
   }
 
-  public static async Create(cborCodec: ICborCodec, publicKey: Uint8Array): Promise<PayToPublicKeyHashPredicate> {
+  public static async create(cborCodec: ICborCodec, publicKey: Uint8Array): Promise<PayToPublicKeyHashPredicate> {
     return new PayToPublicKeyHashPredicate(
       await cborCodec.encode([0x00, new Uint8Array([PayToPublicKeyHashPredicate.P2pkh256ID]), sha256(publicKey)]),
     );
   }
 
   public toString(): string {
-    return `PayToPublicKeyHashPredicate[${Base16Converter.Encode(this.bytes)}]`;
+    return `PayToPublicKeyHashPredicate[${Base16Converter.encode(this.bytes)}]`;
   }
 }

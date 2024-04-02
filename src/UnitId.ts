@@ -16,10 +16,10 @@ export class UnitId implements IUnitId {
   }
 
   public toString(): string {
-    return `${Base16Converter.Encode(this.bytes)}`;
+    return `${Base16Converter.encode(this.bytes)}`;
   }
 
-  public static FromBytes(id: Uint8Array): IUnitId {
+  public static fromBytes(id: Uint8Array): IUnitId {
     return new UnitId(id.slice(-1), id);
   }
 }

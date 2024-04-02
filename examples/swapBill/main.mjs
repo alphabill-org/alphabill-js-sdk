@@ -22,21 +22,21 @@ const cborCodec = new CborCodecNode();
 const client = createPublicClient({
   transport: http(config.moneyPartitionUrl, cborCodec),
 });
-const signingService = new DefaultSigningService(Base16Converter.Decode(config.privateKey));
+const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
 const unitIds = await client.getUnitsByOwnerId(signingService.publicKey);
 const targetUnitIdHex = '0x000000000000000000000000000000000000000000000000000000000000000100';
 const targetUnitId = new UnitIdWithType(
-  new Uint8Array(Base16Converter.Decode(targetUnitIdHex)),
+  new Uint8Array(Base16Converter.decode(targetUnitIdHex)),
   UnitType.MONEY_PARTITION_BILL_DATA,
 );
 const moneyUnitId = unitIds
   .filter((id) => {
     return (
-      Base16Converter.Encode(id.getType()) ===
-        Base16Converter.Encode(new Uint8Array([UnitType.MONEY_PARTITION_BILL_DATA])) &&
-      Base16Converter.Encode(id.getBytes()) !== targetUnitIdHex
+      Base16Converter.encode(id.getType()) ===
+        Base16Converter.encode(new Uint8Array([UnitType.MONEY_PARTITION_BILL_DATA])) &&
+      Base16Converter.encode(id.getBytes()) !== targetUnitIdHex
     );
   })
   .at(0);
@@ -75,7 +75,7 @@ await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new SwapBillsWithDustCollectorPayload(
       new SwapBillsWithDustCollectorAttributes(
-        await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
+        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
         [transactionProof],
         bill.data.value,
       ),

@@ -22,20 +22,20 @@ const tokenClient = createPublicClient({
 const moneyClient = createPublicClient({
   transport: http(config.moneyPartitionUrl, cborCodec),
 });
-const signingService = new DefaultSigningService(Base16Converter.Decode(config.privateKey));
+const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
 const unitIds = await tokenClient.getUnitsByOwnerId(signingService.publicKey);
 const targetUnitIdHex = '0x000000000000000000000000000000000000000000000000000000000000000100';
 const targetUnitId = new UnitIdWithType(
-  new Uint8Array(Base16Converter.Decode(targetUnitIdHex)),
+  new Uint8Array(Base16Converter.decode(targetUnitIdHex)),
   UnitType.MONEY_PARTITION_BILL_DATA,
 );
 const feeCreditUnitId = unitIds
   .filter((id) => {
     return (
-      Base16Converter.Encode(id.getType()) ===
-      Base16Converter.Encode(new Uint8Array([UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD]))
+      Base16Converter.encode(id.getType()) ===
+      Base16Converter.encode(new Uint8Array([UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD]))
     );
   })
   .at(1);

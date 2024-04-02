@@ -26,7 +26,7 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
         Backlink: ${this.backlink}`;
   }
 
-  public static FromArray(data: UnlockFeeCreditAttributesArray): UnlockFeeCreditAttributes {
+  public static fromArray(data: UnlockFeeCreditAttributesArray): UnlockFeeCreditAttributes {
     return new UnlockFeeCreditAttributes(data[0]);
   }
 }

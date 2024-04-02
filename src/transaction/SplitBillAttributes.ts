@@ -33,14 +33,14 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
             ${this.targetUnits.map((unit) => unit.toString()).join('\n')}
           ]
           Remaining Bill Value: ${this.remainingBillValue}
-          Backlink: ${Base16Converter.Encode(this.backlink)}`;
+          Backlink: ${Base16Converter.encode(this.backlink)}`;
   }
 
-  public static FromArray(data: SplitBillAttributesArray): SplitBillAttributes {
+  public static fromArray(data: SplitBillAttributesArray): SplitBillAttributes {
     const targetUnits = Array<SplitBillUnit>();
 
     for (let i = 0; i < data[0].length; i++) {
-      targetUnits.push(SplitBillUnit.FromArray(data[0][i]));
+      targetUnits.push(SplitBillUnit.fromArray(data[0][i]));
     }
 
     return new SplitBillAttributes(targetUnits, BigInt(data[1]), new Uint8Array(data[2]));

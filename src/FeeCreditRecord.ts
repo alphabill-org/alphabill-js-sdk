@@ -11,10 +11,10 @@ export class FeeCreditRecord {
     public readonly locked: boolean,
   ) {}
 
-  public static async Create(data: IFeeCreditRecordDto): Promise<FeeCreditRecord> {
+  public static async create(data: IFeeCreditRecordDto): Promise<FeeCreditRecord> {
     return new FeeCreditRecord(
       BigInt(data.Balance),
-      Base64Converter.Decode(data.Backlink),
+      Base64Converter.decode(data.Backlink),
       BigInt(data.Timeout),
       Boolean(Number(data.Locked)),
     );
@@ -24,7 +24,7 @@ export class FeeCreditRecord {
     return dedent`
       FeeCreditRecord
         Balance: ${this.balance}
-        Backlink: ${Base16Converter.Encode(this.backlink)}
+        Backlink: ${Base16Converter.encode(this.backlink)}
         Timeout: ${this.timeout}
         Locked: ${this.locked}`;
   }

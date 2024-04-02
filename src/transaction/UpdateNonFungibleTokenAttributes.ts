@@ -31,13 +31,13 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
     return dedent`
       UpdateNonFungibleTokenAttributes
         Data: ${this.data.toString()}
-        Backlink: ${Base16Converter.Encode(this.backlink)}
-        Data Update Signatures: ${this.dataUpdateSignatures?.map((signature) => Base16Converter.Encode(signature))}`;
+        Backlink: ${Base16Converter.encode(this.backlink)}
+        Data Update Signatures: ${this.dataUpdateSignatures?.map((signature) => Base16Converter.encode(signature))}`;
   }
 
-  public static FromArray(data: UpdateNonFungibleTokenAttributesArray): UpdateNonFungibleTokenAttributes {
+  public static fromArray(data: UpdateNonFungibleTokenAttributesArray): UpdateNonFungibleTokenAttributes {
     return new UpdateNonFungibleTokenAttributes(
-      NonFungibleTokenData.CreateFromBytes(data[0]),
+      NonFungibleTokenData.createFromBytes(data[0]),
       new Uint8Array(data[1]),
       data[2]?.map((signature) => new Uint8Array(signature)) || null,
     );

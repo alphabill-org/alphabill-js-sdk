@@ -27,7 +27,7 @@
         },
         {
           "selector": ["method"],
-          "format": ["PascalCase"],
+          "format": ["camelCase"],
           "modifiers": ["static"]
         },
         {

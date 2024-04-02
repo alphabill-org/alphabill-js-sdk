@@ -19,7 +19,7 @@ const client = createPublicClient({
   transport: http(config.tokenPartitionUrl, cborCodec),
 });
 
-const signingService = new DefaultSigningService(Base16Converter.Decode(config.privateKey));
+const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
 const round = await client.getRoundNumber();

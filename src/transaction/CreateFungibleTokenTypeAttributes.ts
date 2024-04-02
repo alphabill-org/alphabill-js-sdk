@@ -68,16 +68,16 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
         Token Creation Predicate: ${this.tokenCreationPredicate.toString()}
         Invariant Predicate: ${this.invariantPredicate.toString()}
         Sub Type Creation Predicate Signatures: [
-          ${this.subTypeCreationPredicateSignatures?.map((signature) => Base16Converter.Encode(signature)).join(',\n') ?? 'null'}
+          ${this.subTypeCreationPredicateSignatures?.map((signature) => Base16Converter.encode(signature)).join(',\n') ?? 'null'}
         ]`;
   }
 
-  public static FromArray(data: CreateFungibleTokenTypeAttributesArray): CreateFungibleTokenTypeAttributes {
+  public static fromArray(data: CreateFungibleTokenTypeAttributesArray): CreateFungibleTokenTypeAttributes {
     return new CreateFungibleTokenTypeAttributes(
       data[0],
       data[1],
-      TokenIcon.FromArray(data[2]),
-      data[3] ? UnitId.FromBytes(new Uint8Array(data[3])) : null,
+      TokenIcon.fromArray(data[2]),
+      data[3] ? UnitId.fromBytes(new Uint8Array(data[3])) : null,
       data[4],
       new PredicateBytes(new Uint8Array(data[5])),
       new PredicateBytes(new Uint8Array(data[6])),

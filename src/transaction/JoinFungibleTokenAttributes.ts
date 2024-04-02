@@ -48,14 +48,14 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
     return dedent`
       JoinFungibleTokenAttributes
         Proofs: ${this.proofs.map((proof) => proof.toString()).join(',\n')}
-        Backlink: ${Base16Converter.Encode(this.backlink)}`;
+        Backlink: ${Base16Converter.encode(this.backlink)}`;
   }
 
-  public static FromArray(data: JoinFungibleTokenAttributesArray): JoinFungibleTokenAttributes {
+  public static fromArray(data: JoinFungibleTokenAttributesArray): JoinFungibleTokenAttributes {
     const proofs = Array<TransactionRecordWithProof<BurnFungibleTokenPayload>>();
 
     for (let i = 0; i < data[0].length; i++) {
-      proofs.push(TransactionRecordWithProof.FromArray([data[0][i], data[1][i]]));
+      proofs.push(TransactionRecordWithProof.fromArray([data[0][i], data[1][i]]));
     }
 
     return new JoinFungibleTokenAttributes(

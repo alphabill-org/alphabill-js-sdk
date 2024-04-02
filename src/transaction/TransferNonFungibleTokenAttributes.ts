@@ -47,20 +47,20 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
     return dedent`
       TransferNonFungibleTokenAttributes
         Owner Predicate: ${this.ownerPredicate.toString()}
-        Nonce: ${this.nonce ? Base16Converter.Encode(this.nonce) : 'null'}
-        Backlink: ${Base16Converter.Encode(this.backlink)}
+        Nonce: ${this.nonce ? Base16Converter.encode(this.nonce) : 'null'}
+        Backlink: ${Base16Converter.encode(this.backlink)}
         Type ID: ${this.typeId.toString()}
         Invariant Predicate Signatures: [
-          ${this.invariantPredicateSignatures?.map((signature) => Base16Converter.Encode(signature)).join(',\n') ?? 'null'}
+          ${this.invariantPredicateSignatures?.map((signature) => Base16Converter.encode(signature)).join(',\n') ?? 'null'}
         ]`;
   }
 
-  public static FromArray(data: TransferNonFungibleTokenAttributesArray): TransferNonFungibleTokenAttributes {
+  public static fromArray(data: TransferNonFungibleTokenAttributesArray): TransferNonFungibleTokenAttributes {
     return new TransferNonFungibleTokenAttributes(
       new PredicateBytes(new Uint8Array(data[0])),
       data[1] ? new Uint8Array(data[1]) : null,
       new Uint8Array(data[2]),
-      UnitId.FromBytes(new Uint8Array(data[3])),
+      UnitId.fromBytes(new Uint8Array(data[3])),
       data[4]?.map((signature) => new Uint8Array(signature)) || null,
     );
   }

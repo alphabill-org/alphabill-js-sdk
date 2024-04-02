@@ -28,10 +28,10 @@ export class LockFeeCreditAttributes implements ITransactionPayloadAttributes {
     return dedent`
       LockFeeCredit
         Lock Status: ${this.lockStatus}
-        Backlink: ${Base16Converter.Encode(this.backlink)}`;
+        Backlink: ${Base16Converter.encode(this.backlink)}`;
   }
 
-  public static FromArray(data: LockFeeCreditAttributesArray): LockFeeCreditAttributes {
+  public static fromArray(data: LockFeeCreditAttributesArray): LockFeeCreditAttributes {
     return new LockFeeCreditAttributes(data[0], data[1]);
   }
 }

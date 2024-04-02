@@ -21,7 +21,7 @@ export class SplitBillUnit {
         Owner Predicate: ${this.ownerPredicate.toString()}`;
   }
 
-  public static FromArray(data: SplitBillUnitArray): SplitBillUnit {
+  public static fromArray(data: SplitBillUnitArray): SplitBillUnit {
     return new SplitBillUnit(BigInt(data[0]), new PredicateBytes(new Uint8Array(data[1])));
   }
 }

@@ -19,15 +19,15 @@ export class NonFungibleToken {
     public readonly locked: boolean,
   ) {}
 
-  public static async Create(data: INonFungibleTokenDto): Promise<NonFungibleToken> {
+  public static async create(data: INonFungibleTokenDto): Promise<NonFungibleToken> {
     return new NonFungibleToken(
-      UnitId.FromBytes(Base16Converter.Decode(data.NftType)),
+      UnitId.fromBytes(Base16Converter.decode(data.NftType)),
       data.Name,
       data.URI,
-      Base64Converter.Decode(data.Data),
-      new PredicateBytes(Base64Converter.Decode(data.DataUpdatePredicate)),
+      Base64Converter.decode(data.Data),
+      new PredicateBytes(Base64Converter.decode(data.DataUpdatePredicate)),
       BigInt(data.T),
-      Base64Converter.Decode(data.Backlink),
+      Base64Converter.decode(data.Backlink),
       Boolean(Number(data.Locked)),
     );
   }
@@ -38,10 +38,10 @@ export class NonFungibleToken {
         Token Type: ${this.tokenType.toString()}
         Name: ${this.name}
         URI: ${this.uri}
-        Data: ${Base16Converter.Encode(this.data)}
+        Data: ${Base16Converter.encode(this.data)}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
         Block Number: ${this.blockNumber}
-        Backlink: ${Base16Converter.Encode(this.backlink)}
+        Backlink: ${Base16Converter.encode(this.backlink)}
         Locked: ${this.locked}`;
   }
 }

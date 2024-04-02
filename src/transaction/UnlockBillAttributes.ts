@@ -24,10 +24,10 @@ export class UnlockBillAttributes implements ITransactionPayloadAttributes {
   public toString(): string {
     return dedent`
       UnlockBillAttributes
-        Backlink: ${Base16Converter.Encode(this.backlink)}`;
+        Backlink: ${Base16Converter.encode(this.backlink)}`;
   }
 
-  public static FromArray(data: UnlockBillAttributesArray): UnlockBillAttributes {
+  public static fromArray(data: UnlockBillAttributesArray): UnlockBillAttributes {
     return new UnlockBillAttributes(data[0]);
   }
 }

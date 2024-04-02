@@ -10,11 +10,11 @@ export class Bill {
     public readonly locked: boolean,
   ) {}
 
-  public static async Create(data: IBillDataDto): Promise<Bill> {
+  public static async create(data: IBillDataDto): Promise<Bill> {
     return new Bill(
       BigInt(data.value),
       BigInt(data.lastUpdate),
-      Base16Converter.Decode(data.backlink),
+      Base16Converter.decode(data.backlink),
       Boolean(Number(data.locked)),
     );
   }
@@ -24,7 +24,7 @@ export class Bill {
       Bill
         Value: ${this.value}
         Last Update: ${this.lastUpdate}
-        Backlink: ${Base16Converter.Encode(this.backlink)}
+        Backlink: ${Base16Converter.encode(this.backlink)}
         Locked: ${this.locked}`;
   }
 }

@@ -52,20 +52,20 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
         Owner Predicate: ${this.ownerPredicate.toString()}
         Value: ${this.value}
         Nonce: ${this.nonce}
-        Backlink: ${Base16Converter.Encode(this.backlink)}
+        Backlink: ${Base16Converter.encode(this.backlink)}
         Type ID: ${this.typeId.toString()}
         Invariant Predicate Signatures: [
-          ${this.invariantPredicateSignatures?.map((signature) => Base16Converter.Encode(signature)).join(',\n') ?? 'null'}
+          ${this.invariantPredicateSignatures?.map((signature) => Base16Converter.encode(signature)).join(',\n') ?? 'null'}
         ]`;
   }
 
-  public static FromArray(data: TransferFungibleTokenAttributesArray): TransferFungibleTokenAttributes {
+  public static fromArray(data: TransferFungibleTokenAttributesArray): TransferFungibleTokenAttributes {
     return new TransferFungibleTokenAttributes(
       new PredicateBytes(new Uint8Array(data[0])),
       BigInt(data[1]),
       BigInt(data[2]),
       new Uint8Array(data[3]),
-      UnitId.FromBytes(new Uint8Array(data[4])),
+      UnitId.fromBytes(new Uint8Array(data[4])),
       data[5]?.map((signature) => new Uint8Array(signature)) || null,
     );
   }

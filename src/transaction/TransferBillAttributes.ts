@@ -32,10 +32,10 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
       TransferBillAttributes
         Owner Predicate: ${this.ownerPredicate.toString()}
         Target Value: ${this.targetValue}
-        Backlink: ${Base16Converter.Encode(this.backlink)}`;
+        Backlink: ${Base16Converter.encode(this.backlink)}`;
   }
 
-  public static FromArray(data: TransferBillAttributesArray): TransferBillAttributes {
+  public static fromArray(data: TransferBillAttributesArray): TransferBillAttributes {
     return new TransferBillAttributes(
       new PredicateBytes(new Uint8Array(data[0])),
       BigInt(data[1]),

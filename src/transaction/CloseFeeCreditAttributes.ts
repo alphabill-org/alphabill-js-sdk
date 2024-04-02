@@ -32,13 +32,13 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
       CloseFeeCreditAttributes
         Amount: ${this.amount}
         Target Unit ID: ${this.targetUnitId.toString()}
-        Target Unit Backlink: ${Base16Converter.Encode(this.targetUnitBacklink)}`;
+        Target Unit Backlink: ${Base16Converter.encode(this.targetUnitBacklink)}`;
   }
 
-  public static FromArray(data: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {
+  public static fromArray(data: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {
     return new CloseFeeCreditAttributes(
       BigInt(data[0]),
-      UnitId.FromBytes(new Uint8Array(data[1])),
+      UnitId.fromBytes(new Uint8Array(data[1])),
       new Uint8Array(data[2]),
     );
   }

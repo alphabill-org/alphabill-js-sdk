@@ -6,15 +6,15 @@ import { INonFungibleTokenData } from './INonFungibleTokenData.js';
 export class NonFungibleTokenData implements INonFungibleTokenData {
   private constructor(private readonly data: Uint8Array) {}
 
-  public static async Create(cborCodec: ICborCodec, data: unknown): Promise<NonFungibleTokenData> {
+  public static async create(cborCodec: ICborCodec, data: unknown): Promise<NonFungibleTokenData> {
     return new NonFungibleTokenData(await cborCodec.encode(data));
   }
 
-  public static CreateFromBytes(data: Uint8Array): NonFungibleTokenData {
+  public static createFromBytes(data: Uint8Array): NonFungibleTokenData {
     return new NonFungibleTokenData(data);
   }
 
-  public static async Parse(cborCodec: ICborCodec, data: Uint8Array): Promise<unknown> {
+  public static async parse(cborCodec: ICborCodec, data: Uint8Array): Promise<unknown> {
     return cborCodec.decode(data);
   }
 
@@ -23,6 +23,6 @@ export class NonFungibleTokenData implements INonFungibleTokenData {
   }
 
   public toString(): string {
-    return dedent`${Base16Converter.Encode(this.data)}`;
+    return dedent`${Base16Converter.encode(this.data)}`;
   }
 }

@@ -36,12 +36,12 @@ export class StateApiJsonRpcService implements IStateApiService {
   public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
     const response = await this.client.request<string[] | null>(
       'state_getUnitsByOwnerID',
-      Base16Converter.Encode(ownerId),
+      Base16Converter.encode(ownerId),
     );
 
     const identifiers: IUnitId[] = [];
     for (const id of response ?? []) {
-      identifiers.push(UnitId.FromBytes(Base16Converter.Decode(id)));
+      identifiers.push(UnitId.fromBytes(Base16Converter.decode(id)));
     }
 
     return identifiers;
@@ -50,7 +50,7 @@ export class StateApiJsonRpcService implements IStateApiService {
   public async getUnit(unitId: IUnitId, includeStateProof: boolean): Promise<IUnit<unknown> | null> {
     const response = await this.client.request<IUnitDto>(
       'state_getUnit',
-      Base16Converter.Encode(unitId.getBytes()),
+      Base16Converter.encode(unitId.getBytes()),
       includeStateProof,
     );
 
@@ -63,7 +63,7 @@ export class StateApiJsonRpcService implements IStateApiService {
 
   public async getBlock(blockNumber: bigint): Promise<Uint8Array> {
     const response = (await this.client.request('state_getBlock', String(blockNumber))) as string;
-    return Base16Converter.Decode(response);
+    return Base16Converter.decode(response);
   }
 
   public async getTransactionProof(
@@ -71,13 +71,13 @@ export class StateApiJsonRpcService implements IStateApiService {
   ): Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null> {
     const response = (await this.client.request(
       'state_getTransactionProof',
-      Base16Converter.Encode(transactionHash),
+      Base16Converter.encode(transactionHash),
     )) as TransactionProofDto | null;
 
     return response
-      ? TransactionRecordWithProof.FromArray([
-          (await this.cborCodec.decode(Base16Converter.Decode(response.txRecord))) as TransactionRecordArray,
-          (await this.cborCodec.decode(Base16Converter.Decode(response.txProof))) as TransactionProofArray,
+      ? TransactionRecordWithProof.fromArray([
+          (await this.cborCodec.decode(Base16Converter.decode(response.txRecord))) as TransactionRecordArray,
+          (await this.cborCodec.decode(Base16Converter.decode(response.txProof))) as TransactionProofArray,
         ])
       : null;
   }
@@ -87,9 +87,9 @@ export class StateApiJsonRpcService implements IStateApiService {
   ): Promise<Uint8Array> {
     const response = (await this.client.request(
       'state_sendTransaction',
-      Base16Converter.Encode(await this.cborCodec.encode(transaction.toArray())),
+      Base16Converter.encode(await this.cborCodec.encode(transaction.toArray())),
     )) as string;
-    return Base16Converter.Decode(response);
+    return Base16Converter.decode(response);
   }
 }
 

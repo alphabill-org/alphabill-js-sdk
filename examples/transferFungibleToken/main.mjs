@@ -20,7 +20,7 @@ const client = createPublicClient({
   transport: http(config.tokenPartitionUrl, cborCodec),
 });
 
-const signingService = new DefaultSigningService(Base16Converter.Decode(config.privateKey));
+const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
 const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.TOKEN_PARTITION);
@@ -37,7 +37,7 @@ await client.sendTransaction(
     new TransferFungibleTokenPayload(
       unitId,
       new TransferFungibleTokenAttributes(
-        await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
+        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
         10n,
         null,
         token.data.backlink,

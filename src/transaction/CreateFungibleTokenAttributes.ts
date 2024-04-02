@@ -37,14 +37,14 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
         Type ID: ${this.typeId.toString()}
         Value: ${this.value}
         Token Creation Predicate Signatures: [
-          ${this.tokenCreationPredicateSignatures?.map((signature) => Base16Converter.Encode(signature)).join(',\n') ?? 'null'}
+          ${this.tokenCreationPredicateSignatures?.map((signature) => Base16Converter.encode(signature)).join(',\n') ?? 'null'}
         ]`;
   }
 
-  public static FromArray(data: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
+  public static fromArray(data: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
     return new CreateFungibleTokenAttributes(
       new PredicateBytes(new Uint8Array(data[0])),
-      UnitId.FromBytes(new Uint8Array(data[1])),
+      UnitId.fromBytes(new Uint8Array(data[1])),
       BigInt(data[2]),
       data[3]?.map((signature) => new Uint8Array(signature)) || null,
     );

@@ -8,6 +8,6 @@ export class PredicateBytes {
   }
 
   public toString(): string {
-    return `PredicateBytes[${Base16Converter.Encode(this.bytes)}]`;
+    return `PredicateBytes[${Base16Converter.encode(this.bytes)}]`;
   }
 }

@@ -25,7 +25,7 @@ const tokenClient = createPublicClient({
   transport: http(config.tokenPartitionUrl, cborCodec),
 });
 
-const signingService = new DefaultSigningService(Base16Converter.Decode(config.privateKey));
+const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
 const unitIds = await moneyClient.getUnitsByOwnerId(signingService.publicKey);
@@ -64,7 +64,7 @@ const addFeeCreditTransactionHash = await tokenClient.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new AddFeeCreditPayload(
       new AddFeeCreditAttributes(
-        await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
+        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
         transactionProof,
       ),
       SystemIdentifier.TOKEN_PARTITION,

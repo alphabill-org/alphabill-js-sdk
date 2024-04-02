@@ -28,10 +28,10 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
     return dedent`
       LockBillAttributes
         Lock Status: ${this.lockStatus}
-        Backlink: ${Base16Converter.Encode(this.backlink)}`;
+        Backlink: ${Base16Converter.encode(this.backlink)}`;
   }
 
-  public static FromArray(data: LockBillAttributesArray): LockBillAttributes {
+  public static fromArray(data: LockBillAttributesArray): LockBillAttributes {
     return new LockBillAttributes(data[0], data[1]);
   }
 }

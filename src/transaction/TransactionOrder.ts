@@ -20,15 +20,15 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
     return dedent`
       TransactionOrder
         ${this.payload.toString()}
-        Owner Proof: ${Base16Converter.Encode(this.ownerProof)}
-        Fee Proof: ${this.feeProof ? Base16Converter.Encode(this.feeProof) : null}`;
+        Owner Proof: ${Base16Converter.encode(this.ownerProof)}
+        Fee Proof: ${this.feeProof ? Base16Converter.encode(this.feeProof) : null}`;
   }
 
-  public static FromArray<T extends ITransactionPayloadAttributes>(
+  public static fromArray<T extends ITransactionPayloadAttributes>(
     data: TransactionOrderArray,
   ): TransactionOrder<TransactionPayload<T>> {
     return new TransactionOrder(
-      TransactionPayload.FromArray(data[0]),
+      TransactionPayload.fromArray(data[0]),
       new Uint8Array(data[1]),
       data[2] ? new Uint8Array(data[2]) : null,
     );
