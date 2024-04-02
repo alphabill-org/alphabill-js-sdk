@@ -1,6 +1,5 @@
 import { sha256 } from '@noble/hashes/sha256';
 import { CborCodecNode } from '../../lib/codec/cbor/CborCodecNode.js';
-import { MoneyPartitionUnitFactory } from '../../lib/json-rpc/MoneyPartitionUnitFactory.js';
 import { http } from '../../lib/json-rpc/StateApiJsonRpcService.js';
 import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
 import { createPublicClient } from '../../lib/StateApiClient.js';
@@ -21,7 +20,7 @@ import { waitTransactionProof } from '../waitTransactionProof.mjs';
 
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
-  transport: http(config.moneyPartitionUrl, new MoneyPartitionUnitFactory(), cborCodec),
+  transport: http(config.moneyPartitionUrl, cborCodec),
 });
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
@@ -78,7 +77,7 @@ await client.sendTransaction(
       new SwapBillsWithDustCollectorAttributes(
         await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
         [transactionProof],
-        targetBill.data.value + bill.data.value,
+        bill.data.value,
       ),
       targetBill.unitId,
       {

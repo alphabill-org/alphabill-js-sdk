@@ -1,6 +1,6 @@
 import { IUnitId } from './IUnitId.js';
 import { IFungibleTokenDto } from './json-rpc/IFungibleTokenDto.js';
-import { UnitFactory } from './json-rpc/UnitFactory.js';
+import { UnitId } from './UnitId.js';
 import { Base16Converter } from './util/Base16Converter.js';
 import { Base64Converter } from './util/Base64Converter.js';
 import { dedent } from './util/StringUtils.js';
@@ -16,7 +16,7 @@ export class FungibleToken {
 
   public static async Create(data: IFungibleTokenDto): Promise<FungibleToken> {
     return new FungibleToken(
-      UnitFactory.createUnitIdFromBytes(Base16Converter.decode(data.TokenType)),
+      UnitId.FromBytes(Base16Converter.decode(data.TokenType)),
       BigInt(data.Value),
       BigInt(data.T),
       Base64Converter.decode(data.Backlink),

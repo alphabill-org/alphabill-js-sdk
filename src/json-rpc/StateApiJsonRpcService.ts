@@ -5,23 +5,24 @@ import { IUnitId } from '../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { TransactionPayload } from '../transaction/TransactionPayload.js';
 import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
+import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { IJsonRpcService } from './IJsonRpcService.js';
 import { ITransactionProofFactory } from './ITransactionProofFactory.js';
 import { IUnitDto } from './IUnitDto.js';
-import { IUnitFactory } from './IUnitFactory.js';
 import { JsonRpcClient } from './JsonRpcClient.js';
 import { JsonRpcHttpService } from './JsonRpcHttpService.js';
 import { TransactionProofFactory } from './TransactionProofFactory.js';
+import { UnitFactory } from './UnitFactory.js';
 
 export type TransactionProofDto = { txRecord: string; txProof: string };
 
 export class StateApiJsonRpcService implements IStateApiService {
   private readonly client: JsonRpcClient;
+  private readonly unitFactory = new UnitFactory();
 
   public constructor(
     service: IJsonRpcService,
-    private readonly unitFactory: IUnitFactory,
     private readonly transactionProofFactory: ITransactionProofFactory,
   ) {
     this.client = new JsonRpcClient(service);
@@ -39,7 +40,7 @@ export class StateApiJsonRpcService implements IStateApiService {
 
     const identifiers: IUnitId[] = [];
     for (const id of response ?? []) {
-      identifiers.push(this.unitFactory.createUnitId(Base16Converter.decode(id)));
+      identifiers.push(UnitId.FromBytes(Base16Converter.decode(id)));
     }
 
     return identifiers;
@@ -84,10 +85,6 @@ export class StateApiJsonRpcService implements IStateApiService {
   }
 }
 
-export function http(url: string, unitFactory: IUnitFactory, cborCodec: ICborCodec): IStateApiService {
-  return new StateApiJsonRpcService(
-    new JsonRpcHttpService(url),
-    unitFactory,
-    new TransactionProofFactory(cborCodec, unitFactory),
-  );
+export function http(url: string, cborCodec: ICborCodec): IStateApiService {
+  return new StateApiJsonRpcService(new JsonRpcHttpService(url), new TransactionProofFactory(cborCodec));
 }
