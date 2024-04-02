@@ -1,5 +1,6 @@
-import { TransactionProof, TransactionProofArray } from '../TransactionProof.js';
-import { TransactionRecord, TransactionRecordArray } from '../TransactionRecord.js';
+import { TransactionProofArray } from '../TransactionProof.js';
+import { TransactionRecordArray } from '../TransactionRecord.js';
+import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
 import { BurnFungibleTokenPayload } from './BurnFungibleTokenPayload.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 
@@ -12,16 +13,15 @@ export type JoinFungibleTokenAttributesArray = [
 
 export class JoinFungibleTokenAttributes implements ITransactionPayloadAttributes {
   public constructor(
-    public readonly burnTransactionRecords: TransactionRecord<BurnFungibleTokenPayload>[],
-    public readonly burnTransactionProofs: TransactionProof[],
+    public readonly proofs: TransactionRecordWithProof<BurnFungibleTokenPayload>[],
     public readonly backlink: Uint8Array,
     public readonly invariantPredicateSignatures: Uint8Array[] | null,
   ) {}
 
   public toOwnerProofData(): JoinFungibleTokenAttributesArray {
     return [
-      this.burnTransactionRecords.map((record) => record.toArray()),
-      this.burnTransactionProofs.map((proof) => proof.toArray()),
+      this.proofs.map((proof) => proof.transactionRecord.toArray()),
+      this.proofs.map((proof) => proof.transactionProof.toArray()),
       this.backlink,
       null,
     ];
@@ -29,8 +29,8 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
 
   public toArray(): JoinFungibleTokenAttributesArray {
     return [
-      this.burnTransactionRecords.map((record) => record.toArray()),
-      this.burnTransactionProofs.map((proof) => proof.toArray()),
+      this.proofs.map((proof) => proof.transactionRecord.toArray()),
+      this.proofs.map((proof) => proof.transactionProof.toArray()),
       this.backlink,
       this.invariantPredicateSignatures,
     ];

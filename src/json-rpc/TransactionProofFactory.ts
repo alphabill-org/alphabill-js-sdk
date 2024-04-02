@@ -269,21 +269,15 @@ export class TransactionProofFactory implements ITransactionProofFactory {
   private async createJoinFungibleTokenAttributes(
     data: JoinFungibleTokenAttributesArray,
   ): Promise<JoinFungibleTokenAttributes> {
-    const burnTransactionRecords = new Array<TransactionRecord<BurnFungibleTokenPayload>>();
-    const burnTransactionProofs = new Array<TransactionProof>();
+    const proofs = new Array<Promise<TransactionRecordWithProof<BurnFungibleTokenPayload>>>();
 
     for (let i = 0; i < data[1].length; i++) {
-      const txRecordWithProof = (await this.createTransactionRecordWithProof(
-        data[0][i],
-        data[1][i],
-      )) as TransactionRecordWithProof<BurnFungibleTokenPayload>;
-      burnTransactionRecords.push(txRecordWithProof.transactionRecord);
-      burnTransactionProofs.push(txRecordWithProof.transactionProof);
+      const proofPromise = this.createTransactionRecordWithProof(data[0][i], data[1][i]);
+      proofs.push(proofPromise as Promise<TransactionRecordWithProof<BurnFungibleTokenPayload>>);
     }
 
     return new JoinFungibleTokenAttributes(
-      burnTransactionRecords,
-      burnTransactionProofs,
+      await Promise.all(proofs),
       data[2],
       data[3] ? data[3].map((signature) => signature) : null,
     );

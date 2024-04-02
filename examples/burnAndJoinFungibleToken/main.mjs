@@ -97,21 +97,13 @@ const burnTransactionHash = await client.sendTransaction(
     ),
   ),
 );
-
 const transactionRecordWithProof = await waitTransactionProof(client, burnTransactionHash);
-const burnTransactionRecord = transactionRecordWithProof.transactionRecord;
-const burnTransactionProof = transactionRecordWithProof.transactionProof;
 
 // 5. join the split token back into the original fungible token
 const joinTransactionHash = await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new JoinFungibleTokenPayload(
-      new JoinFungibleTokenAttributes(
-        [burnTransactionRecord],
-        [burnTransactionProof],
-        originalTokenAfterSplit.data.backlink,
-        [null],
-      ),
+      new JoinFungibleTokenAttributes([transactionRecordWithProof], originalTokenAfterSplit.data.backlink, [null]),
       originalTokenAfterSplit.unitId,
       {
         maxTransactionFee: 5n,
