@@ -95,9 +95,9 @@ import { TransactionProof, TransactionProofArray } from '../TransactionProof.js'
 import { TransactionProofChainItem } from '../TransactionProofChainItem.js';
 import { TransactionRecord, TransactionRecordArray } from '../TransactionRecord.js';
 import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
+import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { ITransactionProofFactory } from './ITransactionProofFactory.js';
-import { IUnitFactory } from './IUnitFactory.js';
 import { TransactionProofDto } from './StateApiJsonRpcService.js';
 
 export class TransactionProofFactory implements ITransactionProofFactory {
@@ -125,10 +125,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
     [UpdateNonFungibleTokenPayload.PAYLOAD_TYPE, this.createUpdateNonFungibleTokenAttributes.bind(this)],
   ]);
 
-  public constructor(
-    private readonly cborCodec: ICborCodec,
-    private readonly unitFactory: IUnitFactory,
-  ) {}
+  public constructor(private readonly cborCodec: ICborCodec) {}
 
   public async create({
     txRecord,
@@ -192,12 +189,12 @@ export class TransactionProofFactory implements ITransactionProofFactory {
     return new TransactionPayload(
       type,
       systemIdentifier,
-      this.unitFactory.createUnitId(unitId),
+      UnitId.Create(unitId),
       await this.createTransactionPayloadAttributes(type, attributes),
       {
         timeout: BigInt(clientMetadata[0]),
         maxTransactionFee: BigInt(clientMetadata[1]),
-        feeCreditRecordId: clientMetadata[2] ? this.unitFactory.createUnitId(clientMetadata[2]) : null,
+        feeCreditRecordId: clientMetadata[2] ? UnitId.Create(clientMetadata[2]) : null,
       },
     );
   }
@@ -251,9 +248,9 @@ export class TransactionProofFactory implements ITransactionProofFactory {
     data: BurnFungibleTokenAttributesArray,
   ): Promise<BurnFungibleTokenAttributes> {
     return new BurnFungibleTokenAttributes(
-      this.unitFactory.createUnitId(data[0] as Uint8Array),
+      UnitId.Create(data[0]),
       BigInt(data[1]),
-      this.unitFactory.createUnitId(data[2]),
+      UnitId.Create(data[2]),
       data[3],
       data[4],
       data[5] ? data[5].map((signature) => signature) : null,
@@ -261,7 +258,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
   }
 
   private async createCloseFeeCreditAttributes(data: CloseFeeCreditAttributesArray): Promise<CloseFeeCreditAttributes> {
-    return new CloseFeeCreditAttributes(BigInt(data[0]), this.unitFactory.createUnitId(data[1]), data[2]);
+    return new CloseFeeCreditAttributes(BigInt(data[0]), UnitId.Create(data[1]), data[2]);
   }
 
   private async createCreateFungibleTokenAttributes(
@@ -269,7 +266,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
   ): Promise<CreateFungibleTokenAttributes> {
     return new CreateFungibleTokenAttributes(
       new PredicateBytes(data[0]),
-      this.unitFactory.createUnitId(data[1]),
+      UnitId.Create(data[1]),
       BigInt(data[2]),
       data[3] || null,
     );
@@ -282,7 +279,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
       data[0],
       data[1],
       new TokenIcon(data[2][0], data[2][1]),
-      data[3] ? this.unitFactory.createUnitId(data[3]) : null,
+      data[3] ? UnitId.Create(data[3]) : null,
       data[4],
       new PredicateBytes(data[5]),
       new PredicateBytes(data[6]),
@@ -296,7 +293,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
   ): Promise<CreateNonFungibleTokenAttributes> {
     return new CreateNonFungibleTokenAttributes(
       new PredicateBytes(data[0]),
-      this.unitFactory.createUnitId(data[1]),
+      UnitId.Create(data[1]),
       data[2],
       data[3],
       NonFungibleTokenData.CreateFromBytes(data[4]),
@@ -312,7 +309,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
       data[0],
       data[1],
       new TokenIcon(data[2][0], data[2][1]),
-      data[3] ? this.unitFactory.createUnitId(data[3]) : null,
+      data[3] ? UnitId.Create(data[3]) : null,
       new PredicateBytes(data[4]),
       new PredicateBytes(data[5]),
       new PredicateBytes(data[6]),
@@ -353,7 +350,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
       BigInt(data[1]),
       data[2] || null,
       data[3],
-      this.unitFactory.createUnitId(data[4]),
+      UnitId.Create(data[4]),
       BigInt(data[5]),
       data[6] || null,
     );
@@ -388,12 +385,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
   private async createTransferBillToDustCollectorAttributes(
     data: TransferBillToDustCollectorAttributesArray,
   ): Promise<TransferBillToDustCollectorAttributes> {
-    return new TransferBillToDustCollectorAttributes(
-      BigInt(data[0]),
-      this.unitFactory.createUnitId(data[1]),
-      data[2],
-      data[3],
-    );
+    return new TransferBillToDustCollectorAttributes(BigInt(data[0]), UnitId.Create(data[1]), data[2], data[3]);
   }
 
   private async createTransferFeeCreditAttributes(
@@ -402,7 +394,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
     return new TransferFeeCreditAttributes(
       BigInt(data[0]),
       data[1] as unknown as SystemIdentifier,
-      this.unitFactory.createUnitId(data[2]) as FeeCreditUnitId,
+      UnitId.Create(data[2]) as FeeCreditUnitId,
       BigInt(data[3]),
       BigInt(data[4]),
       data[5] || null,
@@ -418,7 +410,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
       BigInt(data[1]),
       BigInt(data[2]),
       data[3],
-      this.unitFactory.createUnitId(data[4]),
+      UnitId.Create(data[4]),
       data[5] || null,
     );
   }
@@ -430,7 +422,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
       new PredicateBytes(data[0]),
       data[1] || null,
       data[2],
-      this.unitFactory.createUnitId(data[3]),
+      UnitId.Create(data[3]),
       data[4] || null,
     );
   }

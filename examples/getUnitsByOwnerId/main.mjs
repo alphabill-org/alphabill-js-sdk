@@ -1,7 +1,5 @@
 import { CborCodecNode } from '../../lib/codec/cbor/CborCodecNode.js';
-import { MoneyPartitionUnitFactory } from '../../lib/json-rpc/MoneyPartitionUnitFactory.js';
 import { http } from '../../lib/json-rpc/StateApiJsonRpcService.js';
-import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnitFactory.js';
 import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
 import { createPublicClient } from '../../lib/StateApiClient.js';
 import { Base16Converter } from '../../lib/util/Base16Converter.js';
@@ -13,7 +11,7 @@ console.log('Public key in hex encoding: ' + Base16Converter.encode(signingServi
 
 // get units from money partition
 const moneyClient = createPublicClient({
-  transport: http(config.moneyPartitionUrl, new MoneyPartitionUnitFactory(), new CborCodecNode()),
+  transport: http(config.moneyPartitionUrl, new CborCodecNode()),
 });
 
 const moneyUnitIds = await moneyClient.getUnitsByOwnerId(signingService.publicKey);
@@ -24,7 +22,7 @@ if (moneyUnitIds.length > 0) {
 
 // get units from token partition
 const tokenClient = createPublicClient({
-  transport: http(config.tokenPartitionUrl, new TokenPartitionUnitFactory(), new CborCodecNode()),
+  transport: http(config.tokenPartitionUrl, new CborCodecNode()),
 });
 
 const tokenUnitIds = await tokenClient.getUnitsByOwnerId(signingService.publicKey);

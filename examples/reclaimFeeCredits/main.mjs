@@ -1,7 +1,5 @@
 import { CborCodecNode } from '../../lib/codec/cbor/CborCodecNode.js';
-import { MoneyPartitionUnitFactory } from '../../lib/json-rpc/MoneyPartitionUnitFactory.js';
 import { http } from '../../lib/json-rpc/StateApiJsonRpcService.js';
-import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnitFactory.js';
 import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
 import { createPublicClient } from '../../lib/StateApiClient.js';
 import { SystemIdentifier } from '../../lib/SystemIdentifier.js';
@@ -19,10 +17,10 @@ import { waitTransactionProof } from '../waitTransactionProof.mjs';
 
 const cborCodec = new CborCodecNode();
 const tokenClient = createPublicClient({
-  transport: http(config.tokenPartitionUrl, new TokenPartitionUnitFactory(), cborCodec),
+  transport: http(config.tokenPartitionUrl, cborCodec),
 });
 const moneyClient = createPublicClient({
-  transport: http(config.moneyPartitionUrl, new MoneyPartitionUnitFactory(), cborCodec),
+  transport: http(config.moneyPartitionUrl, cborCodec),
 });
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);

@@ -18,4 +18,8 @@ export class UnitId implements IUnitId {
   public toString(): string {
     return `${Base16Converter.encode(this.bytes)}`;
   }
+
+  public static Create(id: Uint8Array): IUnitId {
+    return new UnitId(id.slice(-1), id);
+  }
 }

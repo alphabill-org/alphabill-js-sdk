@@ -1,7 +1,6 @@
 import { sha256 } from '@noble/hashes/sha256';
 import { CborCodecNode } from '../../lib/codec/cbor/CborCodecNode.js';
 import { http } from '../../lib/json-rpc/StateApiJsonRpcService.js';
-import { TokenPartitionUnitFactory } from '../../lib/json-rpc/TokenPartitionUnitFactory.js';
 import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
 import { createPublicClient } from '../../lib/StateApiClient.js';
 import { SystemIdentifier } from '../../lib/SystemIdentifier.js';
@@ -20,7 +19,7 @@ import config from '../config.js';
 
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
-  transport: http(config.tokenPartitionUrl, new TokenPartitionUnitFactory(), cborCodec),
+  transport: http(config.tokenPartitionUrl, cborCodec),
 });
 
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
@@ -28,7 +27,7 @@ const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingSe
 
 const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.TOKEN_PARTITION);
 const round = await client.getRoundNumber();
-const unitId = new UnitIdWithType(new Uint8Array([1, 2, 3, 4, 5]), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN);
+const unitId = new UnitIdWithType(new Uint8Array([1, 2, 3, 4, 6]), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN);
 await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new CreateNonFungibleTokenPayload(

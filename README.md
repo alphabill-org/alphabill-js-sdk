@@ -28,7 +28,7 @@ import { http } from 'alphabill-js-sdk/lib/json-rpc/StateApiHttpService';
 
 // 2. Set up your client with transport.
 const client = createPublicClient({
-    transport: http('http://localhost:8545/rpc', new MoneyPartitionUnitFactory(), new CborCodecNode()),
+    transport: http('http://localhost:8545/rpc', new CborCodecNode()),
 });
 
 // 3. Call the client.

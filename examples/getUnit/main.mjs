@@ -1,5 +1,4 @@
 import { CborCodecNode } from '../../lib/codec/cbor/CborCodecNode.js';
-import { MoneyPartitionUnitFactory } from '../../lib/json-rpc/MoneyPartitionUnitFactory.js';
 import { http } from '../../lib/json-rpc/StateApiJsonRpcService.js';
 
 import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
@@ -8,7 +7,7 @@ import { Base16Converter } from '../../lib/util/Base16Converter.js';
 import config from '../config.js';
 
 const client = createPublicClient({
-  transport: http(config.moneyPartitionUrl, new MoneyPartitionUnitFactory(), new CborCodecNode()),
+  transport: http(config.moneyPartitionUrl, new CborCodecNode()),
 });
 
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
