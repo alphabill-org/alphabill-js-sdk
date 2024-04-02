@@ -60,7 +60,6 @@ export class StateApiJsonRpcService implements IStateApiService {
   }
 
   public async getBlock(blockNumber: bigint): Promise<Uint8Array> {
-    // TODO: temporary fix for number, backend should work with strings
     const response = (await this.client.request('state_getBlock', String(blockNumber))) as string;
     return Base16Converter.decode(response);
   }
