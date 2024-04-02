@@ -16,7 +16,7 @@ export class FungibleToken {
 
   public static async Create(data: IFungibleTokenDto): Promise<FungibleToken> {
     return new FungibleToken(
-      UnitId.Create(Base16Converter.decode(data.TokenType)),
+      UnitId.FromBytes(Base16Converter.decode(data.TokenType)),
       BigInt(data.Value),
       BigInt(data.T),
       Base64Converter.decode(data.Backlink),

@@ -19,7 +19,7 @@ export class UnitId implements IUnitId {
     return `${Base16Converter.encode(this.bytes)}`;
   }
 
-  public static Create(id: Uint8Array): IUnitId {
+  public static FromBytes(id: Uint8Array): IUnitId {
     return new UnitId(id.slice(-1), id);
   }
 }

@@ -31,7 +31,7 @@ export class UnitFactory {
   );
 
   public async createUnit(data: IUnitDto): Promise<IUnit<unknown>> {
-    const unitId = UnitId.Create(Base16Converter.decode(data.unitId));
+    const unitId = UnitId.FromBytes(Base16Converter.decode(data.unitId));
     return {
       unitId,
       data: await this.createUnitData(unitId, data.data),
@@ -60,7 +60,7 @@ export class UnitFactory {
   // TODO: Parse unicity cert
   private createStateProof(data: IStateProofDto): IStateProof {
     return {
-      unitId: UnitId.Create(Base16Converter.decode(data.unitId)),
+      unitId: UnitId.FromBytes(Base16Converter.decode(data.unitId)),
       unitValue: BigInt(data.unitValue),
       unitLedgerHash: Base16Converter.decode(data.unitLedgerHash),
       unitTreeCert: this.createUnitTreeCert(data.unitTreeCert),
@@ -78,7 +78,7 @@ export class UnitFactory {
       path:
         data.path?.map((path) => {
           return {
-            unitId: UnitId.Create(Base16Converter.decode(path.unitId)),
+            unitId: UnitId.FromBytes(Base16Converter.decode(path.unitId)),
             logsHash: Base16Converter.decode(path.logsHash),
             value: BigInt(path.value),
             siblingSummaryHash: Base16Converter.decode(path.siblingSummaryHash),

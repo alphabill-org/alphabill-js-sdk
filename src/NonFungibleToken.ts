@@ -21,7 +21,7 @@ export class NonFungibleToken {
 
   public static async Create(data: INonFungibleTokenDto): Promise<NonFungibleToken> {
     return new NonFungibleToken(
-      UnitId.Create(Base16Converter.decode(data.NftType)),
+      UnitId.FromBytes(Base16Converter.decode(data.NftType)),
       data.Name,
       data.URI,
       Base64Converter.decode(data.Data),

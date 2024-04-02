@@ -40,7 +40,7 @@ export class StateApiJsonRpcService implements IStateApiService {
 
     const identifiers: IUnitId[] = [];
     for (const id of response ?? []) {
-      identifiers.push(UnitId.Create(Base16Converter.decode(id)));
+      identifiers.push(UnitId.FromBytes(Base16Converter.decode(id)));
     }
 
     return identifiers;
