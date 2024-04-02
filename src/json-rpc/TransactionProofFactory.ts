@@ -33,6 +33,11 @@ import {
 import { CreateNonFungibleTokenTypePayload } from '../transaction/CreateNonFungibleTokenTypePayload.js';
 import { FeeCreditUnitId } from '../transaction/FeeCreditUnitId.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
+import {
+  JoinFungibleTokenAttributes,
+  JoinFungibleTokenAttributesArray,
+} from '../transaction/JoinFungibleTokenAttributes.js';
+import { JoinFungibleTokenPayload } from '../transaction/JoinFungibleTokenPayload.js';
 import { LockBillAttributes, LockBillAttributesArray } from '../transaction/LockBillAttributes.js';
 import { LockBillPayload } from '../transaction/LockBillPayload.js';
 import { LockFeeCreditAttributes, LockFeeCreditAttributesArray } from '../transaction/LockFeeCreditAttributes.js';
@@ -106,6 +111,7 @@ export class TransactionProofFactory implements ITransactionProofFactory {
     [LockFeeCreditPayload.PAYLOAD_TYPE, this.createLockFeeCreditAttributes.bind(this)],
     [UnlockFeeCreditPayload.PAYLOAD_TYPE, this.createUnlockFeeCreditAttributes.bind(this)],
     [BurnFungibleTokenPayload.PAYLOAD_TYPE, this.createBurnFungibleTokenAttributes.bind(this)],
+    [JoinFungibleTokenPayload.PAYLOAD_TYPE, this.createJoinFungibleTokenAttributes.bind(this)],
     [CloseFeeCreditPayload.PAYLOAD_TYPE, this.createCloseFeeCreditAttributes.bind(this)],
     [CreateFungibleTokenPayload.PAYLOAD_TYPE, this.createCreateFungibleTokenAttributes.bind(this)],
     [CreateFungibleTokenTypePayload.PAYLOAD_TYPE, this.createCreateFungibleTokenTypeAttributes.bind(this)],
@@ -254,6 +260,23 @@ export class TransactionProofFactory implements ITransactionProofFactory {
       data[3],
       data[4],
       data[5] ? data[5].map((signature) => signature) : null,
+    );
+  }
+
+  private async createJoinFungibleTokenAttributes(
+    data: JoinFungibleTokenAttributesArray,
+  ): Promise<JoinFungibleTokenAttributes> {
+    const proofs = new Array<Promise<TransactionRecordWithProof<BurnFungibleTokenPayload>>>();
+
+    for (let i = 0; i < data[1].length; i++) {
+      const proofPromise = this.createTransactionRecordWithProof(data[0][i], data[1][i]);
+      proofs.push(proofPromise as Promise<TransactionRecordWithProof<BurnFungibleTokenPayload>>);
+    }
+
+    return new JoinFungibleTokenAttributes(
+      await Promise.all(proofs),
+      data[2],
+      data[3] ? data[3].map((signature) => signature) : null,
     );
   }
 
