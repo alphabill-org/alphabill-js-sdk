@@ -24,7 +24,7 @@ export class Base16Converter {
    * @param {Uint8Array} data byte array
    * @returns string hex string
    */
-  public static encode(data: Uint8Array): string {
+  public static Encode(data: Uint8Array): string {
     let hex = '0x';
     for (let i = 0; i < data.length; i++) {
       hex += Base16Converter.BYTE_HEX_MAP[(data[i] & 0xf0) >> 4];
@@ -39,7 +39,7 @@ export class Base16Converter {
    * @param value hex string
    * @returns {Uint8Array} byte array
    */
-  public static decode(value: string): Uint8Array {
+  public static Decode(value: string): Uint8Array {
     if (value.length % 2 !== 0) {
       throw new Error('Octet string should have equal amount of characters');
     }

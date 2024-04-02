@@ -1,9 +1,11 @@
+import { PredicateBytes } from '../PredicateBytes.js';
 import { TransactionProofArray } from '../TransactionProof.js';
 import { TransactionRecordArray } from '../TransactionRecord.js';
 import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
+import { PayloadAttribute } from './PayloadAttribute.js';
 import { TransferBillToDustCollectorPayload } from './TransferBillDustCollectorPayload.js';
 
 export type SwapBillsWithDustCollectorAttributesArray = readonly [
@@ -13,7 +15,12 @@ export type SwapBillsWithDustCollectorAttributesArray = readonly [
   bigint,
 ];
 
+@PayloadAttribute
 export class SwapBillsWithDustCollectorAttributes implements ITransactionPayloadAttributes {
+  public static get PAYLOAD_TYPE(): string {
+    return 'swapDC';
+  }
+
   public constructor(
     public readonly ownerPredicate: IPredicate,
     public readonly proofs: ReadonlyArray<TransactionRecordWithProof<TransferBillToDustCollectorPayload>>,
@@ -42,5 +49,19 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
           ]
           Target Value: ${this.targetValue}
       `;
+  }
+
+  public static FromArray(data: SwapBillsWithDustCollectorAttributesArray): SwapBillsWithDustCollectorAttributes {
+    const proofs = Array<TransactionRecordWithProof<TransferBillToDustCollectorPayload>>();
+
+    for (let i = 0; i < data[1].length; i++) {
+      proofs.push(TransactionRecordWithProof.FromArray([data[1][i], data[2][i]]));
+    }
+
+    return new SwapBillsWithDustCollectorAttributes(
+      new PredicateBytes(new Uint8Array(data[0])),
+      proofs,
+      BigInt(data[3]),
+    );
   }
 }

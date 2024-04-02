@@ -6,10 +6,10 @@ type FeeCreditRecordPartition = SystemIdentifier.MONEY_PARTITION | SystemIdentif
 
 export class FeeCreditUnitId extends UnitIdWithType {
   public constructor(identifier: Uint8Array, type: FeeCreditRecordPartition) {
-    super(identifier, FeeCreditUnitId.getUnitType(type));
+    super(identifier, FeeCreditUnitId.GetUnitType(type));
   }
 
-  private static getUnitType(systemIdentifier: SystemIdentifier): UnitType {
+  private static GetUnitType(systemIdentifier: SystemIdentifier): UnitType {
     switch (systemIdentifier) {
       case SystemIdentifier.MONEY_PARTITION:
         return UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD;

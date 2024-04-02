@@ -5,15 +5,13 @@ import { SwapBillsWithDustCollectorAttributes } from './SwapBillsWithDustCollect
 import { TransactionPayload } from './TransactionPayload.js';
 
 export class SwapBillsWithDustCollectorPayload extends TransactionPayload<SwapBillsWithDustCollectorAttributes> {
-  public static readonly PAYLOAD_TYPE = 'swapDC';
-
   public constructor(
     attributes: SwapBillsWithDustCollectorAttributes,
     unitId: IUnitId,
     clientMetadata: ITransactionClientMetadata,
   ) {
     super(
-      SwapBillsWithDustCollectorPayload.PAYLOAD_TYPE,
+      SwapBillsWithDustCollectorAttributes.PAYLOAD_TYPE,
       SystemIdentifier.MONEY_PARTITION,
       unitId,
       attributes,

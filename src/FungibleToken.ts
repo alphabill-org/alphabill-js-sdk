@@ -16,10 +16,10 @@ export class FungibleToken {
 
   public static async Create(data: IFungibleTokenDto): Promise<FungibleToken> {
     return new FungibleToken(
-      UnitId.FromBytes(Base16Converter.decode(data.TokenType)),
+      UnitId.FromBytes(Base16Converter.Decode(data.TokenType)),
       BigInt(data.Value),
       BigInt(data.T),
-      Base64Converter.decode(data.Backlink),
+      Base64Converter.Decode(data.Backlink),
       Boolean(Number(data.Locked)),
     );
   }
@@ -30,7 +30,7 @@ export class FungibleToken {
         Token Type: ${this.tokenType.toString()}
         Value: ${this.value}
         Block Number: ${this.blockNumber}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Backlink: ${Base16Converter.Encode(this.backlink)}
         Locked: ${this.locked}`;
   }
 }

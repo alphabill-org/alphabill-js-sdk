@@ -1,9 +1,13 @@
 import { IUnitId } from '../IUnitId.js';
+import { PredicateBytes } from '../PredicateBytes.js';
+import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { INonFungibleTokenData } from './INonFungibleTokenData.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
+import { NonFungibleTokenData } from './NonFungibleTokenData.js';
+import { PayloadAttribute } from './PayloadAttribute.js';
 
 export type CreateNonFungibleTokenAttributesArray = readonly [
   Uint8Array,
@@ -15,7 +19,12 @@ export type CreateNonFungibleTokenAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
+@PayloadAttribute
 export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  public static get PAYLOAD_TYPE(): string {
+    return 'createNToken';
+  }
+
   public constructor(
     public readonly ownerPredicate: IPredicate,
     public readonly typeId: IUnitId,
@@ -52,7 +61,19 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
         Data: ${this.data.toString()}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
         Token Creation Predicate Signatures: [
-          ${this.tokenCreationPredicateSignatures?.map((signature) => Base16Converter.encode(signature)).join(',\n') ?? 'null'}
+          ${this.tokenCreationPredicateSignatures?.map((signature) => Base16Converter.Encode(signature)).join(',\n') ?? 'null'}
         ]`;
+  }
+
+  public static FromArray(data: CreateNonFungibleTokenAttributesArray): CreateNonFungibleTokenAttributes {
+    return new CreateNonFungibleTokenAttributes(
+      new PredicateBytes(new Uint8Array(data[0])),
+      UnitId.FromBytes(new Uint8Array(data[1])),
+      data[2],
+      data[3],
+      NonFungibleTokenData.CreateFromBytes(new Uint8Array(data[4])),
+      new PredicateBytes(new Uint8Array(data[5])),
+      data[6]?.map((signature) => new Uint8Array(signature)) || null,
+    );
   }
 }

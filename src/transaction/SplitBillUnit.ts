@@ -1,3 +1,4 @@
+import { PredicateBytes } from '../PredicateBytes.js';
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 
@@ -18,5 +19,9 @@ export class SplitBillUnit {
       SplitBillUnit
         Value: ${this.value}
         Owner Predicate: ${this.ownerPredicate.toString()}`;
+  }
+
+  public static FromArray(data: SplitBillUnitArray): SplitBillUnit {
+    return new SplitBillUnit(BigInt(data[0]), new PredicateBytes(new Uint8Array(data[1])));
   }
 }

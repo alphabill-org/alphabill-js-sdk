@@ -1,9 +1,11 @@
 import { IUnitId } from '../IUnitId.js';
 import { SystemIdentifier } from '../SystemIdentifier.js';
+import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
+import { createAttribute } from './PayloadAttribute.js';
 
 export type TransactionPayloadArray = readonly [
   number,
@@ -58,12 +60,28 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
       TransactionPayload
         Type: ${this.type}
         System Identifier: ${SystemIdentifier[this.systemIdentifier]}
-        Unit ID: ${Base16Converter.encode(this.unitId.getBytes())}
+        Unit ID: ${Base16Converter.Encode(this.unitId.getBytes())}
         Attributes:
           ${this.attributes.toString()}
         Client Metadata:
           Timeout: ${this.clientMetadata.timeout}
           Max Transaction Fee: ${this.clientMetadata.maxTransactionFee}
-          Fee Credit Record ID: ${this.clientMetadata.feeCreditRecordId ? Base16Converter.encode(this.clientMetadata.feeCreditRecordId.getBytes()) : null}`;
+          Fee Credit Record ID: ${this.clientMetadata.feeCreditRecordId ? Base16Converter.Encode(this.clientMetadata.feeCreditRecordId.getBytes()) : null}`;
+  }
+
+  public static FromArray<T extends ITransactionPayloadAttributes>(
+    data: TransactionPayloadArray,
+  ): TransactionPayload<T> {
+    return new TransactionPayload(
+      data[1],
+      data[0],
+      UnitId.FromBytes(new Uint8Array(data[2])),
+      createAttribute(data[1], data[3]) as T,
+      {
+        timeout: BigInt(data[4][0]),
+        maxTransactionFee: BigInt(data[4][1]),
+        feeCreditRecordId: data[4][2] ? UnitId.FromBytes(new Uint8Array(data[4][2])) : null,
+      },
+    );
   }
 }

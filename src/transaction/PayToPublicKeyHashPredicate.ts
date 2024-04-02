@@ -19,6 +19,6 @@ export class PayToPublicKeyHashPredicate implements IPredicate {
   }
 
   public toString(): string {
-    return `PayToPublicKeyHashPredicate[${Base16Converter.encode(this.bytes)}]`;
+    return `PayToPublicKeyHashPredicate[${Base16Converter.Encode(this.bytes)}]`;
   }
 }

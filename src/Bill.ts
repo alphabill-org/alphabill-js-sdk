@@ -14,7 +14,7 @@ export class Bill {
     return new Bill(
       BigInt(data.value),
       BigInt(data.lastUpdate),
-      Base16Converter.decode(data.backlink),
+      Base16Converter.Decode(data.backlink),
       Boolean(Number(data.locked)),
     );
   }
@@ -24,7 +24,7 @@ export class Bill {
       Bill
         Value: ${this.value}
         Last Update: ${this.lastUpdate}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Backlink: ${Base16Converter.Encode(this.backlink)}
         Locked: ${this.locked}`;
   }
 }

@@ -5,10 +5,16 @@ import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { CloseFeeCreditPayload } from './CloseFeeCreditPayload.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
+import { PayloadAttribute } from './PayloadAttribute.js';
 
 export type ReclaimFeeCreditAttributesArray = [TransactionRecordArray, TransactionProofArray, Uint8Array];
 
+@PayloadAttribute
 export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes {
+  public static get PAYLOAD_TYPE(): string {
+    return 'reclFC';
+  }
+
   public constructor(
     public readonly proof: TransactionRecordWithProof<CloseFeeCreditPayload>,
     public readonly backlink: Uint8Array,
@@ -26,7 +32,14 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
     return dedent`
       ReclaimFeeCreditAttributes
           ${this.proof.toString()}
-          Backlink: ${Base16Converter.encode(this.backlink)}
+          Backlink: ${Base16Converter.Encode(this.backlink)}
       `;
+  }
+
+  public static FromArray(data: ReclaimFeeCreditAttributesArray): ReclaimFeeCreditAttributes {
+    return new ReclaimFeeCreditAttributes(
+      TransactionRecordWithProof.FromArray([data[0], data[1]]),
+      new Uint8Array(data[2]),
+    );
   }
 }

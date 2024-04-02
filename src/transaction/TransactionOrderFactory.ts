@@ -14,11 +14,10 @@ export class TransactionOrderFactory {
   public async createTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
     payload: T,
   ): Promise<TransactionOrder<T>> {
-    return TransactionOrderFactory.createTransactionOrder(
+    return new TransactionOrder(
       payload,
       await this.createOwnerProof(payload),
       payload.clientMetadata.feeCreditRecordId ? await this.createFeeProof(payload) : null,
-      this.cborCoder,
     );
   }
 
@@ -36,15 +35,5 @@ export class TransactionOrderFactory {
     return new Uint8Array(
       await this.cborCoder.encode([await signingService.sign(signingBytes), this.signingService.publicKey]),
     );
-  }
-
-  public static async createTransactionOrder<T extends TransactionPayload<ITransactionPayloadAttributes>>(
-    payload: T,
-    ownerProof: Uint8Array,
-    feeProof: Uint8Array | null,
-    cborCodec: ICborCodec,
-  ): Promise<TransactionOrder<T>> {
-    const transactionOrderBytes = await cborCodec.encode([payload.toArray(), ownerProof, feeProof]);
-    return new TransactionOrder<T>(payload, ownerProof, feeProof, transactionOrderBytes);
   }
 }

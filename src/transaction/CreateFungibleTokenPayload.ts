@@ -5,15 +5,13 @@ import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 import { TransactionPayload } from './TransactionPayload.js';
 
 export class CreateFungibleTokenPayload extends TransactionPayload<CreateFungibleTokenAttributes> {
-  public static readonly PAYLOAD_TYPE = 'createFToken';
-
   public constructor(
     unitId: IUnitId,
     attributes: CreateFungibleTokenAttributes,
     clientMetadata: ITransactionClientMetadata,
   ) {
     super(
-      CreateFungibleTokenPayload.PAYLOAD_TYPE,
+      CreateFungibleTokenAttributes.PAYLOAD_TYPE,
       SystemIdentifier.TOKEN_PARTITION,
       unitId,
       attributes,

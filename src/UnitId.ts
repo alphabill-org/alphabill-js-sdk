@@ -16,7 +16,7 @@ export class UnitId implements IUnitId {
   }
 
   public toString(): string {
-    return `${Base16Converter.encode(this.bytes)}`;
+    return `${Base16Converter.Encode(this.bytes)}`;
   }
 
   public static FromBytes(id: Uint8Array): IUnitId {

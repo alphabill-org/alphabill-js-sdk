@@ -4,17 +4,13 @@ import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.j
 import { TransactionPayload, TransactionPayloadArray } from './TransactionPayload.js';
 
 export type TransactionOrderArray = readonly [TransactionPayloadArray, Uint8Array, Uint8Array | null];
+
 export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAttributes>> {
   public constructor(
     public readonly payload: T,
     public readonly ownerProof: Uint8Array,
     public readonly feeProof: Uint8Array | null,
-    private readonly bytes: Uint8Array,
   ) {}
-
-  public getBytes(): Uint8Array {
-    return new Uint8Array(this.bytes);
-  }
 
   public toArray(): TransactionOrderArray {
     return [this.payload.toArray(), this.ownerProof, this.feeProof];
@@ -24,7 +20,17 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
     return dedent`
       TransactionOrder
         ${this.payload.toString()}
-        Owner Proof: ${Base16Converter.encode(this.ownerProof)}
-        Fee Proof: ${this.feeProof ? Base16Converter.encode(this.feeProof) : null}`;
+        Owner Proof: ${Base16Converter.Encode(this.ownerProof)}
+        Fee Proof: ${this.feeProof ? Base16Converter.Encode(this.feeProof) : null}`;
+  }
+
+  public static FromArray<T extends ITransactionPayloadAttributes>(
+    data: TransactionOrderArray,
+  ): TransactionOrder<TransactionPayload<T>> {
+    return new TransactionOrder(
+      TransactionPayload.FromArray(data[0]),
+      new Uint8Array(data[1]),
+      data[2] ? new Uint8Array(data[2]) : null,
+    );
   }
 }

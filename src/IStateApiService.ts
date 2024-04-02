@@ -1,6 +1,7 @@
 import { IUnit } from './IUnit.js';
 import { IUnitId } from './IUnitId.js';
 import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
+import { TransactionOrder } from './transaction/TransactionOrder.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
 
@@ -12,5 +13,7 @@ export interface IStateApiService {
   getTransactionProof(
     transactionHash: Uint8Array,
   ): Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null>;
-  sendTransaction(transactionBytes: Uint8Array): Promise<Uint8Array>;
+  sendTransaction(
+    transaction: TransactionOrder<TransactionPayload<ITransactionPayloadAttributes>>,
+  ): Promise<Uint8Array>;
 }

@@ -5,6 +5,7 @@ import { TransactionRecord, TransactionRecordArray } from './TransactionRecord.j
 import { dedent } from './util/StringUtils.js';
 
 export type TransactionRecordWithProofArray = readonly [TransactionRecordArray, TransactionProofArray];
+
 export class TransactionRecordWithProof<T extends TransactionPayload<ITransactionPayloadAttributes>> {
   public constructor(
     public readonly transactionRecord: TransactionRecord<T>,
@@ -20,5 +21,11 @@ export class TransactionRecordWithProof<T extends TransactionPayload<ITransactio
       TransactionRecordWithProof
         ${this.transactionRecord.toString()}
         ${this.transactionProof.toString()}`;
+  }
+
+  public static FromArray<T extends ITransactionPayloadAttributes>(
+    data: TransactionRecordWithProofArray,
+  ): TransactionRecordWithProof<TransactionPayload<T>> {
+    return new TransactionRecordWithProof(TransactionRecord.FromArray(data[0]), TransactionProof.FromArray(data[1]));
   }
 }

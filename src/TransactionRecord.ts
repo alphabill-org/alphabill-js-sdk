@@ -22,4 +22,10 @@ export class TransactionRecord<T extends TransactionPayload<ITransactionPayloadA
         ${this.transactionOrder.toString()}
         ${this.serverMetadata.toString()}`;
   }
+
+  public static FromArray<T extends ITransactionPayloadAttributes>(
+    data: TransactionRecordArray,
+  ): TransactionRecord<TransactionPayload<T>> {
+    return new TransactionRecord(TransactionOrder.FromArray(data[0]), ServerMetadata.FromArray(data[1]));
+  }
 }

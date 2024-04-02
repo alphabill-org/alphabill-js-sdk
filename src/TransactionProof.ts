@@ -18,9 +18,17 @@ export class TransactionProof {
   public toString(): string {
     return dedent`
       TransactionProof
-        Block header hash: ${Base16Converter.encode(this.blockHeaderHash)}
+        Block header hash: ${Base16Converter.Encode(this.blockHeaderHash)}
         Chain: [
           ${this.chain.map((item) => item.toString()).join('\n')}
         ]`;
+  }
+
+  public static FromArray(data: TransactionProofArray): TransactionProof {
+    return new TransactionProof(
+      new Uint8Array(data[0]),
+      data[1].map((item) => TransactionProofChainItem.FromArray(item)),
+      data[2],
+    );
   }
 }

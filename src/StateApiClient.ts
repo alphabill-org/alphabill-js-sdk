@@ -8,11 +8,7 @@ import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
 
 export class StateApiClient {
-  private readonly service: IStateApiService;
-
-  public constructor(service: IStateApiService) {
-    this.service = service;
-  }
+  public constructor(private readonly service: IStateApiService) {}
 
   public getRoundNumber(): Promise<bigint> {
     return this.service.getRoundNumber();
@@ -39,7 +35,7 @@ export class StateApiClient {
   public async sendTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
     transaction: TransactionOrder<T>,
   ): Promise<Uint8Array> {
-    return this.service.sendTransaction(transaction.getBytes());
+    return this.service.sendTransaction(transaction);
   }
 }
 

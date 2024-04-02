@@ -23,6 +23,6 @@ export class NonFungibleTokenData implements INonFungibleTokenData {
   }
 
   public toString(): string {
-    return dedent`${Base16Converter.encode(this.data)}`;
+    return dedent`${Base16Converter.Encode(this.data)}`;
   }
 }
