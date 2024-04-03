@@ -12,7 +12,11 @@ export class FungibleToken {
     public readonly blockNumber: bigint,
     public readonly backlink: Uint8Array,
     public readonly locked: boolean,
-  ) {}
+  ) {
+    this.value = BigInt(this.value);
+    this.blockNumber = BigInt(this.blockNumber);
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
   public static async create(data: IFungibleTokenDto): Promise<FungibleToken> {
     return new FungibleToken(

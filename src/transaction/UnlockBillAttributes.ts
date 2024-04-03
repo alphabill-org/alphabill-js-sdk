@@ -11,14 +11,16 @@ export class UnlockBillAttributes implements ITransactionPayloadAttributes {
     return 'unlock';
   }
 
-  public constructor(public readonly backlink: Uint8Array) {}
+  public constructor(public readonly backlink: Uint8Array) {
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
   public toOwnerProofData(): UnlockBillAttributesArray {
     return this.toArray();
   }
 
   public toArray(): UnlockBillAttributesArray {
-    return [this.backlink];
+    return [new Uint8Array(this.backlink)];
   }
 
   public toString(): string {

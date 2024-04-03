@@ -6,10 +6,12 @@ export class TokenIcon {
   public constructor(
     public readonly type: string,
     public readonly data: Uint8Array,
-  ) {}
+  ) {
+    this.data = new Uint8Array(this.data);
+  }
 
   public toArray(): TokenIconArray {
-    return [this.type, this.data];
+    return [this.type, new Uint8Array(this.data)];
   }
 
   public toString(): string {

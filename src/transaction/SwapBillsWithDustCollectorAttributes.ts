@@ -23,9 +23,11 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
 
   public constructor(
     public readonly ownerPredicate: IPredicate,
-    public readonly proofs: ReadonlyArray<TransactionRecordWithProof<TransferBillToDustCollectorPayload>>,
+    public readonly proofs: readonly TransactionRecordWithProof<TransferBillToDustCollectorPayload>[],
     public readonly targetValue: bigint,
-  ) {}
+  ) {
+    this.targetValue = BigInt(this.targetValue);
+  }
 
   public toOwnerProofData(): SwapBillsWithDustCollectorAttributesArray {
     return this.toArray();
@@ -52,7 +54,7 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
   }
 
   public static fromArray(data: SwapBillsWithDustCollectorAttributesArray): SwapBillsWithDustCollectorAttributes {
-    const proofs = Array<TransactionRecordWithProof<TransferBillToDustCollectorPayload>>();
+    const proofs: TransactionRecordWithProof<TransferBillToDustCollectorPayload>[] = [];
 
     for (let i = 0; i < data[1].length; i++) {
       proofs.push(TransactionRecordWithProof.fromArray([data[1][i], data[2][i]]));

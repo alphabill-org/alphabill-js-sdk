@@ -7,5 +7,8 @@ export class FeeCreditClientMetadata implements ITransactionClientMetadata {
   public constructor(
     public readonly maxTransactionFee: bigint,
     public readonly timeout: bigint,
-  ) {}
+  ) {
+    this.maxTransactionFee = BigInt(this.maxTransactionFee);
+    this.timeout = BigInt(this.timeout);
+  }
 }

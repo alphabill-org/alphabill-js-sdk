@@ -24,7 +24,7 @@ export class TransactionOrderFactory {
   private async createOwnerProof(payload: TransactionPayload<ITransactionPayloadAttributes>): Promise<Uint8Array> {
     const signingBytes = await this.cborCoder.encode(payload.getSigningFields());
     return new Uint8Array(
-      await this.cborCoder.encode([await this.signingService.sign(signingBytes), this.signingService.publicKey]),
+      await this.cborCoder.encode([await this.signingService.sign(signingBytes), this.signingService.getPublicKey()]),
     );
   }
 
@@ -33,7 +33,7 @@ export class TransactionOrderFactory {
     const signingService = this.feeSigningService || this.signingService;
 
     return new Uint8Array(
-      await this.cborCoder.encode([await signingService.sign(signingBytes), this.signingService.publicKey]),
+      await this.cborCoder.encode([await signingService.sign(signingBytes), this.signingService.getPublicKey()]),
     );
   }
 }

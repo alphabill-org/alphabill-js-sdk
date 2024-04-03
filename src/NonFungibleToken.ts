@@ -17,7 +17,11 @@ export class NonFungibleToken {
     public readonly blockNumber: bigint,
     public readonly backlink: Uint8Array,
     public readonly locked: boolean,
-  ) {}
+  ) {
+    this.data = new Uint8Array(this.data);
+    this.blockNumber = BigInt(this.blockNumber);
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
   public static async create(data: INonFungibleTokenDto): Promise<NonFungibleToken> {
     return new NonFungibleToken(

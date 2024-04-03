@@ -13,17 +13,20 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public constructor(
-    public readonly targetUnits: ReadonlyArray<SplitBillUnit>,
+    public readonly targetUnits: readonly SplitBillUnit[],
     public readonly remainingBillValue: bigint,
     public readonly backlink: Uint8Array,
-  ) {}
+  ) {
+    this.remainingBillValue = BigInt(this.remainingBillValue);
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
   public toOwnerProofData(): SplitBillAttributesArray {
     return this.toArray();
   }
 
   public toArray(): SplitBillAttributesArray {
-    return [this.targetUnits.map((unit) => unit.toArray()), this.remainingBillValue, this.backlink];
+    return [this.targetUnits.map((unit) => unit.toArray()), this.remainingBillValue, new Uint8Array(this.backlink)];
   }
 
   public toString(): string {
@@ -37,7 +40,7 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public static fromArray(data: SplitBillAttributesArray): SplitBillAttributes {
-    const targetUnits = Array<SplitBillUnit>();
+    const targetUnits: SplitBillUnit[] = [];
 
     for (let i = 0; i < data[0].length; i++) {
       targetUnits.push(SplitBillUnit.fromArray(data[0][i]));

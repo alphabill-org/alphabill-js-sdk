@@ -9,7 +9,11 @@ export class FeeCreditRecord {
     public readonly backlink: Uint8Array,
     public readonly timeout: bigint,
     public readonly locked: boolean,
-  ) {}
+  ) {
+    this.balance = BigInt(this.balance);
+    this.timeout = BigInt(this.timeout);
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
   public static async create(data: IFeeCreditRecordDto): Promise<FeeCreditRecord> {
     return new FeeCreditRecord(

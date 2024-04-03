@@ -31,14 +31,21 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
     public readonly typeId: IUnitId,
     public readonly remainingValue: bigint,
     public readonly invariantPredicateSignatures: Uint8Array[] | null,
-  ) {}
+  ) {
+    this.targetValue = BigInt(this.targetValue);
+    this.nonce = this.nonce ? new Uint8Array(this.nonce) : null;
+    this.backlink = new Uint8Array(this.backlink);
+    this.remainingValue = BigInt(this.remainingValue);
+    this.invariantPredicateSignatures =
+      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
 
   public toOwnerProofData(): SplitFungibleTokenAttributesArray {
     return [
       this.ownerPredicate.getBytes(),
       this.targetValue,
-      this.nonce,
-      this.backlink,
+      this.nonce ? new Uint8Array(this.nonce) : null,
+      new Uint8Array(this.backlink),
       this.typeId.getBytes(),
       this.remainingValue,
       null,
@@ -49,11 +56,11 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
     return [
       this.ownerPredicate.getBytes(),
       this.targetValue,
-      this.nonce,
-      this.backlink,
+      this.nonce ? new Uint8Array(this.nonce) : null,
+      new Uint8Array(this.backlink),
       this.typeId.getBytes(),
       this.remainingValue,
-      this.invariantPredicateSignatures,
+      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
     ];
   }
 
@@ -80,11 +87,11 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
     return new SplitFungibleTokenAttributes(
       new PredicateBytes(data[0]),
       data[1],
-      data[2] || null,
+      data[2],
       data[3],
       UnitId.fromBytes(data[4]),
       data[5],
-      data[6] || null,
+      data[6],
     );
   }
 }

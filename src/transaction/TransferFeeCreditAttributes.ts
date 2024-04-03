@@ -30,7 +30,13 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
     public readonly latestAdditionTime: bigint,
     public readonly targetUnitBacklink: Uint8Array | null,
     public readonly backlink: Uint8Array,
-  ) {}
+  ) {
+    this.amount = BigInt(this.amount);
+    this.earliestAdditionTime = BigInt(this.earliestAdditionTime);
+    this.latestAdditionTime = BigInt(this.latestAdditionTime);
+    this.targetUnitBacklink = this.targetUnitBacklink ? new Uint8Array(this.targetUnitBacklink) : null;
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
   public toOwnerProofData(): TransferFeeCreditAttributesArray {
     return this.toArray();
@@ -43,8 +49,8 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
       this.targetUnitId.getBytes(),
       this.earliestAdditionTime,
       this.latestAdditionTime,
-      this.targetUnitBacklink,
-      this.backlink,
+      this.targetUnitBacklink ? new Uint8Array(this.targetUnitBacklink) : null,
+      new Uint8Array(this.backlink),
     ];
   }
 
@@ -69,7 +75,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
       UnitId.fromBytes(data[2]) as FeeCreditUnitId,
       data[3],
       data[4],
-      data[5] || null,
+      data[5],
       data[6],
     );
   }

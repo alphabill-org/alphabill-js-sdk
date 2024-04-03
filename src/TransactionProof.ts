@@ -9,10 +9,12 @@ export class TransactionProof {
     public readonly blockHeaderHash: Uint8Array,
     public readonly chain: TransactionProofChainItem[],
     public readonly unicityCertificate: unknown,
-  ) {}
+  ) {
+    this.blockHeaderHash = new Uint8Array(this.blockHeaderHash);
+  }
 
   public toArray(): TransactionProofArray {
-    return [this.blockHeaderHash, this.chain.map((item) => item.toArray()), this.unicityCertificate];
+    return [new Uint8Array(this.blockHeaderHash), this.chain.map((item) => item.toArray()), this.unicityCertificate];
   }
 
   public toString(): string {
@@ -26,7 +28,7 @@ export class TransactionProof {
 
   public static fromArray(data: TransactionProofArray): TransactionProof {
     return new TransactionProof(
-      new Uint8Array(data[0]),
+      data[0],
       data[1].map((item) => TransactionProofChainItem.fromArray(item)),
       data[2],
     );

@@ -20,14 +20,23 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
     public readonly typeId: IUnitId,
     public readonly value: bigint,
     public readonly tokenCreationPredicateSignatures: Uint8Array[] | null,
-  ) {}
+  ) {
+    this.value = BigInt(this.value);
+    this.tokenCreationPredicateSignatures =
+      this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
 
   public toOwnerProofData(): CreateFungibleTokenAttributesArray {
     return this.toArray();
   }
 
   public toArray(): CreateFungibleTokenAttributesArray {
-    return [this.ownerPredicate.getBytes(), this.typeId.getBytes(), this.value, this.tokenCreationPredicateSignatures];
+    return [
+      this.ownerPredicate.getBytes(),
+      this.typeId.getBytes(),
+      this.value,
+      this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
+    ];
   }
 
   public toString(): string {
@@ -47,11 +56,6 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   }
 
   public static fromArray(data: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
-    return new CreateFungibleTokenAttributes(
-      new PredicateBytes(data[0]),
-      UnitId.fromBytes(data[1]),
-      data[2],
-      data[3] || null,
-    );
+    return new CreateFungibleTokenAttributes(new PredicateBytes(data[0]), UnitId.fromBytes(data[1]), data[2], data[3]);
   }
 }

@@ -8,7 +8,11 @@ export class Bill {
     public readonly lastUpdate: bigint,
     public readonly backlink: Uint8Array,
     public readonly locked: boolean,
-  ) {}
+  ) {
+    this.value = BigInt(this.value);
+    this.lastUpdate = BigInt(this.lastUpdate);
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
   public static async create(data: IBillDataDto): Promise<Bill> {
     return new Bill(

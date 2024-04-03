@@ -17,14 +17,17 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
     public readonly ownerPredicate: IPredicate,
     public readonly targetValue: bigint,
     public readonly backlink: Uint8Array,
-  ) {}
+  ) {
+    this.targetValue = BigInt(this.targetValue);
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
   public toOwnerProofData(): TransferBillAttributesArray {
     return this.toArray();
   }
 
   public toArray(): TransferBillAttributesArray {
-    return [this.ownerPredicate.getBytes(), this.targetValue, this.backlink];
+    return [this.ownerPredicate.getBytes(), this.targetValue, new Uint8Array(this.backlink)];
   }
 
   public toString(): string {

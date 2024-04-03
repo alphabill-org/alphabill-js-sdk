@@ -33,7 +33,10 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
     public readonly data: INonFungibleTokenData,
     public readonly dataUpdatePredicate: IPredicate,
     public readonly tokenCreationPredicateSignatures: Uint8Array[] | null,
-  ) {}
+  ) {
+    this.tokenCreationPredicateSignatures =
+      this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
 
   public toOwnerProofData(): CreateNonFungibleTokenAttributesArray {
     return this.toArray();
@@ -47,7 +50,7 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
       this.uri,
       this.data.getBytes(),
       this.dataUpdatePredicate.getBytes(),
-      this.tokenCreationPredicateSignatures,
+      this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
     ];
   }
 
@@ -78,7 +81,7 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
       data[3],
       NonFungibleTokenData.createFromBytes(data[4]),
       new PredicateBytes(data[5]),
-      data[6] || null,
+      data[6],
     );
   }
 }

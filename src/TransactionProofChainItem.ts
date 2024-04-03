@@ -7,10 +7,12 @@ export class TransactionProofChainItem {
   public constructor(
     public readonly hash: Uint8Array,
     public readonly left: boolean,
-  ) {}
+  ) {
+    this.hash = new Uint8Array(this.hash);
+  }
 
   public toArray(): TransactionProofChainItemArray {
-    return [this.hash, this.left];
+    return [new Uint8Array(this.hash), this.left];
   }
 
   public toString(): string {

@@ -36,7 +36,10 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
     public readonly tokenCreationPredicate: IPredicate,
     public readonly invariantPredicate: IPredicate,
     public readonly subTypeCreationPredicateSignatures: Uint8Array[] | null,
-  ) {}
+  ) {
+    this.subTypeCreationPredicateSignatures =
+      this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
 
   public toOwnerProofData(): CreateFungibleTokenTypeAttributesArray {
     return this.toArray();
@@ -52,7 +55,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
       this.subTypeCreationPredicate.getBytes(),
       this.tokenCreationPredicate.getBytes(),
       this.invariantPredicate.getBytes(),
-      this.subTypeCreationPredicateSignatures,
+      this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
     ];
   }
 
@@ -87,7 +90,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
       new PredicateBytes(data[5]),
       new PredicateBytes(data[6]),
       new PredicateBytes(data[7]),
-      data[8] || null,
+      data[8],
     );
   }
 }

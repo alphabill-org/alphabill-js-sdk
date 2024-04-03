@@ -27,15 +27,21 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
     public readonly targetTokenBacklink: Uint8Array,
     public readonly backlink: Uint8Array,
     public readonly invariantPredicateSignatures: Uint8Array[] | null,
-  ) {}
+  ) {
+    this.value = BigInt(this.value);
+    this.targetTokenBacklink = new Uint8Array(this.targetTokenBacklink);
+    this.backlink = new Uint8Array(this.backlink);
+    this.invariantPredicateSignatures =
+      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
 
   public toOwnerProofData(): BurnFungibleTokenAttributesArray {
     return [
       this.typeId.getBytes(),
       this.value,
       this.targetTokenId.getBytes(),
-      this.targetTokenBacklink,
-      this.backlink,
+      new Uint8Array(this.targetTokenBacklink),
+      new Uint8Array(this.backlink),
       null,
     ];
   }
@@ -45,9 +51,9 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
       this.typeId.getBytes(),
       this.value,
       this.targetTokenId.getBytes(),
-      this.targetTokenBacklink,
-      this.backlink,
-      this.invariantPredicateSignatures,
+      new Uint8Array(this.targetTokenBacklink),
+      new Uint8Array(this.backlink),
+      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
     ];
   }
 
@@ -76,7 +82,7 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
       UnitId.fromBytes(data[2]),
       data[3],
       data[4],
-      data[5] || null,
+      data[5],
     );
   }
 }

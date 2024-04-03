@@ -10,10 +10,17 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
     public readonly payload: T,
     public readonly ownerProof: Uint8Array,
     public readonly feeProof: Uint8Array | null,
-  ) {}
+  ) {
+    this.ownerProof = new Uint8Array(this.ownerProof);
+    this.feeProof = this.feeProof ? new Uint8Array(this.feeProof) : null;
+  }
 
   public toArray(): TransactionOrderArray {
-    return [this.payload.toArray(), this.ownerProof, this.feeProof];
+    return [
+      this.payload.toArray(),
+      new Uint8Array(this.ownerProof),
+      this.feeProof ? new Uint8Array(this.feeProof) : null,
+    ];
   }
 
   public toString(): string {
@@ -27,6 +34,6 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
   public static fromArray<T extends ITransactionPayloadAttributes>(
     data: TransactionOrderArray,
   ): TransactionOrder<TransactionPayload<T>> {
-    return new TransactionOrder(TransactionPayload.fromArray(data[0]), data[1], data[2] || null);
+    return new TransactionOrder(TransactionPayload.fromArray(data[0]), data[1], data[2]);
   }
 }

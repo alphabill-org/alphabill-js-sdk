@@ -27,7 +27,12 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
     public readonly backlink: Uint8Array,
     public readonly typeId: IUnitId,
     public readonly invariantPredicateSignatures: Uint8Array[] | null,
-  ) {}
+  ) {
+    this.nonce = this.nonce ? new Uint8Array(this.nonce) : null;
+    this.backlink = new Uint8Array(this.backlink);
+    this.invariantPredicateSignatures =
+      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
 
   public toOwnerProofData(): TransferNonFungibleTokenAttributesArray {
     return [this.ownerPredicate.getBytes(), this.nonce, this.backlink, this.typeId.getBytes(), null];
@@ -36,10 +41,10 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
   public toArray(): TransferNonFungibleTokenAttributesArray {
     return [
       this.ownerPredicate.getBytes(),
-      this.nonce,
-      this.backlink,
+      this.nonce ? new Uint8Array(this.nonce) : null,
+      new Uint8Array(this.backlink),
       this.typeId.getBytes(),
-      this.invariantPredicateSignatures,
+      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
     ];
   }
 
@@ -63,10 +68,10 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
   public static fromArray(data: TransferNonFungibleTokenAttributesArray): TransferNonFungibleTokenAttributes {
     return new TransferNonFungibleTokenAttributes(
       new PredicateBytes(data[0]),
-      data[1] || null,
+      data[1],
       data[2],
       UnitId.fromBytes(data[3]),
-      data[4] || null,
+      data[4],
     );
   }
 }

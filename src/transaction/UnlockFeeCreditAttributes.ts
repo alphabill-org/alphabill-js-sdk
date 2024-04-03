@@ -10,14 +10,16 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
     return 'unlockFC';
   }
 
-  public constructor(public readonly backlink: Uint8Array) {}
+  public constructor(public readonly backlink: Uint8Array) {
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
-  public toOwnerProofData(): ReadonlyArray<unknown> {
+  public toOwnerProofData(): UnlockFeeCreditAttributesArray {
     return this.toArray();
   }
 
-  public toArray(): ReadonlyArray<unknown> {
-    return [this.backlink];
+  public toArray(): UnlockFeeCreditAttributesArray {
+    return [new Uint8Array(this.backlink)];
   }
 
   public toString(): string {

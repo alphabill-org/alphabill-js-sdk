@@ -17,14 +17,17 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
     public readonly amount: bigint,
     public readonly targetUnitId: IUnitId,
     public readonly targetUnitBacklink: Uint8Array,
-  ) {}
+  ) {
+    this.amount = BigInt(this.amount);
+    this.targetUnitBacklink = new Uint8Array(this.targetUnitBacklink);
+  }
 
   public toOwnerProofData(): CloseFeeCreditAttributesArray {
     return this.toArray();
   }
 
   public toArray(): CloseFeeCreditAttributesArray {
-    return [this.amount, this.targetUnitId.getBytes(), this.targetUnitBacklink];
+    return [this.amount, this.targetUnitId.getBytes(), new Uint8Array(this.targetUnitBacklink)];
   }
 
   public toString(): string {

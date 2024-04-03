@@ -34,7 +34,7 @@ if (moneyIds.length === 0) {
   throw new Error('No bills available');
 }
 
-const unit = await moneyClient.getUnit(moneyIds[0], true);
+const unit = await moneyClient.getUnit(moneyIds[1], true);
 const round = await moneyClient.getRoundNumber();
 const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.TOKEN_PARTITION);
 const feeCreditUnit = await tokenClient.getUnit(feeCreditUnitId, false);

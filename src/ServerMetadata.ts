@@ -9,14 +9,19 @@ export class ServerMetadata {
     public readonly targetUnits: Uint8Array[],
     public readonly successIndicator: bigint,
     public readonly processingDetails: Uint8Array | null,
-  ) {}
+  ) {
+    this.actualFee = BigInt(this.actualFee);
+    this.targetUnits = this.targetUnits.map((unit) => new Uint8Array(unit));
+    this.successIndicator = BigInt(this.successIndicator);
+    this.processingDetails = this.processingDetails ? new Uint8Array(this.processingDetails) : null;
+  }
 
   public toArray(): ServerMetadataArray {
     return [
       this.actualFee,
       this.targetUnits.map((unit) => new Uint8Array(unit)),
       this.successIndicator,
-      this.processingDetails,
+      this.processingDetails ? new Uint8Array(this.processingDetails) : null,
     ];
   }
 
@@ -32,6 +37,6 @@ export class ServerMetadata {
   }
 
   public static fromArray(data: ServerMetadataArray): ServerMetadata {
-    return new ServerMetadata(data[0], data[1], data[2], data[3] || null);
+    return new ServerMetadata(data[0], data[1], data[2], data[3]);
   }
 }

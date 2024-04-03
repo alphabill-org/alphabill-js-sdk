@@ -18,14 +18,23 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
     public readonly targetUnitId: IUnitId,
     public readonly targetUnitBacklink: Uint8Array,
     public readonly backlink: Uint8Array,
-  ) {}
+  ) {
+    this.value = BigInt(this.value);
+    this.targetUnitBacklink = new Uint8Array(this.targetUnitBacklink);
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
   public toOwnerProofData(): TransferBillToDustCollectorAttributesArray {
     return this.toArray();
   }
 
   public toArray(): TransferBillToDustCollectorAttributesArray {
-    return [this.value, this.targetUnitId.getBytes(), this.targetUnitBacklink, this.backlink];
+    return [
+      this.value,
+      this.targetUnitId.getBytes(),
+      new Uint8Array(this.targetUnitBacklink),
+      new Uint8Array(this.backlink),
+    ];
   }
 
   public toString(): string {

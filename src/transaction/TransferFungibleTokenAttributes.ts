@@ -29,7 +29,13 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
     public readonly backlink: Uint8Array,
     public readonly typeId: IUnitId,
     public readonly invariantPredicateSignatures: Uint8Array[] | null,
-  ) {}
+  ) {
+    this.value = BigInt(this.value);
+    this.nonce = BigInt(this.nonce);
+    this.backlink = new Uint8Array(this.backlink);
+    this.invariantPredicateSignatures =
+      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
 
   public toOwnerProofData(): TransferFungibleTokenAttributesArray {
     return [this.ownerPredicate.getBytes(), this.value, this.nonce, this.backlink, this.typeId.getBytes(), null];
@@ -40,9 +46,9 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
       this.ownerPredicate.getBytes(),
       this.value,
       this.nonce,
-      this.backlink,
+      new Uint8Array(this.backlink),
       this.typeId.getBytes(),
-      this.invariantPredicateSignatures,
+      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
     ];
   }
 
@@ -71,7 +77,7 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
       data[2],
       data[3],
       UnitId.fromBytes(data[4]),
-      data[5] || null,
+      data[5],
     );
   }
 }

@@ -8,7 +8,9 @@ export class SplitBillUnit {
   public constructor(
     public readonly value: bigint,
     public readonly ownerPredicate: IPredicate,
-  ) {}
+  ) {
+    this.value = BigInt(value);
+  }
 
   public toArray(): SplitBillUnitArray {
     return [this.value, this.ownerPredicate.getBytes()];

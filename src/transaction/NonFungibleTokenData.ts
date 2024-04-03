@@ -4,7 +4,9 @@ import { dedent } from '../util/StringUtils.js';
 import { INonFungibleTokenData } from './INonFungibleTokenData.js';
 
 export class NonFungibleTokenData implements INonFungibleTokenData {
-  private constructor(private readonly data: Uint8Array) {}
+  private constructor(private readonly data: Uint8Array) {
+    this.data = new Uint8Array(this.data);
+  }
 
   public static async create(cborCodec: ICborCodec, data: unknown): Promise<NonFungibleTokenData> {
     return new NonFungibleTokenData(await cborCodec.encode(data));

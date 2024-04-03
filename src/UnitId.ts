@@ -5,7 +5,10 @@ export class UnitId implements IUnitId {
   public constructor(
     private readonly type: Uint8Array,
     private readonly bytes: Uint8Array,
-  ) {}
+  ) {
+    this.type = new Uint8Array(type);
+    this.bytes = new Uint8Array(bytes);
+  }
 
   public getType(): Uint8Array {
     return new Uint8Array(this.type);

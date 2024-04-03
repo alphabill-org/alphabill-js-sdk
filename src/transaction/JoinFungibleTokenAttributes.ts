@@ -24,7 +24,11 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
     public readonly proofs: TransactionRecordWithProof<BurnFungibleTokenPayload>[],
     public readonly backlink: Uint8Array,
     public readonly invariantPredicateSignatures: Uint8Array[] | null,
-  ) {}
+  ) {
+    this.backlink = new Uint8Array(this.backlink);
+    this.invariantPredicateSignatures =
+      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
 
   public toOwnerProofData(): JoinFungibleTokenAttributesArray {
     return [
@@ -39,8 +43,8 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
     return [
       this.proofs.map((proof) => proof.transactionRecord.toArray()),
       this.proofs.map((proof) => proof.transactionProof.toArray()),
-      this.backlink,
-      this.invariantPredicateSignatures,
+      new Uint8Array(this.backlink),
+      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
     ];
   }
 
@@ -60,12 +64,12 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   public static fromArray(data: JoinFungibleTokenAttributesArray): JoinFungibleTokenAttributes {
-    const proofs = Array<TransactionRecordWithProof<BurnFungibleTokenPayload>>();
+    const proofs: TransactionRecordWithProof<BurnFungibleTokenPayload>[] = [];
 
     for (let i = 0; i < data[0].length; i++) {
       proofs.push(TransactionRecordWithProof.fromArray([data[0][i], data[1][i]]));
     }
 
-    return new JoinFungibleTokenAttributes(proofs, data[2], data[3] || null);
+    return new JoinFungibleTokenAttributes(proofs, data[2], data[3]);
   }
 }
