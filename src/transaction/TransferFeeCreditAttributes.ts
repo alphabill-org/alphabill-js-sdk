@@ -64,13 +64,13 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
 
   public static fromArray(data: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
     return new TransferFeeCreditAttributes(
-      BigInt(data[0]),
+      data[0],
       data[1],
-      UnitId.fromBytes(new Uint8Array(data[2])) as FeeCreditUnitId,
-      BigInt(data[3]),
-      BigInt(data[4]),
-      data[5] ? new Uint8Array(data[5]) : null,
-      new Uint8Array(data[6]),
+      UnitId.fromBytes(data[2]) as FeeCreditUnitId,
+      data[3],
+      data[4],
+      data[5] || null,
+      data[6],
     );
   }
 }

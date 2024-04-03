@@ -50,18 +50,23 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
         Nonce: ${this.nonce ? Base16Converter.encode(this.nonce) : 'null'}
         Backlink: ${Base16Converter.encode(this.backlink)}
         Type ID: ${this.typeId.toString()}
-        Invariant Predicate Signatures: [
-          ${this.invariantPredicateSignatures?.map((signature) => Base16Converter.encode(signature)).join(',\n') ?? 'null'}
-        ]`;
+        Invariant Predicate Signatures: ${
+          this.invariantPredicateSignatures
+            ? dedent`
+        [
+          ${this.invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+        ]`
+            : 'null'
+        }`;
   }
 
   public static fromArray(data: TransferNonFungibleTokenAttributesArray): TransferNonFungibleTokenAttributes {
     return new TransferNonFungibleTokenAttributes(
-      new PredicateBytes(new Uint8Array(data[0])),
-      data[1] ? new Uint8Array(data[1]) : null,
-      new Uint8Array(data[2]),
-      UnitId.fromBytes(new Uint8Array(data[3])),
-      data[4]?.map((signature) => new Uint8Array(signature)) || null,
+      new PredicateBytes(data[0]),
+      data[1] || null,
+      data[2],
+      UnitId.fromBytes(data[3]),
+      data[4] || null,
     );
   }
 }

@@ -59,19 +59,24 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
         Target Token ID: ${this.targetTokenId.toString()}
         Target Token Backlink: ${Base16Converter.encode(this.targetTokenBacklink)}
         Backlink: ${Base16Converter.encode(this.backlink)}
-        Invariant Predicate Signatures: [
-          ${this.invariantPredicateSignatures?.map((signature) => Base16Converter.encode(signature)).join(',\n') ?? 'null'}
-        ]`;
+        Invariant Predicate Signatures: ${
+          this.invariantPredicateSignatures
+            ? dedent`
+        [
+          ${this.invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+        ]`
+            : 'null'
+        }`;
   }
 
   public static fromArray(data: BurnFungibleTokenAttributesArray): BurnFungibleTokenAttributes {
     return new BurnFungibleTokenAttributes(
       UnitId.fromBytes(data[0]),
-      BigInt(data[1]),
+      data[1],
       UnitId.fromBytes(data[2]),
-      new Uint8Array(data[3]),
-      new Uint8Array(data[4]),
-      data[5]?.map((signature) => new Uint8Array(signature)) || null,
+      data[3],
+      data[4],
+      data[5] || null,
     );
   }
 }

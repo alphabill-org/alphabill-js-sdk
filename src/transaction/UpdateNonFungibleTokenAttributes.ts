@@ -38,8 +38,8 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   public static fromArray(data: UpdateNonFungibleTokenAttributesArray): UpdateNonFungibleTokenAttributes {
     return new UpdateNonFungibleTokenAttributes(
       NonFungibleTokenData.createFromBytes(data[0]),
-      new Uint8Array(data[1]),
-      data[2]?.map((signature) => new Uint8Array(signature)) || null,
+      data[1],
+      data[2] || null,
     );
   }
 }

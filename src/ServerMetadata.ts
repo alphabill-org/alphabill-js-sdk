@@ -32,11 +32,6 @@ export class ServerMetadata {
   }
 
   public static fromArray(data: ServerMetadataArray): ServerMetadata {
-    return new ServerMetadata(
-      BigInt(data[0]),
-      data[1].map((unit) => new Uint8Array(unit)),
-      BigInt(data[2]),
-      data[3] ? new Uint8Array(data[3]) : null,
-    );
+    return new ServerMetadata(data[0], data[1], data[2], data[3] || null);
   }
 }

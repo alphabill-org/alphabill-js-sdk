@@ -22,6 +22,6 @@ export class SplitBillUnit {
   }
 
   public static fromArray(data: SplitBillUnitArray): SplitBillUnit {
-    return new SplitBillUnit(BigInt(data[0]), new PredicateBytes(new Uint8Array(data[1])));
+    return new SplitBillUnit(data[0], new PredicateBytes(data[1]));
   }
 }

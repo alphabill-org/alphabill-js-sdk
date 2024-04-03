@@ -29,11 +29,11 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   public toString(): string {
     return dedent`
       SplitBillAttributes
-          Target Units: [
-            ${this.targetUnits.map((unit) => unit.toString()).join('\n')}
-          ]
-          Remaining Bill Value: ${this.remainingBillValue}
-          Backlink: ${Base16Converter.encode(this.backlink)}`;
+        Target Units: [
+          ${this.targetUnits.map((unit) => unit.toString()).join('\n')}
+        ]
+        Remaining Bill Value: ${this.remainingBillValue}
+        Backlink: ${Base16Converter.encode(this.backlink)}`;
   }
 
   public static fromArray(data: SplitBillAttributesArray): SplitBillAttributes {
@@ -43,6 +43,6 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
       targetUnits.push(SplitBillUnit.fromArray(data[0][i]));
     }
 
-    return new SplitBillAttributes(targetUnits, BigInt(data[1]), new Uint8Array(data[2]));
+    return new SplitBillAttributes(targetUnits, data[1], data[2]);
   }
 }

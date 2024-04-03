@@ -60,20 +60,25 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
         URI: ${this.uri}
         Data: ${this.data.toString()}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
-        Token Creation Predicate Signatures: [
-          ${this.tokenCreationPredicateSignatures?.map((signature) => Base16Converter.encode(signature)).join(',\n') ?? 'null'}
-        ]`;
+        Token Creation Predicate Signatures: ${
+          this.tokenCreationPredicateSignatures
+            ? dedent`
+        [
+          ${this.tokenCreationPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+        ]`
+            : 'null'
+        }`;
   }
 
   public static fromArray(data: CreateNonFungibleTokenAttributesArray): CreateNonFungibleTokenAttributes {
     return new CreateNonFungibleTokenAttributes(
-      new PredicateBytes(new Uint8Array(data[0])),
-      UnitId.fromBytes(new Uint8Array(data[1])),
+      new PredicateBytes(data[0]),
+      UnitId.fromBytes(data[1]),
       data[2],
       data[3],
-      NonFungibleTokenData.createFromBytes(new Uint8Array(data[4])),
-      new PredicateBytes(new Uint8Array(data[5])),
-      data[6]?.map((signature) => new Uint8Array(signature)) || null,
+      NonFungibleTokenData.createFromBytes(data[4]),
+      new PredicateBytes(data[5]),
+      data[6] || null,
     );
   }
 }

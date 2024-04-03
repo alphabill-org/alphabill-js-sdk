@@ -27,10 +27,6 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
   public static fromArray<T extends ITransactionPayloadAttributes>(
     data: TransactionOrderArray,
   ): TransactionOrder<TransactionPayload<T>> {
-    return new TransactionOrder(
-      TransactionPayload.fromArray(data[0]),
-      new Uint8Array(data[1]),
-      data[2] ? new Uint8Array(data[2]) : null,
-    );
+    return new TransactionOrder(TransactionPayload.fromArray(data[0]), data[1], data[2] || null);
   }
 }

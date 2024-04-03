@@ -37,7 +37,7 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
 
   public static fromArray(data: AddFeeCreditAttributesArray): AddFeeCreditAttributes {
     return new AddFeeCreditAttributes(
-      new PredicateBytes(new Uint8Array(data[0])),
+      new PredicateBytes(data[0]),
       TransactionRecordWithProof.fromArray([data[1], data[2]]),
     );
   }

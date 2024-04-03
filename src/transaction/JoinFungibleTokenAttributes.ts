@@ -48,7 +48,15 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
     return dedent`
       JoinFungibleTokenAttributes
         Proofs: ${this.proofs.map((proof) => proof.toString()).join(',\n')}
-        Backlink: ${Base16Converter.encode(this.backlink)}`;
+        Backlink: ${Base16Converter.encode(this.backlink)}
+        Invariant Predicate Signatures: ${
+          this.invariantPredicateSignatures
+            ? dedent`
+        [
+          ${this.invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+        ]`
+            : 'null'
+        }`;
   }
 
   public static fromArray(data: JoinFungibleTokenAttributesArray): JoinFungibleTokenAttributes {
@@ -58,10 +66,6 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
       proofs.push(TransactionRecordWithProof.fromArray([data[0][i], data[1][i]]));
     }
 
-    return new JoinFungibleTokenAttributes(
-      proofs,
-      new Uint8Array(data[2]),
-      data[3]?.map((signature) => new Uint8Array(signature)) || null,
-    );
+    return new JoinFungibleTokenAttributes(proofs, data[2], data[3] || null);
   }
 }

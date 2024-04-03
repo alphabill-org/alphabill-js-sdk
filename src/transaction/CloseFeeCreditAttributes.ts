@@ -36,10 +36,6 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   public static fromArray(data: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {
-    return new CloseFeeCreditAttributes(
-      BigInt(data[0]),
-      UnitId.fromBytes(new Uint8Array(data[1])),
-      new Uint8Array(data[2]),
-    );
+    return new CloseFeeCreditAttributes(data[0], UnitId.fromBytes(data[1]), data[2]);
   }
 }

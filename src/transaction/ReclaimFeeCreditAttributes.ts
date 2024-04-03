@@ -31,15 +31,13 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
   public toString(): string {
     return dedent`
       ReclaimFeeCreditAttributes
+        Transaction Proof: 
           ${this.proof.toString()}
-          Backlink: ${Base16Converter.encode(this.backlink)}
+        Backlink: ${Base16Converter.encode(this.backlink)}
       `;
   }
 
   public static fromArray(data: ReclaimFeeCreditAttributesArray): ReclaimFeeCreditAttributes {
-    return new ReclaimFeeCreditAttributes(
-      TransactionRecordWithProof.fromArray([data[0], data[1]]),
-      new Uint8Array(data[2]),
-    );
+    return new ReclaimFeeCreditAttributes(TransactionRecordWithProof.fromArray([data[0], data[1]]), data[2]);
   }
 }

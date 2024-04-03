@@ -43,11 +43,11 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
   public toString(): string {
     return dedent`
       SwapBillsWithDustCollectorAttributes
-          Owner Predicate: ${this.ownerPredicate.toString()}
-          Proofs: [
-            ${this.proofs.map((proof) => proof.toString()).join('\n')}
-          ]
-          Target Value: ${this.targetValue}
+        Owner Predicate: ${this.ownerPredicate.toString()}
+        Transaction Proofs: [
+          ${this.proofs.map((proof) => proof.toString()).join('\n')}
+        ]
+        Target Value: ${this.targetValue}
       `;
   }
 
@@ -58,10 +58,6 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
       proofs.push(TransactionRecordWithProof.fromArray([data[1][i], data[2][i]]));
     }
 
-    return new SwapBillsWithDustCollectorAttributes(
-      new PredicateBytes(new Uint8Array(data[0])),
-      proofs,
-      BigInt(data[3]),
-    );
+    return new SwapBillsWithDustCollectorAttributes(new PredicateBytes(data[0]), proofs, data[3]);
   }
 }

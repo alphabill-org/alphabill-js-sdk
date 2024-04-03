@@ -72,16 +72,10 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
   public static fromArray<T extends ITransactionPayloadAttributes>(
     data: TransactionPayloadArray,
   ): TransactionPayload<T> {
-    return new TransactionPayload(
-      data[1],
-      data[0],
-      UnitId.fromBytes(new Uint8Array(data[2])),
-      createAttribute(data[1], data[3]) as T,
-      {
-        timeout: BigInt(data[4][0]),
-        maxTransactionFee: BigInt(data[4][1]),
-        feeCreditRecordId: data[4][2] ? UnitId.fromBytes(new Uint8Array(data[4][2])) : null,
-      },
-    );
+    return new TransactionPayload(data[1], data[0], UnitId.fromBytes(data[2]), createAttribute(data[1], data[3]) as T, {
+      timeout: data[4][0],
+      maxTransactionFee: data[4][1],
+      feeCreditRecordId: data[4][2] ? UnitId.fromBytes(data[4][2]) : null,
+    });
   }
 }

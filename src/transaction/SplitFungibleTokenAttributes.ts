@@ -66,20 +66,25 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
         Backlink: ${Base16Converter.encode(this.backlink)}
         Type ID: ${this.typeId.toString()}
         Remaining Value: ${this.remainingValue}
-        Invariant Predicate Signatures: [
-          ${this.invariantPredicateSignatures?.map((signature) => Base16Converter.encode(signature)).join(',\n') ?? 'null'}
-        ]`;
+        Invariant Predicate Signatures: ${
+          this.invariantPredicateSignatures
+            ? dedent`
+        [
+          ${this.invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+        ]`
+            : 'null'
+        }`;
   }
 
   public static fromArray(data: SplitFungibleTokenAttributesArray): SplitFungibleTokenAttributes {
     return new SplitFungibleTokenAttributes(
-      new PredicateBytes(new Uint8Array(data[0])),
-      BigInt(data[1]),
-      data[2] ? new Uint8Array(data[2]) : null,
-      new Uint8Array(data[3]),
-      UnitId.fromBytes(new Uint8Array(data[4])),
-      BigInt(data[5]),
-      data[6]?.map((signature) => new Uint8Array(signature)) || null,
+      new PredicateBytes(data[0]),
+      data[1],
+      data[2] || null,
+      data[3],
+      UnitId.fromBytes(data[4]),
+      data[5],
+      data[6] || null,
     );
   }
 }

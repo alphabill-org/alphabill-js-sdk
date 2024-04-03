@@ -38,11 +38,6 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
   }
 
   public static fromArray(data: TransferBillToDustCollectorAttributesArray): TransferBillToDustCollectorAttributes {
-    return new TransferBillToDustCollectorAttributes(
-      BigInt(data[0]),
-      UnitId.fromBytes(new Uint8Array(data[1])),
-      new Uint8Array(data[2]),
-      new Uint8Array(data[3]),
-    );
+    return new TransferBillToDustCollectorAttributes(data[0], UnitId.fromBytes(data[1]), data[2], data[3]);
   }
 }

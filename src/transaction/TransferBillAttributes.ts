@@ -24,7 +24,7 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public toArray(): TransferBillAttributesArray {
-    return [new Uint8Array(this.ownerPredicate.getBytes()), this.targetValue, this.backlink];
+    return [this.ownerPredicate.getBytes(), this.targetValue, this.backlink];
   }
 
   public toString(): string {
@@ -36,10 +36,6 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public static fromArray(data: TransferBillAttributesArray): TransferBillAttributes {
-    return new TransferBillAttributes(
-      new PredicateBytes(new Uint8Array(data[0])),
-      BigInt(data[1]),
-      new Uint8Array(data[2]),
-    );
+    return new TransferBillAttributes(new PredicateBytes(data[0]), data[1], data[2]);
   }
 }
