@@ -23,7 +23,7 @@ const client = createPublicClient({
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
-const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.TOKEN_PARTITION);
+const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.getPublicKey()), SystemIdentifier.TOKEN_PARTITION);
 const round = await client.getRoundNumber();
 
 // expects that the fungible token has already been created
@@ -38,7 +38,7 @@ const transactionHash = await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new SplitFungibleTokenPayload(
       new SplitFungibleTokenAttributes(
-        await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey),
+        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.getPublicKey()),
         targetValue,
         null,
         token.data.backlink,

@@ -28,7 +28,7 @@ const tokenClient = createPublicClient({
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
-const unitIds = await moneyClient.getUnitsByOwnerId(signingService.publicKey);
+const unitIds = await moneyClient.getUnitsByOwnerId(signingService.getPublicKey());
 const moneyIds = unitIds.filter((id) => id.getType().at(-1) === 0);
 if (moneyIds.length === 0) {
   throw new Error('No bills available');
@@ -36,7 +36,7 @@ if (moneyIds.length === 0) {
 
 const unit = await moneyClient.getUnit(moneyIds[0], true);
 const round = await moneyClient.getRoundNumber();
-const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.TOKEN_PARTITION);
+const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.getPublicKey()), SystemIdentifier.TOKEN_PARTITION);
 const feeCreditUnit = await tokenClient.getUnit(feeCreditUnitId, false);
 
 const transferFeeCreditTransactionHash = await moneyClient.sendTransaction(
@@ -64,7 +64,7 @@ const addFeeCreditTransactionHash = await tokenClient.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new AddFeeCreditPayload(
       new AddFeeCreditAttributes(
-        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.getPublicKey()),
         transactionProof,
       ),
       SystemIdentifier.TOKEN_PARTITION,

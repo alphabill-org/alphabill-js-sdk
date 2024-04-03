@@ -27,7 +27,7 @@ const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingSe
 const unitIdBytes = new Uint8Array(32);
 unitIdBytes.set([0x01], 31);
 
-const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.MONEY_PARTITION);
+const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.getPublicKey()), SystemIdentifier.MONEY_PARTITION);
 const round = await client.getRoundNumber();
 
 const bill = await client.getUnit(new UnitIdWithType(unitIdBytes, UnitType.MONEY_PARTITION_BILL_DATA), false);
@@ -35,8 +35,8 @@ const bill = await client.getUnit(new UnitIdWithType(unitIdBytes, UnitType.MONEY
 const payload = new SplitBillPayload(
   new SplitBillAttributes(
     [
-      new SplitBillUnit(10000n, await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey)),
-      new SplitBillUnit(10000n, await PayToPublicKeyHashPredicate.Create(cborCodec, signingService.publicKey)),
+      new SplitBillUnit(10000n, await PayToPublicKeyHashPredicate.create(cborCodec, signingService.getPublicKey())),
+      new SplitBillUnit(10000n, await PayToPublicKeyHashPredicate.create(cborCodec, signingService.getPublicKey())),
     ],
     bill.data.value - 20000n,
     bill.data.backlink,

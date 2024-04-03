@@ -23,7 +23,7 @@ const signingService = new DefaultSigningService(Base16Converter.decode(config.p
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
 const round = await client.getRoundNumber();
-const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.TOKEN_PARTITION);
+const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.getPublicKey()), SystemIdentifier.TOKEN_PARTITION);
 const feeCredit = await client.getUnit(feeCreditUnitId, false);
 console.log('Fee credit lock status: ' + feeCredit.data.locked);
 

@@ -25,7 +25,7 @@ const client = createPublicClient({
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
-const unitIds = await client.getUnitsByOwnerId(signingService.publicKey);
+const unitIds = await client.getUnitsByOwnerId(signingService.getPublicKey());
 const targetUnitIdHex = '0x000000000000000000000000000000000000000000000000000000000000000100';
 const targetUnitId = new UnitIdWithType(
   new Uint8Array(Base16Converter.decode(targetUnitIdHex)),
@@ -47,7 +47,7 @@ if (!moneyUnitId) {
 
 const targetBill = await client.getUnit(targetUnitId, false);
 const bill = await client.getUnit(moneyUnitId, false);
-const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.MONEY_PARTITION);
+const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.getPublicKey()), SystemIdentifier.MONEY_PARTITION);
 const round = await client.getRoundNumber();
 
 const transactionHash = await client.sendTransaction(
@@ -75,7 +75,7 @@ await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new SwapBillsWithDustCollectorPayload(
       new SwapBillsWithDustCollectorAttributes(
-        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.getPublicKey()),
         [transactionProof],
         bill.data.value,
       ),

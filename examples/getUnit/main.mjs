@@ -11,7 +11,7 @@ const client = createPublicClient({
 });
 
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
-const unitIds = await client.getUnitsByOwnerId(signingService.publicKey);
+const unitIds = await client.getUnitsByOwnerId(signingService.getPublicKey());
 if (unitIds.length > 0) {
   console.log(await client.getUnit(unitIds.at(-1), true));
 } else {

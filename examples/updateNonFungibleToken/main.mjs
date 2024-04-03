@@ -24,7 +24,7 @@ const client = createPublicClient({
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
-const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.TOKEN_PARTITION);
+const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.getPublicKey()), SystemIdentifier.TOKEN_PARTITION);
 const round = await client.getRoundNumber();
 const unitId = new UnitIdWithType(new Uint8Array([1, 2, 3, 4, 5]), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN);
 
@@ -34,7 +34,7 @@ await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new UpdateNonFungibleTokenPayload(
       unitId,
-      new UpdateNonFungibleTokenAttributes(await NonFungibleTokenData.Create(cborCodec, data), unit?.data.backlink, [
+      new UpdateNonFungibleTokenAttributes(await NonFungibleTokenData.create(cborCodec, data), unit?.data.backlink, [
         null,
         null,
       ]),

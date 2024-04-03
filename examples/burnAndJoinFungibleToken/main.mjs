@@ -27,7 +27,7 @@ const client = createPublicClient({
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
-const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.TOKEN_PARTITION);
+const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.getPublicKey()), SystemIdentifier.TOKEN_PARTITION);
 const round = await client.getRoundNumber();
 
 // expects that the fungible token has already been created
@@ -43,7 +43,7 @@ const splitTransactionHash = await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     new SplitFungibleTokenPayload(
       new SplitFungibleTokenAttributes(
-        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.getPublicKey()),
         targetValue,
         null,
         token.data.backlink,
@@ -65,7 +65,7 @@ const splitTransactionHash = await client.sendTransaction(
 await waitTransactionProof(client, splitTransactionHash);
 
 // 2. find the token that was split, here as a hack to just take second token from list
-const unitIds = await client.getUnitsByOwnerId(signingService.publicKey);
+const unitIds = await client.getUnitsByOwnerId(signingService.getPublicKey());
 const splitTokenId = unitIds.at(1);
 const splitToken = await client.getUnit(splitTokenId);
 console.log('Split token ID: ' + Base16Converter.encode(splitTokenId.getBytes()));

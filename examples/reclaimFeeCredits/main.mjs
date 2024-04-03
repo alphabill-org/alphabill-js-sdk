@@ -25,7 +25,7 @@ const moneyClient = createPublicClient({
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
-const unitIds = await tokenClient.getUnitsByOwnerId(signingService.publicKey);
+const unitIds = await tokenClient.getUnitsByOwnerId(signingService.getPublicKey());
 const targetUnitIdHex = '0x000000000000000000000000000000000000000000000000000000000000000100';
 const targetUnitId = new UnitIdWithType(
   new Uint8Array(Base16Converter.decode(targetUnitIdHex)),
