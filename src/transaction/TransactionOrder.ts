@@ -7,20 +7,28 @@ export type TransactionOrderArray = readonly [TransactionPayloadArray, Uint8Arra
 
 export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAttributes>> {
   public constructor(
-    public readonly payload: T,
-    public readonly ownerProof: Uint8Array,
-    public readonly feeProof: Uint8Array | null,
+    private readonly payload: T,
+    private readonly ownerProof: Uint8Array,
+    private readonly feeProof: Uint8Array | null,
   ) {
     this.ownerProof = new Uint8Array(this.ownerProof);
     this.feeProof = this.feeProof ? new Uint8Array(this.feeProof) : null;
   }
 
+  public getPayload(): T {
+    return this.payload;
+  }
+
+  public getOwnerProof(): Uint8Array {
+    return new Uint8Array(this.ownerProof);
+  }
+
+  public getFeeProof(): Uint8Array | null {
+    return this.feeProof ? new Uint8Array(this.feeProof) : null;
+  }
+
   public toArray(): TransactionOrderArray {
-    return [
-      this.payload.toArray(),
-      new Uint8Array(this.ownerProof),
-      this.feeProof ? new Uint8Array(this.feeProof) : null,
-    ];
+    return [this.getPayload().toArray(), this.getOwnerProof(), this.getFeeProof()];
   }
 
   public toString(): string {

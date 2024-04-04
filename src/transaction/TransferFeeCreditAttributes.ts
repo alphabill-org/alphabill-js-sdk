@@ -23,13 +23,13 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   }
 
   public constructor(
-    public readonly amount: bigint,
-    public readonly targetSystemIdentifier: SystemIdentifier,
-    public readonly targetUnitId: FeeCreditUnitId,
-    public readonly earliestAdditionTime: bigint,
-    public readonly latestAdditionTime: bigint,
-    public readonly targetUnitBacklink: Uint8Array | null,
-    public readonly backlink: Uint8Array,
+    private readonly amount: bigint,
+    private readonly targetSystemIdentifier: SystemIdentifier,
+    private readonly targetUnitId: FeeCreditUnitId,
+    private readonly earliestAdditionTime: bigint,
+    private readonly latestAdditionTime: bigint,
+    private readonly targetUnitBacklink: Uint8Array | null,
+    private readonly backlink: Uint8Array,
   ) {
     this.amount = BigInt(this.amount);
     this.earliestAdditionTime = BigInt(this.earliestAdditionTime);
@@ -38,19 +38,47 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
     this.backlink = new Uint8Array(this.backlink);
   }
 
+  public getAmount(): bigint {
+    return this.amount;
+  }
+
+  public getTargetSystemIdentifier(): SystemIdentifier {
+    return this.targetSystemIdentifier;
+  }
+
+  public getTargetUnitId(): FeeCreditUnitId {
+    return this.targetUnitId;
+  }
+
+  public getEarliestAdditionTime(): bigint {
+    return this.earliestAdditionTime;
+  }
+
+  public getLatestAdditionTime(): bigint {
+    return this.latestAdditionTime;
+  }
+
+  public getTargetUnitBacklink(): Uint8Array | null {
+    return this.targetUnitBacklink ? new Uint8Array(this.targetUnitBacklink) : null;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
+  }
+
   public toOwnerProofData(): TransferFeeCreditAttributesArray {
     return this.toArray();
   }
 
   public toArray(): TransferFeeCreditAttributesArray {
     return [
-      this.amount,
-      this.targetSystemIdentifier,
-      this.targetUnitId.getBytes(),
-      this.earliestAdditionTime,
-      this.latestAdditionTime,
-      this.targetUnitBacklink ? new Uint8Array(this.targetUnitBacklink) : null,
-      new Uint8Array(this.backlink),
+      this.getAmount(),
+      this.getTargetSystemIdentifier(),
+      this.getTargetUnitId().getBytes(),
+      this.getEarliestAdditionTime(),
+      this.getLatestAdditionTime(),
+      this.getTargetUnitBacklink(),
+      this.getBacklink(),
     ];
   }
 

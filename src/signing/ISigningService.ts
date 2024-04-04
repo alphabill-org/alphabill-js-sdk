@@ -10,6 +10,7 @@ export interface ISigningService {
   /**
    * Sign bytes with user private key
    * @param bytes data bytes to sign
+   * @returns {}
    */
   sign(bytes: Uint8Array): Promise<Uint8Array>;
 }

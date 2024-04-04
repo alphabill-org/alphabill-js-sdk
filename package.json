@@ -9,8 +9,8 @@
     "build": "tsc -d",
     "test": "jest",
     "test:ci": "jest tests/ --ci --reporters=default --reporters=jest-junit",
-    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" \"examples/**/*.mjs\"",
-    "lint:fix": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" \"examples/**/*.mjs\" --fix"
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --fix"
   },
   "dependencies": {
     "cbor": "9.0.2",

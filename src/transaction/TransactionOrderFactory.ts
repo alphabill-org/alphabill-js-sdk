@@ -17,7 +17,7 @@ export class TransactionOrderFactory {
     return new TransactionOrder(
       payload,
       await this.createOwnerProof(payload),
-      payload.clientMetadata.feeCreditRecordId ? await this.createFeeProof(payload) : null,
+      payload.getClientMetadata().feeCreditRecordId ? await this.createFeeProof(payload) : null,
     );
   }
 

@@ -27,18 +27,54 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
   }
 
   public constructor(
-    public readonly symbol: string,
-    public readonly name: string,
-    public readonly icon: TokenIcon,
-    public readonly parentTypeId: IUnitId | null,
-    public readonly subTypeCreationPredicate: IPredicate,
-    public readonly tokenCreationPredicate: IPredicate,
-    public readonly invariantPredicate: IPredicate,
-    public readonly dataUpdatePredicate: IPredicate,
-    public readonly subTypeCreationPredicateSignatures: Uint8Array[] | null,
+    private readonly symbol: string,
+    private readonly name: string,
+    private readonly icon: TokenIcon,
+    private readonly parentTypeId: IUnitId | null,
+    private readonly subTypeCreationPredicate: IPredicate,
+    private readonly tokenCreationPredicate: IPredicate,
+    private readonly invariantPredicate: IPredicate,
+    private readonly dataUpdatePredicate: IPredicate,
+    private readonly subTypeCreationPredicateSignatures: Uint8Array[] | null,
   ) {
     this.subTypeCreationPredicateSignatures =
       this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
+
+  public getSymbol(): string {
+    return this.symbol;
+  }
+
+  public getName(): string {
+    return this.name;
+  }
+
+  public getIcon(): TokenIcon {
+    return this.icon;
+  }
+
+  public getParentTypeId(): IUnitId | null {
+    return this.parentTypeId;
+  }
+
+  public getSubTypeCreationPredicate(): IPredicate {
+    return this.subTypeCreationPredicate;
+  }
+
+  public getTokenCreationPredicate(): IPredicate {
+    return this.tokenCreationPredicate;
+  }
+
+  public getInvariantPredicate(): IPredicate {
+    return this.invariantPredicate;
+  }
+
+  public getDataUpdatePredicate(): IPredicate {
+    return this.dataUpdatePredicate;
+  }
+
+  public getSubTypeCreationPredicateSignatures(): Uint8Array[] | null {
+    return this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   public toOwnerProofData(): CreateNonFungibleTokenTypeAttributesArray {
@@ -47,15 +83,15 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
 
   public toArray(): CreateNonFungibleTokenTypeAttributesArray {
     return [
-      this.symbol,
-      this.name,
-      this.icon.toArray(),
-      this.parentTypeId?.getBytes() || null,
-      this.subTypeCreationPredicate.getBytes(),
-      this.tokenCreationPredicate.getBytes(),
-      this.invariantPredicate.getBytes(),
-      this.dataUpdatePredicate.getBytes(),
-      this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
+      this.getSymbol(),
+      this.getName(),
+      this.getIcon().toArray(),
+      this.getParentTypeId()?.getBytes() || null,
+      this.getSubTypeCreationPredicate().getBytes(),
+      this.getTokenCreationPredicate().getBytes(),
+      this.getInvariantPredicate().getBytes(),
+      this.getDataUpdatePredicate().getBytes(),
+      this.getSubTypeCreationPredicateSignatures(),
     ];
   }
 

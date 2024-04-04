@@ -21,12 +21,12 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   public constructor(
-    public readonly typeId: IUnitId,
-    public readonly value: bigint,
-    public readonly targetTokenId: IUnitId,
-    public readonly targetTokenBacklink: Uint8Array,
-    public readonly backlink: Uint8Array,
-    public readonly invariantPredicateSignatures: Uint8Array[] | null,
+    private readonly typeId: IUnitId,
+    private readonly value: bigint,
+    private readonly targetTokenId: IUnitId,
+    private readonly targetTokenBacklink: Uint8Array,
+    private readonly backlink: Uint8Array,
+    private readonly invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
     this.targetTokenBacklink = new Uint8Array(this.targetTokenBacklink);
@@ -35,25 +35,49 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
       this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  public getTypeId(): IUnitId {
+    return this.typeId;
+  }
+
+  public getValue(): bigint {
+    return this.value;
+  }
+
+  public getTargetTokenId(): IUnitId {
+    return this.targetTokenId;
+  }
+
+  public getTargetTokenBacklink(): Uint8Array {
+    return new Uint8Array(this.targetTokenBacklink);
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
+  }
+
+  public getInvariantPredicateSignatures(): Uint8Array[] | null {
+    return this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
+
   public toOwnerProofData(): BurnFungibleTokenAttributesArray {
     return [
-      this.typeId.getBytes(),
-      this.value,
-      this.targetTokenId.getBytes(),
-      new Uint8Array(this.targetTokenBacklink),
-      new Uint8Array(this.backlink),
+      this.getTypeId().getBytes(),
+      this.getValue(),
+      this.getTargetTokenId().getBytes(),
+      this.getTargetTokenBacklink(),
+      this.getBacklink(),
       null,
     ];
   }
 
   public toArray(): BurnFungibleTokenAttributesArray {
     return [
-      this.typeId.getBytes(),
-      this.value,
-      this.targetTokenId.getBytes(),
-      new Uint8Array(this.targetTokenBacklink),
-      new Uint8Array(this.backlink),
-      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
+      this.getTypeId().getBytes(),
+      this.getValue(),
+      this.getTargetTokenId().getBytes(),
+      this.getTargetTokenBacklink(),
+      this.getBacklink(),
+      this.getInvariantPredicateSignatures(),
     ];
   }
 

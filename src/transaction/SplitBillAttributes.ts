@@ -13,12 +13,24 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public constructor(
-    public readonly targetUnits: readonly SplitBillUnit[],
-    public readonly remainingBillValue: bigint,
-    public readonly backlink: Uint8Array,
+    private readonly targetUnits: readonly SplitBillUnit[],
+    private readonly remainingBillValue: bigint,
+    private readonly backlink: Uint8Array,
   ) {
     this.remainingBillValue = BigInt(this.remainingBillValue);
     this.backlink = new Uint8Array(this.backlink);
+  }
+
+  public getTargetUnits(): readonly SplitBillUnit[] {
+    return Array.from(this.targetUnits);
+  }
+
+  public getRemainingBillValue(): bigint {
+    return this.remainingBillValue;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
   }
 
   public toOwnerProofData(): SplitBillAttributesArray {
@@ -26,7 +38,7 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public toArray(): SplitBillAttributesArray {
-    return [this.targetUnits.map((unit) => unit.toArray()), this.remainingBillValue, new Uint8Array(this.backlink)];
+    return [this.getTargetUnits().map((unit) => unit.toArray()), this.getRemainingBillValue(), this.getBacklink()];
   }
 
   public toString(): string {

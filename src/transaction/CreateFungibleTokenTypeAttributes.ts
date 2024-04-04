@@ -27,18 +27,54 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
   }
 
   public constructor(
-    public readonly symbol: string,
-    public readonly name: string,
-    public readonly icon: TokenIcon,
-    public readonly parentTypeId: IUnitId | null,
-    public readonly decimalPlaces: number,
-    public readonly subTypeCreationPredicate: IPredicate,
-    public readonly tokenCreationPredicate: IPredicate,
-    public readonly invariantPredicate: IPredicate,
-    public readonly subTypeCreationPredicateSignatures: Uint8Array[] | null,
+    private readonly symbol: string,
+    private readonly name: string,
+    private readonly icon: TokenIcon,
+    private readonly parentTypeId: IUnitId | null,
+    private readonly decimalPlaces: number,
+    private readonly subTypeCreationPredicate: IPredicate,
+    private readonly tokenCreationPredicate: IPredicate,
+    private readonly invariantPredicate: IPredicate,
+    private readonly subTypeCreationPredicateSignatures: Uint8Array[] | null,
   ) {
     this.subTypeCreationPredicateSignatures =
       this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
+
+  public getSymbol(): string {
+    return this.symbol;
+  }
+
+  public getName(): string {
+    return this.name;
+  }
+
+  public getIcon(): TokenIcon {
+    return this.icon;
+  }
+
+  public getParentTypeId(): IUnitId | null {
+    return this.parentTypeId;
+  }
+
+  public getDecimalPlaces(): number {
+    return this.decimalPlaces;
+  }
+
+  public getSubTypeCreationPredicate(): IPredicate {
+    return this.subTypeCreationPredicate;
+  }
+
+  public getTokenCreationPredicate(): IPredicate {
+    return this.tokenCreationPredicate;
+  }
+
+  public getInvariantPredicate(): IPredicate {
+    return this.invariantPredicate;
+  }
+
+  public getSubTypeCreationPredicateSignatures(): Uint8Array[] | null {
+    return this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   public toOwnerProofData(): CreateFungibleTokenTypeAttributesArray {
@@ -47,15 +83,15 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
 
   public toArray(): CreateFungibleTokenTypeAttributesArray {
     return [
-      this.symbol,
-      this.name,
-      this.icon.toArray(),
-      this.parentTypeId?.getBytes() || null,
-      this.decimalPlaces,
-      this.subTypeCreationPredicate.getBytes(),
-      this.tokenCreationPredicate.getBytes(),
-      this.invariantPredicate.getBytes(),
-      this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
+      this.getSymbol(),
+      this.getName(),
+      this.getIcon().toArray(),
+      this.getParentTypeId()?.getBytes() || null,
+      this.getDecimalPlaces(),
+      this.getSubTypeCreationPredicate().getBytes(),
+      this.getTokenCreationPredicate().getBytes(),
+      this.getInvariantPredicate().getBytes(),
+      this.getSubTypeCreationPredicateSignatures(),
     ];
   }
 

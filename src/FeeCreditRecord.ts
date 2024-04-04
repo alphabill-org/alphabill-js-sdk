@@ -5,17 +5,33 @@ import { dedent } from './util/StringUtils.js';
 
 export class FeeCreditRecord {
   public constructor(
-    public readonly balance: bigint,
-    public readonly backlink: Uint8Array,
-    public readonly timeout: bigint,
-    public readonly locked: boolean,
+    private readonly balance: bigint,
+    private readonly backlink: Uint8Array,
+    private readonly timeout: bigint,
+    private readonly locked: boolean,
   ) {
     this.balance = BigInt(this.balance);
     this.timeout = BigInt(this.timeout);
     this.backlink = new Uint8Array(this.backlink);
   }
 
-  public static async create(data: IFeeCreditRecordDto): Promise<FeeCreditRecord> {
+  public getBalance(): bigint {
+    return this.balance;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
+  }
+
+  public getTimeout(): bigint {
+    return this.timeout;
+  }
+
+  public isLocked(): boolean {
+    return this.locked;
+  }
+
+  public static create(data: IFeeCreditRecordDto): FeeCreditRecord {
     return new FeeCreditRecord(
       BigInt(data.Balance),
       Base64Converter.decode(data.Backlink),

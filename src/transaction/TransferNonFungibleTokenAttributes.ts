@@ -22,11 +22,11 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
   }
 
   public constructor(
-    public readonly ownerPredicate: IPredicate,
-    public readonly nonce: Uint8Array | null,
-    public readonly backlink: Uint8Array,
-    public readonly typeId: IUnitId,
-    public readonly invariantPredicateSignatures: Uint8Array[] | null,
+    private readonly ownerPredicate: IPredicate,
+    private readonly nonce: Uint8Array | null,
+    private readonly backlink: Uint8Array,
+    private readonly typeId: IUnitId,
+    private readonly invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.nonce = this.nonce ? new Uint8Array(this.nonce) : null;
     this.backlink = new Uint8Array(this.backlink);
@@ -34,17 +34,37 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
       this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  public getOwnerPredicate(): IPredicate {
+    return this.ownerPredicate;
+  }
+
+  public getNonce(): Uint8Array | null {
+    return this.nonce ? new Uint8Array(this.nonce) : null;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
+  }
+
+  public getTypeId(): IUnitId {
+    return this.typeId;
+  }
+
+  public getInvariantPredicateSignatures(): Uint8Array[] | null {
+    return this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
+
   public toOwnerProofData(): TransferNonFungibleTokenAttributesArray {
-    return [this.ownerPredicate.getBytes(), this.nonce, this.backlink, this.typeId.getBytes(), null];
+    return [this.ownerPredicate.getBytes(), this.getNonce(), this.getBacklink(), this.typeId.getBytes(), null];
   }
 
   public toArray(): TransferNonFungibleTokenAttributesArray {
     return [
-      this.ownerPredicate.getBytes(),
-      this.nonce ? new Uint8Array(this.nonce) : null,
-      new Uint8Array(this.backlink),
-      this.typeId.getBytes(),
-      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
+      this.getOwnerPredicate().getBytes(),
+      this.getNonce(),
+      this.getBacklink(),
+      this.getTypeId().getBytes(),
+      this.getInvariantPredicateSignatures(),
     ];
   }
 

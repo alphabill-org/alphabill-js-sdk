@@ -26,16 +26,44 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   }
 
   public constructor(
-    public readonly ownerPredicate: IPredicate,
-    public readonly typeId: IUnitId,
-    public readonly name: string,
-    public readonly uri: string,
-    public readonly data: INonFungibleTokenData,
-    public readonly dataUpdatePredicate: IPredicate,
-    public readonly tokenCreationPredicateSignatures: Uint8Array[] | null,
+    private readonly ownerPredicate: IPredicate,
+    private readonly typeId: IUnitId,
+    private readonly name: string,
+    private readonly uri: string,
+    private readonly data: INonFungibleTokenData,
+    private readonly dataUpdatePredicate: IPredicate,
+    private readonly tokenCreationPredicateSignatures: Uint8Array[] | null,
   ) {
     this.tokenCreationPredicateSignatures =
       this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
+
+  public getOwnerPredicate(): IPredicate {
+    return this.ownerPredicate;
+  }
+
+  public getTypeId(): IUnitId {
+    return this.typeId;
+  }
+
+  public getName(): string {
+    return this.name;
+  }
+
+  public getUri(): string {
+    return this.uri;
+  }
+
+  public getData(): INonFungibleTokenData {
+    return this.data;
+  }
+
+  public getDataUpdatePredicate(): IPredicate {
+    return this.dataUpdatePredicate;
+  }
+
+  public getTokenCreationPredicateSignatures(): Uint8Array[] | null {
+    return this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   public toOwnerProofData(): CreateNonFungibleTokenAttributesArray {
@@ -44,13 +72,13 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
 
   public toArray(): CreateNonFungibleTokenAttributesArray {
     return [
-      this.ownerPredicate.getBytes(),
-      this.typeId.getBytes(),
-      this.name,
-      this.uri,
-      this.data.getBytes(),
-      this.dataUpdatePredicate.getBytes(),
-      this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
+      this.getOwnerPredicate().getBytes(),
+      this.getTypeId().getBytes(),
+      this.getName(),
+      this.getUri(),
+      this.getData().getBytes(),
+      this.getDataUpdatePredicate().getBytes(),
+      this.getTokenCreationPredicateSignatures(),
     ];
   }
 

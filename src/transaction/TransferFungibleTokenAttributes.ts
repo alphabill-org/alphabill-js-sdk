@@ -10,7 +10,7 @@ import { PayloadAttribute } from './PayloadAttribute.js';
 export type TransferFungibleTokenAttributesArray = readonly [
   Uint8Array,
   bigint,
-  bigint,
+  bigint | null,
   Uint8Array,
   Uint8Array,
   Uint8Array[] | null,
@@ -23,32 +23,63 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
   }
 
   public constructor(
-    public readonly ownerPredicate: IPredicate,
-    public readonly value: bigint,
-    public readonly nonce: bigint,
-    public readonly backlink: Uint8Array,
-    public readonly typeId: IUnitId,
-    public readonly invariantPredicateSignatures: Uint8Array[] | null,
+    private readonly ownerPredicate: IPredicate,
+    private readonly value: bigint,
+    private readonly nonce: bigint | null,
+    private readonly backlink: Uint8Array,
+    private readonly typeId: IUnitId,
+    private readonly invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
-    this.nonce = BigInt(this.nonce);
+    this.nonce = this.nonce ? BigInt(this.nonce) : null;
     this.backlink = new Uint8Array(this.backlink);
     this.invariantPredicateSignatures =
       this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  public getOwnerPredicate(): IPredicate {
+    return this.ownerPredicate;
+  }
+
+  public getValue(): bigint {
+    return this.value;
+  }
+
+  public getNonce(): bigint | null {
+    return this.nonce;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
+  }
+
+  public getTypeId(): IUnitId {
+    return this.typeId;
+  }
+
+  public getInvariantPredicateSignatures(): Uint8Array[] | null {
+    return this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
+
   public toOwnerProofData(): TransferFungibleTokenAttributesArray {
-    return [this.ownerPredicate.getBytes(), this.value, this.nonce, this.backlink, this.typeId.getBytes(), null];
+    return [
+      this.getOwnerPredicate().getBytes(),
+      this.getValue(),
+      this.getNonce(),
+      this.getBacklink(),
+      this.getTypeId().getBytes(),
+      null,
+    ];
   }
 
   public toArray(): TransferFungibleTokenAttributesArray {
     return [
-      this.ownerPredicate.getBytes(),
-      this.value,
-      this.nonce,
-      new Uint8Array(this.backlink),
-      this.typeId.getBytes(),
-      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
+      this.getOwnerPredicate().getBytes(),
+      this.getValue(),
+      this.getNonce(),
+      this.getBacklink(),
+      this.getTypeId().getBytes(),
+      this.getInvariantPredicateSignatures(),
     ];
   }
 

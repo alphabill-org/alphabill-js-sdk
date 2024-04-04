@@ -16,14 +16,30 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   }
 
   public constructor(
-    public readonly ownerPredicate: IPredicate,
-    public readonly typeId: IUnitId,
-    public readonly value: bigint,
-    public readonly tokenCreationPredicateSignatures: Uint8Array[] | null,
+    private readonly ownerPredicate: IPredicate,
+    private readonly typeId: IUnitId,
+    private readonly value: bigint,
+    private readonly tokenCreationPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
     this.tokenCreationPredicateSignatures =
       this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
+
+  public getOwnerPredicate(): IPredicate {
+    return this.ownerPredicate;
+  }
+
+  public getTypeId(): IUnitId {
+    return this.typeId;
+  }
+
+  public getValue(): bigint {
+    return this.value;
+  }
+
+  public getTokenCreationPredicateSignatures(): Uint8Array[] | null {
+    return this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   public toOwnerProofData(): CreateFungibleTokenAttributesArray {
@@ -32,10 +48,10 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
 
   public toArray(): CreateFungibleTokenAttributesArray {
     return [
-      this.ownerPredicate.getBytes(),
-      this.typeId.getBytes(),
-      this.value,
-      this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
+      this.getOwnerPredicate().getBytes(),
+      this.getTypeId().getBytes(),
+      this.getValue(),
+      this.getTokenCreationPredicateSignatures(),
     ];
   }
 

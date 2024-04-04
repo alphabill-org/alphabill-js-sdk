@@ -22,11 +22,23 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
   }
 
   public constructor(
-    public readonly ownerPredicate: IPredicate,
-    public readonly proofs: readonly TransactionRecordWithProof<TransferBillToDustCollectorPayload>[],
-    public readonly targetValue: bigint,
+    private readonly ownerPredicate: IPredicate,
+    private readonly proofs: readonly TransactionRecordWithProof<TransferBillToDustCollectorPayload>[],
+    private readonly targetValue: bigint,
   ) {
     this.targetValue = BigInt(this.targetValue);
+  }
+
+  public getOwnerPredicate(): IPredicate {
+    return this.ownerPredicate;
+  }
+
+  public getProofs(): readonly TransactionRecordWithProof<TransferBillToDustCollectorPayload>[] {
+    return Array.from(this.proofs);
+  }
+
+  public getTargetValue(): bigint {
+    return this.targetValue;
   }
 
   public toOwnerProofData(): SwapBillsWithDustCollectorAttributesArray {
@@ -34,12 +46,14 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
   }
 
   public toArray(): SwapBillsWithDustCollectorAttributesArray {
-    return [
-      this.ownerPredicate.getBytes(),
-      this.proofs.map((proof) => proof.transactionRecord.toArray()),
-      this.proofs.map((proof) => proof.transactionProof.toArray()),
-      this.targetValue,
-    ];
+    const records: TransactionRecordArray[] = [];
+    const proofs: TransactionProofArray[] = [];
+    for (const proof of this.getProofs()) {
+      records.push(proof.getTransactionRecord().toArray());
+      proofs.push(proof.getTransactionProof().toArray());
+    }
+
+    return [this.getOwnerPredicate().getBytes(), records, proofs, this.targetValue];
   }
 
   public toString(): string {

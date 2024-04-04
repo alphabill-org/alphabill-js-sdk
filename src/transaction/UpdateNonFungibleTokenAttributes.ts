@@ -14,12 +14,24 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   }
 
   public constructor(
-    public readonly data: INonFungibleTokenData,
-    public readonly backlink: Uint8Array,
-    public readonly dataUpdateSignatures: Uint8Array[] | null,
+    private readonly data: INonFungibleTokenData,
+    private readonly backlink: Uint8Array,
+    private readonly dataUpdateSignatures: Uint8Array[] | null,
   ) {
     this.backlink = new Uint8Array(backlink);
     this.dataUpdateSignatures = this.dataUpdateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
+
+  public getData(): INonFungibleTokenData {
+    return this.data;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
+  }
+
+  public getDataUpdateSignatures(): Uint8Array[] | null {
+    return this.dataUpdateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   public toOwnerProofData(): UpdateNonFungibleTokenAttributesArray {
@@ -27,11 +39,7 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   }
 
   public toArray(): UpdateNonFungibleTokenAttributesArray {
-    return [
-      this.data.getBytes(),
-      new Uint8Array(this.backlink),
-      this.dataUpdateSignatures?.map((signature) => new Uint8Array(signature)) || null,
-    ];
+    return [this.getData().getBytes(), this.getBacklink(), this.getDataUpdateSignatures()];
   }
 
   public toString(): string {

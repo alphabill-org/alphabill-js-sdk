@@ -16,10 +16,18 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
   }
 
   public constructor(
-    public readonly proof: TransactionRecordWithProof<CloseFeeCreditPayload>,
-    public readonly backlink: Uint8Array,
+    private readonly proof: TransactionRecordWithProof<CloseFeeCreditPayload>,
+    private readonly backlink: Uint8Array,
   ) {
     this.backlink = new Uint8Array(this.backlink);
+  }
+
+  public getProof(): TransactionRecordWithProof<CloseFeeCreditPayload> {
+    return this.proof;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
   }
 
   public toOwnerProofData(): ReclaimFeeCreditAttributesArray {
@@ -27,11 +35,9 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
   }
 
   public toArray(): ReclaimFeeCreditAttributesArray {
-    return [
-      this.proof.transactionRecord.toArray(),
-      this.proof.transactionProof.toArray(),
-      new Uint8Array(this.backlink),
-    ];
+    const proof = this.getProof();
+
+    return [proof.getTransactionRecord().toArray(), proof.getTransactionProof().toArray(), this.getBacklink()];
   }
 
   public toString(): string {

@@ -15,16 +15,25 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   public constructor(
-    public readonly ownerPredicate: IPredicate,
-    public readonly transactionProof: TransactionRecordWithProof<TransferFeeCreditPayload>,
+    private readonly ownerPredicate: IPredicate,
+    private readonly transactionProof: TransactionRecordWithProof<TransferFeeCreditPayload>,
   ) {}
+
+  public getOwnerPredicate(): IPredicate {
+    return this.ownerPredicate;
+  }
+
+  public getTransactionProof(): TransactionRecordWithProof<TransferFeeCreditPayload> {
+    return this.transactionProof;
+  }
 
   public toOwnerProofData(): AddFeeCreditAttributesArray {
     return this.toArray();
   }
 
   public toArray(): AddFeeCreditAttributesArray {
-    return [this.ownerPredicate.getBytes(), ...this.transactionProof.toArray()];
+    const proof = this.transactionProof.toArray();
+    return [this.getOwnerPredicate().getBytes(), ...proof];
   }
 
   public toString(): string {

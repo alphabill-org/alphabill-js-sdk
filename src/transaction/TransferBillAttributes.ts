@@ -14,12 +14,24 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public constructor(
-    public readonly ownerPredicate: IPredicate,
-    public readonly targetValue: bigint,
-    public readonly backlink: Uint8Array,
+    private readonly ownerPredicate: IPredicate,
+    private readonly targetValue: bigint,
+    private readonly backlink: Uint8Array,
   ) {
     this.targetValue = BigInt(this.targetValue);
     this.backlink = new Uint8Array(this.backlink);
+  }
+
+  public getOwnerPredicate(): IPredicate {
+    return this.ownerPredicate;
+  }
+
+  public getTargetValue(): bigint {
+    return this.targetValue;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
   }
 
   public toOwnerProofData(): TransferBillAttributesArray {
@@ -27,7 +39,7 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public toArray(): TransferBillAttributesArray {
-    return [this.ownerPredicate.getBytes(), this.targetValue, new Uint8Array(this.backlink)];
+    return [this.getOwnerPredicate().getBytes(), this.getTargetValue(), this.getBacklink()];
   }
 
   public toString(): string {

@@ -1,5 +1,17 @@
+import { IUnitIdType } from './IUnitIdType.js';
+
+/**
+ * UnitId interface.
+ */
 export interface IUnitId {
-  // TODO: Convert bytes to class for extra functionality
-  getType(): Uint8Array;
+  /**
+   * Get type.
+   * @returns {IUnitIdType} Type.
+   */
+  getType(): IUnitIdType;
+  /**
+   * Get bytes.
+   * @returns {Uint8Array} Bytes.
+   */
   getBytes(): Uint8Array;
 }

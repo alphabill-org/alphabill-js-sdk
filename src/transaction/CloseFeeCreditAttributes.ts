@@ -14,12 +14,24 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   public constructor(
-    public readonly amount: bigint,
-    public readonly targetUnitId: IUnitId,
-    public readonly targetUnitBacklink: Uint8Array,
+    private readonly amount: bigint,
+    private readonly targetUnitId: IUnitId,
+    private readonly targetUnitBacklink: Uint8Array,
   ) {
     this.amount = BigInt(this.amount);
     this.targetUnitBacklink = new Uint8Array(this.targetUnitBacklink);
+  }
+
+  public getAmount(): bigint {
+    return this.amount;
+  }
+
+  public getTargetUnitId(): IUnitId {
+    return this.targetUnitId;
+  }
+
+  public getTargetUnitBacklink(): Uint8Array {
+    return new Uint8Array(this.targetUnitBacklink);
   }
 
   public toOwnerProofData(): CloseFeeCreditAttributesArray {
@@ -27,7 +39,7 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   public toArray(): CloseFeeCreditAttributesArray {
-    return [this.amount, this.targetUnitId.getBytes(), new Uint8Array(this.targetUnitBacklink)];
+    return [this.getAmount(), this.getTargetUnitId().getBytes(), this.getTargetUnitBacklink()];
   }
 
   public toString(): string {

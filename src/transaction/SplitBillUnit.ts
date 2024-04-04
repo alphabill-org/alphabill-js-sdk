@@ -6,14 +6,22 @@ export type SplitBillUnitArray = readonly [bigint, Uint8Array];
 
 export class SplitBillUnit {
   public constructor(
-    public readonly value: bigint,
-    public readonly ownerPredicate: IPredicate,
+    private readonly value: bigint,
+    private readonly ownerPredicate: IPredicate,
   ) {
     this.value = BigInt(value);
   }
 
+  public getValue(): bigint {
+    return this.value;
+  }
+
+  public getOwnerPredicate(): IPredicate {
+    return this.ownerPredicate;
+  }
+
   public toArray(): SplitBillUnitArray {
-    return [this.value, this.ownerPredicate.getBytes()];
+    return [this.getValue(), this.getOwnerPredicate().getBytes()];
   }
 
   public toString(): string {

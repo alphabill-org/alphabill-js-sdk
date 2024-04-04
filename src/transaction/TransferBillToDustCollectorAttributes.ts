@@ -14,14 +14,30 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
   }
 
   public constructor(
-    public readonly value: bigint,
-    public readonly targetUnitId: IUnitId,
-    public readonly targetUnitBacklink: Uint8Array,
-    public readonly backlink: Uint8Array,
+    private readonly value: bigint,
+    private readonly targetUnitId: IUnitId,
+    private readonly targetUnitBacklink: Uint8Array,
+    private readonly backlink: Uint8Array,
   ) {
     this.value = BigInt(this.value);
     this.targetUnitBacklink = new Uint8Array(this.targetUnitBacklink);
     this.backlink = new Uint8Array(this.backlink);
+  }
+
+  public getValue(): bigint {
+    return this.value;
+  }
+
+  public getTargetUnitId(): IUnitId {
+    return this.targetUnitId;
+  }
+
+  public getTargetUnitBacklink(): Uint8Array {
+    return new Uint8Array(this.targetUnitBacklink);
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
   }
 
   public toOwnerProofData(): TransferBillToDustCollectorAttributesArray {
@@ -29,12 +45,7 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
   }
 
   public toArray(): TransferBillToDustCollectorAttributesArray {
-    return [
-      this.value,
-      this.targetUnitId.getBytes(),
-      new Uint8Array(this.targetUnitBacklink),
-      new Uint8Array(this.backlink),
-    ];
+    return [this.getValue(), this.getTargetUnitId().getBytes(), this.getTargetUnitBacklink(), this.getBacklink()];
   }
 
   public toString(): string {

@@ -14,8 +14,8 @@ Project uses [ts-jest](https://kulshekhar.github.io/ts-jest/) for testing.
 
 ### Examples
 
-To run examples, `npm run build` must be run to generate `lib` folder with
-ES2020 code.
+Examples are in following repository:
+https://github.com/alphabill-org/alphabill-js-sdk-examples
 
 ### Creation of client
 

@@ -24,13 +24,13 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
   }
 
   public constructor(
-    public readonly ownerPredicate: IPredicate,
-    public readonly targetValue: bigint,
-    public readonly nonce: Uint8Array | null,
-    public readonly backlink: Uint8Array,
-    public readonly typeId: IUnitId,
-    public readonly remainingValue: bigint,
-    public readonly invariantPredicateSignatures: Uint8Array[] | null,
+    private readonly ownerPredicate: IPredicate,
+    private readonly targetValue: bigint,
+    private readonly nonce: Uint8Array | null,
+    private readonly backlink: Uint8Array,
+    private readonly typeId: IUnitId,
+    private readonly remainingValue: bigint,
+    private readonly invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.targetValue = BigInt(this.targetValue);
     this.nonce = this.nonce ? new Uint8Array(this.nonce) : null;
@@ -40,27 +40,55 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
       this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  public getOwnerPredicate(): IPredicate {
+    return this.ownerPredicate;
+  }
+
+  public getTargetValue(): bigint {
+    return this.targetValue;
+  }
+
+  public getNonce(): Uint8Array | null {
+    return this.nonce ? new Uint8Array(this.nonce) : null;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
+  }
+
+  public getTypeId(): IUnitId {
+    return this.typeId;
+  }
+
+  public getRemainingValue(): bigint {
+    return this.remainingValue;
+  }
+
+  public getInvariantPredicateSignatures(): Uint8Array[] | null {
+    return this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
+
   public toOwnerProofData(): SplitFungibleTokenAttributesArray {
     return [
-      this.ownerPredicate.getBytes(),
-      this.targetValue,
-      this.nonce ? new Uint8Array(this.nonce) : null,
-      new Uint8Array(this.backlink),
-      this.typeId.getBytes(),
-      this.remainingValue,
+      this.getOwnerPredicate().getBytes(),
+      this.getTargetValue(),
+      this.getNonce(),
+      this.getBacklink(),
+      this.getTypeId().getBytes(),
+      this.getRemainingValue(),
       null,
     ];
   }
 
   public toArray(): SplitFungibleTokenAttributesArray {
     return [
-      this.ownerPredicate.getBytes(),
-      this.targetValue,
-      this.nonce ? new Uint8Array(this.nonce) : null,
-      new Uint8Array(this.backlink),
-      this.typeId.getBytes(),
-      this.remainingValue,
-      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
+      this.getOwnerPredicate().getBytes(),
+      this.getTargetValue(),
+      this.getNonce(),
+      this.getBacklink(),
+      this.getTypeId().getBytes(),
+      this.getRemainingValue(),
+      this.getInvariantPredicateSignatures(),
     ];
   }
 

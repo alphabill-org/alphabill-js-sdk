@@ -12,11 +12,19 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public constructor(
-    public readonly lockStatus: bigint,
-    public readonly backlink: Uint8Array,
+    private readonly lockStatus: bigint,
+    private readonly backlink: Uint8Array,
   ) {
     this.lockStatus = BigInt(this.lockStatus);
     this.backlink = new Uint8Array(this.backlink);
+  }
+
+  public getLockStatus(): bigint {
+    return this.lockStatus;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
   }
 
   public toOwnerProofData(): LockBillAttributesArray {
@@ -24,7 +32,7 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public toArray(): LockBillAttributesArray {
-    return [this.lockStatus, new Uint8Array(this.backlink)];
+    return [this.getLockStatus(), this.getBacklink()];
   }
 
   public toString(): string {

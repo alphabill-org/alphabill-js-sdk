@@ -21,31 +21,47 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   public constructor(
-    public readonly proofs: TransactionRecordWithProof<BurnFungibleTokenPayload>[],
-    public readonly backlink: Uint8Array,
-    public readonly invariantPredicateSignatures: Uint8Array[] | null,
+    private readonly proofs: TransactionRecordWithProof<BurnFungibleTokenPayload>[],
+    private readonly backlink: Uint8Array,
+    private readonly invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.backlink = new Uint8Array(this.backlink);
     this.invariantPredicateSignatures =
       this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  public getProofs(): TransactionRecordWithProof<BurnFungibleTokenPayload>[] {
+    return Array.from(this.proofs);
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
+  }
+
+  public getInvariantPredicateSignatures(): Uint8Array[] | null {
+    return this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  }
+
   public toOwnerProofData(): JoinFungibleTokenAttributesArray {
-    return [
-      this.proofs.map((proof) => proof.transactionRecord.toArray()),
-      this.proofs.map((proof) => proof.transactionProof.toArray()),
-      this.backlink,
-      null,
-    ];
+    const records: TransactionRecordArray[] = [];
+    const proofs: TransactionProofArray[] = [];
+    for (const proof of this.getProofs()) {
+      records.push(proof.getTransactionRecord().toArray());
+      proofs.push(proof.getTransactionProof().toArray());
+    }
+
+    return [records, proofs, this.getBacklink(), null];
   }
 
   public toArray(): JoinFungibleTokenAttributesArray {
-    return [
-      this.proofs.map((proof) => proof.transactionRecord.toArray()),
-      this.proofs.map((proof) => proof.transactionProof.toArray()),
-      new Uint8Array(this.backlink),
-      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null,
-    ];
+    const records: TransactionRecordArray[] = [];
+    const proofs: TransactionProofArray[] = [];
+    for (const proof of this.getProofs()) {
+      records.push(proof.getTransactionRecord().toArray());
+      proofs.push(proof.getTransactionProof().toArray());
+    }
+
+    return [records, proofs, this.getBacklink(), this.getInvariantPredicateSignatures()];
   }
 
   public toString(): string {
