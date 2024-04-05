@@ -1,6 +1,6 @@
-import { CborCodecNode } from '../../lib/codec/cbor/CborCodecNode.js';
-import { http } from '../../lib/json-rpc/StateApiJsonRpcService.js';
-import { createPublicClient } from '../../lib/StateApiClient.js';
+import { CborCodecNode } from '@alphabill/alphabill-js-sdk/lib/codec/cbor/CborCodecNode.js';
+import { http } from '@alphabill/alphabill-js-sdk/lib/json-rpc/StateApiJsonRpcService.js';
+import { createPublicClient } from '@alphabill/alphabill-js-sdk/lib/StateApiClient.js';
 import config from '../config.js';
 
 const client = createPublicClient({

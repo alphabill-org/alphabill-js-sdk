@@ -7,16 +7,40 @@ import { dedent } from './util/StringUtils.js';
 
 export class FungibleToken {
   public constructor(
-    public readonly tokenType: IUnitId,
-    public readonly value: bigint,
-    public readonly blockNumber: bigint,
-    public readonly backlink: Uint8Array,
-    public readonly locked: boolean,
-  ) {}
+    private readonly tokenType: IUnitId,
+    private readonly value: bigint,
+    private readonly blockNumber: bigint,
+    private readonly backlink: Uint8Array,
+    private readonly locked: boolean,
+  ) {
+    this.value = BigInt(this.value);
+    this.blockNumber = BigInt(this.blockNumber);
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
-  public static async Create(data: IFungibleTokenDto): Promise<FungibleToken> {
+  public getTokenType(): IUnitId {
+    return this.tokenType;
+  }
+
+  public getValue(): bigint {
+    return this.value;
+  }
+
+  public getBlockNumber(): bigint {
+    return this.blockNumber;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
+  }
+
+  public isLocked(): boolean {
+    return this.locked;
+  }
+
+  public static create(data: IFungibleTokenDto): FungibleToken {
     return new FungibleToken(
-      UnitId.FromBytes(Base16Converter.decode(data.TokenType)),
+      UnitId.fromBytes(Base16Converter.decode(data.TokenType)),
       BigInt(data.Value),
       BigInt(data.T),
       Base64Converter.decode(data.Backlink),

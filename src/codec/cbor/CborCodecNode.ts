@@ -1,7 +1,13 @@
 import cbor from 'cbor';
 import { ICborCodec } from './ICborCodec.js';
 
+/**
+ * @implements ICborCodec
+ */
 export class CborCodecNode implements ICborCodec {
+  /**
+   * @see {ICborCodec.encode}
+   */
   public encode(input: unknown): Promise<Uint8Array> {
     return cbor.encodeAsync(input, {
       // Without canonical, collapseBigIntegers must be true
@@ -15,6 +21,9 @@ export class CborCodecNode implements ICborCodec {
     }) as Promise<Uint8Array>;
   }
 
+  /**
+   * @see {ICborCodec.decode}
+   */
   public decode(input: Uint8Array): Promise<unknown> {
     return cbor.decodeFirst(input, {
       preferWeb: true,

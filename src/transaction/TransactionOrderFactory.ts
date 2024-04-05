@@ -14,18 +14,17 @@ export class TransactionOrderFactory {
   public async createTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
     payload: T,
   ): Promise<TransactionOrder<T>> {
-    return TransactionOrderFactory.createTransactionOrder(
+    return new TransactionOrder(
       payload,
       await this.createOwnerProof(payload),
-      payload.clientMetadata.feeCreditRecordId ? await this.createFeeProof(payload) : null,
-      this.cborCoder,
+      payload.getClientMetadata().feeCreditRecordId ? await this.createFeeProof(payload) : null,
     );
   }
 
   private async createOwnerProof(payload: TransactionPayload<ITransactionPayloadAttributes>): Promise<Uint8Array> {
     const signingBytes = await this.cborCoder.encode(payload.getSigningFields());
     return new Uint8Array(
-      await this.cborCoder.encode([await this.signingService.sign(signingBytes), this.signingService.publicKey]),
+      await this.cborCoder.encode([await this.signingService.sign(signingBytes), this.signingService.getPublicKey()]),
     );
   }
 
@@ -34,17 +33,7 @@ export class TransactionOrderFactory {
     const signingService = this.feeSigningService || this.signingService;
 
     return new Uint8Array(
-      await this.cborCoder.encode([await signingService.sign(signingBytes), this.signingService.publicKey]),
+      await this.cborCoder.encode([await signingService.sign(signingBytes), this.signingService.getPublicKey()]),
     );
-  }
-
-  public static async createTransactionOrder<T extends TransactionPayload<ITransactionPayloadAttributes>>(
-    payload: T,
-    ownerProof: Uint8Array,
-    feeProof: Uint8Array | null,
-    cborCodec: ICborCodec,
-  ): Promise<TransactionOrder<T>> {
-    const transactionOrderBytes = await cborCodec.encode([payload.toArray(), ownerProof, feeProof]);
-    return new TransactionOrder<T>(payload, ownerProof, feeProof, transactionOrderBytes);
   }
 }

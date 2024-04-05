@@ -3,30 +3,25 @@ import { IStateApiService } from '../IStateApiService.js';
 import { IUnit } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
+import { TransactionOrder } from '../transaction/TransactionOrder.js';
 import { TransactionPayload } from '../transaction/TransactionPayload.js';
+import { TransactionProofArray } from '../TransactionProof.js';
+import { TransactionRecordArray } from '../TransactionRecord.js';
 import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
-import { IJsonRpcService } from './IJsonRpcService.js';
-import { ITransactionProofFactory } from './ITransactionProofFactory.js';
 import { IUnitDto } from './IUnitDto.js';
 import { JsonRpcClient } from './JsonRpcClient.js';
 import { JsonRpcHttpService } from './JsonRpcHttpService.js';
-import { TransactionProofFactory } from './TransactionProofFactory.js';
-import { UnitFactory } from './UnitFactory.js';
+import { createUnit } from './UnitFactory.js';
 
 export type TransactionProofDto = { txRecord: string; txProof: string };
 
 export class StateApiJsonRpcService implements IStateApiService {
-  private readonly client: JsonRpcClient;
-  private readonly unitFactory = new UnitFactory();
-
   public constructor(
-    service: IJsonRpcService,
-    private readonly transactionProofFactory: ITransactionProofFactory,
-  ) {
-    this.client = new JsonRpcClient(service);
-  }
+    private readonly client: JsonRpcClient,
+    private readonly cborCodec: ICborCodec,
+  ) {}
 
   public async getRoundNumber(): Promise<bigint> {
     return BigInt(await this.client.request('state_getRoundNumber'));
@@ -40,13 +35,13 @@ export class StateApiJsonRpcService implements IStateApiService {
 
     const identifiers: IUnitId[] = [];
     for (const id of response ?? []) {
-      identifiers.push(UnitId.FromBytes(Base16Converter.decode(id)));
+      identifiers.push(UnitId.fromBytes(Base16Converter.decode(id)));
     }
 
     return identifiers;
   }
 
-  public async getUnit(unitId: IUnitId, includeStateProof: boolean): Promise<IUnit<unknown> | null> {
+  public async getUnit<T>(unitId: IUnitId, includeStateProof: boolean): Promise<IUnit<T> | null> {
     const response = await this.client.request<IUnitDto>(
       'state_getUnit',
       Base16Converter.encode(unitId.getBytes()),
@@ -54,7 +49,7 @@ export class StateApiJsonRpcService implements IStateApiService {
     );
 
     if (response) {
-      return this.unitFactory.createUnit(response);
+      return createUnit(response);
     }
 
     return null;
@@ -73,18 +68,25 @@ export class StateApiJsonRpcService implements IStateApiService {
       Base16Converter.encode(transactionHash),
     )) as TransactionProofDto | null;
 
-    return response ? this.transactionProofFactory.create(response) : null;
+    return response
+      ? TransactionRecordWithProof.fromArray([
+          (await this.cborCodec.decode(Base16Converter.decode(response.txRecord))) as TransactionRecordArray,
+          (await this.cborCodec.decode(Base16Converter.decode(response.txProof))) as TransactionProofArray,
+        ])
+      : null;
   }
 
-  public async sendTransaction(transactionBytes: Uint8Array): Promise<Uint8Array> {
+  public async sendTransaction(
+    transaction: TransactionOrder<TransactionPayload<ITransactionPayloadAttributes>>,
+  ): Promise<Uint8Array> {
     const response = (await this.client.request(
       'state_sendTransaction',
-      Base16Converter.encode(transactionBytes),
+      Base16Converter.encode(await this.cborCodec.encode(transaction.toArray())),
     )) as string;
     return Base16Converter.decode(response);
   }
 }
 
 export function http(url: string, cborCodec: ICborCodec): IStateApiService {
-  return new StateApiJsonRpcService(new JsonRpcHttpService(url), new TransactionProofFactory(cborCodec));
+  return new StateApiJsonRpcService(new JsonRpcClient(new JsonRpcHttpService(url)), cborCodec);
 }

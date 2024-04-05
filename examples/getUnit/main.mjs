@@ -1,9 +1,9 @@
-import { CborCodecNode } from '../../lib/codec/cbor/CborCodecNode.js';
-import { http } from '../../lib/json-rpc/StateApiJsonRpcService.js';
+import { CborCodecNode } from '@alphabill/alphabill-js-sdk/lib/codec/cbor/CborCodecNode.js';
+import { http } from '@alphabill/alphabill-js-sdk/lib/json-rpc/StateApiJsonRpcService.js';
 
-import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
-import { createPublicClient } from '../../lib/StateApiClient.js';
-import { Base16Converter } from '../../lib/util/Base16Converter.js';
+import { DefaultSigningService } from '@alphabill/alphabill-js-sdk/lib/signing/DefaultSigningService.js';
+import { createPublicClient } from '@alphabill/alphabill-js-sdk/lib/StateApiClient.js';
+import { Base16Converter } from '@alphabill/alphabill-js-sdk/lib/util/Base16Converter.js';
 import config from '../config.js';
 
 const client = createPublicClient({
@@ -11,7 +11,7 @@ const client = createPublicClient({
 });
 
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
-const unitIds = await client.getUnitsByOwnerId(signingService.publicKey);
+const unitIds = await client.getUnitsByOwnerId(signingService.getPublicKey());
 if (unitIds.length > 0) {
   console.log(await client.getUnit(unitIds.at(-1), true));
 } else {

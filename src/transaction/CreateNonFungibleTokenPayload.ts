@@ -5,15 +5,13 @@ import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 import { TransactionPayload } from './TransactionPayload.js';
 
 export class CreateNonFungibleTokenPayload extends TransactionPayload<CreateNonFungibleTokenAttributes> {
-  public static readonly PAYLOAD_TYPE = 'createNToken';
-
   public constructor(
     unitId: IUnitId,
     attributes: CreateNonFungibleTokenAttributes,
     clientMetadata: ITransactionClientMetadata,
   ) {
     super(
-      CreateNonFungibleTokenPayload.PAYLOAD_TYPE,
+      CreateNonFungibleTokenAttributes.PAYLOAD_TYPE,
       SystemIdentifier.TOKEN_PARTITION,
       unitId,
       attributes,

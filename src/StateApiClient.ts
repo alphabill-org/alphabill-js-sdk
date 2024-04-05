@@ -8,45 +8,88 @@ import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
 
 export class StateApiClient {
-  private readonly service: IStateApiService;
+  /**
+   * State API client constructor.
+   * @param service State API service.
+   */
+  public constructor(private readonly service: IStateApiService) {}
 
-  public constructor(service: IStateApiService) {
-    this.service = service;
-  }
-
+  /**
+   * Get round number.
+   * @returns {Promise<bigint>} Round number.
+   */
   public getRoundNumber(): Promise<bigint> {
     return this.service.getRoundNumber();
   }
 
-  public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
+  /**
+   * Get Unit identifiers by owner ID.
+   * @param {Uint8Array} ownerId Owner ID.
+   * @returns {Promise<IUnitId[]>} Unit identifiers.
+   */
+  public getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
     return this.service.getUnitsByOwnerId(sha256(ownerId));
   }
 
-  public getUnit(unitId: IUnitId, includeStateProof: boolean): Promise<IUnit<unknown> | null> {
+  /**
+   * Get Unit.
+   * @template T
+   * @param {IUnitId} unitId Unit ID.
+   * @param {boolean} includeStateProof Include state proof.
+   * @returns {Promise<IUnit<T> | null>} Unit.
+   */
+  public getUnit<T>(unitId: IUnitId, includeStateProof: boolean): Promise<IUnit<T> | null> {
     return this.service.getUnit(unitId, includeStateProof);
   }
 
+  /**
+   * Get block.
+   * @param {bigint} blockNumber Block number.
+   * @returns {Promise<Uint8Array>} Block.
+   */
   public getBlock(blockNumber: bigint): Promise<Uint8Array> {
     return this.service.getBlock(blockNumber);
   }
 
-  public async getTransactionProof(
+  /**
+   * Get transaction proof.
+   * @param {Uint8Array} transactionHash Transaction hash.
+   * @returns {Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null>} Transaction proof.
+   */
+  public getTransactionProof(
     transactionHash: Uint8Array,
   ): Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null> {
     return this.service.getTransactionProof(transactionHash);
   }
 
-  public async sendTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
+  /**
+   * Send transaction.
+   * @template {TransactionPayload<ITransactionPayloadAttributes>} T
+   * @param {TransactionOrder} transaction Transaction.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
+  public sendTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
     transaction: TransactionOrder<T>,
   ): Promise<Uint8Array> {
-    return this.service.sendTransaction(transaction.getBytes());
+    return this.service.sendTransaction(transaction);
   }
 }
 
+/**
+ * Create public client.
+ * @param {IStateApiClientOptions} options Options.
+ * @returns {StateApiClient} State API client.
+ */
 export function createPublicClient(options: IStateApiClientOptions): StateApiClient {
   return new StateApiClient(options.transport);
 }
 
+/**
+ * State API client options.
+ */
 interface IStateApiClientOptions {
+  /**
+   * State API service.
+   */
   transport: IStateApiService;
 }

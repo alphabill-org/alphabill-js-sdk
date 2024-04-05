@@ -5,14 +5,12 @@ import { LockFeeCreditAttributes } from './LockFeeCreditAttributes.js';
 import { TransactionPayload } from './TransactionPayload.js';
 
 export class LockFeeCreditPayload extends TransactionPayload<LockFeeCreditAttributes> {
-  public static readonly PAYLOAD_TYPE = 'lockFC';
-
   public constructor(
     attributes: LockFeeCreditAttributes,
     systemIdentifier: SystemIdentifier,
     unitId: IUnitId,
     clientMetadata: ITransactionClientMetadata,
   ) {
-    super(LockFeeCreditPayload.PAYLOAD_TYPE, systemIdentifier, unitId, attributes, clientMetadata);
+    super(LockFeeCreditAttributes.PAYLOAD_TYPE, systemIdentifier, unitId, attributes, clientMetadata);
   }
 }
