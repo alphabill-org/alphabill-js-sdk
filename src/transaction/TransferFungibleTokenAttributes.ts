@@ -10,7 +10,7 @@ import { PayloadAttribute } from './PayloadAttribute.js';
 export type TransferFungibleTokenAttributesArray = readonly [
   Uint8Array,
   bigint,
-  bigint | null,
+  Uint8Array | null,
   Uint8Array,
   Uint8Array,
   Uint8Array[] | null,
@@ -25,13 +25,13 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
   public constructor(
     private readonly ownerPredicate: IPredicate,
     private readonly value: bigint,
-    private readonly nonce: bigint | null,
+    private readonly nonce: Uint8Array | null,
     private readonly backlink: Uint8Array,
     private readonly typeId: IUnitId,
     private readonly invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
-    this.nonce = this.nonce ? BigInt(this.nonce) : null;
+    this.nonce = this.nonce ? new Uint8Array(this.nonce) : null;
     this.backlink = new Uint8Array(this.backlink);
     this.invariantPredicateSignatures =
       this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
@@ -45,8 +45,8 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
     return this.value;
   }
 
-  public getNonce(): bigint | null {
-    return this.nonce;
+  public getNonce(): Uint8Array | null {
+    return this.nonce ? new Uint8Array(this.nonce) : null;
   }
 
   public getBacklink(): Uint8Array {
