@@ -16,7 +16,7 @@ export class NonFungibleTokenData implements INonFungibleTokenData {
     return new NonFungibleTokenData(data);
   }
 
-  public static async parse(cborCodec: ICborCodec, data: Uint8Array): Promise<unknown> {
+  public static parse(cborCodec: ICborCodec, data: Uint8Array): Promise<unknown> {
     return cborCodec.decode(data);
   }
 

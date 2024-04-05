@@ -27,7 +27,7 @@ export class StateApiClient {
    * @param {Uint8Array} ownerId Owner ID.
    * @returns {Promise<IUnitId[]>} Unit identifiers.
    */
-  public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
+  public getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
     return this.service.getUnitsByOwnerId(sha256(ownerId));
   }
 
@@ -56,7 +56,7 @@ export class StateApiClient {
    * @param {Uint8Array} transactionHash Transaction hash.
    * @returns {Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null>} Transaction proof.
    */
-  public async getTransactionProof(
+  public getTransactionProof(
     transactionHash: Uint8Array,
   ): Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null> {
     return this.service.getTransactionProof(transactionHash);
@@ -68,7 +68,7 @@ export class StateApiClient {
    * @param {TransactionOrder} transaction Transaction.
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
-  public async sendTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
+  public sendTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
     transaction: TransactionOrder<T>,
   ): Promise<Uint8Array> {
     return this.service.sendTransaction(transaction);
