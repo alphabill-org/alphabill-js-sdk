@@ -23,16 +23,16 @@ export class StateApiClient {
   }
 
   /**
-   * Get units by owner ID.
+   * Get Unit identifiers by owner ID.
    * @param {Uint8Array} ownerId Owner ID.
-   * @returns {Promise<IUnitId[]>} Units.
+   * @returns {Promise<IUnitId[]>} Unit identifiers.
    */
   public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
     return this.service.getUnitsByOwnerId(sha256(ownerId));
   }
 
   /**
-   * Get unit.
+   * Get Unit.
    * @template T
    * @param {IUnitId} unitId Unit ID.
    * @param {boolean} includeStateProof Include state proof.
