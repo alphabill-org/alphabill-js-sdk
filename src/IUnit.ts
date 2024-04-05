@@ -1,44 +1,64 @@
 import { IUnitId } from './IUnitId.js';
 
+/**
+ * Unit interface
+ * @template T - type of unit.
+ */
 export interface IUnit<T> {
-  readonly unitId: IUnitId;
-  readonly data: T;
-  readonly ownerPredicate: Uint8Array;
-  readonly stateProof: IStateProof | null;
+  /**
+   * Get unit id
+   * @returns {IUnit} unit id
+   */
+  getUnitId(): IUnitId;
+  /**
+   * Get unit data
+   * @returns {T} unit data
+   */
+  getData(): T;
+  /**
+   * Get owner predicate
+   * @returns {Uint8Array} owner predicate
+   */
+  getOwnerPredicate(): Uint8Array;
+  /**
+   * Get state proof
+   * @returns {IStateProof | null} state proof
+   */
+  getStateProof(): IStateProof | null;
 }
 
 export interface IStateProof {
-  readonly unitId: IUnitId;
-  readonly unitValue: bigint;
-  readonly unitLedgerHash: Uint8Array;
-  readonly unitTreeCert: IUnitTreeCert;
-  readonly stateTreeCert: IStateTreeCert;
-  readonly unicityCertificate: unknown;
+  getUnitId(): IUnitId;
+  getUnitValue(): bigint;
+  getUnitLedgerHash(): Uint8Array;
+  getUnitTreeCert(): IUnitTreeCert;
+  getStateTreeCert(): IStateTreeCert;
+  getUnicityCertificate(): unknown;
 }
 
 export interface IUnitTreeCert {
-  readonly transactionRecordHash: Uint8Array;
-  readonly unitDataHash: Uint8Array;
-  readonly path: IPathItem[] | null;
+  getTransactionRecordHash(): Uint8Array;
+  getUnitDataHash(): Uint8Array;
+  getPath(): readonly IPathItem[] | null;
 }
 
 export interface IStateTreeCert {
-  readonly leftSummaryHash: Uint8Array;
-  readonly leftSummaryValue: bigint;
-  readonly rightSummaryHash: Uint8Array;
-  readonly rightSummaryValue: bigint;
-  readonly path: IStateTreePathItem[] | null;
+  getLeftSummaryHash(): Uint8Array;
+  getLeftSummaryValue(): bigint;
+  getRightSummaryHash(): Uint8Array;
+  getRightSummaryValue(): bigint;
+  getPath(): readonly IStateTreePathItem[] | null;
 }
 
-interface IPathItem {
-  readonly hash: Uint8Array;
-  readonly directionLeft: boolean;
+export interface IPathItem {
+  getHash(): Uint8Array;
+  isLeft(): boolean;
 }
 
-interface IStateTreePathItem {
-  readonly unitId: IUnitId;
-  readonly logsHash: Uint8Array;
-  readonly value: bigint;
-  readonly siblingSummaryHash: Uint8Array;
-  readonly siblingSummaryValue: bigint;
+export interface IStateTreePathItem {
+  getUnitId(): IUnitId;
+  getLogsHash(): Uint8Array;
+  getValue(): bigint;
+  getSiblingSummaryHash(): Uint8Array;
+  getSiblingSummaryValue(): bigint;
 }

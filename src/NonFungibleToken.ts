@@ -9,19 +9,55 @@ import { dedent } from './util/StringUtils.js';
 
 export class NonFungibleToken {
   public constructor(
-    public readonly tokenType: IUnitId,
-    public readonly name: string,
-    public readonly uri: string,
-    public readonly data: Uint8Array,
-    public readonly dataUpdatePredicate: IPredicate,
-    public readonly blockNumber: bigint,
-    public readonly backlink: Uint8Array,
-    public readonly locked: boolean,
-  ) {}
+    private readonly tokenType: IUnitId,
+    private readonly name: string,
+    private readonly uri: string,
+    private readonly data: Uint8Array,
+    private readonly dataUpdatePredicate: IPredicate,
+    private readonly blockNumber: bigint,
+    private readonly backlink: Uint8Array,
+    private readonly locked: boolean,
+  ) {
+    this.data = new Uint8Array(this.data);
+    this.blockNumber = BigInt(this.blockNumber);
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
-  public static async Create(data: INonFungibleTokenDto): Promise<NonFungibleToken> {
+  public getTokenType(): IUnitId {
+    return this.tokenType;
+  }
+
+  public getName(): string {
+    return this.name;
+  }
+
+  public getURI(): string {
+    return this.uri;
+  }
+
+  public getData(): Uint8Array {
+    return new Uint8Array(this.data);
+  }
+
+  public getDataUpdatePredicate(): IPredicate {
+    return this.dataUpdatePredicate;
+  }
+
+  public getBlockNumber(): bigint {
+    return this.blockNumber;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
+  }
+
+  public isLocked(): boolean {
+    return this.locked;
+  }
+
+  public static create(data: INonFungibleTokenDto): NonFungibleToken {
     return new NonFungibleToken(
-      UnitId.FromBytes(Base16Converter.decode(data.NftType)),
+      UnitId.fromBytes(Base16Converter.decode(data.NftType)),
       data.Name,
       data.URI,
       Base64Converter.decode(data.Data),

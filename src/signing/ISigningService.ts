@@ -1,15 +1,16 @@
 /**
- * Signing service
+ * Signing service interface.
  */
 export interface ISigningService {
   /**
-   * User public key
+   * Get user public key.
    */
-  readonly publicKey: Uint8Array;
+  getPublicKey(): Uint8Array;
 
   /**
-   * Sign bytes with user private key
-   * @param bytes data bytes to sign
+   * Sign bytes with user private key.
+   * @param {Uint8Array} bytes data bytes to sign.
+   * @returns {Promise<Uint8Array>} signature bytes.
    */
   sign(bytes: Uint8Array): Promise<Uint8Array>;
 }

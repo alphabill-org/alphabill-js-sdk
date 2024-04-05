@@ -1,7 +1,10 @@
 import { Base16Converter } from './util/Base16Converter.js';
 
 export class PredicateBytes {
-  public constructor(private readonly bytes: Uint8Array) {}
+  private readonly bytes: Uint8Array;
+  public constructor(bytes: Uint8Array) {
+    this.bytes = new Uint8Array(bytes);
+  }
 
   public getBytes(): Uint8Array {
     return new Uint8Array(this.bytes);

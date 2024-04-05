@@ -5,9 +5,7 @@ import { TransactionPayload } from './TransactionPayload.js';
 import { UnlockBillAttributes } from './UnlockBillAttributes.js';
 
 export class UnlockBillPayload extends TransactionPayload<UnlockBillAttributes> {
-  public static readonly PAYLOAD_TYPE = 'unlock';
-
   public constructor(attributes: UnlockBillAttributes, unitId: IUnitId, clientMetadata: ITransactionClientMetadata) {
-    super(UnlockBillPayload.PAYLOAD_TYPE, SystemIdentifier.MONEY_PARTITION, unitId, attributes, clientMetadata);
+    super(UnlockBillAttributes.PAYLOAD_TYPE, SystemIdentifier.MONEY_PARTITION, unitId, attributes, clientMetadata);
   }
 }

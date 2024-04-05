@@ -4,13 +4,33 @@ import { dedent } from './util/StringUtils.js';
 
 export class Bill {
   public constructor(
-    public readonly value: bigint,
-    public readonly lastUpdate: bigint,
-    public readonly backlink: Uint8Array,
-    public readonly locked: boolean,
-  ) {}
+    private readonly value: bigint,
+    private readonly lastUpdate: bigint,
+    private readonly backlink: Uint8Array,
+    private readonly locked: boolean,
+  ) {
+    this.value = BigInt(this.value);
+    this.lastUpdate = BigInt(this.lastUpdate);
+    this.backlink = new Uint8Array(this.backlink);
+  }
 
-  public static async Create(data: IBillDataDto): Promise<Bill> {
+  public getValue(): bigint {
+    return this.value;
+  }
+
+  public getLastUpdate(): bigint {
+    return this.lastUpdate;
+  }
+
+  public getBacklink(): Uint8Array {
+    return new Uint8Array(this.backlink);
+  }
+
+  public isLocked(): boolean {
+    return this.locked;
+  }
+
+  public static create(data: IBillDataDto): Bill {
     return new Bill(
       BigInt(data.value),
       BigInt(data.lastUpdate),

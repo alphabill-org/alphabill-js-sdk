@@ -2,14 +2,25 @@ import { Base16Converter } from './util/Base16Converter.js';
 import { dedent } from './util/StringUtils.js';
 
 export type TransactionProofChainItemArray = readonly [Uint8Array, boolean];
+
 export class TransactionProofChainItem {
   public constructor(
-    public readonly hash: Uint8Array,
-    public readonly left: boolean,
-  ) {}
+    private readonly hash: Uint8Array,
+    private readonly left: boolean,
+  ) {
+    this.hash = new Uint8Array(this.hash);
+  }
+
+  public getHash(): Uint8Array {
+    return new Uint8Array(this.hash);
+  }
+
+  public getLeft(): boolean {
+    return this.left;
+  }
 
   public toArray(): TransactionProofChainItemArray {
-    return [this.hash, this.left];
+    return [this.getHash(), this.getLeft()];
   }
 
   public toString(): string {
@@ -17,5 +28,9 @@ export class TransactionProofChainItem {
       TransactionProofChainItem
         Hash: ${Base16Converter.encode(this.hash)}
         Left: ${this.left}`;
+  }
+
+  public static fromArray(data: TransactionProofChainItemArray): TransactionProofChainItem {
+    return new TransactionProofChainItem(data[0], data[1]);
   }
 }

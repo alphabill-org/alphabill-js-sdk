@@ -5,14 +5,12 @@ import { FeeCreditPayload } from './FeeCreditPayload.js';
 import { TransferFeeCreditAttributes } from './TransferFeeCreditAttributes.js';
 
 export class TransferFeeCreditPayload extends FeeCreditPayload<TransferFeeCreditAttributes> {
-  public static readonly PAYLOAD_TYPE = 'transFC';
-
   public constructor(
     attributes: TransferFeeCreditAttributes,
     systemIdentifier: SystemIdentifier,
     unitId: IUnitId,
     clientMetadata: FeeCreditClientMetadata,
   ) {
-    super(TransferFeeCreditPayload.PAYLOAD_TYPE, systemIdentifier, unitId, attributes, clientMetadata);
+    super(TransferFeeCreditAttributes.PAYLOAD_TYPE, systemIdentifier, unitId, attributes, clientMetadata);
   }
 }

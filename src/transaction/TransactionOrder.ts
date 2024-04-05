@@ -4,20 +4,31 @@ import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.j
 import { TransactionPayload, TransactionPayloadArray } from './TransactionPayload.js';
 
 export type TransactionOrderArray = readonly [TransactionPayloadArray, Uint8Array, Uint8Array | null];
+
 export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAttributes>> {
   public constructor(
-    public readonly payload: T,
-    public readonly ownerProof: Uint8Array,
-    public readonly feeProof: Uint8Array | null,
-    private readonly bytes: Uint8Array,
-  ) {}
+    private readonly payload: T,
+    private readonly ownerProof: Uint8Array,
+    private readonly feeProof: Uint8Array | null,
+  ) {
+    this.ownerProof = new Uint8Array(this.ownerProof);
+    this.feeProof = this.feeProof ? new Uint8Array(this.feeProof) : null;
+  }
 
-  public getBytes(): Uint8Array {
-    return new Uint8Array(this.bytes);
+  public getPayload(): T {
+    return this.payload;
+  }
+
+  public getOwnerProof(): Uint8Array {
+    return new Uint8Array(this.ownerProof);
+  }
+
+  public getFeeProof(): Uint8Array | null {
+    return this.feeProof ? new Uint8Array(this.feeProof) : null;
   }
 
   public toArray(): TransactionOrderArray {
-    return [this.payload.toArray(), this.ownerProof, this.feeProof];
+    return [this.getPayload().toArray(), this.getOwnerProof(), this.getFeeProof()];
   }
 
   public toString(): string {
@@ -26,5 +37,11 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
         ${this.payload.toString()}
         Owner Proof: ${Base16Converter.encode(this.ownerProof)}
         Fee Proof: ${this.feeProof ? Base16Converter.encode(this.feeProof) : null}`;
+  }
+
+  public static fromArray<T extends ITransactionPayloadAttributes>(
+    data: TransactionOrderArray,
+  ): TransactionOrder<TransactionPayload<T>> {
+    return new TransactionOrder(TransactionPayload.fromArray(data[0]), data[1], data[2]);
   }
 }

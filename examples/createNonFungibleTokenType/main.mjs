@@ -1,18 +1,18 @@
+import { CborCodecNode } from '@alphabill/alphabill-js-sdk/lib/codec/cbor/CborCodecNode.js';
+import { http } from '@alphabill/alphabill-js-sdk/lib/json-rpc/StateApiJsonRpcService.js';
+import { DefaultSigningService } from '@alphabill/alphabill-js-sdk/lib/signing/DefaultSigningService.js';
+import { createPublicClient } from '@alphabill/alphabill-js-sdk/lib/StateApiClient.js';
+import { SystemIdentifier } from '@alphabill/alphabill-js-sdk/lib/SystemIdentifier.js';
+import { AlwaysTruePredicate } from '@alphabill/alphabill-js-sdk/lib/transaction/AlwaysTruePredicate.js';
+import { CreateNonFungibleTokenTypeAttributes } from '@alphabill/alphabill-js-sdk/lib/transaction/CreateNonFungibleTokenTypeAttributes.js';
+import { CreateNonFungibleTokenTypePayload } from '@alphabill/alphabill-js-sdk/lib/transaction/CreateNonFungibleTokenTypePayload.js';
+import { FeeCreditUnitId } from '@alphabill/alphabill-js-sdk/lib/transaction/FeeCreditUnitId.js';
+import { TokenIcon } from '@alphabill/alphabill-js-sdk/lib/transaction/TokenIcon.js';
+import { TransactionOrderFactory } from '@alphabill/alphabill-js-sdk/lib/transaction/TransactionOrderFactory.js';
+import { UnitIdWithType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitIdWithType.js';
+import { UnitType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitType.js';
+import { Base16Converter } from '@alphabill/alphabill-js-sdk/lib/util/Base16Converter.js';
 import { sha256 } from '@noble/hashes/sha256';
-import { CborCodecNode } from '../../lib/codec/cbor/CborCodecNode.js';
-import { http } from '../../lib/json-rpc/StateApiJsonRpcService.js';
-import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
-import { createPublicClient } from '../../lib/StateApiClient.js';
-import { SystemIdentifier } from '../../lib/SystemIdentifier.js';
-import { AlwaysTruePredicate } from '../../lib/transaction/AlwaysTruePredicate.js';
-import { CreateNonFungibleTokenTypeAttributes } from '../../lib/transaction/CreateNonFungibleTokenTypeAttributes.js';
-import { CreateNonFungibleTokenTypePayload } from '../../lib/transaction/CreateNonFungibleTokenTypePayload.js';
-import { FeeCreditUnitId } from '../../lib/transaction/FeeCreditUnitId.js';
-import { TokenIcon } from '../../lib/transaction/TokenIcon.js';
-import { TransactionOrderFactory } from '../../lib/transaction/TransactionOrderFactory.js';
-import { UnitIdWithType } from '../../lib/transaction/UnitIdWithType.js';
-import { UnitType } from '../../lib/transaction/UnitType.js';
-import { Base16Converter } from '../../lib/util/Base16Converter.js';
 
 import config from '../config.js';
 
@@ -24,7 +24,7 @@ const client = createPublicClient({
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
-const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.publicKey), SystemIdentifier.TOKEN_PARTITION);
+const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.getPublicKey()), SystemIdentifier.TOKEN_PARTITION);
 const round = await client.getRoundNumber();
 
 await client.sendTransaction(
