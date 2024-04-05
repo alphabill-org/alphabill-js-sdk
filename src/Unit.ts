@@ -152,6 +152,7 @@ export class StateTreePathItem implements IStateTreePathItem {
     private readonly siblingSummaryValue: bigint,
   ) {
     this.logsHash = new Uint8Array(this.logsHash);
+    this.value = BigInt(this.value);
     this.siblingSummaryHash = new Uint8Array(this.siblingSummaryHash);
   }
 

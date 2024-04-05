@@ -9,7 +9,7 @@ export class SplitBillUnit {
     private readonly value: bigint,
     private readonly ownerPredicate: IPredicate,
   ) {
-    this.value = BigInt(value);
+    this.value = BigInt(this.value);
   }
 
   public getValue(): bigint {
