@@ -20,7 +20,7 @@ export class NonFungibleTokenData implements INonFungibleTokenData {
     return cborCodec.decode(data);
   }
 
-  public getBytes(): Uint8Array {
+  public get bytes(): Uint8Array {
     return new Uint8Array(this.data);
   }
 

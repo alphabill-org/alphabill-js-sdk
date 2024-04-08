@@ -7,31 +7,25 @@ import { PayloadAttribute } from './PayloadAttribute.js';
 
 export type CloseFeeCreditAttributesArray = readonly [bigint, Uint8Array, Uint8Array];
 
-@PayloadAttribute
-export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'closeFC';
-  }
+const PAYLOAD_TYPE = 'closeFC';
 
+@PayloadAttribute(PAYLOAD_TYPE)
+export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   public constructor(
-    private readonly amount: bigint,
-    private readonly targetUnitId: IUnitId,
-    private readonly targetUnitBacklink: Uint8Array,
+    public readonly amount: bigint,
+    public readonly targetUnitId: IUnitId,
+    private readonly _targetUnitBacklink: Uint8Array,
   ) {
     this.amount = BigInt(this.amount);
-    this.targetUnitBacklink = new Uint8Array(this.targetUnitBacklink);
+    this._targetUnitBacklink = new Uint8Array(this._targetUnitBacklink);
   }
 
-  public getAmount(): bigint {
-    return this.amount;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getTargetUnitId(): IUnitId {
-    return this.targetUnitId;
-  }
-
-  public getTargetUnitBacklink(): Uint8Array {
-    return new Uint8Array(this.targetUnitBacklink);
+  public get targetUnitBacklink(): Uint8Array {
+    return new Uint8Array(this._targetUnitBacklink);
   }
 
   public toOwnerProofData(): CloseFeeCreditAttributesArray {
@@ -39,7 +33,7 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   public toArray(): CloseFeeCreditAttributesArray {
-    return [this.getAmount(), this.getTargetUnitId().getBytes(), this.getTargetUnitBacklink()];
+    return [this.amount, this.targetUnitId.bytes, this.targetUnitBacklink];
   }
 
   public toString(): string {
@@ -47,7 +41,7 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
       CloseFeeCreditAttributes
         Amount: ${this.amount}
         Target Unit ID: ${this.targetUnitId.toString()}
-        Target Unit Backlink: ${Base16Converter.encode(this.targetUnitBacklink)}`;
+        Target Unit Backlink: ${Base16Converter.encode(this._targetUnitBacklink)}`;
   }
 
   public static fromArray(data: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {

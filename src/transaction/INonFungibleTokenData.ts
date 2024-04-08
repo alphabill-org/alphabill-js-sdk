@@ -1,3 +1,3 @@
 export interface INonFungibleTokenData {
-  getBytes(): Uint8Array;
+  get bytes(): Uint8Array;
 }

@@ -7,37 +7,31 @@ import { PayloadAttribute } from './PayloadAttribute.js';
 
 export type TransferBillToDustCollectorAttributesArray = readonly [bigint, Uint8Array, Uint8Array, Uint8Array];
 
-@PayloadAttribute
-export class TransferBillToDustCollectorAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'transDC';
-  }
+const PAYLOAD_TYPE = 'transDC';
 
+@PayloadAttribute(PAYLOAD_TYPE)
+export class TransferBillToDustCollectorAttributes implements ITransactionPayloadAttributes {
   public constructor(
-    private readonly value: bigint,
-    private readonly targetUnitId: IUnitId,
-    private readonly targetUnitBacklink: Uint8Array,
-    private readonly backlink: Uint8Array,
+    public readonly value: bigint,
+    public readonly targetUnitId: IUnitId,
+    private readonly _targetUnitBacklink: Uint8Array,
+    private readonly _backlink: Uint8Array,
   ) {
     this.value = BigInt(this.value);
-    this.targetUnitBacklink = new Uint8Array(this.targetUnitBacklink);
-    this.backlink = new Uint8Array(this.backlink);
+    this._targetUnitBacklink = new Uint8Array(this._targetUnitBacklink);
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public getValue(): bigint {
-    return this.value;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getTargetUnitId(): IUnitId {
-    return this.targetUnitId;
+  public get targetUnitBacklink(): Uint8Array {
+    return new Uint8Array(this._targetUnitBacklink);
   }
 
-  public getTargetUnitBacklink(): Uint8Array {
-    return new Uint8Array(this.targetUnitBacklink);
-  }
-
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
   public toOwnerProofData(): TransferBillToDustCollectorAttributesArray {
@@ -45,7 +39,7 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
   }
 
   public toArray(): TransferBillToDustCollectorAttributesArray {
-    return [this.getValue(), this.getTargetUnitId().getBytes(), this.getTargetUnitBacklink(), this.getBacklink()];
+    return [this.value, this.targetUnitId.bytes, this.targetUnitBacklink, this.backlink];
   }
 
   public toString(): string {
@@ -53,8 +47,8 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
       TransferBillToDustCollectorAttributes
         Value: ${this.value}
         Target Unit ID: ${this.targetUnitId.toString()}
-        Target Unit Backlink: ${Base16Converter.encode(this.targetUnitBacklink)}
-        Backlink: ${Base16Converter.encode(this.backlink)}`;
+        Target Unit Backlink: ${Base16Converter.encode(this._targetUnitBacklink)}
+        Backlink: ${Base16Converter.encode(this._backlink)}`;
   }
 
   public static fromArray(data: TransferBillToDustCollectorAttributesArray): TransferBillToDustCollectorAttributes {

@@ -6,12 +6,12 @@ import { IPredicate } from './IPredicate.js';
 export class PayToPublicKeyHashPredicate implements IPredicate {
   private static readonly P2pkh256ID = 0x02;
 
-  private constructor(private readonly bytes: Uint8Array) {
-    this.bytes = new Uint8Array(this.bytes);
+  private constructor(private readonly _bytes: Uint8Array) {
+    this._bytes = new Uint8Array(this._bytes);
   }
 
-  public getBytes(): Uint8Array {
-    return new Uint8Array(this.bytes);
+  public get bytes(): Uint8Array {
+    return new Uint8Array(this._bytes);
   }
 
   public static async create(cborCodec: ICborCodec, publicKey: Uint8Array): Promise<PayToPublicKeyHashPredicate> {
@@ -21,6 +21,6 @@ export class PayToPublicKeyHashPredicate implements IPredicate {
   }
 
   public toString(): string {
-    return `PayToPublicKeyHashPredicate[${Base16Converter.encode(this.bytes)}]`;
+    return `PayToPublicKeyHashPredicate[${Base16Converter.encode(this._bytes)}]`;
   }
 }

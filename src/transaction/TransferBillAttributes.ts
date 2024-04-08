@@ -7,31 +7,25 @@ import { PayloadAttribute } from './PayloadAttribute.js';
 
 export type TransferBillAttributesArray = [Uint8Array, bigint, Uint8Array];
 
-@PayloadAttribute
-export class TransferBillAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'trans';
-  }
+const PAYLOAD_TYPE = 'trans';
 
+@PayloadAttribute(PAYLOAD_TYPE)
+export class TransferBillAttributes implements ITransactionPayloadAttributes {
   public constructor(
-    private readonly ownerPredicate: IPredicate,
-    private readonly targetValue: bigint,
-    private readonly backlink: Uint8Array,
+    public readonly ownerPredicate: IPredicate,
+    public readonly targetValue: bigint,
+    private readonly _backlink: Uint8Array,
   ) {
     this.targetValue = BigInt(this.targetValue);
-    this.backlink = new Uint8Array(this.backlink);
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public getOwnerPredicate(): IPredicate {
-    return this.ownerPredicate;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getTargetValue(): bigint {
-    return this.targetValue;
-  }
-
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
   public toOwnerProofData(): TransferBillAttributesArray {
@@ -39,7 +33,7 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public toArray(): TransferBillAttributesArray {
-    return [this.getOwnerPredicate().getBytes(), this.getTargetValue(), this.getBacklink()];
+    return [this.ownerPredicate.bytes, this.targetValue, this.backlink];
   }
 
   public toString(): string {
@@ -47,7 +41,7 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
       TransferBillAttributes
         Owner Predicate: ${this.ownerPredicate.toString()}
         Target Value: ${this.targetValue}
-        Backlink: ${Base16Converter.encode(this.backlink)}`;
+        Backlink: ${Base16Converter.encode(this._backlink)}`;
   }
 
   public static fromArray(data: TransferBillAttributesArray): TransferBillAttributes {

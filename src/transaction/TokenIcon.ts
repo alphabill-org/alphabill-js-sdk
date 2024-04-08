@@ -4,26 +4,22 @@ export type TokenIconArray = readonly [string, Uint8Array];
 
 export class TokenIcon {
   public constructor(
-    private readonly type: string,
-    private readonly data: Uint8Array,
+    public readonly type: string,
+    private readonly _data: Uint8Array,
   ) {
-    this.data = new Uint8Array(this.data);
+    this._data = new Uint8Array(this._data);
   }
 
-  public getType(): string {
-    return this.type;
-  }
-
-  public getData(): Uint8Array {
-    return new Uint8Array(this.data);
+  public get data(): Uint8Array {
+    return new Uint8Array(this._data);
   }
 
   public toArray(): TokenIconArray {
-    return [this.getType(), this.getData()];
+    return [this.type, this.data];
   }
 
   public toString(): string {
-    return `TokenIcon: ${this.type}; ${Base16Converter.encode(this.data)}`;
+    return `TokenIcon: ${this.type}; ${Base16Converter.encode(this._data)}`;
   }
 
   public static fromArray(data: TokenIconArray): TokenIcon {

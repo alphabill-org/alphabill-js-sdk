@@ -7,31 +7,30 @@ import { PayloadAttribute } from './PayloadAttribute.js';
 
 export type UpdateNonFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Array, Uint8Array[] | null];
 
-@PayloadAttribute
+const PAYLOAD_TYPE = 'updateNToken';
+
+@PayloadAttribute(PAYLOAD_TYPE)
 export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'updateNToken';
-  }
 
   public constructor(
-    private readonly data: INonFungibleTokenData,
-    private readonly backlink: Uint8Array,
-    private readonly dataUpdateSignatures: Uint8Array[] | null,
+    public readonly data: INonFungibleTokenData,
+    private readonly _backlink: Uint8Array,
+    private readonly _dataUpdateSignatures: Uint8Array[] | null,
   ) {
-    this.backlink = new Uint8Array(backlink);
-    this.dataUpdateSignatures = this.dataUpdateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+    this._backlink = new Uint8Array(_backlink);
+    this._dataUpdateSignatures = this._dataUpdateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getData(): INonFungibleTokenData {
-    return this.data;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
-  public getDataUpdateSignatures(): Uint8Array[] | null {
-    return this.dataUpdateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  public get dataUpdateSignatures(): Uint8Array[] | null {
+    return this._dataUpdateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   public toOwnerProofData(): UpdateNonFungibleTokenAttributesArray {
@@ -39,15 +38,15 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   }
 
   public toArray(): UpdateNonFungibleTokenAttributesArray {
-    return [this.getData().getBytes(), this.getBacklink(), this.getDataUpdateSignatures()];
+    return [this.data.bytes, this.backlink, this.dataUpdateSignatures];
   }
 
   public toString(): string {
     return dedent`
       UpdateNonFungibleTokenAttributes
         Data: ${this.data.toString()}
-        Backlink: ${Base16Converter.encode(this.backlink)}
-        Data Update Signatures: ${this.dataUpdateSignatures?.map((signature) => Base16Converter.encode(signature))}`;
+        Backlink: ${Base16Converter.encode(this._backlink)}
+        Data Update Signatures: ${this._dataUpdateSignatures?.map((signature) => Base16Converter.encode(signature))}`;
   }
 
   public static fromArray(data: UpdateNonFungibleTokenAttributesArray): UpdateNonFungibleTokenAttributes {

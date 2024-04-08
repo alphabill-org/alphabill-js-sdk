@@ -7,35 +7,19 @@ import { dedent } from './util/StringUtils.js';
 
 export class FungibleToken {
   public constructor(
-    private readonly tokenType: IUnitId,
-    private readonly value: bigint,
-    private readonly blockNumber: bigint,
-    private readonly backlink: Uint8Array,
-    private readonly locked: boolean,
+    public readonly tokenType: IUnitId,
+    public readonly value: bigint,
+    public readonly blockNumber: bigint,
+    private readonly _backlink: Uint8Array,
+    public readonly locked: boolean,
   ) {
     this.value = BigInt(this.value);
     this.blockNumber = BigInt(this.blockNumber);
-    this.backlink = new Uint8Array(this.backlink);
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public getTokenType(): IUnitId {
-    return this.tokenType;
-  }
-
-  public getValue(): bigint {
-    return this.value;
-  }
-
-  public getBlockNumber(): bigint {
-    return this.blockNumber;
-  }
-
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
-  }
-
-  public isLocked(): boolean {
-    return this.locked;
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
   public static create(data: IFungibleTokenDto): FungibleToken {
@@ -54,7 +38,7 @@ export class FungibleToken {
         Token Type: ${this.tokenType.toString()}
         Value: ${this.value}
         Block Number: ${this.blockNumber}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Backlink: ${Base16Converter.encode(this._backlink)}
         Locked: ${this.locked}`;
   }
 }

@@ -8,20 +8,12 @@ export type TransactionRecordArray = readonly [TransactionOrderArray, ServerMeta
 
 export class TransactionRecord<T extends TransactionPayload<ITransactionPayloadAttributes>> {
   public constructor(
-    private readonly transactionOrder: TransactionOrder<T>,
-    private readonly serverMetadata: ServerMetadata,
+    public readonly transactionOrder: TransactionOrder<T>,
+    public readonly serverMetadata: ServerMetadata,
   ) {}
 
-  public getTransactionOrder(): TransactionOrder<T> {
-    return this.transactionOrder;
-  }
-
-  public getServerMetadata(): ServerMetadata {
-    return this.serverMetadata;
-  }
-
   public toArray(): TransactionRecordArray {
-    return [this.getTransactionOrder().toArray(), this.getServerMetadata().toArray()];
+    return [this.transactionOrder.toArray(), this.serverMetadata.toArray()];
   }
 
   public toString(): string {

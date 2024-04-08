@@ -16,70 +16,53 @@ export type TransferFungibleTokenAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
-@PayloadAttribute
-export class TransferFungibleTokenAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'transFToken';
-  }
+const PAYLOAD_TYPE = 'transFToken';
 
+@PayloadAttribute(PAYLOAD_TYPE)
+export class TransferFungibleTokenAttributes implements ITransactionPayloadAttributes {
   public constructor(
-    private readonly ownerPredicate: IPredicate,
-    private readonly value: bigint,
-    private readonly nonce: Uint8Array | null,
-    private readonly backlink: Uint8Array,
-    private readonly typeId: IUnitId,
-    private readonly invariantPredicateSignatures: Uint8Array[] | null,
+    public readonly ownerPredicate: IPredicate,
+    public readonly value: bigint,
+    private readonly _nonce: Uint8Array | null,
+    private readonly _backlink: Uint8Array,
+    public readonly typeId: IUnitId,
+    private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
-    this.nonce = this.nonce ? new Uint8Array(this.nonce) : null;
-    this.backlink = new Uint8Array(this.backlink);
-    this.invariantPredicateSignatures =
-      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+    this._nonce = this._nonce ? new Uint8Array(this._nonce) : null;
+    this._backlink = new Uint8Array(this._backlink);
+    this._invariantPredicateSignatures =
+      this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getOwnerPredicate(): IPredicate {
-    return this.ownerPredicate;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getValue(): bigint {
-    return this.value;
+  public get nonce(): Uint8Array | null {
+    return this._nonce ? new Uint8Array(this._nonce) : null;
   }
 
-  public getNonce(): Uint8Array | null {
-    return this.nonce ? new Uint8Array(this.nonce) : null;
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
-  }
-
-  public getTypeId(): IUnitId {
-    return this.typeId;
-  }
-
-  public getInvariantPredicateSignatures(): Uint8Array[] | null {
-    return this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  public get invariantPredicateSignatures(): Uint8Array[] | null {
+    return this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   public toOwnerProofData(): TransferFungibleTokenAttributesArray {
-    return [
-      this.getOwnerPredicate().getBytes(),
-      this.getValue(),
-      this.getNonce(),
-      this.getBacklink(),
-      this.getTypeId().getBytes(),
-      null,
-    ];
+    return [this.ownerPredicate.bytes, this.value, this.nonce, this.backlink, this.typeId.bytes, null];
   }
 
   public toArray(): TransferFungibleTokenAttributesArray {
     return [
-      this.getOwnerPredicate().getBytes(),
-      this.getValue(),
-      this.getNonce(),
-      this.getBacklink(),
-      this.getTypeId().getBytes(),
-      this.getInvariantPredicateSignatures(),
+      this.ownerPredicate.bytes,
+      this.value,
+      this.nonce,
+      this.backlink,
+      this.typeId.bytes,
+      this.invariantPredicateSignatures,
     ];
   }
 
@@ -88,14 +71,14 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
       TransferFungibleTokenAttributes
         Owner Predicate: ${this.ownerPredicate.toString()}
         Value: ${this.value}
-        Nonce: ${this.nonce}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Nonce: ${this._nonce}
+        Backlink: ${Base16Converter.encode(this._backlink)}
         Type ID: ${this.typeId.toString()}
         Invariant Predicate Signatures: ${
-          this.invariantPredicateSignatures
+          this._invariantPredicateSignatures
             ? dedent`
         [
-          ${this.invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+          ${this._invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
         ]`
             : 'null'
         }`;

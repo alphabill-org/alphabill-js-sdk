@@ -5,28 +5,24 @@ export type TransactionProofChainItemArray = readonly [Uint8Array, boolean];
 
 export class TransactionProofChainItem {
   public constructor(
-    private readonly hash: Uint8Array,
-    private readonly left: boolean,
+    private readonly _hash: Uint8Array,
+    public readonly left: boolean,
   ) {
-    this.hash = new Uint8Array(this.hash);
+    this._hash = new Uint8Array(this._hash);
   }
 
-  public getHash(): Uint8Array {
-    return new Uint8Array(this.hash);
-  }
-
-  public getLeft(): boolean {
-    return this.left;
+  public get hash(): Uint8Array {
+    return new Uint8Array(this._hash);
   }
 
   public toArray(): TransactionProofChainItemArray {
-    return [this.getHash(), this.getLeft()];
+    return [this.hash, this.left];
   }
 
   public toString(): string {
     return dedent`
       TransactionProofChainItem
-        Hash: ${Base16Converter.encode(this.hash)}
+        Hash: ${Base16Converter.encode(this._hash)}
         Left: ${this.left}`;
   }
 

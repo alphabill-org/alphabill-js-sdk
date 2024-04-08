@@ -4,30 +4,18 @@ import { dedent } from './util/StringUtils.js';
 
 export class Bill {
   public constructor(
-    private readonly value: bigint,
-    private readonly lastUpdate: bigint,
-    private readonly backlink: Uint8Array,
-    private readonly locked: boolean,
+    public readonly value: bigint,
+    public readonly lastUpdate: bigint,
+    private readonly _backlink: Uint8Array,
+    public readonly locked: boolean,
   ) {
     this.value = BigInt(this.value);
     this.lastUpdate = BigInt(this.lastUpdate);
-    this.backlink = new Uint8Array(this.backlink);
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public getValue(): bigint {
-    return this.value;
-  }
-
-  public getLastUpdate(): bigint {
-    return this.lastUpdate;
-  }
-
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
-  }
-
-  public isLocked(): boolean {
-    return this.locked;
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
   public static create(data: IBillDataDto): Bill {
@@ -44,7 +32,7 @@ export class Bill {
       Bill
         Value: ${this.value}
         Last Update: ${this.lastUpdate}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Backlink: ${Base16Converter.encode(this._backlink)}
         Locked: ${this.locked}`;
   }
 }

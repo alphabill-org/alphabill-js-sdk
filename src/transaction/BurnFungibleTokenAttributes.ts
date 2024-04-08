@@ -14,70 +14,53 @@ export type BurnFungibleTokenAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
-@PayloadAttribute
-export class BurnFungibleTokenAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'burnFToken';
-  }
+const PAYLOAD_TYPE = 'burnFToken';
 
+@PayloadAttribute(PAYLOAD_TYPE)
+export class BurnFungibleTokenAttributes implements ITransactionPayloadAttributes {
   public constructor(
-    private readonly typeId: IUnitId,
-    private readonly value: bigint,
-    private readonly targetTokenId: IUnitId,
-    private readonly targetTokenBacklink: Uint8Array,
-    private readonly backlink: Uint8Array,
-    private readonly invariantPredicateSignatures: Uint8Array[] | null,
+    public readonly typeId: IUnitId,
+    public readonly value: bigint,
+    public readonly targetTokenId: IUnitId,
+    private readonly _targetTokenBacklink: Uint8Array,
+    private readonly _backlink: Uint8Array,
+    private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
-    this.targetTokenBacklink = new Uint8Array(this.targetTokenBacklink);
-    this.backlink = new Uint8Array(this.backlink);
-    this.invariantPredicateSignatures =
-      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+    this._targetTokenBacklink = new Uint8Array(this._targetTokenBacklink);
+    this._backlink = new Uint8Array(this._backlink);
+    this._invariantPredicateSignatures =
+      this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getTypeId(): IUnitId {
-    return this.typeId;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getValue(): bigint {
-    return this.value;
+  public get targetTokenBacklink(): Uint8Array {
+    return new Uint8Array(this._targetTokenBacklink);
   }
 
-  public getTargetTokenId(): IUnitId {
-    return this.targetTokenId;
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
-  public getTargetTokenBacklink(): Uint8Array {
-    return new Uint8Array(this.targetTokenBacklink);
-  }
-
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
-  }
-
-  public getInvariantPredicateSignatures(): Uint8Array[] | null {
-    return this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  public get invariantPredicateSignatures(): Uint8Array[] | null {
+    return this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   public toOwnerProofData(): BurnFungibleTokenAttributesArray {
-    return [
-      this.getTypeId().getBytes(),
-      this.getValue(),
-      this.getTargetTokenId().getBytes(),
-      this.getTargetTokenBacklink(),
-      this.getBacklink(),
-      null,
-    ];
+    return [this.typeId.bytes, this.value, this.targetTokenId.bytes, this.targetTokenBacklink, this.backlink, null];
   }
 
   public toArray(): BurnFungibleTokenAttributesArray {
     return [
-      this.getTypeId().getBytes(),
-      this.getValue(),
-      this.getTargetTokenId().getBytes(),
-      this.getTargetTokenBacklink(),
-      this.getBacklink(),
-      this.getInvariantPredicateSignatures(),
+      this.typeId.bytes,
+      this.value,
+      this.targetTokenId.bytes,
+      this.targetTokenBacklink,
+      this.backlink,
+      this.invariantPredicateSignatures,
     ];
   }
 
@@ -87,13 +70,13 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
         Type ID: ${this.typeId.toString()}
         Value: ${this.value}
         Target Token ID: ${this.targetTokenId.toString()}
-        Target Token Backlink: ${Base16Converter.encode(this.targetTokenBacklink)}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Target Token Backlink: ${Base16Converter.encode(this._targetTokenBacklink)}
+        Backlink: ${Base16Converter.encode(this._backlink)}
         Invariant Predicate Signatures: ${
-          this.invariantPredicateSignatures
+          this._invariantPredicateSignatures
             ? dedent`
         [
-          ${this.invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+          ${this._invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
         ]`
             : 'null'
         }`;

@@ -6,173 +6,109 @@ import { IUnitId } from './IUnitId.js';
  */
 export class Unit<T> implements IUnit<T> {
   public constructor(
-    private readonly unitId: IUnitId,
-    private readonly data: T,
-    private readonly ownerPredicate: Uint8Array,
-    private readonly stateProof: IStateProof | null,
+    public readonly unitId: IUnitId,
+    public readonly data: T,
+    private readonly _ownerPredicate: Uint8Array,
+    public readonly stateProof: IStateProof | null,
   ) {
-    this.ownerPredicate = new Uint8Array(this.ownerPredicate);
+    this._ownerPredicate = new Uint8Array(this._ownerPredicate);
   }
 
-  public getUnitId(): IUnitId {
-    return this.unitId;
-  }
-
-  public getData(): T {
-    return this.data;
-  }
-
-  public getOwnerPredicate(): Uint8Array {
-    return new Uint8Array(this.ownerPredicate);
-  }
-
-  public getStateProof(): IStateProof | null {
-    return this.stateProof;
+  public get ownerPredicate(): Uint8Array {
+    return new Uint8Array(this._ownerPredicate);
   }
 }
 
 export class StateProof implements IStateProof {
   public constructor(
-    private readonly unitId: IUnitId,
-    private readonly unitValue: bigint,
-    private readonly unitLedgerHash: Uint8Array,
-    private readonly unitTreeCert: IUnitTreeCert,
-    private readonly stateTreeCert: IStateTreeCert,
-    private readonly unicityCertificate: unknown,
+    public readonly unitId: IUnitId,
+    public readonly unitValue: bigint,
+    private readonly _unitLedgerHash: Uint8Array,
+    public readonly unitTreeCert: IUnitTreeCert,
+    public readonly stateTreeCert: IStateTreeCert,
+    public readonly unicityCertificate: unknown,
   ) {
-    this.unitLedgerHash = new Uint8Array(this.unitLedgerHash);
+    this._unitLedgerHash = new Uint8Array(this._unitLedgerHash);
   }
 
-  public getUnitId(): IUnitId {
-    return this.unitId;
-  }
-
-  public getUnitValue(): bigint {
-    return this.unitValue;
-  }
-
-  public getUnitLedgerHash(): Uint8Array {
-    return new Uint8Array(this.unitLedgerHash);
-  }
-
-  public getUnitTreeCert(): IUnitTreeCert {
-    return this.unitTreeCert;
-  }
-
-  public getStateTreeCert(): IStateTreeCert {
-    return this.stateTreeCert;
-  }
-
-  public getUnicityCertificate(): unknown {
-    return this.unicityCertificate;
+  public get unitLedgerHash(): Uint8Array {
+    return new Uint8Array(this._unitLedgerHash);
   }
 }
 
 export class UnitTreeCert implements IUnitTreeCert {
   public constructor(
-    private readonly transactionRecordHash: Uint8Array,
-    private readonly unitDataHash: Uint8Array,
-    private readonly path: readonly IPathItem[] | null,
+    private readonly _transactionRecordHash: Uint8Array,
+    private readonly _unitDataHash: Uint8Array,
+    public readonly path: readonly IPathItem[] | null,
   ) {
-    this.transactionRecordHash = new Uint8Array(this.transactionRecordHash);
-    this.unitDataHash = new Uint8Array(this.unitDataHash);
+    this._transactionRecordHash = new Uint8Array(this._transactionRecordHash);
+    this._unitDataHash = new Uint8Array(this._unitDataHash);
     this.path = this.path ? Object.freeze(Array.from(this.path)) : null;
   }
 
-  public getTransactionRecordHash(): Uint8Array {
-    return new Uint8Array(this.transactionRecordHash);
+  public get transactionRecordHash(): Uint8Array {
+    return new Uint8Array(this._transactionRecordHash);
   }
 
-  public getUnitDataHash(): Uint8Array {
-    return new Uint8Array(this.unitDataHash);
-  }
-
-  public getPath(): readonly IPathItem[] | null {
-    return this.path;
+  public get unitDataHash(): Uint8Array {
+    return new Uint8Array(this._unitDataHash);
   }
 }
 
 export class PathItem implements IPathItem {
   public constructor(
-    private readonly hash: Uint8Array,
-    private readonly directionLeft: boolean,
+    private readonly _hash: Uint8Array,
+    public readonly left: boolean,
   ) {
-    this.hash = new Uint8Array(this.hash);
+    this._hash = new Uint8Array(this._hash);
   }
 
-  public getHash(): Uint8Array {
-    return new Uint8Array(this.hash);
-  }
-
-  public isLeft(): boolean {
-    return this.directionLeft;
+  public get hash(): Uint8Array {
+    return new Uint8Array(this._hash);
   }
 }
 
 export class StateTreeCert implements IStateTreeCert {
   public constructor(
-    private readonly leftSummaryHash: Uint8Array,
-    private readonly leftSummaryValue: bigint,
-    private readonly rightSummaryHash: Uint8Array,
-    private readonly rightSummaryValue: bigint,
-    private readonly path: readonly IStateTreePathItem[] | null,
+    private readonly _leftSummaryHash: Uint8Array,
+    public readonly leftSummaryValue: bigint,
+    private readonly _rightSummaryHash: Uint8Array,
+    public readonly rightSummaryValue: bigint,
+    public readonly path: readonly IStateTreePathItem[] | null,
   ) {
-    this.leftSummaryHash = new Uint8Array(this.leftSummaryHash);
-    this.rightSummaryHash = new Uint8Array(this.rightSummaryHash);
+    this._leftSummaryHash = new Uint8Array(this._leftSummaryHash);
+    this._rightSummaryHash = new Uint8Array(this._rightSummaryHash);
     this.path = this.path ? Object.freeze(Array.from(this.path)) : null;
   }
 
-  public getLeftSummaryHash(): Uint8Array {
-    return new Uint8Array(this.leftSummaryHash);
+  public get leftSummaryHash(): Uint8Array {
+    return new Uint8Array(this._leftSummaryHash);
   }
 
-  public getLeftSummaryValue(): bigint {
-    return this.leftSummaryValue;
-  }
-
-  public getRightSummaryHash(): Uint8Array {
-    return new Uint8Array(this.rightSummaryHash);
-  }
-
-  public getRightSummaryValue(): bigint {
-    return this.rightSummaryValue;
-  }
-
-  public getPath(): readonly IStateTreePathItem[] | null {
-    return this.path;
+  public get rightSummaryHash(): Uint8Array {
+    return new Uint8Array(this._rightSummaryHash);
   }
 }
 
 export class StateTreePathItem implements IStateTreePathItem {
   public constructor(
-    private readonly unitId: IUnitId,
-    private readonly logsHash: Uint8Array,
-    private readonly value: bigint,
-    private readonly siblingSummaryHash: Uint8Array,
-    private readonly siblingSummaryValue: bigint,
+    public readonly unitId: IUnitId,
+    private readonly _logsHash: Uint8Array,
+    public readonly value: bigint,
+    private readonly _siblingSummaryHash: Uint8Array,
+    public readonly siblingSummaryValue: bigint,
   ) {
-    this.logsHash = new Uint8Array(this.logsHash);
+    this._logsHash = new Uint8Array(this._logsHash);
     this.value = BigInt(this.value);
-    this.siblingSummaryHash = new Uint8Array(this.siblingSummaryHash);
+    this._siblingSummaryHash = new Uint8Array(this._siblingSummaryHash);
   }
 
-  public getUnitId(): IUnitId {
-    return this.unitId;
+  public get logsHash(): Uint8Array {
+    return new Uint8Array(this._logsHash);
   }
 
-  public getLogsHash(): Uint8Array {
-    return new Uint8Array(this.logsHash);
-  }
-
-  public getValue(): bigint {
-    return this.value;
-  }
-
-  public getSiblingSummaryHash(): Uint8Array {
-    return new Uint8Array(this.siblingSummaryHash);
-  }
-
-  public getSiblingSummaryValue(): bigint {
-    return this.siblingSummaryValue;
+  public get siblingSummaryHash(): Uint8Array {
+    return new Uint8Array(this._siblingSummaryHash);
   }
 }

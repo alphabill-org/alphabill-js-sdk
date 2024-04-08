@@ -5,46 +5,36 @@ export type ServerMetadataArray = readonly [bigint, Uint8Array[], bigint, Uint8A
 
 export class ServerMetadata {
   public constructor(
-    private readonly actualFee: bigint,
-    private readonly targetUnits: Uint8Array[],
-    private readonly successIndicator: bigint,
-    private readonly processingDetails: Uint8Array | null,
+    public readonly actualFee: bigint,
+    private readonly _targetUnits: Uint8Array[],
+    public readonly successIndicator: bigint,
+    private readonly _processingDetails: Uint8Array | null,
   ) {
     this.actualFee = BigInt(this.actualFee);
-    this.targetUnits = this.targetUnits.map((unit) => new Uint8Array(unit));
+    this._targetUnits = this._targetUnits.map((unit) => new Uint8Array(unit));
     this.successIndicator = BigInt(this.successIndicator);
-    this.processingDetails = this.processingDetails ? new Uint8Array(this.processingDetails) : null;
+    this._processingDetails = this._processingDetails ? new Uint8Array(this._processingDetails) : null;
   }
 
-  public getActualFee(): bigint {
-    return this.actualFee;
+  public get targetUnits(): Uint8Array[] {
+    return this._targetUnits.map((unit) => new Uint8Array(unit));
   }
 
-  public getTargetUnits(): Uint8Array[] {
-    return this.targetUnits.map((unit) => new Uint8Array(unit));
-  }
-
-  public getSuccessIndicator(): bigint {
-    return this.successIndicator;
-  }
-
-  public getProcessingDetails(): Uint8Array | null {
-    return this.processingDetails ? new Uint8Array(this.processingDetails) : null;
+  public get processingDetails(): Uint8Array | null {
+    return this._processingDetails ? new Uint8Array(this._processingDetails) : null;
   }
 
   public toArray(): ServerMetadataArray {
-    return [this.getActualFee(), this.getTargetUnits(), this.getSuccessIndicator(), this.getProcessingDetails()];
+    return [this.actualFee, this.targetUnits, this.successIndicator, this.processingDetails];
   }
 
   public toString(): string {
     return dedent`
       ServerMetadata
         Actual Fee: ${this.actualFee}
-        Target Units: [
-          ${this.targetUnits.map((unit) => Base16Converter.encode(unit)).join(',\n')}
-        ]
+        Target Units: [${this._targetUnits.length ? `\n${this._targetUnits.map((unit) => Base16Converter.encode(unit)).join('\n')}\n` : ''}]
         Success indicator: ${this.successIndicator}
-        Processing details: ${this.processingDetails ? Base16Converter.encode(this.processingDetails) : null}`;
+        Processing details: ${this._processingDetails ? Base16Converter.encode(this._processingDetails) : null}`;
   }
 
   public static fromArray(data: ServerMetadataArray): ServerMetadata {

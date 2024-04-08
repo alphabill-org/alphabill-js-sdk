@@ -9,56 +9,56 @@ export interface IUnit<T> {
    * Get unit id
    * @returns {IUnit} unit id
    */
-  getUnitId(): IUnitId;
+  get unitId(): IUnitId;
   /**
    * Get unit data
    * @returns {T} unit data
    */
-  getData(): T;
+  get data(): T;
   /**
    * Get owner predicate
    * @returns {Uint8Array} owner predicate
    */
-  getOwnerPredicate(): Uint8Array;
+  get ownerPredicate(): Uint8Array;
   /**
    * Get state proof
    * @returns {IStateProof | null} state proof
    */
-  getStateProof(): IStateProof | null;
+  get stateProof(): IStateProof | null;
 }
 
 export interface IStateProof {
-  getUnitId(): IUnitId;
-  getUnitValue(): bigint;
-  getUnitLedgerHash(): Uint8Array;
-  getUnitTreeCert(): IUnitTreeCert;
-  getStateTreeCert(): IStateTreeCert;
-  getUnicityCertificate(): unknown;
+  get unitId(): IUnitId;
+  get unitValue(): bigint;
+  get unitLedgerHash(): Uint8Array;
+  get unitTreeCert(): IUnitTreeCert;
+  get stateTreeCert(): IStateTreeCert;
+  get unicityCertificate(): unknown;
 }
 
 export interface IUnitTreeCert {
-  getTransactionRecordHash(): Uint8Array;
-  getUnitDataHash(): Uint8Array;
-  getPath(): readonly IPathItem[] | null;
+  get transactionRecordHash(): Uint8Array;
+  get unitDataHash(): Uint8Array;
+  get path(): readonly IPathItem[] | null;
 }
 
 export interface IStateTreeCert {
-  getLeftSummaryHash(): Uint8Array;
-  getLeftSummaryValue(): bigint;
-  getRightSummaryHash(): Uint8Array;
-  getRightSummaryValue(): bigint;
-  getPath(): readonly IStateTreePathItem[] | null;
+  get leftSummaryHash(): Uint8Array;
+  get leftSummaryValue(): bigint;
+  get rightSummaryHash(): Uint8Array;
+  get rightSummaryValue(): bigint;
+  get path(): readonly IStateTreePathItem[] | null;
 }
 
 export interface IPathItem {
-  getHash(): Uint8Array;
-  isLeft(): boolean;
+  get hash(): Uint8Array;
+  get left(): boolean;
 }
 
 export interface IStateTreePathItem {
-  getUnitId(): IUnitId;
-  getLogsHash(): Uint8Array;
-  getValue(): bigint;
-  getSiblingSummaryHash(): Uint8Array;
-  getSiblingSummaryValue(): bigint;
+  get unitId(): IUnitId;
+  get logsHash(): Uint8Array;
+  get value(): bigint;
+  get siblingSummaryHash(): Uint8Array;
+  get siblingSummaryValue(): bigint;
 }

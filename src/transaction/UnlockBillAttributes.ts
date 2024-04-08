@@ -5,18 +5,21 @@ import { PayloadAttribute } from './PayloadAttribute.js';
 
 export type UnlockBillAttributesArray = readonly [Uint8Array];
 
-@PayloadAttribute
+const PAYLOAD_TYPE = 'unlock';
+
+@PayloadAttribute(PAYLOAD_TYPE)
 export class UnlockBillAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'unlock';
+
+  public constructor(private readonly _backlink: Uint8Array) {
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public constructor(private readonly backlink: Uint8Array) {
-    this.backlink = new Uint8Array(this.backlink);
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
   public toOwnerProofData(): UnlockBillAttributesArray {
@@ -24,13 +27,13 @@ export class UnlockBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public toArray(): UnlockBillAttributesArray {
-    return [this.getBacklink()];
+    return [this.backlink];
   }
 
   public toString(): string {
     return dedent`
       UnlockBillAttributes
-        Backlink: ${Base16Converter.encode(this.backlink)}`;
+        Backlink: ${Base16Converter.encode(this._backlink)}`;
   }
 
   public static fromArray(data: UnlockBillAttributesArray): UnlockBillAttributes {

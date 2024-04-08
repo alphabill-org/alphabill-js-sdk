@@ -8,5 +8,5 @@ export interface IUnitIdType {
    * Get type bytes.
    * @returns {Uint8Array} Bytes.
    */
-  getBytes(): Uint8Array;
+  get bytes(): Uint8Array;
 }

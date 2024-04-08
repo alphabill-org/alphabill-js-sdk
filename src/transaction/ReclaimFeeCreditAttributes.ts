@@ -3,31 +3,30 @@ import { TransactionProofArray } from '../TransactionProof.js';
 import { TransactionRecordArray } from '../TransactionRecord.js';
 import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
 import { Base16Converter } from '../util/Base16Converter.js';
-import { CloseFeeCreditPayload } from './CloseFeeCreditPayload.js';
+import { CloseFeeCreditAttributes } from './CloseFeeCreditAttributes.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { PayloadAttribute } from './PayloadAttribute.js';
+import { TransactionPayload } from './TransactionPayload.js';
 
 export type ReclaimFeeCreditAttributesArray = [TransactionRecordArray, TransactionProofArray, Uint8Array];
 
-@PayloadAttribute
+const PAYLOAD_TYPE = 'reclFC';
+
+@PayloadAttribute(PAYLOAD_TYPE)
 export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'reclFC';
-  }
-
   public constructor(
-    private readonly proof: TransactionRecordWithProof<CloseFeeCreditPayload>,
-    private readonly backlink: Uint8Array,
+    public readonly proof: TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>>,
+    private readonly _backlink: Uint8Array,
   ) {
-    this.backlink = new Uint8Array(this.backlink);
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public getProof(): TransactionRecordWithProof<CloseFeeCreditPayload> {
-    return this.proof;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
   public toOwnerProofData(): ReclaimFeeCreditAttributesArray {
@@ -35,9 +34,7 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
   }
 
   public toArray(): ReclaimFeeCreditAttributesArray {
-    const proof = this.getProof();
-
-    return [proof.getTransactionRecord().toArray(), proof.getTransactionProof().toArray(), this.getBacklink()];
+    return [this.proof.transactionRecord.toArray(), this.proof.transactionProof.toArray(), this.backlink];
   }
 
   public toString(): string {
@@ -45,7 +42,7 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
       ReclaimFeeCreditAttributes
         Transaction Proof: 
           ${this.proof.toString()}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Backlink: ${Base16Converter.encode(this._backlink)}
       `;
   }
 

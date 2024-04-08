@@ -17,14 +17,14 @@ export class TransactionOrderFactory {
     return new TransactionOrder(
       payload,
       await this.createOwnerProof(payload),
-      payload.getClientMetadata().feeCreditRecordId ? await this.createFeeProof(payload) : null,
+      payload.clientMetadata.feeCreditRecordId ? await this.createFeeProof(payload) : null,
     );
   }
 
   private async createOwnerProof(payload: TransactionPayload<ITransactionPayloadAttributes>): Promise<Uint8Array> {
     const signingBytes = await this.cborCoder.encode(payload.getSigningFields());
     return new Uint8Array(
-      await this.cborCoder.encode([await this.signingService.sign(signingBytes), this.signingService.getPublicKey()]),
+      await this.cborCoder.encode([await this.signingService.sign(signingBytes), this.signingService.publicKey]),
     );
   }
 
@@ -33,7 +33,7 @@ export class TransactionOrderFactory {
     const signingService = this.feeSigningService || this.signingService;
 
     return new Uint8Array(
-      await this.cborCoder.encode([await signingService.sign(signingBytes), this.signingService.getPublicKey()]),
+      await this.cborCoder.encode([await signingService.sign(signingBytes), this.signingService.publicKey]),
     );
   }
 }

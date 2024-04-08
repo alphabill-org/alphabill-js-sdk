@@ -15,71 +15,60 @@ export type TransferNonFungibleTokenAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
-@PayloadAttribute
+const PAYLOAD_TYPE = 'transNToken';
+
+@PayloadAttribute(PAYLOAD_TYPE)
 export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'transNToken';
-  }
 
   public constructor(
-    private readonly ownerPredicate: IPredicate,
-    private readonly nonce: Uint8Array | null,
-    private readonly backlink: Uint8Array,
-    private readonly typeId: IUnitId,
-    private readonly invariantPredicateSignatures: Uint8Array[] | null,
+    public readonly ownerPredicate: IPredicate,
+    private readonly _nonce: Uint8Array | null,
+    private readonly _backlink: Uint8Array,
+    public readonly typeId: IUnitId,
+    private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
-    this.nonce = this.nonce ? new Uint8Array(this.nonce) : null;
-    this.backlink = new Uint8Array(this.backlink);
-    this.invariantPredicateSignatures =
-      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+    this._nonce = this._nonce ? new Uint8Array(this._nonce) : null;
+    this._backlink = new Uint8Array(this._backlink);
+    this._invariantPredicateSignatures =
+      this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getOwnerPredicate(): IPredicate {
-    return this.ownerPredicate;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getNonce(): Uint8Array | null {
-    return this.nonce ? new Uint8Array(this.nonce) : null;
+  public get nonce(): Uint8Array | null {
+    return this._nonce ? new Uint8Array(this._nonce) : null;
   }
 
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
-  public getTypeId(): IUnitId {
-    return this.typeId;
-  }
-
-  public getInvariantPredicateSignatures(): Uint8Array[] | null {
-    return this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  public get invariantPredicateSignatures(): Uint8Array[] | null {
+    return this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   public toOwnerProofData(): TransferNonFungibleTokenAttributesArray {
-    return [this.ownerPredicate.getBytes(), this.getNonce(), this.getBacklink(), this.typeId.getBytes(), null];
+    return [this.ownerPredicate.bytes, this.nonce, this.backlink, this.typeId.bytes, null];
   }
 
   public toArray(): TransferNonFungibleTokenAttributesArray {
-    return [
-      this.getOwnerPredicate().getBytes(),
-      this.getNonce(),
-      this.getBacklink(),
-      this.getTypeId().getBytes(),
-      this.getInvariantPredicateSignatures(),
-    ];
+    return [this.ownerPredicate.bytes, this.nonce, this.backlink, this.typeId.bytes, this.invariantPredicateSignatures];
   }
 
   public toString(): string {
     return dedent`
       TransferNonFungibleTokenAttributes
         Owner Predicate: ${this.ownerPredicate.toString()}
-        Nonce: ${this.nonce ? Base16Converter.encode(this.nonce) : 'null'}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Nonce: ${this._nonce ? Base16Converter.encode(this._nonce) : 'null'}
+        Backlink: ${Base16Converter.encode(this._backlink)}
         Type ID: ${this.typeId.toString()}
         Invariant Predicate Signatures: ${
-          this.invariantPredicateSignatures
+          this._invariantPredicateSignatures
             ? dedent`
         [
-          ${this.invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+          ${this._invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
         ]`
             : 'null'
         }`;

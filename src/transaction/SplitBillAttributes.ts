@@ -6,31 +6,30 @@ import { SplitBillUnit, SplitBillUnitArray } from './SplitBillUnit.js';
 
 export type SplitBillAttributesArray = [SplitBillUnitArray[], bigint, Uint8Array];
 
-@PayloadAttribute
+const PAYLOAD_TYPE = 'split';
+
+@PayloadAttribute(PAYLOAD_TYPE)
 export class SplitBillAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'split';
-  }
-
   public constructor(
-    private readonly targetUnits: readonly SplitBillUnit[],
-    private readonly remainingBillValue: bigint,
-    private readonly backlink: Uint8Array,
+    private readonly _targetUnits: readonly SplitBillUnit[],
+    public readonly remainingBillValue: bigint,
+    private readonly _backlink: Uint8Array,
   ) {
+    this._targetUnits = Array.from(this._targetUnits);
     this.remainingBillValue = BigInt(this.remainingBillValue);
-    this.backlink = new Uint8Array(this.backlink);
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public getTargetUnits(): readonly SplitBillUnit[] {
-    return Array.from(this.targetUnits);
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getRemainingBillValue(): bigint {
-    return this.remainingBillValue;
+  public get targetUnits(): readonly SplitBillUnit[] {
+    return Array.from(this._targetUnits);
   }
 
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
   public toOwnerProofData(): SplitBillAttributesArray {
@@ -38,17 +37,17 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public toArray(): SplitBillAttributesArray {
-    return [this.getTargetUnits().map((unit) => unit.toArray()), this.getRemainingBillValue(), this.getBacklink()];
+    return [this.targetUnits.map((unit) => unit.toArray()), this.remainingBillValue, this.backlink];
   }
 
   public toString(): string {
     return dedent`
       SplitBillAttributes
         Target Units: [
-          ${this.targetUnits.map((unit) => unit.toString()).join('\n')}
+          ${this._targetUnits.map((unit) => unit.toString()).join('\n')}
         ]
         Remaining Bill Value: ${this.remainingBillValue}
-        Backlink: ${Base16Converter.encode(this.backlink)}`;
+        Backlink: ${Base16Converter.encode(this._backlink)}`;
   }
 
   public static fromArray(data: SplitBillAttributesArray): SplitBillAttributes {

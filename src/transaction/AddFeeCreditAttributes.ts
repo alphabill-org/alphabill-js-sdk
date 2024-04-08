@@ -4,27 +4,22 @@ import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { PayloadAttribute } from './PayloadAttribute.js';
-import { TransferFeeCreditPayload } from './TransferFeeCreditPayload.js';
+import { TransactionPayload } from './TransactionPayload.js';
+import { TransferFeeCreditAttributes } from './TransferFeeCreditAttributes.js';
 
 export type AddFeeCreditAttributesArray = [Uint8Array, ...TransactionRecordWithProofArray];
 
-@PayloadAttribute
-export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'addFC';
-  }
+const PAYLOAD_TYPE = 'addFC';
 
+@PayloadAttribute(PAYLOAD_TYPE)
+export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
   public constructor(
-    private readonly ownerPredicate: IPredicate,
-    private readonly transactionProof: TransactionRecordWithProof<TransferFeeCreditPayload>,
+    public readonly ownerPredicate: IPredicate,
+    public readonly transactionProof: TransactionRecordWithProof<TransactionPayload<TransferFeeCreditAttributes>>,
   ) {}
 
-  public getOwnerPredicate(): IPredicate {
-    return this.ownerPredicate;
-  }
-
-  public getTransactionProof(): TransactionRecordWithProof<TransferFeeCreditPayload> {
-    return this.transactionProof;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
   public toOwnerProofData(): AddFeeCreditAttributesArray {
@@ -33,7 +28,7 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
 
   public toArray(): AddFeeCreditAttributesArray {
     const proof = this.transactionProof.toArray();
-    return [this.getOwnerPredicate().getBytes(), ...proof];
+    return [this.ownerPredicate.bytes, ...proof];
   }
 
   public toString(): string {

@@ -14,7 +14,9 @@ export function dedent(strings: TemplateStringsArray, ...data: unknown[]): strin
   const whiteSpacesFromEdge = rows[0].length - rows[0].trimStart().length;
   const result: string[] = [];
   for (let j = 0; j < strings.length; j++) {
-    result.push(`${result.pop() || ''}${rows[0].slice(whiteSpacesFromEdge)}`);
+    result.push(
+      `${result.pop() || ''}${rows[0].slice(Math.min(rows[0].length - rows[0].trim().length, whiteSpacesFromEdge))}`,
+    );
     for (let i = 1; i < rows.length; i++) {
       result.push(rows[i].slice(whiteSpacesFromEdge));
     }
@@ -31,4 +33,8 @@ export function dedent(strings: TemplateStringsArray, ...data: unknown[]): strin
   }
 
   return result.join('\n');
+}
+
+function sliceWithoutData(data: string, whiteSpace: number) {
+  data.slice(Math.max(data.trim().length - data.length, whiteSpace));
 }

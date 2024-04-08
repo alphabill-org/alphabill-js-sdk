@@ -6,26 +6,22 @@ import { Base16Converter } from './util/Base16Converter.js';
  * @implements {IUnitId}
  */
 export class UnitId implements IUnitId {
-  private readonly type: IUnitIdType;
+  public readonly type: IUnitIdType;
 
   public constructor(
     type: Uint8Array,
-    private readonly bytes: Uint8Array,
+    private readonly _bytes: Uint8Array,
   ) {
     this.type = new UnitIdType(type);
-    this.bytes = new Uint8Array(bytes);
+    this._bytes = new Uint8Array(this._bytes);
   }
 
-  public getType(): IUnitIdType {
-    return this.type;
-  }
-
-  public getBytes(): Uint8Array {
-    return new Uint8Array(this.bytes);
+  public get bytes(): Uint8Array {
+    return new Uint8Array(this._bytes);
   }
 
   public toString(): string {
-    return `${Base16Converter.encode(this.bytes)}`;
+    return `${Base16Converter.encode(this._bytes)}`;
   }
 
   public static fromBytes(id: Uint8Array): IUnitId {
@@ -41,7 +37,7 @@ class UnitIdType implements IUnitIdType {
     this.hex = Base16Converter.encode(this.type);
   }
 
-  public getBytes(): Uint8Array {
+  public get bytes(): Uint8Array {
     return new Uint8Array(this.type);
   }
 

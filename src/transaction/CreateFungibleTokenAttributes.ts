@@ -9,37 +9,27 @@ import { PayloadAttribute } from './PayloadAttribute.js';
 
 export type CreateFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Array, bigint, Uint8Array[] | null];
 
-@PayloadAttribute
-export class CreateFungibleTokenAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'createFToken';
-  }
+const PAYLOAD_TYPE = 'createFToken';
 
+@PayloadAttribute(PAYLOAD_TYPE)
+export class CreateFungibleTokenAttributes implements ITransactionPayloadAttributes {
   public constructor(
-    private readonly ownerPredicate: IPredicate,
-    private readonly typeId: IUnitId,
-    private readonly value: bigint,
-    private readonly tokenCreationPredicateSignatures: Uint8Array[] | null,
+    public readonly ownerPredicate: IPredicate,
+    public readonly typeId: IUnitId,
+    public readonly value: bigint,
+    private readonly _tokenCreationPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
-    this.tokenCreationPredicateSignatures =
-      this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+    this._tokenCreationPredicateSignatures =
+      this._tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getOwnerPredicate(): IPredicate {
-    return this.ownerPredicate;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getTypeId(): IUnitId {
-    return this.typeId;
-  }
-
-  public getValue(): bigint {
-    return this.value;
-  }
-
-  public getTokenCreationPredicateSignatures(): Uint8Array[] | null {
-    return this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  public get tokenCreationPredicateSignatures(): Uint8Array[] | null {
+    return this._tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   public toOwnerProofData(): CreateFungibleTokenAttributesArray {
@@ -47,12 +37,7 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   }
 
   public toArray(): CreateFungibleTokenAttributesArray {
-    return [
-      this.getOwnerPredicate().getBytes(),
-      this.getTypeId().getBytes(),
-      this.getValue(),
-      this.getTokenCreationPredicateSignatures(),
-    ];
+    return [this.ownerPredicate.bytes, this.typeId.bytes, this.value, this.tokenCreationPredicateSignatures];
   }
 
   public toString(): string {
@@ -62,10 +47,10 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
         Type ID: ${this.typeId.toString()}
         Value: ${this.value}
         Token Creation Predicate Signatures: ${
-          this.tokenCreationPredicateSignatures
+          this._tokenCreationPredicateSignatures
             ? dedent`
         [
-          ${this.tokenCreationPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+          ${this._tokenCreationPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
         ]`
             : 'null'
         }`;

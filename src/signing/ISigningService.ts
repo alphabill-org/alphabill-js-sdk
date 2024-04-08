@@ -5,7 +5,7 @@ export interface ISigningService {
   /**
    * Get user public key.
    */
-  getPublicKey(): Uint8Array;
+  get publicKey(): Uint8Array;
 
   /**
    * Sign bytes with user private key.

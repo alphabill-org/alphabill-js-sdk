@@ -9,50 +9,26 @@ import { dedent } from './util/StringUtils.js';
 
 export class NonFungibleToken {
   public constructor(
-    private readonly tokenType: IUnitId,
-    private readonly name: string,
-    private readonly uri: string,
-    private readonly data: Uint8Array,
-    private readonly dataUpdatePredicate: IPredicate,
-    private readonly blockNumber: bigint,
-    private readonly backlink: Uint8Array,
-    private readonly locked: boolean,
+    public readonly tokenType: IUnitId,
+    public readonly name: string,
+    public readonly uri: string,
+    private readonly _data: Uint8Array,
+    public readonly dataUpdatePredicate: IPredicate,
+    public readonly blockNumber: bigint,
+    private readonly _backlink: Uint8Array,
+    public readonly locked: boolean,
   ) {
-    this.data = new Uint8Array(this.data);
+    this._data = new Uint8Array(this._data);
     this.blockNumber = BigInt(this.blockNumber);
-    this.backlink = new Uint8Array(this.backlink);
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public getTokenType(): IUnitId {
-    return this.tokenType;
+  public get data(): Uint8Array {
+    return new Uint8Array(this._data);
   }
 
-  public getName(): string {
-    return this.name;
-  }
-
-  public getURI(): string {
-    return this.uri;
-  }
-
-  public getData(): Uint8Array {
-    return new Uint8Array(this.data);
-  }
-
-  public getDataUpdatePredicate(): IPredicate {
-    return this.dataUpdatePredicate;
-  }
-
-  public getBlockNumber(): bigint {
-    return this.blockNumber;
-  }
-
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
-  }
-
-  public isLocked(): boolean {
-    return this.locked;
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
   public static create(data: INonFungibleTokenDto): NonFungibleToken {
@@ -74,10 +50,10 @@ export class NonFungibleToken {
         Token Type: ${this.tokenType.toString()}
         Name: ${this.name}
         URI: ${this.uri}
-        Data: ${Base16Converter.encode(this.data)}
+        Data: ${Base16Converter.encode(this._data)}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
         Block Number: ${this.blockNumber}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Backlink: ${Base16Converter.encode(this._backlink)}
         Locked: ${this.locked}`;
   }
 }

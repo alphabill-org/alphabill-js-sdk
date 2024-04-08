@@ -8,7 +8,7 @@ import { ISigningService } from './ISigningService.js';
  */
 export class DefaultSigningService implements ISigningService {
   private readonly privateKey: Uint8Array;
-  private readonly publicKey: Uint8Array;
+  private readonly _publicKey: Uint8Array;
 
   /**
    * Signing service constructor.
@@ -16,15 +16,15 @@ export class DefaultSigningService implements ISigningService {
    */
   public constructor(key: Uint8Array) {
     this.privateKey = new Uint8Array(key);
-    this.publicKey = secp256k1.getPublicKey(this.privateKey, true);
+    this._publicKey = secp256k1.getPublicKey(this.privateKey, true);
   }
 
   /**
    * Get public key bytes.
    * @returns {Uint8Array} public key bytes.
    */
-  public getPublicKey(): Uint8Array {
-    return new Uint8Array(this.publicKey);
+  public get publicKey(): Uint8Array {
+    return new Uint8Array(this._publicKey);
   }
 
   /**

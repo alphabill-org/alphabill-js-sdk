@@ -5,26 +5,24 @@ import { PayloadAttribute } from './PayloadAttribute.js';
 
 export type LockBillAttributesArray = readonly [bigint, Uint8Array];
 
-@PayloadAttribute
-export class LockBillAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'lock';
-  }
+const PAYLOAD_TYPE = 'lock';
 
+@PayloadAttribute(PAYLOAD_TYPE)
+export class LockBillAttributes implements ITransactionPayloadAttributes {
   public constructor(
-    private readonly lockStatus: bigint,
-    private readonly backlink: Uint8Array,
+    public readonly lockStatus: bigint,
+    private readonly _backlink: Uint8Array,
   ) {
     this.lockStatus = BigInt(this.lockStatus);
-    this.backlink = new Uint8Array(this.backlink);
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public getLockStatus(): bigint {
-    return this.lockStatus;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
   public toOwnerProofData(): LockBillAttributesArray {
@@ -32,14 +30,14 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
   }
 
   public toArray(): LockBillAttributesArray {
-    return [this.getLockStatus(), this.getBacklink()];
+    return [this.lockStatus, this.backlink];
   }
 
   public toString(): string {
     return dedent`
       LockBillAttributes
         Lock Status: ${this.lockStatus}
-        Backlink: ${Base16Converter.encode(this.backlink)}`;
+        Backlink: ${Base16Converter.encode(this._backlink)}`;
   }
 
   public static fromArray(data: LockBillAttributesArray): LockBillAttributes {

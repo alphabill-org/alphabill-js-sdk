@@ -8,20 +8,12 @@ export type TransactionRecordWithProofArray = readonly [TransactionRecordArray, 
 
 export class TransactionRecordWithProof<T extends TransactionPayload<ITransactionPayloadAttributes>> {
   public constructor(
-    private readonly transactionRecord: TransactionRecord<T>,
-    private readonly transactionProof: TransactionProof,
+    public readonly transactionRecord: TransactionRecord<T>,
+    public readonly transactionProof: TransactionProof,
   ) {}
 
-  public getTransactionRecord(): TransactionRecord<T> {
-    return this.transactionRecord;
-  }
-
-  public getTransactionProof(): TransactionProof {
-    return this.transactionProof;
-  }
-
   public toArray(): TransactionRecordWithProofArray {
-    return [this.getTransactionRecord().toArray(), this.getTransactionProof().toArray()];
+    return [this.transactionRecord.toArray(), this.transactionProof.toArray()];
   }
 
   public toString(): string {

@@ -14,52 +14,30 @@ export type TransactionPayloadArray = readonly [number, string, Uint8Array, unkn
  * TODO: Use only TransactionPayload class, move types to ITransactionPayloadAttributes
  */
 export class TransactionPayload<T extends ITransactionPayloadAttributes> {
-  public constructor(
-    private readonly type: string,
-    private readonly systemIdentifier: SystemIdentifier,
-    private readonly unitId: IUnitId,
-    private readonly attributes: T,
-    private readonly clientMetadata: ITransactionClientMetadata,
-  ) {
-    Object.freeze(clientMetadata);
-  }
-
-  public getType(): string {
-    return this.type;
-  }
-
-  public getSystemIdentifier(): SystemIdentifier {
-    return this.systemIdentifier;
-  }
-
-  public getUnitId(): IUnitId {
-    return this.unitId;
-  }
-
-  public getAttributes(): T {
-    return this.attributes;
-  }
-
-  public getClientMetadata(): ITransactionClientMetadata {
-    return this.clientMetadata;
-  }
+  private constructor(
+    public readonly type: string,
+    public readonly systemIdentifier: SystemIdentifier,
+    public readonly unitId: IUnitId,
+    public readonly attributes: T,
+    public readonly clientMetadata: ITransactionClientMetadata,
+  ) {}
 
   public getSigningFields(): TransactionPayloadArray {
     return [
-      this.getSystemIdentifier(),
-      this.getType(),
-      this.getUnitId().getBytes(),
-      this.getAttributes().toOwnerProofData(),
+      this.systemIdentifier,
+      this.type,
+      this.unitId.bytes,
+      this.attributes.toOwnerProofData(),
       this.getClientMetadataArray(),
     ];
   }
 
   public toArray(): TransactionPayloadArray {
     return [
-      this.getSystemIdentifier(),
-      this.getType(),
-      this.getUnitId().getBytes(),
-      this.getAttributes().toArray(),
+      this.systemIdentifier,
+      this.type,
+      this.unitId.bytes,
+      this.attributes.toArray(),
       this.getClientMetadataArray(),
     ];
   }
@@ -69,27 +47,50 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
       TransactionPayload
         Type: ${this.type}
         System Identifier: ${SystemIdentifier[this.systemIdentifier]}
-        Unit ID: ${Base16Converter.encode(this.unitId.getBytes())}
+        Unit ID: ${Base16Converter.encode(this.unitId.bytes)}
         Attributes:
           ${this.attributes.toString()}
         Client Metadata:
           Timeout: ${this.clientMetadata.timeout}
           Max Transaction Fee: ${this.clientMetadata.maxTransactionFee}
-          Fee Credit Record ID: ${this.clientMetadata.feeCreditRecordId ? Base16Converter.encode(this.clientMetadata.feeCreditRecordId.getBytes()) : null}`;
+          Fee Credit Record ID: ${this.clientMetadata.feeCreditRecordId ? Base16Converter.encode(this.clientMetadata.feeCreditRecordId.bytes) : null}`;
   }
 
   public static fromArray<T extends ITransactionPayloadAttributes>(
     data: TransactionPayloadArray,
   ): TransactionPayload<T> {
-    return new TransactionPayload(data[1], data[0], UnitId.fromBytes(data[2]), createAttribute(data[1], data[3]) as T, {
-      timeout: data[4][0],
-      maxTransactionFee: data[4][1],
-      feeCreditRecordId: data[4][2] ? UnitId.fromBytes(data[4][2]) : null,
-    });
+    return new TransactionPayload<T>(
+      data[1],
+      data[0],
+      UnitId.fromBytes(data[2]),
+      createAttribute(data[1], data[3]) as T,
+      {
+        timeout: data[4][0],
+        maxTransactionFee: data[4][1],
+        feeCreditRecordId: data[4][2] ? UnitId.fromBytes(data[4][2]) : null,
+      },
+    );
+  }
+
+  /**
+   * Creates a new TransactionPayload.
+   * @param {SystemIdentifier} systemIdentifier - The system identifier.
+   * @param {IUnitId} unitId - The unit ID.
+   * @param {T} attributes - The payload attributes.
+   * @param {ITransactionClientMetadata} clientMetadata - The client metadata.
+   * @returns {TransactionPayload<T>} The transaction payload.
+   */
+  public static create<T extends ITransactionPayloadAttributes>(
+    systemIdentifier: SystemIdentifier,
+    unitId: IUnitId,
+    attributes: T,
+    clientMetadata: ITransactionClientMetadata,
+  ): TransactionPayload<T> {
+    return new TransactionPayload(attributes.payloadType, systemIdentifier, unitId, attributes, clientMetadata);
   }
 
   private getClientMetadataArray(): TransactionClientMetadataArray {
-    const { timeout, maxTransactionFee, feeCreditRecordId } = this.getClientMetadata();
-    return [timeout, maxTransactionFee, feeCreditRecordId?.getBytes() || null];
+    const { timeout, maxTransactionFee, feeCreditRecordId } = this.clientMetadata;
+    return [timeout, maxTransactionFee, feeCreditRecordId?.bytes || null];
   }
 }

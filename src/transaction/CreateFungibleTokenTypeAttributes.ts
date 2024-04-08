@@ -20,61 +20,31 @@ export type CreateFungibleTokenTypeAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
-@PayloadAttribute
+const PAYLOAD_TYPE = 'createFType';
+
+@PayloadAttribute(PAYLOAD_TYPE)
 export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'createFType';
-  }
-
   public constructor(
-    private readonly symbol: string,
-    private readonly name: string,
-    private readonly icon: TokenIcon,
-    private readonly parentTypeId: IUnitId | null,
-    private readonly decimalPlaces: number,
-    private readonly subTypeCreationPredicate: IPredicate,
-    private readonly tokenCreationPredicate: IPredicate,
-    private readonly invariantPredicate: IPredicate,
-    private readonly subTypeCreationPredicateSignatures: Uint8Array[] | null,
+    public readonly symbol: string,
+    public readonly name: string,
+    public readonly icon: TokenIcon,
+    public readonly parentTypeId: IUnitId | null,
+    public readonly decimalPlaces: number,
+    public readonly subTypeCreationPredicate: IPredicate,
+    public readonly tokenCreationPredicate: IPredicate,
+    public readonly invariantPredicate: IPredicate,
+    private readonly _subTypeCreationPredicateSignatures: Uint8Array[] | null,
   ) {
-    this.subTypeCreationPredicateSignatures =
-      this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+    this._subTypeCreationPredicateSignatures =
+      this._subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getSymbol(): string {
-    return this.symbol;
+  public get payloadType(): string {
+    return PAYLOAD_TYPE;
   }
 
-  public getName(): string {
-    return this.name;
-  }
-
-  public getIcon(): TokenIcon {
-    return this.icon;
-  }
-
-  public getParentTypeId(): IUnitId | null {
-    return this.parentTypeId;
-  }
-
-  public getDecimalPlaces(): number {
-    return this.decimalPlaces;
-  }
-
-  public getSubTypeCreationPredicate(): IPredicate {
-    return this.subTypeCreationPredicate;
-  }
-
-  public getTokenCreationPredicate(): IPredicate {
-    return this.tokenCreationPredicate;
-  }
-
-  public getInvariantPredicate(): IPredicate {
-    return this.invariantPredicate;
-  }
-
-  public getSubTypeCreationPredicateSignatures(): Uint8Array[] | null {
-    return this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+  public get subTypeCreationPredicateSignatures(): Uint8Array[] | null {
+    return this._subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   public toOwnerProofData(): CreateFungibleTokenTypeAttributesArray {
@@ -83,15 +53,15 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
 
   public toArray(): CreateFungibleTokenTypeAttributesArray {
     return [
-      this.getSymbol(),
-      this.getName(),
-      this.getIcon().toArray(),
-      this.getParentTypeId()?.getBytes() || null,
-      this.getDecimalPlaces(),
-      this.getSubTypeCreationPredicate().getBytes(),
-      this.getTokenCreationPredicate().getBytes(),
-      this.getInvariantPredicate().getBytes(),
-      this.getSubTypeCreationPredicateSignatures(),
+      this.symbol,
+      this.name,
+      this.icon.toArray(),
+      this.parentTypeId?.bytes || null,
+      this.decimalPlaces,
+      this.subTypeCreationPredicate.bytes,
+      this.tokenCreationPredicate.bytes,
+      this.invariantPredicate.bytes,
+      this.subTypeCreationPredicateSignatures,
     ];
   }
 
@@ -107,10 +77,10 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
         Token Creation Predicate: ${this.tokenCreationPredicate.toString()}
         Invariant Predicate: ${this.invariantPredicate.toString()}
         Sub Type Creation Predicate Signatures: ${
-          this.subTypeCreationPredicateSignatures
+          this._subTypeCreationPredicateSignatures
             ? dedent`
         [
-          ${this.subTypeCreationPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+          ${this._subTypeCreationPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
         ]`
             : 'null'
         }`;
