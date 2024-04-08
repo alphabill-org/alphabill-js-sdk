@@ -1,3 +1,7 @@
+/**
+ * Unit from getUnit.
+ * @interface IUnitDto
+ */
 export interface IUnitDto {
   readonly unitId: string;
   readonly data: unknown;
@@ -5,6 +9,9 @@ export interface IUnitDto {
   readonly stateProof?: IStateProofDto;
 }
 
+/**
+ * Unit state proof from getUnit.
+ */
 export interface IStateProofDto {
   readonly unitId: string;
   readonly unitValue: bigint;

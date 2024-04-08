@@ -19,7 +19,6 @@ const PAYLOAD_TYPE = 'transNToken';
 
 @PayloadAttribute(PAYLOAD_TYPE)
 export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
-
   public constructor(
     public readonly ownerPredicate: IPredicate,
     private readonly _nonce: Uint8Array | null,

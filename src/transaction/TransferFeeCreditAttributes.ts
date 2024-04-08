@@ -1,4 +1,4 @@
-import { IUnitId } from "../IUnitId.js";
+import { IUnitId } from '../IUnitId.js';
 import { SystemIdentifier } from '../SystemIdentifier.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';

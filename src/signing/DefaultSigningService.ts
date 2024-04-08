@@ -20,17 +20,14 @@ export class DefaultSigningService implements ISigningService {
   }
 
   /**
-   * Get public key bytes.
-   * @returns {Uint8Array} public key bytes.
+   * @see {ISigningService.publicKey}
    */
   public get publicKey(): Uint8Array {
     return new Uint8Array(this._publicKey);
   }
 
   /**
-   * Sign given bytes.
-   * @param {Uint8Array} bytes bytes to sign.
-   * @returns {Promise<Uint8Array>} signature bytes.
+   * @see {ISigningService.sign}
    */
   // eslint-disable-next-line require-await
   public async sign(bytes: Uint8Array): Promise<Uint8Array> {

@@ -17,6 +17,10 @@ import { createUnit } from './UnitFactory.js';
 
 export type TransactionProofDto = { txRecord: string; txProof: string };
 
+/**
+ * State API JSON-RPC service.
+ * @implements {IStateApiService}
+ */
 export class StateApiJsonRpcService implements IStateApiService {
   public constructor(
     private readonly client: JsonRpcClient,

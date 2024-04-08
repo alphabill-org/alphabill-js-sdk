@@ -86,6 +86,7 @@ export function createPublicClient(options: IStateApiClientOptions): StateApiCli
 
 /**
  * State API client options.
+ * @interface IStateApiClientOptions
  */
 interface IStateApiClientOptions {
   /**

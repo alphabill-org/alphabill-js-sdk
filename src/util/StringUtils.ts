@@ -34,7 +34,3 @@ export function dedent(strings: TemplateStringsArray, ...data: unknown[]): strin
 
   return result.join('\n');
 }
-
-function sliceWithoutData(data: string, whiteSpace: number) {
-  data.slice(Math.max(data.trim().length - data.length, whiteSpace));
-}

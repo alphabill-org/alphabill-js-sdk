@@ -4,7 +4,6 @@ import { DefaultSigningService } from '@alphabill/alphabill-js-sdk/lib/signing/D
 import { createPublicClient } from '@alphabill/alphabill-js-sdk/lib/StateApiClient.js';
 import { SystemIdentifier } from '@alphabill/alphabill-js-sdk/lib/SystemIdentifier.js';
 import { AddFeeCreditAttributes } from '@alphabill/alphabill-js-sdk/lib/transaction/AddFeeCreditAttributes.js';
-import { FeeCreditClientMetadata } from '@alphabill/alphabill-js-sdk/lib/transaction/FeeCreditClientMetadata.js';
 import { PayToPublicKeyHashPredicate } from '@alphabill/alphabill-js-sdk/lib/transaction/PayToPublicKeyHashPredicate.js';
 import { TransactionOrderFactory } from '@alphabill/alphabill-js-sdk/lib/transaction/TransactionOrderFactory.js';
 import { TransactionPayload } from '@alphabill/alphabill-js-sdk/lib/transaction/TransactionPayload.js';
@@ -36,11 +35,11 @@ if (moneyIds.length === 0) {
 
 const unit = await moneyClient.getUnit(moneyIds[0], false);
 const round = await moneyClient.getRoundNumber();
-const feeCreditUnitId = new UnitIdWithType(
+const feeCreditRecordId = new UnitIdWithType(
   sha256(signingService.publicKey),
   UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
 );
-const feeCreditUnit = await tokenClient.getUnit(feeCreditUnitId, false);
+const feeCreditUnit = await tokenClient.getUnit(feeCreditRecordId, false);
 
 const transferFeeCreditTransactionHash = await moneyClient.sendTransaction(
   await transactionOrderFactory.createTransaction(
@@ -50,13 +49,17 @@ const transferFeeCreditTransactionHash = await moneyClient.sendTransaction(
       new TransferFeeCreditAttributes(
         100n,
         SystemIdentifier.TOKEN_PARTITION,
-        feeCreditUnitId,
+        feeCreditRecordId,
         round,
         round + 60n,
         feeCreditUnit?.data.backlink || null,
         unit.data.backlink,
       ),
-      new FeeCreditClientMetadata(5n, round + 60n),
+      {
+        maxTransactionFee: 5n,
+        timeout: round + 60n,
+        feeCreditRecordId: null
+      },
     ),
   ),
 );
@@ -67,12 +70,16 @@ const addFeeCreditTransactionHash = await tokenClient.sendTransaction(
   await transactionOrderFactory.createTransaction(
     TransactionPayload.create(
       SystemIdentifier.TOKEN_PARTITION,
-      feeCreditUnitId,
+      feeCreditRecordId,
       new AddFeeCreditAttributes(
         await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
         transactionProof,
       ),
-      new FeeCreditClientMetadata(5n, round + 60n),
+      {
+        maxTransactionFee: 5n,
+        timeout: round + 100n,
+        feeCreditRecordId: null
+      },
     ),
   ),
 );

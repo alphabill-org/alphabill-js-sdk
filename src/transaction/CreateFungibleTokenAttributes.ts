@@ -11,8 +11,18 @@ export type CreateFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Arra
 
 const PAYLOAD_TYPE = 'createFToken';
 
+/**
+ * Create fungible token payload attributes.
+ */
 @PayloadAttribute(PAYLOAD_TYPE)
 export class CreateFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  /**
+   * Create fungible token payload attributes constructor.
+   * @param {IPredicate} ownerPredicate Owner predicate.
+   * @param {IUnitId} typeId Token type ID.
+   * @param {bigint} value Token value.
+   * @param {Uint8Array[] | null} _tokenCreationPredicateSignatures Token creation predicate signatures.
+   */
   public constructor(
     public readonly ownerPredicate: IPredicate,
     public readonly typeId: IUnitId,
@@ -24,22 +34,39 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
       this._tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
   public get payloadType(): string {
     return PAYLOAD_TYPE;
   }
 
+  /**
+   * Token creation predicate signatures.
+   * @returns {Uint8Array[] | null}
+   */
   public get tokenCreationPredicateSignatures(): Uint8Array[] | null {
     return this._tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): CreateFungibleTokenAttributesArray {
     return this.toArray();
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): CreateFungibleTokenAttributesArray {
     return [this.ownerPredicate.bytes, this.typeId.bytes, this.value, this.tokenCreationPredicateSignatures];
   }
 
+  /**
+   * Create fungible token attributes to string.
+   * @returns {string} Create fungible token attributes to string.
+   */
   public toString(): string {
     return dedent`
       CreateFungibleTokenAttributes
@@ -56,6 +83,11 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
         }`;
   }
 
+  /**
+   * Create create fungible token attributes from array.
+   * @param {CreateFungibleTokenAttributesArray} data Create fungible token attributes array.
+   * @returns {CreateFungibleTokenAttributes} Create fungible token attributes.
+   */
   public static fromArray(data: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
     return new CreateFungibleTokenAttributes(new PredicateBytes(data[0]), UnitId.fromBytes(data[1]), data[2], data[3]);
   }

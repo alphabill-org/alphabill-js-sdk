@@ -3,12 +3,9 @@ import { http } from '@alphabill/alphabill-js-sdk/lib/json-rpc/StateApiJsonRpcSe
 import { DefaultSigningService } from '@alphabill/alphabill-js-sdk/lib/signing/DefaultSigningService.js';
 import { createPublicClient } from '@alphabill/alphabill-js-sdk/lib/StateApiClient.js';
 import { SystemIdentifier } from '@alphabill/alphabill-js-sdk/lib/SystemIdentifier.js';
-import { FeeCreditUnitId } from '@alphabill/alphabill-js-sdk/lib/transaction/FeeCreditUnitId.js';
 import { PayToPublicKeyHashPredicate } from '@alphabill/alphabill-js-sdk/lib/transaction/PayToPublicKeyHashPredicate.js';
 import { SwapBillsWithDustCollectorAttributes } from '@alphabill/alphabill-js-sdk/lib/transaction/SwapBillsWithDustCollectorAttributes.js';
-import { SwapBillsWithDustCollectorPayload } from '@alphabill/alphabill-js-sdk/lib/transaction/SwapBillsWithDustCollectorPayload.js';
 import { TransactionOrderFactory } from '@alphabill/alphabill-js-sdk/lib/transaction/TransactionOrderFactory.js';
-import { TransferBillToDustCollectorPayload } from '@alphabill/alphabill-js-sdk/lib/transaction/TransferBillDustCollectorPayload.js';
 import { TransferBillToDustCollectorAttributes } from '@alphabill/alphabill-js-sdk/lib/transaction/TransferBillToDustCollectorAttributes.js';
 import { UnitIdWithType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitIdWithType.js';
 import { UnitType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitType.js';
@@ -17,6 +14,7 @@ import { sha256 } from '@noble/hashes/sha256';
 
 import config from '../config.js';
 import { waitTransactionProof } from '../waitTransactionProof.mjs';
+import { TransactionPayload } from "@alphabill/alphabill-js-sdk/lib/transaction/TransactionPayload.js";
 
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
@@ -25,7 +23,7 @@ const client = createPublicClient({
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
-const unitIds = await client.getUnitsByOwnerId(signingService.getPublicKey());
+const unitIds = await client.getUnitsByOwnerId(signingService.publicKey);
 const targetUnitIdHex = '0x000000000000000000000000000000000000000000000000000000000000000100';
 const targetUnitId = new UnitIdWithType(
   new Uint8Array(Base16Converter.decode(targetUnitIdHex)),
@@ -34,8 +32,8 @@ const targetUnitId = new UnitIdWithType(
 const moneyUnitId = unitIds
   .filter(
     (id) =>
-      id.getType().toBase16() === UnitType.MONEY_PARTITION_BILL_DATA &&
-      Base16Converter.encode(id.getBytes()) !== targetUnitIdHex,
+      id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA &&
+      Base16Converter.encode(id.bytes) !== targetUnitIdHex,
   )
   .at(0);
 
@@ -43,25 +41,32 @@ if (!moneyUnitId) {
   throw new Error('No bills available');
 }
 
+/**
+ * @type {IUnit<Bill>|null}
+ */
 const targetBill = await client.getUnit(targetUnitId, false);
+/**
+ * @type {IUnit<Bill>|null}
+ */
 const bill = await client.getUnit(moneyUnitId, false);
-const feeCreditUnitId = new FeeCreditUnitId(sha256(signingService.getPublicKey()), SystemIdentifier.MONEY_PARTITION);
+const feeCreditRecordId = new UnitIdWithType(sha256(signingService.publicKey), UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD);
 const round = await client.getRoundNumber();
 
 const transactionHash = await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
-    new TransferBillToDustCollectorPayload(
+    TransactionPayload.create(
+      SystemIdentifier.MONEY_PARTITION,
+      bill?.unitId,
       new TransferBillToDustCollectorAttributes(
-        bill.getData().getValue(),
-        targetBill.getUnitId(),
-        targetBill.getData().getBacklink(),
-        bill.getData().getBacklink(),
+        bill?.data.value,
+        targetBill?.unitId,
+        targetBill?.data.backlink,
+        bill?.data.backlink,
       ),
-      bill.getUnitId(),
       {
         maxTransactionFee: 5n,
         timeout: round + 60n,
-        feeCreditRecordId: feeCreditUnitId,
+        feeCreditRecordId,
       },
     ),
   ),
@@ -71,17 +76,18 @@ const transactionProof = await waitTransactionProof(client, transactionHash);
 
 await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
-    new SwapBillsWithDustCollectorPayload(
+    TransactionPayload.create(
+      SystemIdentifier.MONEY_PARTITION,
+      targetBill?.unitId,
       new SwapBillsWithDustCollectorAttributes(
-        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.getPublicKey()),
+        await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
         [transactionProof],
-        bill.getData().getValue(),
+        bill?.data.value,
       ),
-      targetBill.getUnitId(),
       {
         maxTransactionFee: 5n,
         timeout: round + 100n,
-        feeCreditRecordId: feeCreditUnitId,
+        feeCreditRecordId,
       },
     ),
   ),

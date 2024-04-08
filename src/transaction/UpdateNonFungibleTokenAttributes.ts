@@ -11,7 +11,6 @@ const PAYLOAD_TYPE = 'updateNToken';
 
 @PayloadAttribute(PAYLOAD_TYPE)
 export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
-
   public constructor(
     public readonly data: INonFungibleTokenData,
     private readonly _backlink: Uint8Array,

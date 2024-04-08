@@ -4,16 +4,14 @@ import { DefaultSigningService } from '@alphabill/alphabill-js-sdk/lib/signing/D
 import { createPublicClient } from '@alphabill/alphabill-js-sdk/lib/StateApiClient.js';
 import { SystemIdentifier } from '@alphabill/alphabill-js-sdk/lib/SystemIdentifier.js';
 import { CloseFeeCreditAttributes } from '@alphabill/alphabill-js-sdk/lib/transaction/CloseFeeCreditAttributes.js';
-import { CloseFeeCreditPayload } from '@alphabill/alphabill-js-sdk/lib/transaction/CloseFeeCreditPayload.js';
-import { FeeCreditClientMetadata } from '@alphabill/alphabill-js-sdk/lib/transaction/FeeCreditClientMetadata.js';
 import { ReclaimFeeCreditAttributes } from '@alphabill/alphabill-js-sdk/lib/transaction/ReclaimFeeCreditAttributes.js';
-import { ReclaimFeeCreditPayload } from '@alphabill/alphabill-js-sdk/lib/transaction/ReclaimFeeCreditPayload.js';
 import { TransactionOrderFactory } from '@alphabill/alphabill-js-sdk/lib/transaction/TransactionOrderFactory.js';
 import { UnitIdWithType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitIdWithType.js';
 import { UnitType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitType.js';
 import { Base16Converter } from '@alphabill/alphabill-js-sdk/lib/util/Base16Converter.js';
 import config from '../config.js';
 import { waitTransactionProof } from '../waitTransactionProof.mjs';
+import { TransactionPayload } from "@alphabill/alphabill-js-sdk/lib/transaction/TransactionPayload.js";
 
 const cborCodec = new CborCodecNode();
 const tokenClient = createPublicClient({
@@ -25,21 +23,27 @@ const moneyClient = createPublicClient({
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
-const unitIds = await tokenClient.getUnitsByOwnerId(signingService.getPublicKey());
+const unitIds = await tokenClient.getUnitsByOwnerId(signingService.publicKey);
 const targetUnitIdHex = '0x000000000000000000000000000000000000000000000000000000000000000100';
 const targetUnitId = new UnitIdWithType(
   new Uint8Array(Base16Converter.decode(targetUnitIdHex)),
   UnitType.MONEY_PARTITION_BILL_DATA,
 );
 const feeCreditUnitId = unitIds
-  .filter((id) => id.getType().toBase16() === UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD)
+  .filter((id) => id.type.toBase16() === UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD)
   .at(1);
 
 if (!feeCreditUnitId) {
   throw new Error('No fee credit available');
 }
 
+/**
+ * @type {IUnit<Bill>|null}
+ */
 const targetBill = await moneyClient.getUnit(targetUnitId, false);
+/**
+ * @type {IUnit<FeeCreditRecord>|null}
+ */
 const feeCredit = await tokenClient.getUnit(feeCreditUnitId, false);
 const round = await tokenClient.getRoundNumber();
 
@@ -47,15 +51,19 @@ console.log(feeCredit);
 
 let transactionHash = await tokenClient.sendTransaction(
   await transactionOrderFactory.createTransaction(
-    new CloseFeeCreditPayload(
-      new CloseFeeCreditAttributes(
-        feeCredit.getData().getBalance(),
-        targetBill.getUnitId(),
-        targetBill.getData().getBacklink(),
-      ),
+    TransactionPayload.create(
       SystemIdentifier.TOKEN_PARTITION,
-      feeCredit.getUnitId(),
-      new FeeCreditClientMetadata(5n, round + 60n),
+      feeCredit?.unitId,
+      new CloseFeeCreditAttributes(
+        feeCredit?.data.balance,
+        targetBill?.unitId,
+        targetBill?.data.backlink,
+      ),
+      {
+        maxTransactionFee: 5n,
+        timeout: round + 60n,
+        feeCreditRecordId: null
+      }
     ),
   ),
 );
@@ -64,10 +72,15 @@ const transactionProof = await waitTransactionProof(tokenClient, transactionHash
 
 transactionHash = await moneyClient.sendTransaction(
   await transactionOrderFactory.createTransaction(
-    new ReclaimFeeCreditPayload(
-      new ReclaimFeeCreditAttributes(transactionProof, targetBill.getData().getBacklink()),
-      targetBill.getUnitId(),
-      new FeeCreditClientMetadata(5n, round + 60n),
+    TransactionPayload.create(
+      SystemIdentifier.MONEY_PARTITION,
+      targetBill?.unitId,
+      new ReclaimFeeCreditAttributes(transactionProof, targetBill?.data.backlink),
+      {
+        maxTransactionFee: 5n,
+        timeout: round + 60n,
+        feeCreditRecordId: null
+      },
     ),
   ),
 );

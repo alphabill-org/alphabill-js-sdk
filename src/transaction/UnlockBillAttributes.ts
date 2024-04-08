@@ -9,7 +9,6 @@ const PAYLOAD_TYPE = 'unlock';
 
 @PayloadAttribute(PAYLOAD_TYPE)
 export class UnlockBillAttributes implements ITransactionPayloadAttributes {
-
   public constructor(private readonly _backlink: Uint8Array) {
     this._backlink = new Uint8Array(this._backlink);
   }

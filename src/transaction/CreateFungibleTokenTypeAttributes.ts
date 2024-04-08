@@ -22,8 +22,23 @@ export type CreateFungibleTokenTypeAttributesArray = readonly [
 
 const PAYLOAD_TYPE = 'createFType';
 
+/**
+ * Create fungible token type payload attributes.
+ */
 @PayloadAttribute(PAYLOAD_TYPE)
 export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAttributes {
+  /**
+   * Create fungible token type payload attributes constructor.
+   * @param {string} symbol Symbol.
+   * @param {string} name Name.
+   * @param {TokenIcon} icon Icon.
+   * @param {IUnitId | null} parentTypeId Parent type ID.
+   * @param {number} decimalPlaces Decimal places.
+   * @param {IPredicate} subTypeCreationPredicate Sub type creation predicate.
+   * @param {IPredicate} tokenCreationPredicate Token creation predicate.
+   * @param {IPredicate} invariantPredicate Invariant predicate.
+   * @param {Uint8Array[] | null} _subTypeCreationPredicateSignatures Sub type creation predicate signatures.
+   */
   public constructor(
     public readonly symbol: string,
     public readonly name: string,
@@ -39,18 +54,31 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
       this._subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
   public get payloadType(): string {
     return PAYLOAD_TYPE;
   }
 
+  /**
+   * Sub type creation predicate signatures.
+   * @returns {Uint8Array[] | null}
+   */
   public get subTypeCreationPredicateSignatures(): Uint8Array[] | null {
     return this._subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): CreateFungibleTokenTypeAttributesArray {
     return this.toArray();
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): CreateFungibleTokenTypeAttributesArray {
     return [
       this.symbol,
@@ -65,6 +93,10 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
     ];
   }
 
+  /**
+   * Create fungible token type attributes to string.
+   * @returns {string} Create fungible token type attributes to string.
+   */
   public toString(): string {
     return dedent`
       CreateFungibleTokenTypeAttributes
@@ -86,6 +118,11 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
         }`;
   }
 
+  /**
+   * Create create fungible token type attributes from array.
+   * @param {CreateFungibleTokenTypeAttributesArray} data Create fungible token type attributes array.
+   * @returns {CreateFungibleTokenTypeAttributes} Create fungible token type attributes.
+   */
   public static fromArray(data: CreateFungibleTokenTypeAttributesArray): CreateFungibleTokenTypeAttributes {
     return new CreateFungibleTokenTypeAttributes(
       data[0],

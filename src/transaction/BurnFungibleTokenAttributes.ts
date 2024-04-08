@@ -16,8 +16,20 @@ export type BurnFungibleTokenAttributesArray = readonly [
 
 const PAYLOAD_TYPE = 'burnFToken';
 
+/**
+ * Burn fungible token payload attributes.
+ */
 @PayloadAttribute(PAYLOAD_TYPE)
 export class BurnFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  /**
+   * Burn fungible token payload attributes constructor.
+   * @param {IUnitId} typeId Token type ID.
+   * @param {bigint} value Token value.
+   * @param {IUnitId} targetTokenId Target token ID.
+   * @param {Uint8Array} _targetTokenBacklink Target token backlink.
+   * @param {Uint8Array} _backlink Backlink.
+   * @param {Uint8Array[] | null} _invariantPredicateSignatures Invariant predicate signatures.
+   */
   public constructor(
     public readonly typeId: IUnitId,
     public readonly value: bigint,
@@ -33,26 +45,47 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
   public get payloadType(): string {
     return PAYLOAD_TYPE;
   }
 
+  /**
+   * Target token backlink.
+   * @returns {Uint8Array}
+   */
   public get targetTokenBacklink(): Uint8Array {
     return new Uint8Array(this._targetTokenBacklink);
   }
 
+  /**
+   * Backlink.
+   * @returns {Uint8Array}
+   */
   public get backlink(): Uint8Array {
     return new Uint8Array(this._backlink);
   }
 
+  /**
+   * Invariant predicate signatures.
+   * @returns {Uint8Array[] | null}
+   */
   public get invariantPredicateSignatures(): Uint8Array[] | null {
     return this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): BurnFungibleTokenAttributesArray {
     return [this.typeId.bytes, this.value, this.targetTokenId.bytes, this.targetTokenBacklink, this.backlink, null];
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): BurnFungibleTokenAttributesArray {
     return [
       this.typeId.bytes,
@@ -64,6 +97,10 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
     ];
   }
 
+  /**
+   * Burn fungible token attributes to string.
+   * @returns {string} Burn fungible token attributes to string.
+   */
   public toString(): string {
     return dedent`
       BurnFungibleTokenAttributes
@@ -82,6 +119,11 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
         }`;
   }
 
+  /**
+   * Create burn fungible token attributes from array.
+   * @param {BurnFungibleTokenAttributesArray} data Burn fungible token attributes array.
+   * @returns {BurnFungibleTokenAttributes} Burn fungible token attributes.
+   */
   public static fromArray(data: BurnFungibleTokenAttributesArray): BurnFungibleTokenAttributes {
     return new BurnFungibleTokenAttributes(
       UnitId.fromBytes(data[0]),
