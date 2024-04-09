@@ -5,13 +5,13 @@ import { createPublicClient } from '@alphabill/alphabill-js-sdk/lib/StateApiClie
 import { SystemIdentifier } from '@alphabill/alphabill-js-sdk/lib/SystemIdentifier.js';
 import { LockFeeCreditAttributes } from '@alphabill/alphabill-js-sdk/lib/transaction/LockFeeCreditAttributes.js';
 import { TransactionOrderFactory } from '@alphabill/alphabill-js-sdk/lib/transaction/TransactionOrderFactory.js';
+import { TransactionPayload } from '@alphabill/alphabill-js-sdk/lib/transaction/TransactionPayload.js';
+import { UnitIdWithType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitIdWithType.js';
+import { UnitType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitType.js';
 import { Base16Converter } from '@alphabill/alphabill-js-sdk/lib/util/Base16Converter.js';
 import { sha256 } from '@noble/hashes/sha256';
 import config from '../config.js';
 import { waitTransactionProof } from '../waitTransactionProof.mjs';
-import { UnitIdWithType } from "@alphabill/alphabill-js-sdk/lib/transaction/UnitIdWithType.js";
-import { UnitType } from "@alphabill/alphabill-js-sdk/lib/transaction/UnitType.js";
-import { TransactionPayload } from "@alphabill/alphabill-js-sdk/lib/transaction/TransactionPayload.js";
 
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
@@ -22,7 +22,10 @@ const signingService = new DefaultSigningService(Base16Converter.decode(config.p
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
 
 const round = await client.getRoundNumber();
-const feeCreditRecordId = new UnitIdWithType(sha256(signingService.publicKey), UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD);
+const feeCreditRecordId = new UnitIdWithType(
+  sha256(signingService.publicKey),
+  UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
+);
 /**
  * @type {IUnit<FeeCreditRecord>|null}
  */

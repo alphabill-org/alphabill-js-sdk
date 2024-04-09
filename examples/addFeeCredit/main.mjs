@@ -58,7 +58,7 @@ const transferFeeCreditTransactionHash = await moneyClient.sendTransaction(
       {
         maxTransactionFee: 5n,
         timeout: round + 60n,
-        feeCreditRecordId: null
+        feeCreditRecordId: null,
       },
     ),
   ),
@@ -78,7 +78,7 @@ const addFeeCreditTransactionHash = await tokenClient.sendTransaction(
       {
         maxTransactionFee: 5n,
         timeout: round + 100n,
-        feeCreditRecordId: null
+        feeCreditRecordId: null,
       },
     ),
   ),

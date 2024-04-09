@@ -4,6 +4,7 @@ import { DefaultSigningService } from '@alphabill/alphabill-js-sdk/lib/signing/D
 import { createPublicClient } from '@alphabill/alphabill-js-sdk/lib/StateApiClient.js';
 import { SystemIdentifier } from '@alphabill/alphabill-js-sdk/lib/SystemIdentifier.js';
 import { TransactionOrderFactory } from '@alphabill/alphabill-js-sdk/lib/transaction/TransactionOrderFactory.js';
+import { TransactionPayload } from '@alphabill/alphabill-js-sdk/lib/transaction/TransactionPayload.js';
 import { UnitIdWithType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitIdWithType.js';
 import { UnitType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitType.js';
 import { UnlockBillAttributes } from '@alphabill/alphabill-js-sdk/lib/transaction/UnlockBillAttributes.js';
@@ -11,7 +12,6 @@ import { Base16Converter } from '@alphabill/alphabill-js-sdk/lib/util/Base16Conv
 import { sha256 } from '@noble/hashes/sha256';
 
 import config from '../config.js';
-import { TransactionPayload } from "@alphabill/alphabill-js-sdk/lib/transaction/TransactionPayload.js";
 
 const cborCodec = new CborCodecNode();
 const client = createPublicClient({
@@ -24,7 +24,10 @@ const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingSe
 const unitIdBytes = new Uint8Array(32);
 unitIdBytes.set([0x01], 31);
 
-const feeCreditRecordId = new UnitIdWithType(sha256(signingService.publicKey), UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD);
+const feeCreditRecordId = new UnitIdWithType(
+  sha256(signingService.publicKey),
+  UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD,
+);
 const round = await client.getRoundNumber();
 
 /**
@@ -32,16 +35,18 @@ const round = await client.getRoundNumber();
  */
 const bill = await client.getUnit(new UnitIdWithType(unitIdBytes, UnitType.MONEY_PARTITION_BILL_DATA), false);
 
-const hash = await client.sendTransaction(await transactionOrderFactory.createTransaction(
-  TransactionPayload.create(
-    SystemIdentifier.MONEY_PARTITION,
-    bill?.unitId,
-    new UnlockBillAttributes(bill?.data.backlink),
-    {
-      maxTransactionFee: 5n,
-      timeout: round + 60n,
-      feeCreditRecordId,
-    }
-  )
-));
+const hash = await client.sendTransaction(
+  await transactionOrderFactory.createTransaction(
+    TransactionPayload.create(
+      SystemIdentifier.MONEY_PARTITION,
+      bill?.unitId,
+      new UnlockBillAttributes(bill?.data.backlink),
+      {
+        maxTransactionFee: 5n,
+        timeout: round + 60n,
+        feeCreditRecordId,
+      },
+    ),
+  ),
+);
 console.log(hash);

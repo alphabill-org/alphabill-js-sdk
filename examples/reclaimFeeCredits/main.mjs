@@ -6,12 +6,12 @@ import { SystemIdentifier } from '@alphabill/alphabill-js-sdk/lib/SystemIdentifi
 import { CloseFeeCreditAttributes } from '@alphabill/alphabill-js-sdk/lib/transaction/CloseFeeCreditAttributes.js';
 import { ReclaimFeeCreditAttributes } from '@alphabill/alphabill-js-sdk/lib/transaction/ReclaimFeeCreditAttributes.js';
 import { TransactionOrderFactory } from '@alphabill/alphabill-js-sdk/lib/transaction/TransactionOrderFactory.js';
+import { TransactionPayload } from '@alphabill/alphabill-js-sdk/lib/transaction/TransactionPayload.js';
 import { UnitIdWithType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitIdWithType.js';
 import { UnitType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitType.js';
 import { Base16Converter } from '@alphabill/alphabill-js-sdk/lib/util/Base16Converter.js';
 import config from '../config.js';
 import { waitTransactionProof } from '../waitTransactionProof.mjs';
-import { TransactionPayload } from "@alphabill/alphabill-js-sdk/lib/transaction/TransactionPayload.js";
 
 const cborCodec = new CborCodecNode();
 const tokenClient = createPublicClient({
@@ -29,9 +29,7 @@ const targetUnitId = new UnitIdWithType(
   new Uint8Array(Base16Converter.decode(targetUnitIdHex)),
   UnitType.MONEY_PARTITION_BILL_DATA,
 );
-const feeCreditUnitId = unitIds
-  .filter((id) => id.type.toBase16() === UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD)
-  .at(1);
+const feeCreditUnitId = unitIds.filter((id) => id.type.toBase16() === UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD).at(1);
 
 if (!feeCreditUnitId) {
   throw new Error('No fee credit available');
@@ -54,16 +52,12 @@ let transactionHash = await tokenClient.sendTransaction(
     TransactionPayload.create(
       SystemIdentifier.TOKEN_PARTITION,
       feeCredit?.unitId,
-      new CloseFeeCreditAttributes(
-        feeCredit?.data.balance,
-        targetBill?.unitId,
-        targetBill?.data.backlink,
-      ),
+      new CloseFeeCreditAttributes(feeCredit?.data.balance, targetBill?.unitId, targetBill?.data.backlink),
       {
         maxTransactionFee: 5n,
         timeout: round + 60n,
-        feeCreditRecordId: null
-      }
+        feeCreditRecordId: null,
+      },
     ),
   ),
 );
@@ -79,7 +73,7 @@ transactionHash = await moneyClient.sendTransaction(
       {
         maxTransactionFee: 5n,
         timeout: round + 60n,
-        feeCreditRecordId: null
+        feeCreditRecordId: null,
       },
     ),
   ),
