@@ -30,7 +30,7 @@ await client.sendTransaction(
   await transactionOrderFactory.createTransaction(
     TransactionPayload.create(
       SystemIdentifier.TOKEN_PARTITION,
-      new UnitIdWithType(new Uint8Array([1, 2, 3]), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN_TYPE),
+      new UnitIdWithType(new Uint8Array([1, 2, 3, 25]), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN_TYPE),
       new CreateNonFungibleTokenTypeAttributes(
         'E',
         'Big money come',

@@ -5,7 +5,7 @@ import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
 export type SplitFungibleTokenAttributesArray = readonly [
   Uint8Array,
@@ -17,9 +17,6 @@ export type SplitFungibleTokenAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
-const PAYLOAD_TYPE = 'splitFToken';
-
-@PayloadAttribute(PAYLOAD_TYPE)
 export class SplitFungibleTokenAttributes implements ITransactionPayloadAttributes {
   public constructor(
     public readonly ownerPredicate: IPredicate,
@@ -38,8 +35,8 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.SplitFungibleTokenAttributes;
   }
 
   public get nonce(): Uint8Array | null {

@@ -7,7 +7,7 @@ import { INonFungibleTokenData } from './INonFungibleTokenData.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { NonFungibleTokenData } from './NonFungibleTokenData.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
 export type CreateNonFungibleTokenAttributesArray = readonly [
   Uint8Array,
@@ -19,12 +19,9 @@ export type CreateNonFungibleTokenAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
-const PAYLOAD_TYPE = 'createNToken';
-
 /**
  * Create non-fungible token payload attributes.
  */
-@PayloadAttribute(PAYLOAD_TYPE)
 export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
   /**
    * Create non-fungible token payload attributes constructor.
@@ -52,8 +49,8 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.CreateNonFungibleTokenAttributes;
   }
 
   /**

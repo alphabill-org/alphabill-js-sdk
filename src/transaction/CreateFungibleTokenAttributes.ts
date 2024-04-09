@@ -5,16 +5,13 @@ import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
 export type CreateFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Array, bigint, Uint8Array[] | null];
-
-const PAYLOAD_TYPE = 'createFToken';
 
 /**
  * Create fungible token payload attributes.
  */
-@PayloadAttribute(PAYLOAD_TYPE)
 export class CreateFungibleTokenAttributes implements ITransactionPayloadAttributes {
   /**
    * Create fungible token payload attributes constructor.
@@ -37,8 +34,8 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.CreateFungibleTokenAttributes;
   }
 
   /**

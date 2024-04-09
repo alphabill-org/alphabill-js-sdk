@@ -1,13 +1,10 @@
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
 export type LockBillAttributesArray = readonly [bigint, Uint8Array];
 
-const PAYLOAD_TYPE = 'lock';
-
-@PayloadAttribute(PAYLOAD_TYPE)
 export class LockBillAttributes implements ITransactionPayloadAttributes {
   public constructor(
     public readonly lockStatus: bigint,
@@ -17,8 +14,8 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
     this._backlink = new Uint8Array(this._backlink);
   }
 
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.LockBillAttributes;
   }
 
   public get backlink(): Uint8Array {

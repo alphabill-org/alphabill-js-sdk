@@ -3,16 +3,13 @@ import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
 export type CloseFeeCreditAttributesArray = readonly [bigint, Uint8Array, Uint8Array];
-
-const PAYLOAD_TYPE = 'closeFC';
 
 /**
  * Close fee credit payload attributes.
  */
-@PayloadAttribute(PAYLOAD_TYPE)
 export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * Close fee credit payload attributes constructor.
@@ -32,8 +29,8 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.CloseFeeCreditAttributes;
   }
 
   /**

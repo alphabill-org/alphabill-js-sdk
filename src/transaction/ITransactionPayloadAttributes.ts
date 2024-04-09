@@ -1,3 +1,5 @@
+import { PayloadType } from './PayloadAttributeFactory.js';
+
 /**
  * Transaction payload attributes interface.
  * @interface ITransactionPayloadAttributes
@@ -5,9 +7,9 @@
 export interface ITransactionPayloadAttributes {
   /**
    * Payload type string.
-   * @returns {string} Payload type.
+   * @returns {PayloadType} Payload type.
    */
-  get payloadType(): string;
+  get payloadType(): PayloadType;
   /**
    * Convert to owner proof data array.
    * @returns {readonly unknown[]} Owner proof data array.

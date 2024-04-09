@@ -1,14 +1,11 @@
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 import { SplitBillUnit, SplitBillUnitArray } from './SplitBillUnit.js';
 
 export type SplitBillAttributesArray = [SplitBillUnitArray[], bigint, Uint8Array];
 
-const PAYLOAD_TYPE = 'split';
-
-@PayloadAttribute(PAYLOAD_TYPE)
 export class SplitBillAttributes implements ITransactionPayloadAttributes {
   public constructor(
     private readonly _targetUnits: readonly SplitBillUnit[],
@@ -20,8 +17,8 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
     this._backlink = new Uint8Array(this._backlink);
   }
 
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.SplitBillAttributes;
   }
 
   public get targetUnits(): readonly SplitBillUnit[] {

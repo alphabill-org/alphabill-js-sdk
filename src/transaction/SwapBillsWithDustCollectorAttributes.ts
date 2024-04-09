@@ -5,7 +5,7 @@ import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 import { TransactionPayload } from './TransactionPayload.js';
 import { TransferBillToDustCollectorAttributes } from './TransferBillToDustCollectorAttributes.js';
 
@@ -16,9 +16,6 @@ export type SwapBillsWithDustCollectorAttributesArray = readonly [
   bigint,
 ];
 
-const PAYLOAD_TYPE = 'swapDC';
-
-@PayloadAttribute(PAYLOAD_TYPE)
 export class SwapBillsWithDustCollectorAttributes implements ITransactionPayloadAttributes {
   public constructor(
     public readonly ownerPredicate: IPredicate,
@@ -31,8 +28,8 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
     this.targetValue = BigInt(this.targetValue);
   }
 
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.SwapBillsWithDustCollectorAttributes;
   }
 
   public get proofs(): readonly TransactionRecordWithProof<

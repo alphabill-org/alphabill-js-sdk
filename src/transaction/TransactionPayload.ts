@@ -5,7 +5,7 @@ import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { createAttribute } from './PayloadAttribute.js';
+import { createAttribute, PayloadType } from './PayloadAttributeFactory.js';
 
 type TransactionClientMetadataArray = [bigint, bigint, Uint8Array | null];
 export type TransactionPayloadArray = readonly [number, string, Uint8Array, unknown, TransactionClientMetadataArray];
@@ -63,7 +63,7 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
       data[1],
       data[0],
       UnitId.fromBytes(data[2]),
-      createAttribute(data[1], data[3]) as T,
+      createAttribute(data[1] as PayloadType, data[3]) as T,
       {
         timeout: data[4][0],
         maxTransactionFee: data[4][1],

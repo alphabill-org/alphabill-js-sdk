@@ -8,7 +8,7 @@
     "lint:fix": "eslint \"./**/*.mjs\" --fix"
   },
   "dependencies": {
-    "@alphabill/alphabill-js-sdk": "file:../alphabill-alphabill-js-sdk-1.0.0.tgz",
+    "@alphabill/alphabill-js-sdk": "latest",
     "@noble/hashes": "^1.4.0"
   }
 }

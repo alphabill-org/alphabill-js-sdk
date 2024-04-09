@@ -3,18 +3,15 @@ import { TransactionRecordWithProof, TransactionRecordWithProofArray } from '../
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 import { TransactionPayload } from './TransactionPayload.js';
 import { TransferFeeCreditAttributes } from './TransferFeeCreditAttributes.js';
 
 export type AddFeeCreditAttributesArray = [Uint8Array, ...TransactionRecordWithProofArray];
 
-const PAYLOAD_TYPE = 'addFC';
-
 /**
  * Add fee credit payload attributes.
  */
-@PayloadAttribute(PAYLOAD_TYPE)
 export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * Add fee credit payload attributes constructor.
@@ -29,8 +26,8 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.AddFeeCreditAttributes;
   }
 
   /**

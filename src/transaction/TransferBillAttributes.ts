@@ -3,13 +3,10 @@ import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
 export type TransferBillAttributesArray = [Uint8Array, bigint, Uint8Array];
 
-const PAYLOAD_TYPE = 'trans';
-
-@PayloadAttribute(PAYLOAD_TYPE)
 export class TransferBillAttributes implements ITransactionPayloadAttributes {
   public constructor(
     public readonly ownerPredicate: IPredicate,
@@ -20,8 +17,8 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
     this._backlink = new Uint8Array(this._backlink);
   }
 
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.TransferBillAttributes;
   }
 
   public get backlink(): Uint8Array {

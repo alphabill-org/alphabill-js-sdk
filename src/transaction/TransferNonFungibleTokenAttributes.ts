@@ -5,7 +5,7 @@ import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
 export type TransferNonFungibleTokenAttributesArray = readonly [
   Uint8Array,
@@ -15,9 +15,6 @@ export type TransferNonFungibleTokenAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
-const PAYLOAD_TYPE = 'transNToken';
-
-@PayloadAttribute(PAYLOAD_TYPE)
 export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
   public constructor(
     public readonly ownerPredicate: IPredicate,
@@ -32,8 +29,8 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.TransferNonFungibleTokenAttributes;
   }
 
   public get nonce(): Uint8Array | null {

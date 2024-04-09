@@ -3,13 +3,10 @@ import { dedent } from '../util/StringUtils.js';
 import { INonFungibleTokenData } from './INonFungibleTokenData.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { NonFungibleTokenData } from './NonFungibleTokenData.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
 export type UpdateNonFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Array, Uint8Array[] | null];
 
-const PAYLOAD_TYPE = 'updateNToken';
-
-@PayloadAttribute(PAYLOAD_TYPE)
 export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
   public constructor(
     public readonly data: INonFungibleTokenData,
@@ -20,8 +17,8 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
     this._dataUpdateSignatures = this._dataUpdateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.UpdateNonFungibleTokenAttributes;
   }
 
   public get backlink(): Uint8Array {

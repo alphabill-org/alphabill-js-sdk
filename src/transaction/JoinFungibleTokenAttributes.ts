@@ -5,7 +5,7 @@ import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { BurnFungibleTokenAttributes } from './BurnFungibleTokenAttributes.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 import { TransactionPayload } from './TransactionPayload.js';
 
 export type JoinFungibleTokenAttributesArray = [
@@ -15,9 +15,6 @@ export type JoinFungibleTokenAttributesArray = [
   Uint8Array[] | null,
 ];
 
-const PAYLOAD_TYPE = 'joinFToken';
-
-@PayloadAttribute(PAYLOAD_TYPE)
 export class JoinFungibleTokenAttributes implements ITransactionPayloadAttributes {
   public constructor(
     private readonly _proofs: TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[],
@@ -30,8 +27,8 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public get payloadType(): string {
-    return PAYLOAD_TYPE;
+  public get payloadType(): PayloadType {
+    return PayloadType.JoinFungibleTokenAttributes;
   }
 
   public get proofs(): TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[] {
