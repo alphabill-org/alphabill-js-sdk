@@ -8,10 +8,14 @@ import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.j
 import { createAttribute, PayloadType } from './PayloadAttributeFactory.js';
 
 type TransactionClientMetadataArray = [bigint, bigint, Uint8Array | null];
+
+/**
+ * Transaction payload array.
+ */
 export type TransactionPayloadArray = readonly [number, string, Uint8Array, unknown, TransactionClientMetadataArray];
 
-/*
- * TODO: Use only TransactionPayload class, move types to ITransactionPayloadAttributes
+/**
+ * Transaction payload.
  */
 export class TransactionPayload<T extends ITransactionPayloadAttributes> {
   private constructor(
@@ -22,6 +26,10 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
     public readonly clientMetadata: ITransactionClientMetadata,
   ) {}
 
+  /**
+   * Get array for signing payload.
+   * @returns {TransactionPayloadArray} signable data array.
+   */
   public getSigningFields(): TransactionPayloadArray {
     return [
       this.systemIdentifier,
@@ -32,6 +40,10 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
     ];
   }
 
+  /**
+   * Convert to array.
+   * @returns {TransactionPayloadArray} Array of transcation payload.
+   */
   public toArray(): TransactionPayloadArray {
     return [
       this.systemIdentifier,
@@ -42,6 +54,10 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
     ];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       TransactionPayload
@@ -56,6 +72,12 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
           Fee Credit Record ID: ${this.clientMetadata.feeCreditRecordId ? Base16Converter.encode(this.clientMetadata.feeCreditRecordId.bytes) : null}`;
   }
 
+  /**
+   * Create TransactionPayload from array.
+   * @param {TransactionPayloadArray} data - Transaction payload array.
+   * @returns {TransactionPayload<T>} Transaction payload instance.
+   * @template T - Transaction payload attributes type.
+   */
   public static fromArray<T extends ITransactionPayloadAttributes>(
     data: TransactionPayloadArray,
   ): TransactionPayload<T> {

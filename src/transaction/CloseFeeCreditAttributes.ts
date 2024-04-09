@@ -5,6 +5,9 @@ import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { PayloadType } from './PayloadAttributeFactory.js';
 
+/**
+ * Close fee credit attributes array.
+ */
 export type CloseFeeCreditAttributesArray = readonly [bigint, Uint8Array, Uint8Array];
 
 /**
@@ -34,7 +37,7 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Target unit backlink.
+   * Get target unit backlink.
    * @returns {Uint8Array}
    */
   public get targetUnitBacklink(): Uint8Array {
@@ -56,8 +59,8 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Close fee credit attributes to string.
-   * @returns {string} Close fee credit attributes to string.
+   * Convert to string.
+   * @returns {string} String representation.
    */
   public toString(): string {
     return dedent`
@@ -68,9 +71,9 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Create close fee credit attributes from array.
+   * Create CloseFeeCreditAttributes from array.
    * @param {CloseFeeCreditAttributesArray} data Close fee credit attributes array.
-   * @returns {CloseFeeCreditAttributes} Close fee credit attributes.
+   * @returns {CloseFeeCreditAttributes} Close fee credit attributes instance.
    */
   public static fromArray(data: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {
     return new CloseFeeCreditAttributes(data[0], UnitId.fromBytes(data[1]), data[2]);

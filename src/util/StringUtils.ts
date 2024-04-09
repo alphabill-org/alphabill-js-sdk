@@ -1,5 +1,8 @@
 /**
  * String dedent function, calculates distance which has to be removed from second line string
+ * @param {TemplateStringsArray} strings - Template strings array
+ * @param {unknown[]} data - Data to be inserted
+ * @returns {string} - Dedented string
  */
 export function dedent(strings: TemplateStringsArray, ...data: unknown[]): string {
   if (strings.length === 0) {

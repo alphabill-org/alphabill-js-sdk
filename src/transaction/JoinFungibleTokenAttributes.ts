@@ -8,6 +8,9 @@ import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.j
 import { PayloadType } from './PayloadAttributeFactory.js';
 import { TransactionPayload } from './TransactionPayload.js';
 
+/**
+ * Join fungible token attributes array.
+ */
 export type JoinFungibleTokenAttributesArray = [
   TransactionRecordArray[],
   TransactionProofArray[],
@@ -15,7 +18,16 @@ export type JoinFungibleTokenAttributesArray = [
   Uint8Array[] | null,
 ];
 
+/**
+ * Join fungible token payload attributes.
+ */
 export class JoinFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  /**
+   * Join fungible token attributes constructor.
+   * @param {TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[]} _proofs - Proofs.
+   * @param {Uint8Array} _backlink - Backlink.
+   * @param {Uint8Array[] | null} _invariantPredicateSignatures - Invariant predicate signatures.
+   */
   public constructor(
     private readonly _proofs: TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[],
     private readonly _backlink: Uint8Array,
@@ -27,22 +39,40 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
   public get payloadType(): PayloadType {
     return PayloadType.JoinFungibleTokenAttributes;
   }
 
+  /**
+   * Get proofs.
+   * @returns {TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[]} Proofs.
+   */
   public get proofs(): TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[] {
     return Array.from(this._proofs);
   }
 
+  /**
+   * Get backlink.
+   * @returns {Uint8Array} Backlink.
+   */
   public get backlink(): Uint8Array {
     return new Uint8Array(this._backlink);
   }
 
+  /**
+   * Get invariant predicate signatures.
+   * @returns {Uint8Array[] | null} Invariant predicate signatures.
+   */
   public get invariantPredicateSignatures(): Uint8Array[] | null {
     return this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): JoinFungibleTokenAttributesArray {
     const records: TransactionRecordArray[] = [];
     const proofs: TransactionProofArray[] = [];
@@ -54,6 +84,9 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
     return [records, proofs, this.backlink, null];
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): JoinFungibleTokenAttributesArray {
     const records: TransactionRecordArray[] = [];
     const proofs: TransactionProofArray[] = [];
@@ -65,6 +98,10 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
     return [records, proofs, this.backlink, this.invariantPredicateSignatures];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       JoinFungibleTokenAttributes
@@ -80,6 +117,11 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
         }`;
   }
 
+  /**
+   * Create a JoinFungibleTokenAttributes from an array.
+   * @param {JoinFungibleTokenAttributesArray} data - join fungible token attributes array.
+   * @returns {JoinFungibleTokenAttributes} Join fungible token attributes instance.
+   */
   public static fromArray(data: JoinFungibleTokenAttributesArray): JoinFungibleTokenAttributes {
     const proofs: TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[] = [];
 

@@ -5,9 +5,21 @@ import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.j
 import { NonFungibleTokenData } from './NonFungibleTokenData.js';
 import { PayloadType } from './PayloadAttributeFactory.js';
 
+/**
+ * Update non-fungible token attributes array.
+ */
 export type UpdateNonFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Array, Uint8Array[] | null];
 
+/**
+ * Update non-fungible token payload attributes.
+ */
 export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  /**
+   * Update non-fungible token attributes constructor.
+   * @param {INonFungibleTokenData} data - Non-fungible token data.
+   * @param {Uint8Array} _backlink - Backlink.
+   * @param {Uint8Array[] | null} _dataUpdateSignatures - Data update signatures.
+   */
   public constructor(
     public readonly data: INonFungibleTokenData,
     private readonly _backlink: Uint8Array,
@@ -17,26 +29,47 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
     this._dataUpdateSignatures = this._dataUpdateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
   public get payloadType(): PayloadType {
     return PayloadType.UpdateNonFungibleTokenAttributes;
   }
 
+  /**
+   * Get backlink.
+   * @returns {Uint8Array} Backlink.
+   */
   public get backlink(): Uint8Array {
     return new Uint8Array(this._backlink);
   }
 
+  /**
+   * Get data update signatures.
+   * @returns {Uint8Array[] | null} Data update signatures.
+   */
   public get dataUpdateSignatures(): Uint8Array[] | null {
     return this._dataUpdateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): UpdateNonFungibleTokenAttributesArray {
     return this.toArray();
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): UpdateNonFungibleTokenAttributesArray {
     return [this.data.bytes, this.backlink, this.dataUpdateSignatures];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       UpdateNonFungibleTokenAttributes
@@ -45,6 +78,11 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
         Data Update Signatures: ${this._dataUpdateSignatures?.map((signature) => Base16Converter.encode(signature))}`;
   }
 
+  /**
+   * Create UpdateNonFungibleTokenAttributes from array.
+   * @param {UpdateNonFungibleTokenAttributesArray} data - Update non-fungible token attributes array.
+   * @returns {UpdateNonFungibleTokenAttributes} Update non-fungible token attributes instance.
+   */
   public static fromArray(data: UpdateNonFungibleTokenAttributesArray): UpdateNonFungibleTokenAttributes {
     return new UpdateNonFungibleTokenAttributes(NonFungibleTokenData.createFromBytes(data[0]), data[1], data[2]);
   }

@@ -7,6 +7,9 @@ import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { PayloadType } from './PayloadAttributeFactory.js';
 
+/**
+ * Create fungible token attributes array.
+ */
 export type CreateFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Array, bigint, Uint8Array[] | null];
 
 /**
@@ -39,7 +42,7 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   }
 
   /**
-   * Token creation predicate signatures.
+   * Get token creation predicate signatures.
    * @returns {Uint8Array[] | null}
    */
   public get tokenCreationPredicateSignatures(): Uint8Array[] | null {
@@ -61,8 +64,8 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   }
 
   /**
-   * Create fungible token attributes to string.
-   * @returns {string} Create fungible token attributes to string.
+   * Convert to string.
+   * @returns {string} String representation.
    */
   public toString(): string {
     return dedent`
@@ -81,9 +84,9 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   }
 
   /**
-   * Create create fungible token attributes from array.
+   * Create CreateFungibleTokenAttributes from array.
    * @param {CreateFungibleTokenAttributesArray} data Create fungible token attributes array.
-   * @returns {CreateFungibleTokenAttributes} Create fungible token attributes.
+   * @returns {CreateFungibleTokenAttributes} Create fungible token attributes instance.
    */
   public static fromArray(data: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
     return new CreateFungibleTokenAttributes(new PredicateBytes(data[0]), UnitId.fromBytes(data[1]), data[2], data[3]);

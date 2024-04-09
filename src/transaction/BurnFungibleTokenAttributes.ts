@@ -5,6 +5,9 @@ import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { PayloadType } from './PayloadAttributeFactory.js';
 
+/**
+ * Burn fungible token attributes array.
+ */
 export type BurnFungibleTokenAttributesArray = readonly [
   Uint8Array,
   bigint,
@@ -50,7 +53,7 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * Target token backlink.
+   * Get target token backlink.
    * @returns {Uint8Array}
    */
   public get targetTokenBacklink(): Uint8Array {
@@ -58,7 +61,7 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * Backlink.
+   * Get backlink.
    * @returns {Uint8Array}
    */
   public get backlink(): Uint8Array {
@@ -66,7 +69,7 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * Invariant predicate signatures.
+   * Get invariant predicate signatures.
    * @returns {Uint8Array[] | null}
    */
   public get invariantPredicateSignatures(): Uint8Array[] | null {
@@ -95,8 +98,8 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * Burn fungible token attributes to string.
-   * @returns {string} Burn fungible token attributes to string.
+   * Convert to string.
+   * @returns {string} String representation.
    */
   public toString(): string {
     return dedent`
@@ -117,7 +120,7 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * Create burn fungible token attributes from array.
+   * Create BurnFungibleTokenAttributes from array.
    * @param {BurnFungibleTokenAttributesArray} data Burn fungible token attributes array.
    * @returns {BurnFungibleTokenAttributes} Burn fungible token attributes.
    */

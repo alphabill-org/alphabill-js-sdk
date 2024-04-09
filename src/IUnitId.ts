@@ -2,6 +2,7 @@ import { IUnitIdType } from './IUnitIdType.js';
 
 /**
  * UnitId interface.
+ * @interface IUnitId
  */
 export interface IUnitId {
   /**

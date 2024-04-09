@@ -12,8 +12,8 @@ export class AlwaysTruePredicate implements IPredicate {
   }
 
   /**
-   * Always true predicate to string.
-   * @returns {string} Always true predicate to string.
+   * Convert to string.
+   * @returns {string} String representation.
    */
   public toString(): string {
     return 'AlwaysTruePredicate';

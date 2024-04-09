@@ -14,22 +14,9 @@ export class Bill {
    * @param {boolean} locked Is locked.
    */
   public constructor(
-    /**
-     * Value.
-     */
     public readonly value: bigint,
-    /**
-     * Last update.
-     */
     public readonly lastUpdate: bigint,
-    /**
-     * Backlink.
-     * @private
-     */
     private readonly _backlink: Uint8Array,
-    /**
-     * Is locked.
-     */
     public readonly locked: boolean,
   ) {
     this.value = BigInt(this.value);
@@ -38,7 +25,7 @@ export class Bill {
   }
 
   /**
-   * Backlink.
+   * Get backlink.
    * @returns {Uint8Array}
    */
   public get backlink(): Uint8Array {
@@ -60,8 +47,8 @@ export class Bill {
   }
 
   /**
-   * Bill to string.
-   * @returns {string} Bill to string.
+   * Convert to string.
+   * @returns {string} String representation.
    */
   public toString(): string {
     return dedent`

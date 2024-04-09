@@ -8,6 +8,9 @@ import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.j
 import { PayloadType } from './PayloadAttributeFactory.js';
 import { TokenIcon, TokenIconArray } from './TokenIcon.js';
 
+/**
+ * Create non-fungible token type attributes array.
+ */
 export type CreateNonFungibleTokenTypeAttributesArray = readonly [
   string,
   string,
@@ -59,7 +62,7 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
   }
 
   /**
-   * Sub type creation predicate signatures.
+   * Get sub type creation predicate signatures.
    * @returns {Uint8Array[] | null}
    */
   public get subTypeCreationPredicateSignatures(): Uint8Array[] | null {
@@ -91,8 +94,8 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
   }
 
   /**
-   * Create non-fungible token type attributes to string.
-   * @returns {string} Create non-fungible token type attributes to string.
+   * Convert to string.
+   * @returns {string} String representation.
    */
   public toString(): string {
     return dedent`
@@ -116,9 +119,9 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
   }
 
   /**
-   * Create non-fungible token type attributes from array.
+   * Create CreateNonFungibleTokenTypeAttributes from array.
    * @param {CreateNonFungibleTokenTypeAttributesArray} data Create non-fungible token type attributes array.
-   * @returns {CreateNonFungibleTokenTypeAttributes} Create non-fungible token type attributes.
+   * @returns {CreateNonFungibleTokenTypeAttributes} Create non-fungible token type attributes instance.
    */
   public static fromArray(data: CreateNonFungibleTokenTypeAttributesArray): CreateNonFungibleTokenTypeAttributes {
     return new CreateNonFungibleTokenTypeAttributes(

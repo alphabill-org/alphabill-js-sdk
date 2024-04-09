@@ -18,26 +18,10 @@ export class FungibleToken {
    * @param {boolean} locked Is token locked.
    */
   public constructor(
-    /**
-     * Token type.
-     */
     public readonly tokenType: IUnitId,
-    /**
-     * Token value.
-     */
     public readonly value: bigint,
-    /**
-     * Block number.
-     */
     public readonly blockNumber: bigint,
-    /**
-     * Backlink.
-     * @private
-     */
     private readonly _backlink: Uint8Array,
-    /**
-     * Is token locked.
-     */
     public readonly locked: boolean,
   ) {
     this.value = BigInt(this.value);
@@ -46,7 +30,7 @@ export class FungibleToken {
   }
 
   /**
-   * Backlink.
+   * Get backlink.
    * @returns {Uint8Array} Backlink.
    */
   public get backlink(): Uint8Array {
@@ -69,8 +53,8 @@ export class FungibleToken {
   }
 
   /**
-   * Fungible token to string.
-   * @returns {string} Fungible token string.
+   * Convert to string.
+   * @returns {string} String representation.
    */
   public toString(): string {
     return dedent`

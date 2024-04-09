@@ -23,39 +23,13 @@ export class NonFungibleToken {
    * @param {boolean} locked Is token locked.
    */
   public constructor(
-    /**
-     * Type.
-     */
     public readonly tokenType: IUnitId,
-    /**
-     * Name.
-     */
     public readonly name: string,
-    /**
-     * URI.
-     */
     public readonly uri: string,
-    /**
-     * User data.
-     * @private
-     */
     private readonly _data: Uint8Array,
-    /**
-     * Data update predicate.
-     */
     public readonly dataUpdatePredicate: IPredicate,
-    /**
-     * Block number.
-     */
     public readonly blockNumber: bigint,
-    /**
-     * Backlink.
-     * @private
-     */
     private readonly _backlink: Uint8Array,
-    /**
-     * Is locked.
-     */
     public readonly locked: boolean,
   ) {
     this._data = new Uint8Array(this._data);
@@ -64,7 +38,7 @@ export class NonFungibleToken {
   }
 
   /**
-   * User data.
+   * Get user data.
    * @returns {Uint8Array} User data.
    */
   public get data(): Uint8Array {
@@ -72,7 +46,7 @@ export class NonFungibleToken {
   }
 
   /**
-   * Backlink.
+   * Get backlink.
    * @returns {Uint8Array} Backlink.
    */
   public get backlink(): Uint8Array {
@@ -98,8 +72,8 @@ export class NonFungibleToken {
   }
 
   /**
-   * Non-fungible token to string.
-   * @returns {string}
+   * Convert to string.
+   * @returns {string} String representation.
    */
   public toString(): string {
     return dedent`

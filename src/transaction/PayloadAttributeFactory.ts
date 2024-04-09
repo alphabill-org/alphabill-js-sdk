@@ -22,6 +22,9 @@ import { UnlockBillAttributes } from './UnlockBillAttributes.js';
 import { UnlockFeeCreditAttributes } from './UnlockFeeCreditAttributes.js';
 import { UpdateNonFungibleTokenAttributes } from './UpdateNonFungibleTokenAttributes.js';
 
+/**
+ * Payload type.
+ */
 export enum PayloadType {
   AddFeeCreditAttributes = 'addFC',
   BurnFungibleTokenAttributes = 'burnFToken',
@@ -72,6 +75,12 @@ const payloadAttributesMap = new Map<PayloadType, (data: unknown) => ITransactio
   [PayloadType.UpdateNonFungibleTokenAttributes, UpdateNonFungibleTokenAttributes.fromArray],
 ]);
 
+/**
+ * Create transaction payload attributes from payload type and data array.
+ * @param {PayloadType} type - Payload type.
+ * @param {unknown} data - Payload data.
+ * @returns {ITransactionPayloadAttributes} Transaction payload attributes.
+ */
 export function createAttribute(type: PayloadType, data: unknown): ITransactionPayloadAttributes {
   const payloadAttribute = payloadAttributesMap.get(type);
   if (payloadAttribute === undefined) {

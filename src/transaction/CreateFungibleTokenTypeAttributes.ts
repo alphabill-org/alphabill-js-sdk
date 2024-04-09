@@ -8,6 +8,9 @@ import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.j
 import { PayloadType } from './PayloadAttributeFactory.js';
 import { TokenIcon, TokenIconArray } from './TokenIcon.js';
 
+/**
+ * Create fungible token type attributes array.
+ */
 export type CreateFungibleTokenTypeAttributesArray = readonly [
   string,
   string,
@@ -59,7 +62,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
   }
 
   /**
-   * Sub type creation predicate signatures.
+   * Get sub type creation predicate signatures.
    * @returns {Uint8Array[] | null}
    */
   public get subTypeCreationPredicateSignatures(): Uint8Array[] | null {
@@ -91,8 +94,8 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
   }
 
   /**
-   * Create fungible token type attributes to string.
-   * @returns {string} Create fungible token type attributes to string.
+   * Convert to string.
+   * @returns {string} String.
    */
   public toString(): string {
     return dedent`
@@ -116,9 +119,9 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
   }
 
   /**
-   * Create create fungible token type attributes from array.
+   * Create CreateFungibleTokenTypeAttributes from array.
    * @param {CreateFungibleTokenTypeAttributesArray} data Create fungible token type attributes array.
-   * @returns {CreateFungibleTokenTypeAttributes} Create fungible token type attributes.
+   * @returns {CreateFungibleTokenTypeAttributes} Create fungible token type attributes instance.
    */
   public static fromArray(data: CreateFungibleTokenTypeAttributesArray): CreateFungibleTokenTypeAttributes {
     return new CreateFungibleTokenTypeAttributes(

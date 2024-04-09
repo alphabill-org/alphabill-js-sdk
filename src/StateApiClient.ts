@@ -7,10 +7,13 @@ import { TransactionOrder } from './transaction/TransactionOrder.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
 
+/**
+ * State API client.
+ */
 export class StateApiClient {
   /**
    * State API client constructor.
-   * @param service State API service.
+   * @param {IStateApiService} service State API service.
    */
   public constructor(private readonly service: IStateApiService) {}
 
@@ -33,7 +36,7 @@ export class StateApiClient {
 
   /**
    * Get Unit.
-   * @template T
+   * @template T Unit data type.
    * @param {IUnitId} unitId Unit ID.
    * @param {boolean} includeStateProof Include state proof.
    * @returns {Promise<IUnit<T> | null>} Unit.
@@ -73,24 +76,4 @@ export class StateApiClient {
   ): Promise<Uint8Array> {
     return this.service.sendTransaction(transaction);
   }
-}
-
-/**
- * Create public client.
- * @param {IStateApiClientOptions} options Options.
- * @returns {StateApiClient} State API client.
- */
-export function createPublicClient(options: IStateApiClientOptions): StateApiClient {
-  return new StateApiClient(options.transport);
-}
-
-/**
- * State API client options.
- * @interface IStateApiClientOptions
- */
-interface IStateApiClientOptions {
-  /**
-   * State API service.
-   */
-  transport: IStateApiService;
 }

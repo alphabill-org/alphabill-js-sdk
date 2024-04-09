@@ -4,13 +4,27 @@ import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.j
 import { TransactionOrder } from './TransactionOrder.js';
 import { TransactionPayload } from './TransactionPayload.js';
 
+/**
+ * Transaction order factory.
+ */
 export class TransactionOrderFactory {
+  /**
+   * Transaction order factory constructor.
+   * @param {ICborCodec} cborCoder - CBOR codec.
+   * @param {ISigningService} signingService - Signing service.
+   * @param {ISigningService} [feeSigningService] - Fee signing service.
+   */
   public constructor(
     private readonly cborCoder: ICborCodec,
     private readonly signingService: ISigningService,
     private readonly feeSigningService?: ISigningService,
   ) {}
 
+  /**
+   * Create transaction order.
+   * @param {T} payload - Transaction payload.
+   * @returns {Promise<TransactionOrder<T>>} Transaction order.
+   */
   public async createTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
     payload: T,
   ): Promise<TransactionOrder<T>> {

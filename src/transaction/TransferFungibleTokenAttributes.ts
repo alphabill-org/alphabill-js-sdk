@@ -7,6 +7,9 @@ import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { PayloadType } from './PayloadAttributeFactory.js';
 
+/**
+ * Transfer fungible token attributes array.
+ */
 export type TransferFungibleTokenAttributesArray = readonly [
   Uint8Array,
   bigint,
@@ -16,7 +19,19 @@ export type TransferFungibleTokenAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
+/**
+ * Transfer fungible token payload attributes.
+ */
 export class TransferFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  /**
+   * Transfer fungible token attributes constructor.
+   * @param {IPredicate} ownerPredicate - Owner predicate.
+   * @param {bigint} value - Value.
+   * @param {Uint8Array | null} _nonce - Nonce.
+   * @param {Uint8Array} _backlink - Backlink.
+   * @param {IUnitId} typeId - Type ID.
+   * @param {Uint8Array[] | null} _invariantPredicateSignatures - Invariant predicate signatures.
+   */
   public constructor(
     public readonly ownerPredicate: IPredicate,
     public readonly value: bigint,
@@ -32,26 +47,47 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
   public get payloadType(): PayloadType {
     return PayloadType.TransferFungibleTokenAttributes;
   }
 
+  /**
+   * Get nonce.
+   * @returns {Uint8Array | null} Nonce.
+   */
   public get nonce(): Uint8Array | null {
     return this._nonce ? new Uint8Array(this._nonce) : null;
   }
 
+  /**
+   * Get backlink.
+   * @returns {Uint8Array} Backlink.
+   */
   public get backlink(): Uint8Array {
     return new Uint8Array(this._backlink);
   }
 
+  /**
+   * Get invariant predicate signatures.
+   * @returns {Uint8Array[] | null} Invariant predicate signatures.
+   */
   public get invariantPredicateSignatures(): Uint8Array[] | null {
     return this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): TransferFungibleTokenAttributesArray {
     return [this.ownerPredicate.bytes, this.value, this.nonce, this.backlink, this.typeId.bytes, null];
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): TransferFungibleTokenAttributesArray {
     return [
       this.ownerPredicate.bytes,
@@ -63,6 +99,10 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
     ];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       TransferFungibleTokenAttributes
@@ -81,6 +121,11 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
         }`;
   }
 
+  /**
+   * Create TransferFungibleTokenAttributesArray from array.
+   * @param {TransferFungibleTokenAttributesArray} data - Transfer fungible token attributes array.
+   * @returns {TransferFungibleTokenAttributes} Transfer fungible token attributes instance.
+   */
   public static fromArray(data: TransferFungibleTokenAttributesArray): TransferFungibleTokenAttributes {
     return new TransferFungibleTokenAttributes(
       new PredicateBytes(data[0]),

@@ -7,6 +7,9 @@ import { PayloadType } from './PayloadAttributeFactory.js';
 import { TransactionPayload } from './TransactionPayload.js';
 import { TransferFeeCreditAttributes } from './TransferFeeCreditAttributes.js';
 
+/**
+ * Add fee credit attributes array.
+ */
 export type AddFeeCreditAttributesArray = [Uint8Array, ...TransactionRecordWithProofArray];
 
 /**
@@ -46,8 +49,8 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Add fee credit attributes to string.
-   * @returns {string} Add fee credit attributes to string.
+   * Convert to string.
+   * @returns {string} String representation.
    */
   public toString(): string {
     return dedent`
@@ -58,7 +61,7 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Create add fee credit attributes from array.
+   * Create AddFeeCreditAttributes from array.
    * @param {AddFeeCreditAttributesArray} data Add fee credit attributes array.
    * @returns {AddFeeCreditAttributes} Add fee credit attributes.
    */

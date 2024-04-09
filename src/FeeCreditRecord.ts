@@ -15,22 +15,9 @@ export class FeeCreditRecord {
    * @param {boolean} locked Is fee credit locked.
    */
   public constructor(
-    /**
-     * Balance.
-     */
     public readonly balance: bigint,
-    /**
-     * Backlink.
-     * @private
-     */
     private readonly _backlink: Uint8Array,
-    /**
-     * Timeout.
-     */
     public readonly timeout: bigint,
-    /**
-     * Is locked.
-     */
     public readonly locked: boolean,
   ) {
     this.balance = BigInt(this.balance);
@@ -39,7 +26,8 @@ export class FeeCreditRecord {
   }
 
   /**
-   * Backlink.
+   * Get backlink.
+   * @returns {Uint8Array} Backlink.
    */
   public get backlink(): Uint8Array {
     return new Uint8Array(this._backlink);
@@ -47,6 +35,8 @@ export class FeeCreditRecord {
 
   /**
    * Create fee credit record from DTO.
+   * @param {IFeeCreditRecordDto} data Fee credit record data.
+   * @returns {FeeCreditRecord} Fee credit record.
    */
   public static create(data: IFeeCreditRecordDto): FeeCreditRecord {
     return new FeeCreditRecord(
@@ -58,7 +48,8 @@ export class FeeCreditRecord {
   }
 
   /**
-   * Fee credit record to string.
+   * Convert to string.
+   * @returns {string} String representation.
    */
   public toString(): string {
     return dedent`

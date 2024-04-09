@@ -1,3 +1,6 @@
+/**
+ * @interface IUnitIdType
+ */
 export interface IUnitIdType {
   /**
    * Convert type to base16 string.
@@ -5,7 +8,7 @@ export interface IUnitIdType {
    */
   toBase16(): string;
   /**
-   * Get type bytes.
+   * Get unit identifier type bytes.
    * @returns {Uint8Array} Bytes.
    */
   get bytes(): Uint8Array;
