@@ -107,7 +107,7 @@ export class PathItem implements IPathItem {
   /**
    * Path item constructor.
    * @param _hash - hash.
-   * @param {boolean} left - left.
+   * @param {boolean} left - // Direction from parent node. True - left from parent, False - right from parent.
    */
   public constructor(
     private readonly _hash: Uint8Array,
@@ -145,7 +145,9 @@ export class StateTreeCert implements IStateTreeCert {
     public readonly path: readonly IStateTreePathItem[] | null,
   ) {
     this._leftSummaryHash = new Uint8Array(this._leftSummaryHash);
+    this.leftSummaryValue = BigInt(leftSummaryValue);
     this._rightSummaryHash = new Uint8Array(this._rightSummaryHash);
+    this.rightSummaryValue = BigInt(rightSummaryValue);
     this.path = this.path ? Object.freeze(Array.from(this.path)) : null;
   }
 

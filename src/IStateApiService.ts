@@ -16,7 +16,7 @@ export interface IStateApiService {
    */
   getRoundNumber(): Promise<bigint>;
   /**
-   * Get units by owner ID.
+   * Get Unit identifiers by owner ID.
    * @param {Uint8Array} ownerId Owner ID.
    * @returns {Promise<IUnitId[]>} Units identifiers.
    */

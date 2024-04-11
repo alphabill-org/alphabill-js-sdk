@@ -13,7 +13,7 @@ export class TransactionProofChainItem {
   /**
    * Transaction proof chain item constructor.
    * @param {Uint8Array} _hash - hash.
-   * @param {boolean} left - left.
+   * @param {boolean} left - Direction from parent node. True - left from parent, False - right from parent.
    */
   public constructor(
     private readonly _hash: Uint8Array,
