@@ -1,38 +1,69 @@
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
+/**
+ * Unlock bill attributes array.
+ */
 export type UnlockBillAttributesArray = readonly [Uint8Array];
 
-@PayloadAttribute
+/**
+ * Unlock bill payload attributes.
+ */
 export class UnlockBillAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'unlock';
+  /**
+   * Unlock bill attributes constructor.
+   * @param {Uint8Array} _backlink - Backlink.
+   */
+  public constructor(private readonly _backlink: Uint8Array) {
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public constructor(private readonly backlink: Uint8Array) {
-    this.backlink = new Uint8Array(this.backlink);
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
+  public get payloadType(): PayloadType {
+    return PayloadType.UnlockBillAttributes;
   }
 
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
+  /**
+   * Get backlink.
+   * @returns {Uint8Array} Backlink.
+   */
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): UnlockBillAttributesArray {
     return this.toArray();
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): UnlockBillAttributesArray {
-    return [this.getBacklink()];
+    return [this.backlink];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       UnlockBillAttributes
-        Backlink: ${Base16Converter.encode(this.backlink)}`;
+        Backlink: ${Base16Converter.encode(this._backlink)}`;
   }
 
+  /**
+   * Create UnlockBillAttributes from array.
+   * @param {UnlockBillAttributesArray} data Unlock bill attributes array.
+   * @returns {UnlockBillAttributes} Unlock bill attributes instance.
+   */
   public static fromArray(data: UnlockBillAttributesArray): UnlockBillAttributes {
     return new UnlockBillAttributes(data[0]);
   }

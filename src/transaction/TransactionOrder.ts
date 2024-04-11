@@ -3,42 +3,72 @@ import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { TransactionPayload, TransactionPayloadArray } from './TransactionPayload.js';
 
+/**
+ * Transaction order array.
+ */
 export type TransactionOrderArray = readonly [TransactionPayloadArray, Uint8Array, Uint8Array | null];
 
+/**
+ * Transaction order.
+ * @template T - Transaction payload type.
+ */
 export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAttributes>> {
+  /**
+   * Transaction order constructor.
+   * @param {T} payload - Payload.
+   * @param {Uint8Array} _ownerProof - Owner proof.
+   * @param {Uint8Array | null} _feeProof - Fee proof.
+   */
   public constructor(
-    private readonly payload: T,
-    private readonly ownerProof: Uint8Array,
-    private readonly feeProof: Uint8Array | null,
+    public readonly payload: T,
+    private readonly _ownerProof: Uint8Array,
+    private readonly _feeProof: Uint8Array | null,
   ) {
-    this.ownerProof = new Uint8Array(this.ownerProof);
-    this.feeProof = this.feeProof ? new Uint8Array(this.feeProof) : null;
+    this._ownerProof = new Uint8Array(this._ownerProof);
+    this._feeProof = this._feeProof ? new Uint8Array(this._feeProof) : null;
   }
 
-  public getPayload(): T {
-    return this.payload;
+  /**
+   * Get owner proof.
+   * @returns {Uint8Array} Owner proof.
+   */
+  public get ownerProof(): Uint8Array {
+    return new Uint8Array(this._ownerProof);
   }
 
-  public getOwnerProof(): Uint8Array {
-    return new Uint8Array(this.ownerProof);
+  /**
+   * Get fee proof.
+   * @returns {Uint8Array | null} Fee proof.
+   */
+  public get feeProof(): Uint8Array | null {
+    return this._feeProof ? new Uint8Array(this._feeProof) : null;
   }
 
-  public getFeeProof(): Uint8Array | null {
-    return this.feeProof ? new Uint8Array(this.feeProof) : null;
-  }
-
+  /**
+   * Convert to array.
+   * @returns {TransactionOrderArray} Transaction order array.
+   */
   public toArray(): TransactionOrderArray {
-    return [this.getPayload().toArray(), this.getOwnerProof(), this.getFeeProof()];
+    return [this.payload.toArray(), this.ownerProof, this.feeProof];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       TransactionOrder
         ${this.payload.toString()}
-        Owner Proof: ${Base16Converter.encode(this.ownerProof)}
-        Fee Proof: ${this.feeProof ? Base16Converter.encode(this.feeProof) : null}`;
+        Owner Proof: ${Base16Converter.encode(this._ownerProof)}
+        Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}`;
   }
 
+  /**
+   * Create TransactionOrder from array.
+   * @param {TransactionOrderArray} data - Transaction order array.
+   * @returns {TransactionOrder} Transaction order instance.
+   */
   public static fromArray<T extends ITransactionPayloadAttributes>(
     data: TransactionOrderArray,
   ): TransactionOrder<TransactionPayload<T>> {

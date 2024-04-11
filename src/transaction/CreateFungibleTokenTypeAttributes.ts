@@ -5,9 +5,12 @@ import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 import { TokenIcon, TokenIconArray } from './TokenIcon.js';
 
+/**
+ * Create fungible token type attributes array.
+ */
 export type CreateFungibleTokenTypeAttributesArray = readonly [
   string,
   string,
@@ -20,81 +23,80 @@ export type CreateFungibleTokenTypeAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
-@PayloadAttribute
+/**
+ * Create fungible token type payload attributes.
+ */
 export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'createFType';
-  }
-
+  /**
+   * Create fungible token type payload attributes constructor.
+   * @param {string} symbol Symbol.
+   * @param {string} name Name.
+   * @param {TokenIcon} icon Icon.
+   * @param {IUnitId | null} parentTypeId Parent type ID.
+   * @param {number} decimalPlaces Decimal places.
+   * @param {IPredicate} subTypeCreationPredicate Sub type creation predicate.
+   * @param {IPredicate} tokenCreationPredicate Token creation predicate.
+   * @param {IPredicate} invariantPredicate Invariant predicate.
+   * @param {Uint8Array[] | null} _subTypeCreationPredicateSignatures Sub type creation predicate signatures.
+   */
   public constructor(
-    private readonly symbol: string,
-    private readonly name: string,
-    private readonly icon: TokenIcon,
-    private readonly parentTypeId: IUnitId | null,
-    private readonly decimalPlaces: number,
-    private readonly subTypeCreationPredicate: IPredicate,
-    private readonly tokenCreationPredicate: IPredicate,
-    private readonly invariantPredicate: IPredicate,
-    private readonly subTypeCreationPredicateSignatures: Uint8Array[] | null,
+    public readonly symbol: string,
+    public readonly name: string,
+    public readonly icon: TokenIcon,
+    public readonly parentTypeId: IUnitId | null,
+    public readonly decimalPlaces: number,
+    public readonly subTypeCreationPredicate: IPredicate,
+    public readonly tokenCreationPredicate: IPredicate,
+    public readonly invariantPredicate: IPredicate,
+    private readonly _subTypeCreationPredicateSignatures: Uint8Array[] | null,
   ) {
-    this.subTypeCreationPredicateSignatures =
-      this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+    this._subTypeCreationPredicateSignatures =
+      this._subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getSymbol(): string {
-    return this.symbol;
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
+  public get payloadType(): PayloadType {
+    return PayloadType.CreateFungibleTokenTypeAttributes;
   }
 
-  public getName(): string {
-    return this.name;
+  /**
+   * Get sub type creation predicate signatures.
+   * @returns {Uint8Array[] | null}
+   */
+  public get subTypeCreationPredicateSignatures(): Uint8Array[] | null {
+    return this._subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getIcon(): TokenIcon {
-    return this.icon;
-  }
-
-  public getParentTypeId(): IUnitId | null {
-    return this.parentTypeId;
-  }
-
-  public getDecimalPlaces(): number {
-    return this.decimalPlaces;
-  }
-
-  public getSubTypeCreationPredicate(): IPredicate {
-    return this.subTypeCreationPredicate;
-  }
-
-  public getTokenCreationPredicate(): IPredicate {
-    return this.tokenCreationPredicate;
-  }
-
-  public getInvariantPredicate(): IPredicate {
-    return this.invariantPredicate;
-  }
-
-  public getSubTypeCreationPredicateSignatures(): Uint8Array[] | null {
-    return this.subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
-  }
-
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): CreateFungibleTokenTypeAttributesArray {
     return this.toArray();
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): CreateFungibleTokenTypeAttributesArray {
     return [
-      this.getSymbol(),
-      this.getName(),
-      this.getIcon().toArray(),
-      this.getParentTypeId()?.getBytes() || null,
-      this.getDecimalPlaces(),
-      this.getSubTypeCreationPredicate().getBytes(),
-      this.getTokenCreationPredicate().getBytes(),
-      this.getInvariantPredicate().getBytes(),
-      this.getSubTypeCreationPredicateSignatures(),
+      this.symbol,
+      this.name,
+      this.icon.toArray(),
+      this.parentTypeId?.bytes || null,
+      this.decimalPlaces,
+      this.subTypeCreationPredicate.bytes,
+      this.tokenCreationPredicate.bytes,
+      this.invariantPredicate.bytes,
+      this.subTypeCreationPredicateSignatures,
     ];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String.
+   */
   public toString(): string {
     return dedent`
       CreateFungibleTokenTypeAttributes
@@ -107,15 +109,20 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
         Token Creation Predicate: ${this.tokenCreationPredicate.toString()}
         Invariant Predicate: ${this.invariantPredicate.toString()}
         Sub Type Creation Predicate Signatures: ${
-          this.subTypeCreationPredicateSignatures
+          this._subTypeCreationPredicateSignatures
             ? dedent`
         [
-          ${this.subTypeCreationPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+          ${this._subTypeCreationPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
         ]`
             : 'null'
         }`;
   }
 
+  /**
+   * Create CreateFungibleTokenTypeAttributes from array.
+   * @param {CreateFungibleTokenTypeAttributesArray} data Create fungible token type attributes array.
+   * @returns {CreateFungibleTokenTypeAttributes} Create fungible token type attributes instance.
+   */
   public static fromArray(data: CreateFungibleTokenTypeAttributesArray): CreateFungibleTokenTypeAttributes {
     return new CreateFungibleTokenTypeAttributes(
       data[0],

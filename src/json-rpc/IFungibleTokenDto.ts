@@ -1,3 +1,7 @@
+/**
+ * Fungible token data from getUnit.
+ * @interface IFungibleTokenDto
+ */
 export interface IFungibleTokenDto {
   TokenType: string;
   Value: number;

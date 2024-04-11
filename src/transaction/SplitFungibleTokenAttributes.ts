@@ -5,8 +5,11 @@ import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
+/**
+ * Split fungible token attributes array.
+ */
 export type SplitFungibleTokenAttributesArray = readonly [
   Uint8Array,
   bigint,
@@ -17,100 +20,126 @@ export type SplitFungibleTokenAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
-@PayloadAttribute
+/**
+ * Split fungible token payload attributes.
+ */
 export class SplitFungibleTokenAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'splitFToken';
-  }
-
+  /**
+   * Split fungible token attributes constructor.
+   * @param {IPredicate} ownerPredicate - Owner predicate.
+   * @param {bigint} targetValue - Target value.
+   * @param {Uint8Array | null} _nonce - Nonce.
+   * @param {Uint8Array} _backlink - Backlink.
+   * @param {IUnitId} typeId - Type ID.
+   * @param {bigint} remainingValue - Remaining value.
+   * @param {Uint8Array[] | null} _invariantPredicateSignatures - Invariant predicate signatures.
+   */
   public constructor(
-    private readonly ownerPredicate: IPredicate,
-    private readonly targetValue: bigint,
-    private readonly nonce: Uint8Array | null,
-    private readonly backlink: Uint8Array,
-    private readonly typeId: IUnitId,
-    private readonly remainingValue: bigint,
-    private readonly invariantPredicateSignatures: Uint8Array[] | null,
+    public readonly ownerPredicate: IPredicate,
+    public readonly targetValue: bigint,
+    private readonly _nonce: Uint8Array | null,
+    private readonly _backlink: Uint8Array,
+    public readonly typeId: IUnitId,
+    public readonly remainingValue: bigint,
+    private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.targetValue = BigInt(this.targetValue);
-    this.nonce = this.nonce ? new Uint8Array(this.nonce) : null;
-    this.backlink = new Uint8Array(this.backlink);
+    this._nonce = this._nonce ? new Uint8Array(this._nonce) : null;
+    this._backlink = new Uint8Array(this._backlink);
     this.remainingValue = BigInt(this.remainingValue);
-    this.invariantPredicateSignatures =
-      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+    this._invariantPredicateSignatures =
+      this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getOwnerPredicate(): IPredicate {
-    return this.ownerPredicate;
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
+  public get payloadType(): PayloadType {
+    return PayloadType.SplitFungibleTokenAttributes;
   }
 
-  public getTargetValue(): bigint {
-    return this.targetValue;
+  /**
+   * Get nonce.
+   * @returns {Uint8Array | null} Nonce.
+   */
+  public get nonce(): Uint8Array | null {
+    return this._nonce ? new Uint8Array(this._nonce) : null;
   }
 
-  public getNonce(): Uint8Array | null {
-    return this.nonce ? new Uint8Array(this.nonce) : null;
+  /**
+   * Get backlink.
+   * @returns {Uint8Array} Backlink.
+   */
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
+  /**
+   * Get invariant predicate signatures.
+   * @returns {Uint8Array[] | null} Invariant predicate signatures.
+   */
+  public get invariantPredicateSignatures(): Uint8Array[] | null {
+    return this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getTypeId(): IUnitId {
-    return this.typeId;
-  }
-
-  public getRemainingValue(): bigint {
-    return this.remainingValue;
-  }
-
-  public getInvariantPredicateSignatures(): Uint8Array[] | null {
-    return this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
-  }
-
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): SplitFungibleTokenAttributesArray {
     return [
-      this.getOwnerPredicate().getBytes(),
-      this.getTargetValue(),
-      this.getNonce(),
-      this.getBacklink(),
-      this.getTypeId().getBytes(),
-      this.getRemainingValue(),
+      this.ownerPredicate.bytes,
+      this.targetValue,
+      this.nonce,
+      this.backlink,
+      this.typeId.bytes,
+      this.remainingValue,
       null,
     ];
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): SplitFungibleTokenAttributesArray {
     return [
-      this.getOwnerPredicate().getBytes(),
-      this.getTargetValue(),
-      this.getNonce(),
-      this.getBacklink(),
-      this.getTypeId().getBytes(),
-      this.getRemainingValue(),
-      this.getInvariantPredicateSignatures(),
+      this.ownerPredicate.bytes,
+      this.targetValue,
+      this.nonce,
+      this.backlink,
+      this.typeId.bytes,
+      this.remainingValue,
+      this.invariantPredicateSignatures,
     ];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       SplitFungibleTokenAttributes
         Owner Predicate: ${this.ownerPredicate.toString()}
         Target Value: ${this.targetValue}
-        Nonce: ${this.nonce ? Base16Converter.encode(this.nonce) : 'null'}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Nonce: ${this._nonce ? Base16Converter.encode(this._nonce) : 'null'}
+        Backlink: ${Base16Converter.encode(this._backlink)}
         Type ID: ${this.typeId.toString()}
         Remaining Value: ${this.remainingValue}
         Invariant Predicate Signatures: ${
-          this.invariantPredicateSignatures
+          this._invariantPredicateSignatures
             ? dedent`
         [
-          ${this.invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+          ${this._invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
         ]`
             : 'null'
         }`;
   }
 
+  /**
+   * Create a SplitFungibleTokenAttributes from an array.
+   * @param {SplitFungibleTokenAttributesArray} data - Split fungible token attributes array.
+   * @returns {SplitFungibleTokenAttributes} Split fungible token attributes instance.
+   */
   public static fromArray(data: SplitFungibleTokenAttributesArray): SplitFungibleTokenAttributes {
     return new SplitFungibleTokenAttributes(
       new PredicateBytes(data[0]),

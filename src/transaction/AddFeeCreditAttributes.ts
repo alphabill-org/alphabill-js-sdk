@@ -3,39 +3,55 @@ import { TransactionRecordWithProof, TransactionRecordWithProofArray } from '../
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
-import { TransferFeeCreditPayload } from './TransferFeeCreditPayload.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
+import { TransactionPayload } from './TransactionPayload.js';
+import { TransferFeeCreditAttributes } from './TransferFeeCreditAttributes.js';
 
+/**
+ * Add fee credit attributes array.
+ */
 export type AddFeeCreditAttributesArray = [Uint8Array, ...TransactionRecordWithProofArray];
 
-@PayloadAttribute
+/**
+ * Add fee credit payload attributes.
+ */
 export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'addFC';
-  }
-
+  /**
+   * Add fee credit payload attributes constructor.
+   * @param {IPredicate} ownerPredicate Owner predicate.
+   * @param {TransactionRecordWithProof<TransactionPayload<TransferFeeCreditAttributes>>} transactionProof Transaction proof.
+   */
   public constructor(
-    private readonly ownerPredicate: IPredicate,
-    private readonly transactionProof: TransactionRecordWithProof<TransferFeeCreditPayload>,
+    public readonly ownerPredicate: IPredicate,
+    public readonly transactionProof: TransactionRecordWithProof<TransactionPayload<TransferFeeCreditAttributes>>,
   ) {}
 
-  public getOwnerPredicate(): IPredicate {
-    return this.ownerPredicate;
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
+  public get payloadType(): PayloadType {
+    return PayloadType.AddFeeCreditAttributes;
   }
 
-  public getTransactionProof(): TransactionRecordWithProof<TransferFeeCreditPayload> {
-    return this.transactionProof;
-  }
-
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): AddFeeCreditAttributesArray {
     return this.toArray();
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): AddFeeCreditAttributesArray {
     const proof = this.transactionProof.toArray();
-    return [this.getOwnerPredicate().getBytes(), ...proof];
+    return [this.ownerPredicate.bytes, ...proof];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       AddFeeCreditAttributes
@@ -44,6 +60,11 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
           ${this.transactionProof.toString()}`;
   }
 
+  /**
+   * Create AddFeeCreditAttributes from array.
+   * @param {AddFeeCreditAttributesArray} data Add fee credit attributes array.
+   * @returns {AddFeeCreditAttributes} Add fee credit attributes.
+   */
   public static fromArray(data: AddFeeCreditAttributesArray): AddFeeCreditAttributes {
     return new AddFeeCreditAttributes(
       new PredicateBytes(data[0]),

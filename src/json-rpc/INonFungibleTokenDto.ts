@@ -1,3 +1,7 @@
+/**
+ * Non Fungible token data from getUnit.
+ * @interface INonFungibleTokenDto
+ */
 export interface INonFungibleTokenDto {
   NftType: string;
   Name: string;

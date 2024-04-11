@@ -7,54 +7,57 @@ import { Base16Converter } from './util/Base16Converter.js';
 import { Base64Converter } from './util/Base64Converter.js';
 import { dedent } from './util/StringUtils.js';
 
+/**
+ * Non-fungible token.
+ */
 export class NonFungibleToken {
+  /**
+   * Non-fungible token constructor.
+   * @param {IUnitId} tokenType Token type.
+   * @param {string} name Token name.
+   * @param {string} uri Token URI.
+   * @param {Uint8Array} _data Token data.
+   * @param {IPredicate} dataUpdatePredicate Data update predicate.
+   * @param {bigint} blockNumber Block number.
+   * @param {Uint8Array} _backlink Backlink.
+   * @param {boolean} locked Is token locked.
+   */
   public constructor(
-    private readonly tokenType: IUnitId,
-    private readonly name: string,
-    private readonly uri: string,
-    private readonly data: Uint8Array,
-    private readonly dataUpdatePredicate: IPredicate,
-    private readonly blockNumber: bigint,
-    private readonly backlink: Uint8Array,
-    private readonly locked: boolean,
+    public readonly tokenType: IUnitId,
+    public readonly name: string,
+    public readonly uri: string,
+    private readonly _data: Uint8Array,
+    public readonly dataUpdatePredicate: IPredicate,
+    public readonly blockNumber: bigint,
+    private readonly _backlink: Uint8Array,
+    public readonly locked: boolean,
   ) {
-    this.data = new Uint8Array(this.data);
+    this._data = new Uint8Array(this._data);
     this.blockNumber = BigInt(this.blockNumber);
-    this.backlink = new Uint8Array(this.backlink);
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public getTokenType(): IUnitId {
-    return this.tokenType;
+  /**
+   * Get user data.
+   * @returns {Uint8Array} User data.
+   */
+  public get data(): Uint8Array {
+    return new Uint8Array(this._data);
   }
 
-  public getName(): string {
-    return this.name;
+  /**
+   * Get backlink.
+   * @returns {Uint8Array} Backlink.
+   */
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
-  public getURI(): string {
-    return this.uri;
-  }
-
-  public getData(): Uint8Array {
-    return new Uint8Array(this.data);
-  }
-
-  public getDataUpdatePredicate(): IPredicate {
-    return this.dataUpdatePredicate;
-  }
-
-  public getBlockNumber(): bigint {
-    return this.blockNumber;
-  }
-
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
-  }
-
-  public isLocked(): boolean {
-    return this.locked;
-  }
-
+  /**
+   * Create non-fungible token from DTO.
+   * @param {INonFungibleTokenDto} data Non-fungible token data.
+   * @returns {NonFungibleToken} Non-fungible token.
+   */
   public static create(data: INonFungibleTokenDto): NonFungibleToken {
     return new NonFungibleToken(
       UnitId.fromBytes(Base16Converter.decode(data.NftType)),
@@ -68,16 +71,20 @@ export class NonFungibleToken {
     );
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       NonFungibleToken
         Token Type: ${this.tokenType.toString()}
         Name: ${this.name}
         URI: ${this.uri}
-        Data: ${Base16Converter.encode(this.data)}
+        Data: ${Base16Converter.encode(this._data)}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
         Block Number: ${this.blockNumber}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Backlink: ${Base16Converter.encode(this._backlink)}
         Locked: ${this.locked}`;
   }
 }

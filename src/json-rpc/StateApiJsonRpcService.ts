@@ -12,21 +12,30 @@ import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { IUnitDto } from './IUnitDto.js';
 import { JsonRpcClient } from './JsonRpcClient.js';
-import { JsonRpcHttpService } from './JsonRpcHttpService.js';
 import { createUnit } from './UnitFactory.js';
 
 export type TransactionProofDto = { txRecord: string; txProof: string };
 
+/**
+ * State API JSON-RPC service.
+ * @implements {IStateApiService}
+ */
 export class StateApiJsonRpcService implements IStateApiService {
   public constructor(
     private readonly client: JsonRpcClient,
     private readonly cborCodec: ICborCodec,
   ) {}
 
+  /**
+   * @see {IStateApiService.getRoundNumber}
+   */
   public async getRoundNumber(): Promise<bigint> {
     return BigInt(await this.client.request('state_getRoundNumber'));
   }
 
+  /**
+   * @see {IStateApiService.getUnitsByOwnerId}
+   */
   public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
     const response = await this.client.request<string[] | null>(
       'state_getUnitsByOwnerID',
@@ -41,10 +50,13 @@ export class StateApiJsonRpcService implements IStateApiService {
     return identifiers;
   }
 
+  /**
+   * @see {IStateApiService.getUnit}
+   */
   public async getUnit<T>(unitId: IUnitId, includeStateProof: boolean): Promise<IUnit<T> | null> {
     const response = await this.client.request<IUnitDto>(
       'state_getUnit',
-      Base16Converter.encode(unitId.getBytes()),
+      Base16Converter.encode(unitId.bytes),
       includeStateProof,
     );
 
@@ -55,11 +67,17 @@ export class StateApiJsonRpcService implements IStateApiService {
     return null;
   }
 
+  /**
+   * @see {IStateApiService.getBlock}
+   */
   public async getBlock(blockNumber: bigint): Promise<Uint8Array> {
     const response = (await this.client.request('state_getBlock', String(blockNumber))) as string;
     return Base16Converter.decode(response);
   }
 
+  /**
+   * @see {IStateApiService.getTransactionProof}
+   */
   public async getTransactionProof(
     transactionHash: Uint8Array,
   ): Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null> {
@@ -76,6 +94,9 @@ export class StateApiJsonRpcService implements IStateApiService {
       : null;
   }
 
+  /**
+   * @see {IStateApiService.sendTransaction}
+   */
   public async sendTransaction(
     transaction: TransactionOrder<TransactionPayload<ITransactionPayloadAttributes>>,
   ): Promise<Uint8Array> {
@@ -85,8 +106,4 @@ export class StateApiJsonRpcService implements IStateApiService {
     )) as string;
     return Base16Converter.decode(response);
   }
-}
-
-export function http(url: string, cborCodec: ICborCodec): IStateApiService {
-  return new StateApiJsonRpcService(new JsonRpcClient(new JsonRpcHttpService(url)), cborCodec);
 }

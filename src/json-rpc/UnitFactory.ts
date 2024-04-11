@@ -17,11 +17,17 @@ const unitDataCreateMap = new Map<string, (input: unknown) => unknown>([
   [UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD, FeeCreditRecord.create],
 ]);
 
+/**
+ * Create a unit from a DTO.
+ * @param {IUnitDto} data Unit DTO.
+ * @returns {IUnit<T>} Unit.
+ * @throws {Error} If the unit type is unknown.
+ */
 export function createUnit<T>(data: IUnitDto): IUnit<T> {
   const unitId = UnitId.fromBytes(Base16Converter.decode(data.unitId));
-  const unitData = unitDataCreateMap.get(unitId.getType().toBase16())?.(data.data);
+  const unitData = unitDataCreateMap.get(unitId.type.toBase16())?.(data.data);
   if (unitData === undefined) {
-    throw new Error(`Unknown unit type: ${unitId.getType().toBase16()}`);
+    throw new Error(`Unknown unit type: ${unitId.type.toBase16()}`);
   }
 
   return new Unit(

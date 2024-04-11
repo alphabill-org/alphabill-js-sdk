@@ -7,8 +7,11 @@ import { INonFungibleTokenData } from './INonFungibleTokenData.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { NonFungibleTokenData } from './NonFungibleTokenData.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
+/**
+ * Create non-fungible token attributes array.
+ */
 export type CreateNonFungibleTokenAttributesArray = readonly [
   Uint8Array,
   Uint8Array,
@@ -19,69 +22,74 @@ export type CreateNonFungibleTokenAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
-@PayloadAttribute
+/**
+ * Create non-fungible token payload attributes.
+ */
 export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'createNToken';
-  }
-
+  /**
+   * Create non-fungible token payload attributes constructor.
+   * @param {IPredicate} ownerPredicate Owner predicate.
+   * @param {IUnitId} typeId Token type ID.
+   * @param {string} name Name.
+   * @param {string} uri URI.
+   * @param {INonFungibleTokenData} data Data.
+   * @param {IPredicate} dataUpdatePredicate Data update predicate.
+   * @param {Uint8Array[] | null} _tokenCreationPredicateSignatures Token creation predicate signatures.
+   */
   public constructor(
-    private readonly ownerPredicate: IPredicate,
-    private readonly typeId: IUnitId,
-    private readonly name: string,
-    private readonly uri: string,
-    private readonly data: INonFungibleTokenData,
-    private readonly dataUpdatePredicate: IPredicate,
-    private readonly tokenCreationPredicateSignatures: Uint8Array[] | null,
+    public readonly ownerPredicate: IPredicate,
+    public readonly typeId: IUnitId,
+    public readonly name: string,
+    public readonly uri: string,
+    public readonly data: INonFungibleTokenData,
+    public readonly dataUpdatePredicate: IPredicate,
+    private readonly _tokenCreationPredicateSignatures: Uint8Array[] | null,
   ) {
-    this.tokenCreationPredicateSignatures =
-      this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+    this._tokenCreationPredicateSignatures =
+      this._tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getOwnerPredicate(): IPredicate {
-    return this.ownerPredicate;
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
+  public get payloadType(): PayloadType {
+    return PayloadType.CreateNonFungibleTokenAttributes;
   }
 
-  public getTypeId(): IUnitId {
-    return this.typeId;
+  /**
+   * Get token creation predicate signatures.
+   * @returns {Uint8Array[] | null}
+   */
+  public get tokenCreationPredicateSignatures(): Uint8Array[] | null {
+    return this._tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getName(): string {
-    return this.name;
-  }
-
-  public getUri(): string {
-    return this.uri;
-  }
-
-  public getData(): INonFungibleTokenData {
-    return this.data;
-  }
-
-  public getDataUpdatePredicate(): IPredicate {
-    return this.dataUpdatePredicate;
-  }
-
-  public getTokenCreationPredicateSignatures(): Uint8Array[] | null {
-    return this.tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
-  }
-
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): CreateNonFungibleTokenAttributesArray {
     return this.toArray();
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): CreateNonFungibleTokenAttributesArray {
     return [
-      this.getOwnerPredicate().getBytes(),
-      this.getTypeId().getBytes(),
-      this.getName(),
-      this.getUri(),
-      this.getData().getBytes(),
-      this.getDataUpdatePredicate().getBytes(),
-      this.getTokenCreationPredicateSignatures(),
+      this.ownerPredicate.bytes,
+      this.typeId.bytes,
+      this.name,
+      this.uri,
+      this.data.bytes,
+      this.dataUpdatePredicate.bytes,
+      this.tokenCreationPredicateSignatures,
     ];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String.
+   */
   public toString(): string {
     return dedent`
       CreateNonFungibleTokenAttributes
@@ -92,15 +100,20 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
         Data: ${this.data.toString()}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
         Token Creation Predicate Signatures: ${
-          this.tokenCreationPredicateSignatures
+          this._tokenCreationPredicateSignatures
             ? dedent`
         [
-          ${this.tokenCreationPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+          ${this._tokenCreationPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
         ]`
             : 'null'
         }`;
   }
 
+  /**
+   * Create CreateNonFungibleTokenAttributes from array.
+   * @param {CreateNonFungibleTokenAttributesArray} data Create non-fungible token attributes array.
+   * @returns {CreateNonFungibleTokenAttributes} Create non-fungible token attributes instance.
+   */
   public static fromArray(data: CreateNonFungibleTokenAttributesArray): CreateNonFungibleTokenAttributes {
     return new CreateNonFungibleTokenAttributes(
       new PredicateBytes(data[0]),

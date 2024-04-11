@@ -1,5 +1,8 @@
 /**
  * String dedent function, calculates distance which has to be removed from second line string
+ * @param {TemplateStringsArray} strings - Template strings array
+ * @param {unknown[]} data - Data to be inserted
+ * @returns {string} - Dedented string
  */
 export function dedent(strings: TemplateStringsArray, ...data: unknown[]): string {
   if (strings.length === 0) {
@@ -14,7 +17,9 @@ export function dedent(strings: TemplateStringsArray, ...data: unknown[]): strin
   const whiteSpacesFromEdge = rows[0].length - rows[0].trimStart().length;
   const result: string[] = [];
   for (let j = 0; j < strings.length; j++) {
-    result.push(`${result.pop() || ''}${rows[0].slice(whiteSpacesFromEdge)}`);
+    result.push(
+      `${result.pop() || ''}${rows[0].slice(Math.min(rows[0].length - rows[0].trim().length, whiteSpacesFromEdge))}`,
+    );
     for (let i = 1; i < rows.length; i++) {
       result.push(rows[i].slice(whiteSpacesFromEdge));
     }

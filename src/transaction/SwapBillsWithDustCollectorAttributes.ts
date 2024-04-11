@@ -5,9 +5,13 @@ import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
 import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './IPredicate.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
-import { TransferBillToDustCollectorPayload } from './TransferBillDustCollectorPayload.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
+import { TransactionPayload } from './TransactionPayload.js';
+import { TransferBillToDustCollectorAttributes } from './TransferBillToDustCollectorAttributes.js';
 
+/**
+ * Swap bills with dust collector attributes array.
+ */
 export type SwapBillsWithDustCollectorAttributesArray = readonly [
   Uint8Array,
   TransactionRecordArray[],
@@ -15,60 +19,87 @@ export type SwapBillsWithDustCollectorAttributesArray = readonly [
   bigint,
 ];
 
-@PayloadAttribute
+/**
+ * Swap bills with dust collector payload attributes.
+ */
 export class SwapBillsWithDustCollectorAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'swapDC';
-  }
-
+  /**
+   * Swap bills with dust collector attributes constructor.
+   * @param {IPredicate} ownerPredicate - Owner predicate.
+   * @param {TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>>[]} _proofs - Transaction proofs.
+   * @param {bigint} targetValue - Target value.
+   */
   public constructor(
-    private readonly ownerPredicate: IPredicate,
-    private readonly proofs: readonly TransactionRecordWithProof<TransferBillToDustCollectorPayload>[],
-    private readonly targetValue: bigint,
+    public readonly ownerPredicate: IPredicate,
+    private readonly _proofs: readonly TransactionRecordWithProof<
+      TransactionPayload<TransferBillToDustCollectorAttributes>
+    >[],
+    public readonly targetValue: bigint,
   ) {
+    this._proofs = Array.from(this._proofs);
     this.targetValue = BigInt(this.targetValue);
   }
 
-  public getOwnerPredicate(): IPredicate {
-    return this.ownerPredicate;
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
+  public get payloadType(): PayloadType {
+    return PayloadType.SwapBillsWithDustCollectorAttributes;
   }
 
-  public getProofs(): readonly TransactionRecordWithProof<TransferBillToDustCollectorPayload>[] {
-    return Array.from(this.proofs);
+  /**
+   * Get transaction proofs.
+   * @returns {readonly TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>>[]} Transaction proofs.
+   */
+  public get proofs(): readonly TransactionRecordWithProof<
+    TransactionPayload<TransferBillToDustCollectorAttributes>
+  >[] {
+    return Array.from(this._proofs);
   }
 
-  public getTargetValue(): bigint {
-    return this.targetValue;
-  }
-
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): SwapBillsWithDustCollectorAttributesArray {
     return this.toArray();
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): SwapBillsWithDustCollectorAttributesArray {
     const records: TransactionRecordArray[] = [];
     const proofs: TransactionProofArray[] = [];
-    for (const proof of this.getProofs()) {
-      records.push(proof.getTransactionRecord().toArray());
-      proofs.push(proof.getTransactionProof().toArray());
+    for (const proof of this.proofs) {
+      records.push(proof.transactionRecord.toArray());
+      proofs.push(proof.transactionProof.toArray());
     }
 
-    return [this.getOwnerPredicate().getBytes(), records, proofs, this.targetValue];
+    return [this.ownerPredicate.bytes, records, proofs, this.targetValue];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       SwapBillsWithDustCollectorAttributes
         Owner Predicate: ${this.ownerPredicate.toString()}
         Transaction Proofs: [
-          ${this.proofs.map((proof) => proof.toString()).join('\n')}
+          ${this._proofs.map((proof) => proof.toString()).join('\n')}
         ]
         Target Value: ${this.targetValue}
       `;
   }
 
+  /**
+   * Create a SwapBillsWithDustCollectorAttributes object from an array.
+   * @param {SwapBillsWithDustCollectorAttributesArray} data - swap bills with dust collector attributes array.
+   * @returns {SwapBillsWithDustCollectorAttributes} Swap bills with dust collector attributes instance.
+   */
   public static fromArray(data: SwapBillsWithDustCollectorAttributesArray): SwapBillsWithDustCollectorAttributes {
-    const proofs: TransactionRecordWithProof<TransferBillToDustCollectorPayload>[] = [];
+    const proofs: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>>[] = [];
 
     for (let i = 0; i < data[1].length; i++) {
       proofs.push(TransactionRecordWithProof.fromArray([data[1][i], data[2][i]]));

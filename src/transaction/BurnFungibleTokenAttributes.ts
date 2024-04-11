@@ -3,8 +3,11 @@ import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
+/**
+ * Burn fungible token attributes array.
+ */
 export type BurnFungibleTokenAttributesArray = readonly [
   Uint8Array,
   bigint,
@@ -14,91 +17,113 @@ export type BurnFungibleTokenAttributesArray = readonly [
   Uint8Array[] | null,
 ];
 
-@PayloadAttribute
+/**
+ * Burn fungible token payload attributes.
+ */
 export class BurnFungibleTokenAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'burnFToken';
-  }
-
+  /**
+   * Burn fungible token payload attributes constructor.
+   * @param {IUnitId} typeId Token type ID.
+   * @param {bigint} value Token value.
+   * @param {IUnitId} targetTokenId Target token ID.
+   * @param {Uint8Array} _targetTokenBacklink Target token backlink.
+   * @param {Uint8Array} _backlink Backlink.
+   * @param {Uint8Array[] | null} _invariantPredicateSignatures Invariant predicate signatures.
+   */
   public constructor(
-    private readonly typeId: IUnitId,
-    private readonly value: bigint,
-    private readonly targetTokenId: IUnitId,
-    private readonly targetTokenBacklink: Uint8Array,
-    private readonly backlink: Uint8Array,
-    private readonly invariantPredicateSignatures: Uint8Array[] | null,
+    public readonly typeId: IUnitId,
+    public readonly value: bigint,
+    public readonly targetTokenId: IUnitId,
+    private readonly _targetTokenBacklink: Uint8Array,
+    private readonly _backlink: Uint8Array,
+    private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
-    this.targetTokenBacklink = new Uint8Array(this.targetTokenBacklink);
-    this.backlink = new Uint8Array(this.backlink);
-    this.invariantPredicateSignatures =
-      this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
+    this._targetTokenBacklink = new Uint8Array(this._targetTokenBacklink);
+    this._backlink = new Uint8Array(this._backlink);
+    this._invariantPredicateSignatures =
+      this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getTypeId(): IUnitId {
-    return this.typeId;
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
+  public get payloadType(): PayloadType {
+    return PayloadType.BurnFungibleTokenAttributes;
   }
 
-  public getValue(): bigint {
-    return this.value;
+  /**
+   * Get target token backlink.
+   * @returns {Uint8Array}
+   */
+  public get targetTokenBacklink(): Uint8Array {
+    return new Uint8Array(this._targetTokenBacklink);
   }
 
-  public getTargetTokenId(): IUnitId {
-    return this.targetTokenId;
+  /**
+   * Get backlink.
+   * @returns {Uint8Array}
+   */
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
-  public getTargetTokenBacklink(): Uint8Array {
-    return new Uint8Array(this.targetTokenBacklink);
+  /**
+   * Get invariant predicate signatures.
+   * @returns {Uint8Array[] | null}
+   */
+  public get invariantPredicateSignatures(): Uint8Array[] | null {
+    return this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
-  }
-
-  public getInvariantPredicateSignatures(): Uint8Array[] | null {
-    return this.invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
-  }
-
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): BurnFungibleTokenAttributesArray {
-    return [
-      this.getTypeId().getBytes(),
-      this.getValue(),
-      this.getTargetTokenId().getBytes(),
-      this.getTargetTokenBacklink(),
-      this.getBacklink(),
-      null,
-    ];
+    return [this.typeId.bytes, this.value, this.targetTokenId.bytes, this.targetTokenBacklink, this.backlink, null];
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): BurnFungibleTokenAttributesArray {
     return [
-      this.getTypeId().getBytes(),
-      this.getValue(),
-      this.getTargetTokenId().getBytes(),
-      this.getTargetTokenBacklink(),
-      this.getBacklink(),
-      this.getInvariantPredicateSignatures(),
+      this.typeId.bytes,
+      this.value,
+      this.targetTokenId.bytes,
+      this.targetTokenBacklink,
+      this.backlink,
+      this.invariantPredicateSignatures,
     ];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       BurnFungibleTokenAttributes
         Type ID: ${this.typeId.toString()}
         Value: ${this.value}
         Target Token ID: ${this.targetTokenId.toString()}
-        Target Token Backlink: ${Base16Converter.encode(this.targetTokenBacklink)}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Target Token Backlink: ${Base16Converter.encode(this._targetTokenBacklink)}
+        Backlink: ${Base16Converter.encode(this._backlink)}
         Invariant Predicate Signatures: ${
-          this.invariantPredicateSignatures
+          this._invariantPredicateSignatures
             ? dedent`
         [
-          ${this.invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+          ${this._invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
         ]`
             : 'null'
         }`;
   }
 
+  /**
+   * Create BurnFungibleTokenAttributes from array.
+   * @param {BurnFungibleTokenAttributesArray} data Burn fungible token attributes array.
+   * @returns {BurnFungibleTokenAttributes} Burn fungible token attributes.
+   */
   public static fromArray(data: BurnFungibleTokenAttributesArray): BurnFungibleTokenAttributes {
     return new BurnFungibleTokenAttributes(
       UnitId.fromBytes(data[0]),

@@ -1,14 +1,14 @@
 {
   "name": "@alphabill/alphabill-js-sdk-examples",
   "version": "1.0.0",
-  "description": "",
+  "description": "Examples for the Alphabill JS SDK",
   "type": "module",
   "scripts": {
-    "lint": "eslint \"examples/**/*.mjs\"",
-    "lint:fix": "eslint \"examples/**/*.mjs\" --fix"
+    "lint": "eslint \"./**/*.mjs\"",
+    "lint:fix": "eslint \"./**/*.mjs\" --fix"
   },
   "dependencies": {
-    "@alphabill/alphabill-js-sdk": "../",
+    "@alphabill/alphabill-js-sdk": "latest",
     "@noble/hashes": "^1.4.0"
   }
 }

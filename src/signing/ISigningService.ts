@@ -1,11 +1,13 @@
 /**
  * Signing service interface.
+ * @interface ISigningService
  */
 export interface ISigningService {
   /**
    * Get user public key.
+   * @returns {Uint8Array} public key bytes.
    */
-  getPublicKey(): Uint8Array;
+  get publicKey(): Uint8Array;
 
   /**
    * Sign bytes with user private key.

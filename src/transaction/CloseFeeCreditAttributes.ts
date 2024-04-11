@@ -3,53 +3,78 @@ import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadAttribute } from './PayloadAttribute.js';
+import { PayloadType } from './PayloadAttributeFactory.js';
 
+/**
+ * Close fee credit attributes array.
+ */
 export type CloseFeeCreditAttributesArray = readonly [bigint, Uint8Array, Uint8Array];
 
-@PayloadAttribute
+/**
+ * Close fee credit payload attributes.
+ */
 export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
-  public static get PAYLOAD_TYPE(): string {
-    return 'closeFC';
-  }
-
+  /**
+   * Close fee credit payload attributes constructor.
+   * @param {bigint} amount Amount.
+   * @param {IUnitId} targetUnitId Target unit ID.
+   * @param {Uint8Array} _targetUnitBacklink Target unit backlink.
+   */
   public constructor(
-    private readonly amount: bigint,
-    private readonly targetUnitId: IUnitId,
-    private readonly targetUnitBacklink: Uint8Array,
+    public readonly amount: bigint,
+    public readonly targetUnitId: IUnitId,
+    private readonly _targetUnitBacklink: Uint8Array,
   ) {
     this.amount = BigInt(this.amount);
-    this.targetUnitBacklink = new Uint8Array(this.targetUnitBacklink);
+    this._targetUnitBacklink = new Uint8Array(this._targetUnitBacklink);
   }
 
-  public getAmount(): bigint {
-    return this.amount;
+  /**
+   * @see {ITransactionPayloadAttributes.payloadType}
+   */
+  public get payloadType(): PayloadType {
+    return PayloadType.CloseFeeCreditAttributes;
   }
 
-  public getTargetUnitId(): IUnitId {
-    return this.targetUnitId;
+  /**
+   * Get target unit backlink.
+   * @returns {Uint8Array}
+   */
+  public get targetUnitBacklink(): Uint8Array {
+    return new Uint8Array(this._targetUnitBacklink);
   }
 
-  public getTargetUnitBacklink(): Uint8Array {
-    return new Uint8Array(this.targetUnitBacklink);
-  }
-
+  /**
+   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   */
   public toOwnerProofData(): CloseFeeCreditAttributesArray {
     return this.toArray();
   }
 
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
   public toArray(): CloseFeeCreditAttributesArray {
-    return [this.getAmount(), this.getTargetUnitId().getBytes(), this.getTargetUnitBacklink()];
+    return [this.amount, this.targetUnitId.bytes, this.targetUnitBacklink];
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       CloseFeeCreditAttributes
         Amount: ${this.amount}
         Target Unit ID: ${this.targetUnitId.toString()}
-        Target Unit Backlink: ${Base16Converter.encode(this.targetUnitBacklink)}`;
+        Target Unit Backlink: ${Base16Converter.encode(this._targetUnitBacklink)}`;
   }
 
+  /**
+   * Create CloseFeeCreditAttributes from array.
+   * @param {CloseFeeCreditAttributesArray} data Close fee credit attributes array.
+   * @returns {CloseFeeCreditAttributes} Close fee credit attributes instance.
+   */
   public static fromArray(data: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {
     return new CloseFeeCreditAttributes(data[0], UnitId.fromBytes(data[1]), data[2]);
   }

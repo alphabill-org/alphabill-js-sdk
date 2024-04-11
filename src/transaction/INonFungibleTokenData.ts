@@ -1,3 +1,11 @@
+/**
+ * Non fungible token data.
+ * @interface INonFungibleTokenData
+ */
 export interface INonFungibleTokenData {
-  getBytes(): Uint8Array;
+  /**
+   * Non fungible token data bytes.
+   * @returns {Uint8Array}
+   */
+  get bytes(): Uint8Array;
 }

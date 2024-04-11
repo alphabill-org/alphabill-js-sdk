@@ -1,3 +1,10 @@
+/**
+ * @interface IPredicate
+ */
 export interface IPredicate {
-  getBytes(): Uint8Array;
+  /**
+   * Predicate bytes.
+   * @type {Uint8Array}
+   */
+  get bytes(): Uint8Array;
 }

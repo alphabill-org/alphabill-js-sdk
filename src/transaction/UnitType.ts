@@ -1,3 +1,6 @@
+/**
+ * GetUnit endpoint unit id types.
+ */
 export enum UnitType {
   MONEY_PARTITION_BILL_DATA = '0x00',
   MONEY_PARTITION_FEE_CREDIT_RECORD = '0x0F',

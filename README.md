@@ -12,6 +12,9 @@ Project uses [ts-jest](https://kulshekhar.github.io/ts-jest/) for testing.
 
 ## Usage
 
+### Package
+Latest nightly build is in npm registry with `dev` tag. 
+
 ### Examples
 
 To run examples, `npm run build` must be run to generate `lib` folder with
@@ -23,8 +26,8 @@ To create a client use following code snippet
 
 ```
 // 1. Import modules.
-import { createPublicClient } from 'alphabill-js-sdk/lib/StateApiClient';
-import { http } from 'alphabill-js-sdk/lib/json-rpc/StateApiHttpService';
+import { createPublicClient } from '@alphabill/alphabill-js-sdk/lib/StateApiClient';
+import { http } from '@alphabill/alphabill-js-sdk/lib/json-rpc/StateApiHttpService';
 
 // 2. Set up your client with transport.
 const client = createPublicClient({

@@ -2,16 +2,17 @@ import { IUnitIdType } from './IUnitIdType.js';
 
 /**
  * UnitId interface.
+ * @interface IUnitId
  */
 export interface IUnitId {
   /**
    * Get type.
    * @returns {IUnitIdType} Type.
    */
-  getType(): IUnitIdType;
+  get type(): IUnitIdType;
   /**
    * Get bytes.
    * @returns {Uint8Array} Bytes.
    */
-  getBytes(): Uint8Array;
+  get bytes(): Uint8Array;
 }

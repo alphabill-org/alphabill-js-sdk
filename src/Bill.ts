@@ -2,34 +2,41 @@ import { IBillDataDto } from './json-rpc/IBillDataDto.js';
 import { Base16Converter } from './util/Base16Converter.js';
 import { dedent } from './util/StringUtils.js';
 
+/**
+ * Bill.
+ */
 export class Bill {
+  /**
+   * Bill constructor.
+   * @param {bigint} value Bill value.
+   * @param {bigint} lastUpdate Last update.
+   * @param {Uint8Array} _backlink Backlink.
+   * @param {boolean} locked Is locked.
+   */
   public constructor(
-    private readonly value: bigint,
-    private readonly lastUpdate: bigint,
-    private readonly backlink: Uint8Array,
-    private readonly locked: boolean,
+    public readonly value: bigint,
+    public readonly lastUpdate: bigint,
+    private readonly _backlink: Uint8Array,
+    public readonly locked: boolean,
   ) {
     this.value = BigInt(this.value);
     this.lastUpdate = BigInt(this.lastUpdate);
-    this.backlink = new Uint8Array(this.backlink);
+    this._backlink = new Uint8Array(this._backlink);
   }
 
-  public getValue(): bigint {
-    return this.value;
+  /**
+   * Get backlink.
+   * @returns {Uint8Array}
+   */
+  public get backlink(): Uint8Array {
+    return new Uint8Array(this._backlink);
   }
 
-  public getLastUpdate(): bigint {
-    return this.lastUpdate;
-  }
-
-  public getBacklink(): Uint8Array {
-    return new Uint8Array(this.backlink);
-  }
-
-  public isLocked(): boolean {
-    return this.locked;
-  }
-
+  /**
+   * Create bill from DTO.
+   * @param {IBillDataDto} data Bill data.
+   * @returns {Bill} Bill.
+   */
   public static create(data: IBillDataDto): Bill {
     return new Bill(
       BigInt(data.value),
@@ -39,12 +46,16 @@ export class Bill {
     );
   }
 
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
   public toString(): string {
     return dedent`
       Bill
         Value: ${this.value}
         Last Update: ${this.lastUpdate}
-        Backlink: ${Base16Converter.encode(this.backlink)}
+        Backlink: ${Base16Converter.encode(this._backlink)}
         Locked: ${this.locked}`;
   }
 }
