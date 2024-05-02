@@ -39,9 +39,9 @@ export class StateApiClient {
    * @template T Unit data type.
    * @param {IUnitId} unitId Unit ID.
    * @param {boolean} includeStateProof Include state proof.
-   * @returns {Promise<IUnit<T> | null>} Unit.
+   * @returns {Promise<T | null>} Unit.
    */
-  public getUnit<T>(unitId: IUnitId, includeStateProof: boolean): Promise<IUnit<T> | null> {
+  public getUnit<T extends IUnit>(unitId: IUnitId, includeStateProof: boolean): Promise<T | null> {
     return this.service.getUnit(unitId, includeStateProof);
   }
 

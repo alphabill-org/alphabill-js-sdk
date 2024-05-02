@@ -6,7 +6,7 @@ import { TransactionPayload, TransactionPayloadArray } from './TransactionPayloa
 /**
  * Transaction order array.
  */
-export type TransactionOrderArray = readonly [TransactionPayloadArray, Uint8Array, Uint8Array | null];
+export type TransactionOrderArray = readonly [TransactionPayloadArray, Uint8Array | null, Uint8Array | null];
 
 /**
  * Transaction order.
@@ -21,19 +21,19 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
    */
   public constructor(
     public readonly payload: T,
-    private readonly _ownerProof: Uint8Array,
+    private readonly _ownerProof: Uint8Array | null,
     private readonly _feeProof: Uint8Array | null,
   ) {
-    this._ownerProof = new Uint8Array(this._ownerProof);
+    this._ownerProof = this._ownerProof ? new Uint8Array(this._ownerProof) : null;
     this._feeProof = this._feeProof ? new Uint8Array(this._feeProof) : null;
   }
 
   /**
    * Get owner proof.
-   * @returns {Uint8Array} Owner proof.
+   * @returns {Uint8Array | null} Owner proof.
    */
-  public get ownerProof(): Uint8Array {
-    return new Uint8Array(this._ownerProof);
+  public get ownerProof(): Uint8Array | null {
+    return this._ownerProof ? new Uint8Array(this._ownerProof) : null;
   }
 
   /**
@@ -60,7 +60,7 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
     return dedent`
       TransactionOrder
         ${this.payload.toString()}
-        Owner Proof: ${Base16Converter.encode(this._ownerProof)}
+        Owner Proof: ${this._ownerProof ? Base16Converter.encode(this._ownerProof) : null}
         Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}`;
   }
 

@@ -37,6 +37,8 @@ export class UnitId implements IUnitId {
     return `${Base16Converter.encode(this._bytes)}`;
   }
 
+  // TODO: Create equals method
+
   /**
    * Create unit identifier from bytes.
    * @param {Uint8Array} id - bytes.

@@ -1,3 +1,4 @@
+import { IStateProof } from './IUnit.js';
 import { IUnitId } from './IUnitId.js';
 import { INonFungibleTokenDto } from './json-rpc/INonFungibleTokenDto.js';
 import { PredicateBytes } from './PredicateBytes.js';
@@ -13,6 +14,8 @@ import { dedent } from './util/StringUtils.js';
 export class NonFungibleToken {
   /**
    * Non-fungible token constructor.
+   * @param {IUnitId} unitId Unit ID.
+   * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {IUnitId} tokenType Token type.
    * @param {string} name Token name.
    * @param {string} uri Token URI.
@@ -21,8 +24,11 @@ export class NonFungibleToken {
    * @param {bigint} blockNumber Block number.
    * @param {Uint8Array} _backlink Backlink.
    * @param {boolean} locked Is token locked.
+   * @param {IStateProof | null} stateProof State proof.
    */
   public constructor(
+    public readonly unitId: IUnitId,
+    public readonly ownerPredicate: IPredicate,
     public readonly tokenType: IUnitId,
     public readonly name: string,
     public readonly uri: string,
@@ -31,6 +37,7 @@ export class NonFungibleToken {
     public readonly blockNumber: bigint,
     private readonly _backlink: Uint8Array,
     public readonly locked: boolean,
+    public readonly stateProof: IStateProof | null,
   ) {
     this._data = new Uint8Array(this._data);
     this.blockNumber = BigInt(this.blockNumber);
@@ -55,11 +62,21 @@ export class NonFungibleToken {
 
   /**
    * Create non-fungible token from DTO.
+   * @param {IUnitId} unitId Unit ID.
+   * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {INonFungibleTokenDto} data Non-fungible token data.
+   * @param {IStateProof | null} stateProof State proof.
    * @returns {NonFungibleToken} Non-fungible token.
    */
-  public static create(data: INonFungibleTokenDto): NonFungibleToken {
+  public static create(
+    unitId: IUnitId,
+    ownerPredicate: IPredicate,
+    data: INonFungibleTokenDto,
+    stateProof: IStateProof | null,
+  ): NonFungibleToken {
     return new NonFungibleToken(
+      unitId,
+      ownerPredicate,
       UnitId.fromBytes(Base16Converter.decode(data.NftType)),
       data.Name,
       data.URI,
@@ -68,6 +85,7 @@ export class NonFungibleToken {
       BigInt(data.T),
       Base64Converter.decode(data.Backlink),
       Boolean(Number(data.Locked)),
+      stateProof,
     );
   }
 
