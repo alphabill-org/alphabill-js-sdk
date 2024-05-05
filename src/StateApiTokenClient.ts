@@ -1,7 +1,12 @@
 import { IStateApiService } from './IStateApiService.js';
 import { IUnitId } from './IUnitId.js';
 import { StateApiClient } from './StateApiClient.js';
-import { IAddFeeCreditTransactionData, ICloseFeeCreditTransactionData } from './StateApiMoneyClient.js';
+import {
+  IAddFeeCreditTransactionData,
+  ICloseFeeCreditTransactionData,
+  ILockUnitTransactionData,
+  IUnlockUnitTransactionData,
+} from './StateApiMoneyClient.js';
 import { SystemIdentifier } from './SystemIdentifier.js';
 import { AddFeeCreditAttributes } from './transaction/AddFeeCreditAttributes.js';
 import { BurnFungibleTokenAttributes } from './transaction/BurnFungibleTokenAttributes.js';
@@ -15,11 +20,13 @@ import { IPredicate } from './transaction/IPredicate.js';
 import { ITransactionClientMetadata } from './transaction/ITransactionClientMetadata.js';
 import { ITransactionOrderFactory } from './transaction/ITransactionOrderFactory.js';
 import { JoinFungibleTokenAttributes } from './transaction/JoinFungibleTokenAttributes.js';
+import { LockFeeCreditAttributes } from './transaction/LockFeeCreditAttributes.js';
 import { SplitFungibleTokenAttributes } from './transaction/SplitFungibleTokenAttributes.js';
 import { TokenIcon } from './transaction/TokenIcon.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransferFungibleTokenAttributes } from './transaction/TransferFungibleTokenAttributes.js';
 import { TransferNonFungibleTokenAttributes } from './transaction/TransferNonFungibleTokenAttributes.js';
+import { UnlockFeeCreditAttributes } from './transaction/UnlockFeeCreditAttributes.js';
 import { UpdateNonFungibleTokenAttributes } from './transaction/UpdateNonFungibleTokenAttributes.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
 
@@ -403,6 +410,38 @@ export class StateApiTokenClient extends StateApiClient {
           SystemIdentifier.TOKEN_PARTITION,
           feeCreditRecord.unitId,
           new CloseFeeCreditAttributes(amount, bill.unitId, bill.backlink),
+          metadata,
+        ),
+      ),
+    );
+  }
+
+  public async lockFeeCredit(
+    { status, data }: ILockUnitTransactionData,
+    metadata: ITransactionClientMetadata,
+  ): Promise<Uint8Array> {
+    return this.sendTransaction(
+      await this.transactionOrderFactory.createTransaction(
+        TransactionPayload.create(
+          SystemIdentifier.TOKEN_PARTITION,
+          data.unitId,
+          new LockFeeCreditAttributes(status, data.backlink),
+          metadata,
+        ),
+      ),
+    );
+  }
+
+  public async unlockFeeCredit(
+    { data }: IUnlockUnitTransactionData,
+    metadata: ITransactionClientMetadata,
+  ): Promise<Uint8Array> {
+    return this.sendTransaction(
+      await this.transactionOrderFactory.createTransaction(
+        TransactionPayload.create(
+          SystemIdentifier.TOKEN_PARTITION,
+          data.unitId,
+          new UnlockFeeCreditAttributes(data.backlink),
           metadata,
         ),
       ),

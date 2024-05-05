@@ -55,7 +55,7 @@ const splitTransactionHash = await client.splitFungibleToken(
 // 1b. wait for transaction to finalize
 const splitBillProof = await waitTransactionProof(client, splitTransactionHash);
 
-// 2. find the token that was split, here as a hack to just take second token from list
+// 2. find the token that was split
 const splitTokenId = splitBillProof.transactionRecord.serverMetadata.targetUnits
   .map((bytes) => UnitId.fromBytes(bytes))
   .find(

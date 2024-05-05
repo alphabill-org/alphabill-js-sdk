@@ -30,12 +30,12 @@ interface ITransferFeeCreditTransactionData {
   bill: { unitId: IUnitId; backlink: Uint8Array };
 }
 
-interface ILockUnitTransactionData {
+export interface ILockUnitTransactionData {
   status: bigint;
   data: { unitId: IUnitId; backlink: Uint8Array };
 }
 
-interface IUnlockUnitTransactionData {
+export interface IUnlockUnitTransactionData {
   data: { unitId: IUnitId; backlink: Uint8Array };
 }
 

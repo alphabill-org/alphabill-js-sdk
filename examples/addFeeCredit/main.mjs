@@ -7,9 +7,9 @@ import { TransactionOrderFactory } from '@alphabill/alphabill-js-sdk/lib/transac
 import { UnitIdWithType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitIdWithType.js';
 import { UnitType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitType.js';
 import { Base16Converter } from '@alphabill/alphabill-js-sdk/lib/util/Base16Converter.js';
+import { waitTransactionProof } from '../waitTransactionProof.mjs';
 import { sha256 } from '@noble/hashes/sha256';
 import config from '../config.js';
-import { waitTransactionProof } from '../waitTransactionProof.mjs';
 
 const cborCodec = new CborCodecNode();
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
@@ -32,10 +32,12 @@ if (unitIds.length === 0) {
   throw new Error('No bills available');
 }
 
-for (const { client, systemIdentifier } of [
+const partitions = [
   { client: moneyClient, systemIdentifier: SystemIdentifier.MONEY_PARTITION },
   { client: tokenClient, systemIdentifier: SystemIdentifier.TOKEN_PARTITION },
-]) {
+];
+
+for (const { client, systemIdentifier } of partitions) {
   const bill = await moneyClient.getUnit(unitIds[0], false);
   const round = await moneyClient.getRoundNumber();
   const feeCreditRecordId = new UnitIdWithType(
