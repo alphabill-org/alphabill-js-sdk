@@ -7,9 +7,9 @@ import { TransactionOrderFactory } from '@alphabill/alphabill-js-sdk/lib/transac
 import { UnitIdWithType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitIdWithType.js';
 import { UnitType } from '@alphabill/alphabill-js-sdk/lib/transaction/UnitType.js';
 import { Base16Converter } from '@alphabill/alphabill-js-sdk/lib/util/Base16Converter.js';
-import { waitTransactionProof } from '../waitTransactionProof.mjs';
 import { sha256 } from '@noble/hashes/sha256';
 import config from '../config.js';
+import { waitTransactionProof } from '../waitTransactionProof.mjs';
 
 const cborCodec = new CborCodecNode();
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
