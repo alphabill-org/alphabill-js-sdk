@@ -9,6 +9,7 @@ import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.j
 import { JoinFungibleTokenAttributes } from './JoinFungibleTokenAttributes.js';
 import { LockBillAttributes } from './LockBillAttributes.js';
 import { LockFeeCreditAttributes } from './LockFeeCreditAttributes.js';
+import { LockTokenAttributes } from './LockTokenAttributes.js';
 import { ReclaimFeeCreditAttributes } from './ReclaimFeeCreditAttributes.js';
 import { SplitBillAttributes } from './SplitBillAttributes.js';
 import { SplitFungibleTokenAttributes } from './SplitFungibleTokenAttributes.js';
@@ -20,6 +21,7 @@ import { TransferFungibleTokenAttributes } from './TransferFungibleTokenAttribut
 import { TransferNonFungibleTokenAttributes } from './TransferNonFungibleTokenAttributes.js';
 import { UnlockBillAttributes } from './UnlockBillAttributes.js';
 import { UnlockFeeCreditAttributes } from './UnlockFeeCreditAttributes.js';
+import { UnlockTokenAttributes } from './UnlockTokenAttributes.js';
 import { UpdateNonFungibleTokenAttributes } from './UpdateNonFungibleTokenAttributes.js';
 
 /**
@@ -34,6 +36,7 @@ export enum PayloadType {
   CreateNonFungibleTokenAttributes = 'createNToken',
   CreateNonFungibleTokenTypeAttributes = 'createNType',
   JoinFungibleTokenAttributes = 'joinFToken',
+  LockTokenAttributes = 'lockToken',
   LockBillAttributes = 'lock',
   LockFeeCreditAttributes = 'lockFC',
   ReclaimFeeCreditAttributes = 'reclFC',
@@ -46,6 +49,7 @@ export enum PayloadType {
   TransferFungibleTokenAttributes = 'transFToken',
   TransferNonFungibleTokenAttributes = 'transNToken',
   UnlockBillAttributes = 'unlock',
+  UnlockTokenAttributes = 'unlockToken',
   UnlockFeeCreditAttributes = 'unlockFC',
   UpdateNonFungibleTokenAttributes = 'updateNToken',
 }
@@ -60,6 +64,7 @@ const payloadAttributesMap = new Map<PayloadType, (data: unknown) => ITransactio
   [PayloadType.CreateNonFungibleTokenTypeAttributes, CreateNonFungibleTokenTypeAttributes.fromArray],
   [PayloadType.JoinFungibleTokenAttributes, JoinFungibleTokenAttributes.fromArray],
   [PayloadType.LockBillAttributes, LockBillAttributes.fromArray],
+  [PayloadType.LockTokenAttributes, LockTokenAttributes.fromArray],
   [PayloadType.LockFeeCreditAttributes, LockFeeCreditAttributes.fromArray],
   [PayloadType.ReclaimFeeCreditAttributes, ReclaimFeeCreditAttributes.fromArray],
   [PayloadType.SplitBillAttributes, SplitBillAttributes.fromArray],
@@ -71,6 +76,7 @@ const payloadAttributesMap = new Map<PayloadType, (data: unknown) => ITransactio
   [PayloadType.TransferFungibleTokenAttributes, TransferFungibleTokenAttributes.fromArray],
   [PayloadType.TransferNonFungibleTokenAttributes, TransferNonFungibleTokenAttributes.fromArray],
   [PayloadType.UnlockBillAttributes, UnlockBillAttributes.fromArray],
+  [PayloadType.UnlockTokenAttributes, UnlockTokenAttributes.fromArray],
   [PayloadType.UnlockFeeCreditAttributes, UnlockFeeCreditAttributes.fromArray],
   [PayloadType.UpdateNonFungibleTokenAttributes, UpdateNonFungibleTokenAttributes.fromArray],
 ]);

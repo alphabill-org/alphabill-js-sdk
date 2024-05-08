@@ -32,11 +32,11 @@ interface ITransferFeeCreditTransactionData {
 
 export interface ILockUnitTransactionData {
   status: bigint;
-  data: { unitId: IUnitId; backlink: Uint8Array };
+  unit: { unitId: IUnitId; backlink: Uint8Array };
 }
 
 export interface IUnlockUnitTransactionData {
-  data: { unitId: IUnitId; backlink: Uint8Array };
+  unit: { unitId: IUnitId; backlink: Uint8Array };
 }
 
 interface IReclaimFeeCreditTransactionData {
@@ -77,7 +77,15 @@ export interface ICloseFeeCreditTransactionData {
   feeCreditRecord: { unitId: IUnitId; balance: bigint };
 }
 
+/**
+ * State API client for money partition.
+ */
 export class StateApiMoneyClient extends StateApiClient {
+  /**
+   * State API client for money partition constructor.
+   * @param transactionOrderFactory Transaction order factory.
+   * @param service State API service.
+   */
   public constructor(
     private readonly transactionOrderFactory: ITransactionOrderFactory,
     service: IStateApiService,
@@ -85,6 +93,12 @@ export class StateApiMoneyClient extends StateApiClient {
     super(service);
   }
 
+  /**
+   * Transfer fee credit from bill.
+   * @param {ITransferFeeCreditTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async transferToFeeCredit(
     {
       bill,
@@ -116,6 +130,12 @@ export class StateApiMoneyClient extends StateApiClient {
     );
   }
 
+  /**
+   * Add fee credit.
+   * @param {IAddFeeCreditTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async addFeeCredit(
     { ownerPredicate, proof, feeCreditRecord }: IAddFeeCreditTransactionData,
     metadata: ITransactionClientMetadata,
@@ -132,38 +152,56 @@ export class StateApiMoneyClient extends StateApiClient {
     );
   }
 
+  /**
+   * Lock bill.
+   * @param {ILockUnitTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async lockBill(
-    { status, data }: ILockUnitTransactionData,
+    { status, unit }: ILockUnitTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
-          data.unitId,
-          new LockBillAttributes(status, data.backlink),
+          unit.unitId,
+          new LockBillAttributes(status, unit.backlink),
           metadata,
         ),
       ),
     );
   }
 
+  /**
+   * Lock fee credit.
+   * @param {ILockUnitTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async lockFeeCredit(
-    { status, data }: ILockUnitTransactionData,
+    { status, unit }: ILockUnitTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
-          data.unitId,
-          new LockFeeCreditAttributes(status, data.backlink),
+          unit.unitId,
+          new LockFeeCreditAttributes(status, unit.backlink),
           metadata,
         ),
       ),
     );
   }
 
+  /**
+   * Close fee credit.
+   * @param {ICloseFeeCreditTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async closeFeeCredit(
     { bill, feeCreditRecord }: ICloseFeeCreditTransactionData,
     metadata: ITransactionClientMetadata,
@@ -180,6 +218,12 @@ export class StateApiMoneyClient extends StateApiClient {
     );
   }
 
+  /**
+   * Reclaim fee credit.
+   * @param {IReclaimFeeCreditTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async reclaimFeeCredit(
     { proof, bill }: IReclaimFeeCreditTransactionData,
     metadata: ITransactionClientMetadata,
@@ -196,6 +240,12 @@ export class StateApiMoneyClient extends StateApiClient {
     );
   }
 
+  /**
+   * Split bill.
+   * @param {ISplitBillTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async splitBill(
     { splits, bill }: ISplitBillTransactionData,
     metadata: ITransactionClientMetadata,
@@ -216,6 +266,12 @@ export class StateApiMoneyClient extends StateApiClient {
     );
   }
 
+  /**
+   * Transfer bill to dust collector.
+   * @param {ISplitBillTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async transferBillToDustCollector(
     { bill, targetBill }: ITransferBillToDustCollectorTransactionData,
     metadata: ITransactionClientMetadata,
@@ -232,6 +288,12 @@ export class StateApiMoneyClient extends StateApiClient {
     );
   }
 
+  /**
+   * Swap bills with dust collector.
+   * @param {ISwapBillsWithDustCollectorTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async swapBillsWithDustCollector(
     { bill, ownerPredicate, proofs }: ISwapBillsWithDustCollectorTransactionData,
     metadata: ITransactionClientMetadata,
@@ -256,6 +318,12 @@ export class StateApiMoneyClient extends StateApiClient {
     );
   }
 
+  /**
+   * Transfer bill.
+   * @param {ITransferBillTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async transferBill(
     { ownerPredicate, bill }: ITransferBillTransactionData,
     metadata: ITransactionClientMetadata,
@@ -272,32 +340,44 @@ export class StateApiMoneyClient extends StateApiClient {
     );
   }
 
+  /**
+   * Unlock bill.
+   * @param {IUnlockUnitTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async unlockBill(
-    { data }: IUnlockUnitTransactionData,
+    { unit }: IUnlockUnitTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
-          data.unitId,
-          new UnlockBillAttributes(data.backlink),
+          unit.unitId,
+          new UnlockBillAttributes(unit.backlink),
           metadata,
         ),
       ),
     );
   }
 
+  /**
+   * Unlock fee credits.
+   * @param {IUnlockUnitTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async unlockFeeCredit(
-    { data }: IUnlockUnitTransactionData,
+    { unit }: IUnlockUnitTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
-          data.unitId,
-          new UnlockFeeCreditAttributes(data.backlink),
+          unit.unitId,
+          new UnlockFeeCreditAttributes(unit.backlink),
           metadata,
         ),
       ),

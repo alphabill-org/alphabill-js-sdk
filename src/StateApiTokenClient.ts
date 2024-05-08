@@ -29,6 +29,8 @@ import { TransferNonFungibleTokenAttributes } from './transaction/TransferNonFun
 import { UnlockFeeCreditAttributes } from './transaction/UnlockFeeCreditAttributes.js';
 import { UpdateNonFungibleTokenAttributes } from './transaction/UpdateNonFungibleTokenAttributes.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
+import { LockTokenAttributes } from './transaction/LockTokenAttributes.js';
+import { UnlockTokenAttributes } from './transaction/UnlockTokenAttributes.js';
 
 // TODO: Move interfaces to separate file for token and money client
 // TODO: Comment all functions and interfaces
@@ -126,7 +128,15 @@ interface IJoinFungibleTokensTransactionData {
   invariantPredicateSignatures: Uint8Array[] | null;
 }
 
+/**
+ * State API client for token partition.
+ */
 export class StateApiTokenClient extends StateApiClient {
+  /**
+   * State API client for token partition constructor.
+   * @param transactionOrderFactory Transaction order factory.
+   * @param service State API service.
+   */
   public constructor(
     private readonly transactionOrderFactory: ITransactionOrderFactory,
     service: IStateApiService,
@@ -134,6 +144,12 @@ export class StateApiTokenClient extends StateApiClient {
     super(service);
   }
 
+  /**
+   * Create non-fungible token type.
+   * @param {ICreateNonFungibleTokenTypeTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async createNonFungibleTokenType(
     {
       type,
@@ -171,6 +187,12 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
+  /**
+   * Create non-fungible token.
+   * @param {ICreateNonFungibleTokenTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async createNonFungibleToken(
     {
       token,
@@ -204,6 +226,12 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
+  /**
+   * Transfer non-fungible token.
+   * @param {ITransferNonFungibleTokenTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async transferNonFungibleToken(
     { token, ownerPredicate, nonce, type, invariantPredicateSignatures }: ITransferNonFungibleTokenTransactionData,
     metadata: ITransactionClientMetadata,
@@ -226,6 +254,12 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
+  /**
+   * Update non-fungible token.
+   * @param {IUpdateNonFungibleTokenTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async updateNonFungibleToken(
     { token, data, dataUpdateSignatures }: IUpdateNonFungibleTokenTransactionData,
     metadata: ITransactionClientMetadata,
@@ -242,6 +276,12 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
+  /**
+   * Create fungible token type.
+   * @param {ICreateFungibleTokenTypeTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async createFungibleTokenType(
     {
       type,
@@ -279,6 +319,12 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
+  /**
+   * Create fungible token.
+   * @param {ICreateFungibleTokenTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async createFungibleToken(
     { token, ownerPredicate, type, value, tokenCreationPredicateSignatures }: ICreateFungibleTokenTransactionData,
     metadata: ITransactionClientMetadata,
@@ -295,6 +341,12 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
+  /**
+   * Transfer fungible token.
+   * @param {ITransferFungibleTokenTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async transferFungibleToken(
     { token, ownerPredicate, nonce, type, invariantPredicateSignatures }: ITransferFungibleTokenTransactionData,
     metadata: ITransactionClientMetadata,
@@ -318,6 +370,12 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
+  /**
+   * Split fungible token.
+   * @param {ISplitFungibleTokenTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async splitFungibleToken(
     { token, ownerPredicate, amount, nonce, type, invariantPredicateSignatures }: ISplitFungibleTokenTransactionData,
     metadata: ITransactionClientMetadata,
@@ -342,6 +400,12 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
+  /**
+   * Burn fungible token.
+   * @param {IBurnFungibleTokenTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async burnFungibleToken(
     { token, targetToken, type, invariantPredicateSignatures }: IBurnFungibleTokenTransactionData,
     metadata: ITransactionClientMetadata,
@@ -365,6 +429,12 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
+  /**
+   * Join fungible tokens.
+   * @param {IJoinFungibleTokensTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async joinFungibleTokens(
     { proofs, token, invariantPredicateSignatures }: IJoinFungibleTokensTransactionData,
     metadata: ITransactionClientMetadata,
@@ -381,9 +451,12 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
-  // TODO: Lock token, unlock token
-  // TODO: Lock, unlock, reclaim
-
+  /**
+   * Add fee credit.
+   * @param {IAddFeeCreditTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async addFeeCredit(
     { ownerPredicate, proof, feeCreditRecord }: IAddFeeCreditTransactionData,
     metadata: ITransactionClientMetadata,
@@ -400,6 +473,12 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
+  /**
+   * Close fee credit.
+   * @param {ICloseFeeCreditTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async closeFeeCredit(
     { amount, bill, feeCreditRecord }: ICloseFeeCreditTransactionData,
     metadata: ITransactionClientMetadata,
@@ -416,32 +495,88 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
+  /**
+   * Lock fee credit.
+   * @param {ILockUnitTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async lockFeeCredit(
-    { status, data }: ILockUnitTransactionData,
+    { status, unit }: ILockUnitTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
-          data.unitId,
-          new LockFeeCreditAttributes(status, data.backlink),
+          unit.unitId,
+          new LockFeeCreditAttributes(status, unit.backlink),
           metadata,
         ),
       ),
     );
   }
 
+  /**
+   * Unlock fee credit..
+   * @param {IUnlockUnitTransactionData} data Transaction data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
   public async unlockFeeCredit(
-    { data }: IUnlockUnitTransactionData,
+    { unit }: IUnlockUnitTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
-          data.unitId,
-          new UnlockFeeCreditAttributes(data.backlink),
+          unit.unitId,
+          new UnlockFeeCreditAttributes(unit.backlink),
+          metadata,
+        ),
+      ),
+    );
+  }
+
+  /**
+   * Lock token.
+   * @param {{status: bigint; unit: { unitId: IUnitId; backlink: Uint8Array }}} data Lock unit data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
+  public async lockToken(
+    { status, unit }: ILockUnitTransactionData,
+    metadata: ITransactionClientMetadata,
+  ): Promise<Uint8Array> {
+    return this.sendTransaction(
+      await this.transactionOrderFactory.createTransaction(
+        TransactionPayload.create(
+          SystemIdentifier.TOKEN_PARTITION,
+          unit.unitId,
+          new LockTokenAttributes(status, unit.backlink),
+          metadata,
+        ),
+      ),
+    );
+  }
+
+  /**
+   * Unlock token.
+   * @param {IUnlockUnitTransactionData} data Unlock unit data.
+   * @param {ITransactionClientMetadata} metadata Transaction client metadata.
+   * @returns {Promise<Uint8Array>} Transaction hash.
+   */
+  public async unlockToken(
+    { unit }: IUnlockUnitTransactionData,
+    metadata: ITransactionClientMetadata,
+  ): Promise<Uint8Array> {
+    return this.sendTransaction(
+      await this.transactionOrderFactory.createTransaction(
+        TransactionPayload.create(
+          SystemIdentifier.TOKEN_PARTITION,
+          unit.unitId,
+          new UnlockTokenAttributes(unit.backlink),
           metadata,
         ),
       ),
