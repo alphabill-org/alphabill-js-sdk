@@ -21,16 +21,16 @@ import { ITransactionClientMetadata } from './transaction/ITransactionClientMeta
 import { ITransactionOrderFactory } from './transaction/ITransactionOrderFactory.js';
 import { JoinFungibleTokenAttributes } from './transaction/JoinFungibleTokenAttributes.js';
 import { LockFeeCreditAttributes } from './transaction/LockFeeCreditAttributes.js';
+import { LockTokenAttributes } from './transaction/LockTokenAttributes.js';
 import { SplitFungibleTokenAttributes } from './transaction/SplitFungibleTokenAttributes.js';
 import { TokenIcon } from './transaction/TokenIcon.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransferFungibleTokenAttributes } from './transaction/TransferFungibleTokenAttributes.js';
 import { TransferNonFungibleTokenAttributes } from './transaction/TransferNonFungibleTokenAttributes.js';
 import { UnlockFeeCreditAttributes } from './transaction/UnlockFeeCreditAttributes.js';
+import { UnlockTokenAttributes } from './transaction/UnlockTokenAttributes.js';
 import { UpdateNonFungibleTokenAttributes } from './transaction/UpdateNonFungibleTokenAttributes.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
-import { LockTokenAttributes } from './transaction/LockTokenAttributes.js';
-import { UnlockTokenAttributes } from './transaction/UnlockTokenAttributes.js';
 
 // TODO: Move interfaces to separate file for token and money client
 // TODO: Comment all functions and interfaces
