@@ -1,6 +1,6 @@
 import { CborCodecNode } from '@alphabill/alphabill-js-sdk/lib/codec/cbor/CborCodecNode.js';
 import { DefaultSigningService } from '@alphabill/alphabill-js-sdk/lib/signing/DefaultSigningService.js';
-import { createPublicClient, http } from '@alphabill/alphabill-js-sdk/lib/StateApiClientFactory.js';
+import { createTokenClient, http } from '@alphabill/alphabill-js-sdk/lib/StateApiClientFactory.js';
 import { SystemIdentifier } from '@alphabill/alphabill-js-sdk/lib/SystemIdentifier.js';
 import { CreateFungibleTokenAttributes } from '@alphabill/alphabill-js-sdk/lib/transaction/CreateFungibleTokenAttributes.js';
 import { PayToPublicKeyHashPredicate } from '@alphabill/alphabill-js-sdk/lib/transaction/PayToPublicKeyHashPredicate.js';
@@ -14,12 +14,13 @@ import { sha256 } from '@noble/hashes/sha256';
 import config from '../config.js';
 
 const cborCodec = new CborCodecNode();
-const client = createPublicClient({
-  transport: http(config.tokenPartitionUrl, cborCodec),
-});
-
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
 const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
+
+const client = createTokenClient({
+  transport: http(config.tokenPartitionUrl, cborCodec),
+  transactionOrderFactory,
+});
 
 const feeCreditRecordId = new UnitIdWithType(
   sha256(signingService.publicKey),

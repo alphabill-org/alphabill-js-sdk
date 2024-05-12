@@ -1,9 +1,13 @@
 import { ICborCodec } from './codec/cbor/ICborCodec.js';
 import { IStateApiService } from './IStateApiService.js';
+
 import { JsonRpcClient } from './json-rpc/JsonRpcClient.js';
 import { JsonRpcHttpService } from './json-rpc/JsonRpcHttpService.js';
 import { StateApiJsonRpcService } from './json-rpc/StateApiJsonRpcService.js';
 import { StateApiClient } from './StateApiClient.js';
+import { StateApiMoneyClient } from './StateApiMoneyClient.js';
+import { StateApiTokenClient } from './StateApiTokenClient.js';
+import { ITransactionOrderFactory } from './transaction/ITransactionOrderFactory.js';
 
 type StateApiClientOptions = {
   transport: IStateApiService;
@@ -16,6 +20,26 @@ type StateApiClientOptions = {
  */
 export function createPublicClient(options: StateApiClientOptions): StateApiClient {
   return new StateApiClient(options.transport);
+}
+
+type PlatformStateApiClientOptions = { transactionOrderFactory: ITransactionOrderFactory } & StateApiClientOptions;
+
+/**
+ * Create money partition client.
+ * @param {PlatformStateApiClientOptions} options Options.
+ * @returns {StateApiMoneyClient} State API client.
+ */
+export function createMoneyClient(options: PlatformStateApiClientOptions): StateApiMoneyClient {
+  return new StateApiMoneyClient(options.transactionOrderFactory, options.transport);
+}
+
+/**
+ * Create token partition client.
+ * @param {PlatformStateApiClientOptions} options Options.
+ * @returns {StateApiTokenClient} State API client.
+ */
+export function createTokenClient(options: PlatformStateApiClientOptions): StateApiTokenClient {
+  return new StateApiTokenClient(options.transactionOrderFactory, options.transport);
 }
 
 /**

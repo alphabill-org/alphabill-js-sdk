@@ -53,7 +53,7 @@ export class StateApiJsonRpcService implements IStateApiService {
   /**
    * @see {IStateApiService.getUnit}
    */
-  public async getUnit<T>(unitId: IUnitId, includeStateProof: boolean): Promise<IUnit<T> | null> {
+  public async getUnit<T extends IUnit>(unitId: IUnitId, includeStateProof: boolean): Promise<T | null> {
     const response = await this.client.request<IUnitDto>(
       'state_getUnit',
       Base16Converter.encode(unitId.bytes),
@@ -61,7 +61,7 @@ export class StateApiJsonRpcService implements IStateApiService {
     );
 
     if (response) {
-      return createUnit(response);
+      return createUnit<T>(response);
     }
 
     return null;

@@ -1,34 +1,5 @@
-import { IPathItem, IStateProof, IStateTreeCert, IStateTreePathItem, IUnit, IUnitTreeCert } from './IUnit.js';
+import { IPathItem, IStateProof, IStateTreeCert, IStateTreePathItem, IUnitTreeCert } from './IUnit.js';
 import { IUnitId } from './IUnitId.js';
-import { PredicateBytes } from './PredicateBytes.js';
-import { IPredicate } from './transaction/IPredicate.js';
-
-/**
- * Unit.
- * @implements {IUnit}
- */
-export class Unit<T> implements IUnit<T> {
-  /**
-   * Owner predicate.
-   */
-  public readonly ownerPredicate: IPredicate;
-
-  /**
-   * Unit constructor.
-   * @param {IUnitId} unitId - unit identifier.
-   * @param {T} data - unit data.
-   * @param {Uint8Array} ownerPredicate - owner predicate.
-   * @param {IStateProof | null} stateProof - state proof.
-   */
-  public constructor(
-    public readonly unitId: IUnitId,
-    public readonly data: T,
-    ownerPredicate: Uint8Array,
-    public readonly stateProof: IStateProof | null,
-  ) {
-    this.ownerPredicate = new PredicateBytes(ownerPredicate);
-  }
-}
 
 /**
  * State proof.

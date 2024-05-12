@@ -1,5 +1,6 @@
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { ISigningService } from '../signing/ISigningService.js';
+import { ITransactionOrderFactory } from './ITransactionOrderFactory.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { TransactionOrder } from './TransactionOrder.js';
 import { TransactionPayload } from './TransactionPayload.js';
@@ -7,7 +8,7 @@ import { TransactionPayload } from './TransactionPayload.js';
 /**
  * Transaction order factory.
  */
-export class TransactionOrderFactory {
+export class TransactionOrderFactory implements ITransactionOrderFactory {
   /**
    * Transaction order factory constructor.
    * @param {ICborCodec} cborCoder - CBOR codec.

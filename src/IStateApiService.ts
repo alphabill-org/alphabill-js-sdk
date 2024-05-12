@@ -25,9 +25,9 @@ export interface IStateApiService {
    * Get unit by ID.
    * @param {IUnitId} unitId Unit ID.
    * @param {boolean} includeStateProof Include state proof.
-   * @returns {Promise<IUnit<T> | null>} Unit.
+   * @returns {Promise<T | null>} Unit.
    */
-  getUnit<T>(unitId: IUnitId, includeStateProof: boolean): Promise<IUnit<T> | null>;
+  getUnit<T extends IUnit>(unitId: IUnitId, includeStateProof: boolean): Promise<T | null>;
   /**
    * Get block.
    * @param {bigint} blockNumber Block number.

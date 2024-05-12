@@ -1,5 +1,6 @@
 import { IUnitId } from './IUnitId.js';
 import { IUnitIdType } from './IUnitIdType.js';
+import { areUint8ArraysEqual } from './util/ArrayUtils.js';
 import { Base16Converter } from './util/Base16Converter.js';
 
 /**
@@ -35,6 +36,30 @@ export class UnitId implements IUnitId {
    */
   public toString(): string {
     return `${Base16Converter.encode(this._bytes)}`;
+  }
+
+  public equals(obj: IUnitId): boolean {
+    return UnitId.equals(this, obj);
+  }
+
+  public static equals(a: unknown, b: unknown): boolean {
+    if (!UnitId.isUnitId(a) || !UnitId.isUnitId(b)) {
+      return false;
+    }
+
+    const obj1 = a as IUnitId;
+    const obj2 = b as IUnitId;
+
+    return areUint8ArraysEqual(obj1.bytes, obj2.bytes) && obj1.type.toBase16() === obj2.type.toBase16();
+  }
+
+  public static isUnitId(obj: unknown): boolean {
+    if (!(obj instanceof Object) || !('bytes' in obj) || !('type' in obj)) {
+      return false;
+    }
+
+    const unitId = obj as IUnitId;
+    return ArrayBuffer.isView(unitId.bytes) && UnitIdType.isUnitIdType(unitId.type);
   }
 
   /**
@@ -75,5 +100,14 @@ class UnitIdType implements IUnitIdType {
    */
   public toBase16(): string {
     return this.hex;
+  }
+
+  public static isUnitIdType(obj: unknown): boolean {
+    if (!(obj instanceof Object) || !('bytes' in obj) || !('toBase16' in obj)) {
+      return false;
+    }
+
+    const unitIdType = obj as IUnitIdType;
+    return ArrayBuffer.isView(unitIdType.bytes) && typeof unitIdType.toBase16() === 'string';
   }
 }
