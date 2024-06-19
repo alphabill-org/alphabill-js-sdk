@@ -1,4 +1,4 @@
-import { UnitId } from '../src/UnitId.js';
+import { UnitId } from '../../src/UnitId.js';
 
 describe('UnitId', () => {
   it('should equal to other unitId', () => {
