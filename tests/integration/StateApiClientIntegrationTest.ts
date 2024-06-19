@@ -5,10 +5,12 @@ import { FeeCreditRecord } from '../../src/FeeCreditRecord.js';
 import { IUnit } from '../../src/IUnit.js';
 import { IUnitId } from '../../src/IUnitId.js';
 import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
+import { StateApiClient } from '../../src/StateApiClient.js';
 import { createMoneyClient, createTokenClient, http } from '../../src/StateApiClientFactory.js';
 import { SystemIdentifier } from '../../src/SystemIdentifier.js';
 import { AlwaysTruePredicate } from '../../src/transaction/AlwaysTruePredicate.js';
 import { CreateFungibleTokenAttributes } from '../../src/transaction/CreateFungibleTokenAttributes.js';
+import { ITransactionPayloadAttributes } from '../../src/transaction/ITransactionPayloadAttributes.js';
 import { NonFungibleTokenData } from '../../src/transaction/NonFungibleTokenData.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/PayToPublicKeyHashPredicate.js';
 import { TokenIcon } from '../../src/transaction/TokenIcon.js';
@@ -19,8 +21,7 @@ import { UnitIdWithType } from '../../src/transaction/UnitIdWithType.js';
 import { UnitType } from '../../src/transaction/UnitType.js';
 import { TransactionRecordWithProof } from '../../src/TransactionRecordWithProof.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
-import config from './config.js';
-import { waitTransactionProof } from './waitTransactionProof.js';
+import config from './config/config.js';
 
 describe('State Api Client Integration tests', () => {
   const cborCodec = new CborCodecNode();
@@ -52,6 +53,7 @@ describe('State Api Client Integration tests', () => {
   );
 
   let moneyFeeCreditRecord: FeeCreditRecord | null;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let tokenFeeCreditRecord: FeeCreditRecord | null;
 
   it('Get round number and get block', async () => {
@@ -345,3 +347,38 @@ describe('State Api Client Integration tests', () => {
     console.log('Unlocking bill successful');
   }, 20000);
 });
+
+/**
+ * Wait for a transaction proof to be available.
+ * @param {StateApiClient} client State API client.
+ * @param {Uint8Array} transactionHash Transaction hash.
+ * @param {number} [timeout=10000] Timeout in milliseconds.
+ * @param {number} [interval=1000] Interval in milliseconds for polling.
+ * @returns {Promise<TransactionRecordWithProof>} Transaction proof.
+ * @throws {string} Timeout.
+ */
+export function waitTransactionProof<T extends ITransactionPayloadAttributes>(
+  client: StateApiClient,
+  transactionHash: Uint8Array,
+  timeout = 10000,
+  interval = 1000,
+): Promise<TransactionRecordWithProof<TransactionPayload<T>>> {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    const poller = async (): Promise<void> => {
+      const proof = await client.getTransactionProof(transactionHash);
+      if (proof !== null) {
+        // @ts-expect-error FIXME
+        return resolve(proof);
+      }
+
+      if (Date.now() > start + timeout) {
+        return reject('Timeout');
+      }
+
+      setTimeout(poller, interval);
+    };
+
+    poller();
+  });
+}
