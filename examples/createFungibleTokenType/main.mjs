@@ -37,6 +37,7 @@ await client.createFungibleTokenType(
     subTypeCreationPredicate: new AlwaysTruePredicate(),
     tokenCreationPredicate: new AlwaysTruePredicate(),
     invariantPredicate: new AlwaysTruePredicate(),
+    dataUpdatePredicate: new AlwaysTruePredicate(),
     subTypeCreationPredicateSignatures: null,
   },
   {
