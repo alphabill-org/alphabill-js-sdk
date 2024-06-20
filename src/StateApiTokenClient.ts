@@ -99,9 +99,7 @@ interface ICreateFungibleTokenTransactionData {
 interface ITransferFungibleTokenTransactionData {
   token: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
   ownerPredicate: IPredicate;
-  value: bigint;
   nonce: Uint8Array | null;
-  backlink: Uint8Array;
   type: { unitId: IUnitId };
   invariantPredicateSignatures: Uint8Array[] | null;
 }
