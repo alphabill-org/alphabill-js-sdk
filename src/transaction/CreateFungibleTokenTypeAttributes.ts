@@ -20,7 +20,6 @@ export type CreateFungibleTokenTypeAttributesArray = readonly [
   Uint8Array,
   Uint8Array,
   Uint8Array,
-  Uint8Array,
   Uint8Array[] | null,
 ];
 
@@ -38,7 +37,6 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
    * @param {IPredicate} subTypeCreationPredicate Sub type creation predicate.
    * @param {IPredicate} tokenCreationPredicate Token creation predicate.
    * @param {IPredicate} invariantPredicate Invariant predicate.
-   * @param {IPredicate} dataUpdatePredicate Data update predicate.
    * @param {Uint8Array[] | null} _subTypeCreationPredicateSignatures Sub type creation predicate signatures.
    */
   public constructor(
@@ -50,7 +48,6 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
     public readonly subTypeCreationPredicate: IPredicate,
     public readonly tokenCreationPredicate: IPredicate,
     public readonly invariantPredicate: IPredicate,
-    public readonly dataUpdatePredicate: IPredicate,
     private readonly _subTypeCreationPredicateSignatures: Uint8Array[] | null,
   ) {
     this._subTypeCreationPredicateSignatures =
@@ -92,7 +89,6 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
       this.subTypeCreationPredicate.bytes,
       this.tokenCreationPredicate.bytes,
       this.invariantPredicate.bytes,
-      this.dataUpdatePredicate.bytes,
       this.subTypeCreationPredicateSignatures,
     ];
   }
@@ -112,7 +108,6 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
         Sub Type Creation Predicate: ${this.subTypeCreationPredicate.toString()}
         Token Creation Predicate: ${this.tokenCreationPredicate.toString()}
         Invariant Predicate: ${this.invariantPredicate.toString()}
-        Data Update Predicate: ${this.dataUpdatePredicate.toString()}
         Sub Type Creation Predicate Signatures: ${
           this._subTypeCreationPredicateSignatures
             ? dedent`
@@ -138,8 +133,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
       new PredicateBytes(data[5]),
       new PredicateBytes(data[6]),
       new PredicateBytes(data[7]),
-      new PredicateBytes(data[8]),
-      data[9],
+      data[8],
     );
   }
 }

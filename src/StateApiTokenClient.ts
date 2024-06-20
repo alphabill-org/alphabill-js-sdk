@@ -84,7 +84,6 @@ interface ICreateFungibleTokenTypeTransactionData {
   subTypeCreationPredicate: IPredicate;
   tokenCreationPredicate: IPredicate;
   invariantPredicate: IPredicate;
-  dataUpdatePredicate: IPredicate;
   subTypeCreationPredicateSignatures: Uint8Array[] | null;
 }
 
@@ -291,7 +290,6 @@ export class StateApiTokenClient extends StateApiClient {
       subTypeCreationPredicate,
       tokenCreationPredicate,
       invariantPredicate,
-      dataUpdatePredicate,
       subTypeCreationPredicateSignatures,
     }: ICreateFungibleTokenTypeTransactionData,
     metadata: ITransactionClientMetadata,
@@ -310,7 +308,6 @@ export class StateApiTokenClient extends StateApiClient {
             subTypeCreationPredicate,
             tokenCreationPredicate,
             invariantPredicate,
-            dataUpdatePredicate,
             subTypeCreationPredicateSignatures,
           ),
           metadata,
