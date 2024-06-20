@@ -70,7 +70,6 @@ interface ITransferNonFungibleTokenTransactionData {
 interface IUpdateNonFungibleTokenTransactionData {
   token: { unitId: IUnitId; backlink: Uint8Array };
   data: INonFungibleTokenData;
-  backlink: Uint8Array;
   dataUpdateSignatures: Uint8Array[] | null;
 }
 
