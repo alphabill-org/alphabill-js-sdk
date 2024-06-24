@@ -42,11 +42,11 @@ describe('State Api Client Integration tests', () => {
       transactionOrderFactory,
     });
 
-    const moneyFeeCreditRecordId = new UnitIdWithType(
+    const feeCreditRecordId = new UnitIdWithType(
       sha256(signingService.publicKey),
       UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD,
     );
-    let moneyFeeCreditRecord: FeeCreditRecord | null;
+    let feeCreditRecord: FeeCreditRecord | null;
 
     it('Get round number and get block', async () => {
       const round = await moneyClient.getRoundNumber();
@@ -64,29 +64,27 @@ describe('State Api Client Integration tests', () => {
     });
 
     it('Add fee credit', async () => {
-      const feeCreditRecord = await moneyClient.getUnit(moneyFeeCreditRecordId, false);
-      if (feeCreditRecord != null) {
-        console.log('Fee credit already exists, skipping...');
-        moneyFeeCreditRecord = feeCreditRecord as FeeCreditRecord;
-        return;
-      }
+      feeCreditRecord = await moneyClient.getUnit(feeCreditRecordId, false);
 
       const unitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
         (id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA,
       );
       expect(unitIds.length).toBeGreaterThan(0);
 
-      const bill = await moneyClient.getUnit(unitIds[0], false);
+      const bill: Bill | null = await moneyClient.getUnit(unitIds[0], false);
       expect(bill).not.toBeNull();
       const round = await moneyClient.getRoundNumber();
 
+      const amountToFeeCredit = BigInt(100);
+      expect(bill!.value).toBeGreaterThan(amountToFeeCredit);
+
       console.log('Transferring to fee credit...');
-      let transactionHash = await moneyClient.transferToFeeCredit(
+      const transferToFeeCreditHash = await moneyClient.transferToFeeCredit(
         {
           bill: bill!,
-          amount: BigInt(100),
+          amount: amountToFeeCredit,
           systemIdentifier: SystemIdentifier.MONEY_PARTITION,
-          feeCreditRecord: { unitId: moneyFeeCreditRecordId, backlink: null },
+          feeCreditRecord: feeCreditRecord ? feeCreditRecord : { unitId: feeCreditRecordId, backlink: null },
           earliestAdditionTime: round,
           latestAdditionTime: round + BigInt(60),
         },
@@ -98,15 +96,15 @@ describe('State Api Client Integration tests', () => {
       );
 
       const proof: TransactionRecordWithProof<TransactionPayload<TransferFeeCreditAttributes>> =
-        await waitTransactionProof(moneyClient, transactionHash);
+        await waitTransactionProof(moneyClient, transferToFeeCreditHash);
       console.log('Transfer to fee credit successful');
 
       console.log('Adding fee credit');
-      transactionHash = await moneyClient.addFeeCredit(
+      const addFeeCreditHash = await moneyClient.addFeeCredit(
         {
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           proof,
-          feeCreditRecord: { unitId: moneyFeeCreditRecordId },
+          feeCreditRecord: { unitId: feeCreditRecordId },
         },
         {
           maxTransactionFee: BigInt(5),
@@ -115,19 +113,20 @@ describe('State Api Client Integration tests', () => {
         },
       );
 
-      await waitTransactionProof(moneyClient, transactionHash);
+      await waitTransactionProof(moneyClient, addFeeCreditHash);
       console.log('Adding fee credit successful');
-      moneyFeeCreditRecord = await moneyClient.getUnit(moneyFeeCreditRecordId, false);
+      feeCreditRecord = await moneyClient.getUnit(feeCreditRecordId, false);
     }, 20000);
 
     it('Lock and unlock fee credit', async () => {
+      expect(feeCreditRecord?.locked).toBe(false);
       const round = await moneyClient.getRoundNumber();
 
       console.log('Locking fee credit...');
       const lockHash = await moneyClient.lockFeeCredit(
         {
           status: 5n,
-          unit: moneyFeeCreditRecord!,
+          unit: feeCreditRecord!,
         },
         {
           maxTransactionFee: 5n,
@@ -138,7 +137,7 @@ describe('State Api Client Integration tests', () => {
 
       await waitTransactionProof(moneyClient, lockHash);
       console.log('Locking fee credit successful');
-      const feeCreditAfterLock: FeeCreditRecord | null = await moneyClient.getUnit(moneyFeeCreditRecordId, false);
+      const feeCreditAfterLock: FeeCreditRecord | null = await moneyClient.getUnit(feeCreditRecordId, false);
       expect(feeCreditAfterLock?.locked).toBe(true);
 
       console.log('Unlocking fee credit...');
@@ -155,134 +154,8 @@ describe('State Api Client Integration tests', () => {
 
       await waitTransactionProof(moneyClient, unlockHash);
       console.log('Unlocking fee credit successful');
-      const feeCreditAfterUnlock: FeeCreditRecord | null = await moneyClient.getUnit(moneyFeeCreditRecordId, false);
+      const feeCreditAfterUnlock: FeeCreditRecord | null = await moneyClient.getUnit(feeCreditRecordId, false);
       expect(feeCreditAfterUnlock?.locked).toBe(false);
-    }, 20000);
-
-    it('Close and reclaim fee credit', async () => {
-      const round = await moneyClient.getRoundNumber();
-      const billUnitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
-        (id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA,
-      );
-      expect(billUnitIds.length).toBeGreaterThan(0);
-      const bill: IUnit | null = await moneyClient.getUnit(billUnitIds[0], false);
-      expect(bill).not.toBeNull();
-
-      console.log('Closing fee credit...');
-      let transactionHash = await moneyClient.closeFeeCredit(
-        {
-          amount: 1n,
-          bill: bill!,
-          feeCreditRecord: moneyFeeCreditRecord!,
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: null,
-        },
-      );
-      const proof: TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>> =
-        await waitTransactionProof(moneyClient, transactionHash);
-      console.log('Closing fee credit successful');
-
-      console.log('Reclaiming fee credit...');
-      transactionHash = await moneyClient.reclaimFeeCredit(
-        {
-          proof: proof!,
-          bill: bill!,
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: null,
-        },
-      );
-      console.log('Reclaiming fee credit successful');
-    }, 20000);
-
-    it('Split, swap and transfer bill', async () => {
-      const round = await moneyClient.getRoundNumber();
-      const billUnitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
-        (id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA,
-      );
-      expect(billUnitIds.length).toBeGreaterThan(0);
-      const bill: Bill | null = await moneyClient.getUnit(billUnitIds[0], false);
-      expect(bill).not.toBeNull();
-
-      console.log('Splitting bill...');
-      const splitBillHash = await moneyClient.splitBill(
-        {
-          splits: [
-            {
-              value: bill!.value - 1n,
-              ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-            },
-            {
-              value: 1n,
-              ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-            },
-          ],
-          bill: bill!,
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: moneyFeeCreditRecordId,
-        },
-      );
-      await waitTransactionProof(moneyClient, splitBillHash);
-      console.log('Splitting bill successful');
-
-      const targetBillUnitId: IUnitId | undefined = billUnitIds
-        .filter((id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA && id.bytes !== bill!.unitId.bytes)
-        .at(0);
-      const targetBill: Bill | null = await moneyClient.getUnit(targetBillUnitId!, false);
-
-      console.log('Swapping bill...');
-      const swapBillHash = await moneyClient.transferBillToDustCollector(
-        {
-          bill: bill!,
-          targetBill: targetBill!,
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: moneyFeeCreditRecordId,
-        },
-      );
-      const transactionProof: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>> =
-        await waitTransactionProof(moneyClient, swapBillHash);
-      await moneyClient.swapBillsWithDustCollector(
-        {
-          bill: targetBill!,
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-          proofs: [transactionProof],
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 100n,
-          feeCreditRecordId: moneyFeeCreditRecordId,
-        },
-      );
-
-      await waitTransactionProof(moneyClient, swapBillHash);
-      console.log('Swapping bill successful');
-
-      console.log('Transferring bill...');
-      const transferBillHash = await moneyClient.transferBill(
-        {
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-          bill: bill!,
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: moneyFeeCreditRecordId,
-        },
-      );
-
-      await waitTransactionProof(moneyClient, transferBillHash);
-      console.log('Transferring bill successful');
     }, 20000);
 
     it('Lock and unlock bill', async () => {
@@ -304,7 +177,7 @@ describe('State Api Client Integration tests', () => {
         {
           maxTransactionFee: 5n,
           timeout: round + 60n,
-          feeCreditRecordId: moneyFeeCreditRecordId,
+          feeCreditRecordId: feeCreditRecordId,
         },
       );
       await waitTransactionProof(moneyClient, lockHash);
@@ -321,11 +194,162 @@ describe('State Api Client Integration tests', () => {
         {
           maxTransactionFee: 5n,
           timeout: round + 60n,
-          feeCreditRecordId: moneyFeeCreditRecordId,
+          feeCreditRecordId: feeCreditRecordId,
         },
       );
       await waitTransactionProof(moneyClient, unlockHash);
       console.log('Unlocking bill successful');
+    }, 20000);
+
+    it('Split and transfer bill', async () => {
+      const round = await moneyClient.getRoundNumber();
+      const billUnitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
+        (id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA,
+      );
+      expect(billUnitIds.length).toBeGreaterThan(0);
+      const billUnitId = billUnitIds[0];
+      let bill: Bill | null = await moneyClient.getUnit(billUnitId, false);
+      expect(bill).not.toBeNull();
+
+      const splitBillValue = 10n;
+      expect(splitBillValue).toBeGreaterThan(0);
+
+      console.log('Splitting bill...');
+      const splitBillHash = await moneyClient.splitBill(
+        {
+          splits: [
+            {
+              value: splitBillValue,
+              ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+            },
+          ],
+          bill: bill!,
+        },
+        {
+          maxTransactionFee: 5n,
+          timeout: round + 60n,
+          feeCreditRecordId: feeCreditRecordId,
+        },
+      );
+      await waitTransactionProof(moneyClient, splitBillHash);
+      console.log('Splitting bill successful');
+
+      bill = await moneyClient.getUnit(billUnitId, false);
+      expect(bill!.value).toBeGreaterThan(0);
+
+      const targetBillUnitId: IUnitId | undefined = billUnitIds
+        .filter((id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA && id.bytes !== bill!.unitId.bytes)
+        .at(0);
+      const targetBill: Bill | null = await moneyClient.getUnit(targetBillUnitId!, false);
+
+      console.log('Transferring bill...');
+      const transferBillHash = await moneyClient.transferBill(
+        {
+          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+          bill: targetBill!,
+        },
+        {
+          maxTransactionFee: 5n,
+          timeout: round + 60n,
+          feeCreditRecordId: feeCreditRecordId,
+        },
+      );
+      await waitTransactionProof(moneyClient, transferBillHash);
+      console.log('Transferring bill successful');
+    }, 20000);
+
+    it('Transfer and swap bill with dust collector', async () => {
+      const round = await moneyClient.getRoundNumber();
+      const billUnitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
+        (id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA,
+      );
+      expect(billUnitIds.length).toBeGreaterThan(0);
+      const bill: Bill | null = await moneyClient.getUnit(billUnitIds[0], false);
+      expect(bill).not.toBeNull();
+
+      const targetBillUnitId: IUnitId | undefined = billUnitIds
+        .filter((id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA && id.bytes !== bill!.unitId.bytes)
+        .at(0);
+      const targetBill: Bill | null = await moneyClient.getUnit(targetBillUnitId!, false);
+      expect(targetBill).not.toBeNull();
+
+      console.log('Transferring bill to dust collector...');
+      const swapBillHash = await moneyClient.transferBillToDustCollector(
+        {
+          bill: bill!,
+          targetBill: targetBill!,
+        },
+        {
+          maxTransactionFee: 5n,
+          timeout: round + 60n,
+          feeCreditRecordId: feeCreditRecordId,
+        },
+      );
+      const transactionProof: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>> =
+        await waitTransactionProof(moneyClient, swapBillHash);
+      console.log('Transferring bill to dust collector successful');
+
+      console.log('Swapping bill with dust collector...');
+      await moneyClient.swapBillsWithDustCollector(
+        {
+          bill: targetBill!,
+          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+          proofs: [transactionProof],
+        },
+        {
+          maxTransactionFee: 5n,
+          timeout: round + 100n,
+          feeCreditRecordId: feeCreditRecordId,
+        },
+      );
+
+      await waitTransactionProof(moneyClient, swapBillHash);
+      console.log('Swapping bill successful');
+    }, 20000);
+
+    it('Close and reclaim fee credit', async () => {
+      const round = await moneyClient.getRoundNumber();
+      const billUnitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
+        (id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA,
+      );
+      expect(billUnitIds.length).toBeGreaterThan(0);
+      const billUnitId = billUnitIds[0];
+      let bill: Bill | null = await moneyClient.getUnit(billUnitId, false);
+      expect(bill).not.toBeNull();
+
+      const feeCreditRecord: FeeCreditRecord | null = await moneyClient.getUnit(feeCreditRecordId, false);
+      console.log('Closing fee credit...');
+      const closeFeeCreditHash = await moneyClient.closeFeeCredit(
+        {
+          amount: bill!.value,
+          bill: bill!,
+          feeCreditRecord: feeCreditRecord!,
+        },
+        {
+          maxTransactionFee: 5n,
+          timeout: round + 60n,
+          feeCreditRecordId: null,
+        },
+      );
+      const proof: TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>> =
+        await waitTransactionProof(moneyClient, closeFeeCreditHash);
+      console.log('Closing fee credit successful');
+
+      bill = await moneyClient.getUnit(billUnitId, false);
+      console.log('Reclaiming fee credit...');
+      const reclaimFeeCreditHash = await moneyClient.reclaimFeeCredit(
+        {
+          proof: proof!,
+          bill: bill!,
+        },
+        {
+          maxTransactionFee: 5n,
+          timeout: round + 60n,
+          feeCreditRecordId: null,
+        },
+      );
+      await waitTransactionProof(moneyClient, reclaimFeeCreditHash);
+      console.log('Reclaiming fee credit successful');
     }, 20000);
   });
 
@@ -335,13 +359,7 @@ describe('State Api Client Integration tests', () => {
       transactionOrderFactory,
     });
 
-    // needed just to add fee credit so that this test can be run separately
-    const moneyClient = createMoneyClient({
-      transport: http(config.moneyPartitionUrl, new CborCodecNode()),
-      transactionOrderFactory,
-    });
-
-    const tokenFeeCreditRecordId = new UnitIdWithType(
+    const feeCreditRecordId = new UnitIdWithType(
       sha256(signingService.publicKey),
       UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
     );
@@ -359,28 +377,31 @@ describe('State Api Client Integration tests', () => {
     });
 
     it('Add fee credit', async () => {
-      const feeCreditRecord = await tokenClient.getUnit(tokenFeeCreditRecordId, false);
-      if (feeCreditRecord != null) {
-        console.log('Fee credit already exists, skipping...');
-        return;
-      }
+      const feeCreditRecord: FeeCreditRecord | null = await tokenClient.getUnit(feeCreditRecordId, false);
+
+      const moneyClient = createMoneyClient({
+        transport: http(config.moneyPartitionUrl, new CborCodecNode()),
+        transactionOrderFactory,
+      });
 
       const unitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
         (id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA,
       );
       expect(unitIds.length).toBeGreaterThan(0);
 
-      const bill = await moneyClient.getUnit(unitIds[0], false);
+      const bill: Bill | null = await moneyClient.getUnit(unitIds[0], false);
       expect(bill).not.toBeNull();
       const round = await moneyClient.getRoundNumber();
+      const amountToFeeCredit = BigInt(100);
+      expect(bill!.value).toBeGreaterThan(amountToFeeCredit);
 
       console.log('Transferring to fee credit...');
-      let transactionHash = await moneyClient.transferToFeeCredit(
+      const transferToFeeCreditHash = await moneyClient.transferToFeeCredit(
         {
           bill: bill!,
-          amount: BigInt(100),
-          systemIdentifier: SystemIdentifier.MONEY_PARTITION,
-          feeCreditRecord: { unitId: tokenFeeCreditRecordId, backlink: null },
+          amount: amountToFeeCredit,
+          systemIdentifier: SystemIdentifier.TOKEN_PARTITION,
+          feeCreditRecord: feeCreditRecord ? feeCreditRecord : { unitId: feeCreditRecordId, backlink: null },
           earliestAdditionTime: round,
           latestAdditionTime: round + BigInt(60),
         },
@@ -390,17 +411,16 @@ describe('State Api Client Integration tests', () => {
           feeCreditRecordId: null,
         },
       );
-
       const proof: TransactionRecordWithProof<TransactionPayload<TransferFeeCreditAttributes>> =
-        await waitTransactionProof(moneyClient, transactionHash);
+        await waitTransactionProof(moneyClient, transferToFeeCreditHash);
       console.log('Transfer to fee credit successful');
 
       console.log('Adding fee credit');
-      transactionHash = await tokenClient.addFeeCredit(
+      const addFeeCreditHash = await tokenClient.addFeeCredit(
         {
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           proof,
-          feeCreditRecord: { unitId: tokenFeeCreditRecordId },
+          feeCreditRecord: feeCreditRecord ? feeCreditRecord : { unitId: feeCreditRecordId },
         },
         {
           maxTransactionFee: BigInt(5),
@@ -409,11 +429,11 @@ describe('State Api Client Integration tests', () => {
         },
       );
 
-      await waitTransactionProof(tokenClient, transactionHash);
+      await waitTransactionProof(tokenClient, addFeeCreditHash);
       console.log('Adding fee credit successful');
     }, 20000);
 
-    it('Create fungible token type and fungible token', async () => {
+    it('FT - Create token type and token', async () => {
       const round = await tokenClient.getRoundNumber();
       console.log('Creating fungible token type...');
       const createFungibleTokenTypeHash = await tokenClient.createFungibleTokenType(
@@ -432,7 +452,7 @@ describe('State Api Client Integration tests', () => {
         {
           maxTransactionFee: 5n,
           timeout: round + 60n,
-          feeCreditRecordId: tokenFeeCreditRecordId,
+          feeCreditRecordId: feeCreditRecordId,
         },
       );
       await waitTransactionProof(tokenClient, createFungibleTokenTypeHash);
@@ -453,7 +473,7 @@ describe('State Api Client Integration tests', () => {
             {
               maxTransactionFee: 5n,
               timeout: round + 60n,
-              feeCreditRecordId: tokenFeeCreditRecordId,
+              feeCreditRecordId: feeCreditRecordId,
             },
           ),
         ),
@@ -462,7 +482,7 @@ describe('State Api Client Integration tests', () => {
       console.log('Creating fungible token successful');
     }, 20000);
 
-    it('Split, burn and join fungible token', async () => {
+    it('FT - Split, burn and join', async () => {
       const round = await tokenClient.getRoundNumber();
       const token: FungibleToken | null = await tokenClient.getUnit(ftUnitId, false);
       console.log('Splitting fungible token...');
@@ -478,7 +498,7 @@ describe('State Api Client Integration tests', () => {
         {
           maxTransactionFee: 5n,
           timeout: round + 60n,
-          feeCreditRecordId: tokenFeeCreditRecordId,
+          feeCreditRecordId: feeCreditRecordId,
         },
       );
       await waitTransactionProof(tokenClient, splitFungibleTokenHash);
@@ -506,7 +526,7 @@ describe('State Api Client Integration tests', () => {
         {
           maxTransactionFee: 5n,
           timeout: round + 60n,
-          feeCreditRecordId: tokenFeeCreditRecordId,
+          feeCreditRecordId: feeCreditRecordId,
         },
       );
       await waitTransactionProof(tokenClient, burnFungibleTokenHash);
@@ -524,14 +544,14 @@ describe('State Api Client Integration tests', () => {
         {
           maxTransactionFee: 5n,
           timeout: round + 60n,
-          feeCreditRecordId: tokenFeeCreditRecordId,
+          feeCreditRecordId: feeCreditRecordId,
         },
       );
       await waitTransactionProof(tokenClient, joinFungibleTokenHash);
       console.log('Fungible token join successful');
     }, 20000);
 
-    it('Transfer fungible token', async () => {
+    it('FT - Transfer', async () => {
       const round = await tokenClient.getRoundNumber();
       const token: FungibleToken | null = await tokenClient.getUnit(ftUnitId, false);
 
@@ -547,7 +567,7 @@ describe('State Api Client Integration tests', () => {
         {
           maxTransactionFee: 5n,
           timeout: round + 60n,
-          feeCreditRecordId: tokenFeeCreditRecordId,
+          feeCreditRecordId: feeCreditRecordId,
         },
       );
 
@@ -555,7 +575,7 @@ describe('State Api Client Integration tests', () => {
       console.log('Fungible token transfer successful');
     }, 20000);
 
-    it('Create non fungible token type and non fungible token', async () => {
+    it('NFT - Create token type and token', async () => {
       const round = await tokenClient.getRoundNumber();
       console.log('Creating non fungible token type...');
       const createNonFungibleTokenTypeHash = await tokenClient.createNonFungibleTokenType(
@@ -574,7 +594,7 @@ describe('State Api Client Integration tests', () => {
         {
           maxTransactionFee: 5n,
           timeout: round + 60n,
-          feeCreditRecordId: tokenFeeCreditRecordId,
+          feeCreditRecordId: feeCreditRecordId,
         },
       );
       await waitTransactionProof(tokenClient, createNonFungibleTokenTypeHash);
@@ -599,16 +619,16 @@ describe('State Api Client Integration tests', () => {
         {
           maxTransactionFee: 5n,
           timeout: round + 60n,
-          feeCreditRecordId: tokenFeeCreditRecordId,
+          feeCreditRecordId: feeCreditRecordId,
         },
       );
       await waitTransactionProof(tokenClient, createNonFungibleTokenHash);
       console.log('Creating non fungible token successful');
     }, 20000);
 
-    it('Update and transfer non fungible token', async () => {
+    it('NFT - Update and transfer', async () => {
       const round = await tokenClient.getRoundNumber();
-      const token: NonFungibleToken | null = await tokenClient.getUnit(ftUnitId, false);
+      let token: NonFungibleToken | null = await tokenClient.getUnit(nftUnitId, false);
       expect(token).not.toBeNull();
 
       console.log('Updating non fungible token...');
@@ -621,11 +641,13 @@ describe('State Api Client Integration tests', () => {
         {
           maxTransactionFee: 5n,
           timeout: round + 60n,
-          feeCreditRecordId: tokenFeeCreditRecordId,
+          feeCreditRecordId: feeCreditRecordId,
         },
       );
       await waitTransactionProof(tokenClient, updateNonFungibleTokenHash);
       console.log('Updating non token fungible token successful');
+
+      token = await tokenClient.getUnit(nftUnitId, false);
 
       console.log('Transferring non fungible token...');
       const transferNonFungibleTokenHash = await tokenClient.transferNonFungibleToken(
@@ -640,46 +662,46 @@ describe('State Api Client Integration tests', () => {
         {
           maxTransactionFee: 5n,
           timeout: round + 60n,
-          feeCreditRecordId: tokenFeeCreditRecordId,
+          feeCreditRecordId: feeCreditRecordId,
         },
       );
       await waitTransactionProof(tokenClient, transferNonFungibleTokenHash);
       console.log('Transferring non token fungible token successful');
     }, 20000);
   });
+
+  /**
+   * Wait for a transaction proof to be available.
+   * @param {StateApiClient} client State API client.
+   * @param {Uint8Array} transactionHash Transaction hash.
+   * @param {number} [timeout=10000] Timeout in milliseconds.
+   * @param {number} [interval=1000] Interval in milliseconds for polling.
+   * @returns {Promise<TransactionRecordWithProof>} Transaction proof.
+   * @throws {string} Timeout.
+   */
+  function waitTransactionProof<T extends ITransactionPayloadAttributes>(
+    client: StateApiClient,
+    transactionHash: Uint8Array,
+    timeout = 10000,
+    interval = 1000,
+  ): Promise<TransactionRecordWithProof<TransactionPayload<T>>> {
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
+      const poller = async (): Promise<void> => {
+        const proof = await client.getTransactionProof(transactionHash);
+        if (proof !== null) {
+          // @ts-expect-error FIXME
+          return resolve(proof);
+        }
+
+        if (Date.now() > start + timeout) {
+          return reject('Timeout');
+        }
+
+        setTimeout(poller, interval);
+      };
+
+      poller();
+    });
+  }
 });
-
-/**
- * Wait for a transaction proof to be available.
- * @param {StateApiClient} client State API client.
- * @param {Uint8Array} transactionHash Transaction hash.
- * @param {number} [timeout=10000] Timeout in milliseconds.
- * @param {number} [interval=1000] Interval in milliseconds for polling.
- * @returns {Promise<TransactionRecordWithProof>} Transaction proof.
- * @throws {string} Timeout.
- */
-export function waitTransactionProof<T extends ITransactionPayloadAttributes>(
-  client: StateApiClient,
-  transactionHash: Uint8Array,
-  timeout = 10000,
-  interval = 1000,
-): Promise<TransactionRecordWithProof<TransactionPayload<T>>> {
-  return new Promise((resolve, reject) => {
-    const start = Date.now();
-    const poller = async (): Promise<void> => {
-      const proof = await client.getTransactionProof(transactionHash);
-      if (proof !== null) {
-        // @ts-expect-error FIXME
-        return resolve(proof);
-      }
-
-      if (Date.now() > start + timeout) {
-        return reject('Timeout');
-      }
-
-      setTimeout(poller, interval);
-    };
-
-    poller();
-  });
-}
