@@ -32,7 +32,7 @@ const feeCreditRecordId = new UnitIdWithType(
 );
 const feeCreditRecord = (await moneyClient.getUnit(feeCreditRecordId, false))?.data || {
   unitId: feeCreditRecordId,
-  backlink: null,
+  counter: null,
 };
 
 const transferFeeCreditTransactionHash = await moneyClient.transferToFeeCredit(

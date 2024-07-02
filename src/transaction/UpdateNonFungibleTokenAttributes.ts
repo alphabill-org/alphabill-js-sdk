@@ -8,7 +8,7 @@ import { PayloadType } from './PayloadAttributeFactory.js';
 /**
  * Update non-fungible token attributes array.
  */
-export type UpdateNonFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Array, Uint8Array[] | null];
+export type UpdateNonFungibleTokenAttributesArray = readonly [Uint8Array, bigint, Uint8Array[] | null];
 
 /**
  * Update non-fungible token payload attributes.
@@ -17,15 +17,15 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   /**
    * Update non-fungible token attributes constructor.
    * @param {INonFungibleTokenData} data - Non-fungible token data.
-   * @param {Uint8Array} _backlink - Backlink.
+   * @param {bigint} counter - Counter.
    * @param {Uint8Array[] | null} _dataUpdateSignatures - Data update signatures.
    */
   public constructor(
     public readonly data: INonFungibleTokenData,
-    private readonly _backlink: Uint8Array,
+    public readonly counter: bigint,
     private readonly _dataUpdateSignatures: Uint8Array[] | null,
   ) {
-    this._backlink = new Uint8Array(_backlink);
+    this.counter = BigInt(counter);
     this._dataUpdateSignatures = this._dataUpdateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
@@ -34,14 +34,6 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
    */
   public get payloadType(): PayloadType {
     return PayloadType.UpdateNonFungibleTokenAttributes;
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
   }
 
   /**
@@ -63,7 +55,7 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public toArray(): UpdateNonFungibleTokenAttributesArray {
-    return [this.data.bytes, this.backlink, this.dataUpdateSignatures];
+    return [this.data.bytes, this.counter, this.dataUpdateSignatures];
   }
 
   /**
@@ -74,7 +66,7 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
     return dedent`
       UpdateNonFungibleTokenAttributes
         Data: ${this.data.toString()}
-        Backlink: ${Base16Converter.encode(this._backlink)}
+        Counter: ${this.counter}
         Data Update Signatures: ${this._dataUpdateSignatures?.map((signature) => Base16Converter.encode(signature))}`;
   }
 

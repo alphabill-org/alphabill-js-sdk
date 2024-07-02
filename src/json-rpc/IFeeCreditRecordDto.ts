@@ -4,7 +4,7 @@
  */
 export interface IFeeCreditRecordDto {
   Balance: string;
-  Backlink: string;
+  Counter: string;
   Timeout: string;
   Locked: number;
 }

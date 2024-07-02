@@ -26,43 +26,43 @@ interface ITransferFeeCreditTransactionData {
   systemIdentifier: SystemIdentifier;
   earliestAdditionTime: bigint;
   latestAdditionTime: bigint;
-  feeCreditRecord: { unitId: IUnitId; backlink: Uint8Array | null };
-  bill: { unitId: IUnitId; backlink: Uint8Array };
+  feeCreditRecord: { unitId: IUnitId; counter: bigint | null };
+  bill: { unitId: IUnitId; counter: bigint };
 }
 
 export interface ILockUnitTransactionData {
   status: bigint;
-  unit: { unitId: IUnitId; backlink: Uint8Array };
+  unit: { unitId: IUnitId; counter: bigint };
 }
 
 export interface IUnlockUnitTransactionData {
-  unit: { unitId: IUnitId; backlink: Uint8Array };
+  unit: { unitId: IUnitId; counter: bigint };
 }
 
 interface IReclaimFeeCreditTransactionData {
   proof: TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>>;
-  bill: { unitId: IUnitId; backlink: Uint8Array };
+  bill: { unitId: IUnitId; counter: bigint };
 }
 
 interface ISplitBillTransactionData {
   splits: { value: bigint; ownerPredicate: IPredicate }[];
-  bill: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
+  bill: { unitId: IUnitId; counter: bigint; value: bigint };
 }
 
 interface ITransferBillToDustCollectorTransactionData {
-  bill: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
-  targetBill: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
+  bill: { unitId: IUnitId; counter: bigint; value: bigint };
+  targetBill: { unitId: IUnitId; counter: bigint; value: bigint };
 }
 
 interface ISwapBillsWithDustCollectorTransactionData {
   ownerPredicate: IPredicate;
   proofs: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>>[];
-  bill: { unitId: IUnitId; backlink: Uint8Array };
+  bill: { unitId: IUnitId; counter: bigint };
 }
 
 interface ITransferBillTransactionData {
   ownerPredicate: IPredicate;
-  bill: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
+  bill: { unitId: IUnitId; counter: bigint; value: bigint };
 }
 
 export interface IAddFeeCreditTransactionData {
@@ -73,7 +73,7 @@ export interface IAddFeeCreditTransactionData {
 
 export interface ICloseFeeCreditTransactionData {
   amount: bigint;
-  bill: { unitId: IUnitId; backlink: Uint8Array };
+  bill: { unitId: IUnitId; counter: bigint };
   feeCreditRecord: { unitId: IUnitId; balance: bigint };
 }
 
@@ -121,8 +121,8 @@ export class StateApiMoneyClient extends StateApiClient {
             feeCreditRecord.unitId,
             earliestAdditionTime,
             latestAdditionTime,
-            feeCreditRecord.backlink,
-            bill.backlink,
+            feeCreditRecord.counter,
+            bill.counter,
           ),
           metadata,
         ),
@@ -167,7 +167,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           unit.unitId,
-          new LockBillAttributes(status, unit.backlink),
+          new LockBillAttributes(status, unit.counter),
           metadata,
         ),
       ),
@@ -189,7 +189,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           unit.unitId,
-          new LockFeeCreditAttributes(status, unit.backlink),
+          new LockFeeCreditAttributes(status, unit.counter),
           metadata,
         ),
       ),
@@ -211,7 +211,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           feeCreditRecord.unitId,
-          new CloseFeeCreditAttributes(feeCreditRecord.balance, bill.unitId, bill.backlink),
+          new CloseFeeCreditAttributes(feeCreditRecord.balance, bill.unitId, bill.counter),
           metadata,
         ),
       ),
@@ -233,7 +233,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           bill.unitId,
-          new ReclaimFeeCreditAttributes(proof, bill.backlink),
+          new ReclaimFeeCreditAttributes(proof, bill.counter),
           metadata,
         ),
       ),
@@ -258,7 +258,7 @@ export class StateApiMoneyClient extends StateApiClient {
           new SplitBillAttributes(
             splits.map(({ value, ownerPredicate }) => new SplitBillUnit(value, ownerPredicate)),
             splits.reduce((previousValue, currentValue) => previousValue - currentValue.value, bill.value),
-            bill.backlink,
+            bill.counter,
           ),
           metadata,
         ),
@@ -281,7 +281,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           bill.unitId,
-          new TransferBillToDustCollectorAttributes(bill.value, targetBill.unitId, targetBill.backlink, bill.backlink),
+          new TransferBillToDustCollectorAttributes(bill.value, targetBill.unitId, targetBill.counter, bill.counter),
           metadata,
         ),
       ),
@@ -333,7 +333,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           bill.unitId,
-          new TransferBillAttributes(ownerPredicate, bill.value, bill.backlink),
+          new TransferBillAttributes(ownerPredicate, bill.value, bill.counter),
           metadata,
         ),
       ),
@@ -355,7 +355,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           unit.unitId,
-          new UnlockBillAttributes(unit.backlink),
+          new UnlockBillAttributes(unit.counter),
           metadata,
         ),
       ),
@@ -377,7 +377,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           unit.unitId,
-          new UnlockFeeCreditAttributes(unit.backlink),
+          new UnlockFeeCreditAttributes(unit.counter),
           metadata,
         ),
       ),

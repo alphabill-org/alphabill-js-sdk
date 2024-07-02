@@ -59,7 +59,7 @@ describe('State Api Client Integration tests', () => {
       const moneyUnitIds: IUnitId[] = await moneyClient.getUnitsByOwnerId(signingService.publicKey);
       expect(moneyUnitIds.length).toBeGreaterThan(0);
       const moneyUnit = (await moneyClient.getUnit(moneyUnitIds[0], true)) as IUnit;
-      expect(moneyUnit.backlink).not.toBeNull();
+      expect(moneyUnit.counter).not.toBeNull();
     });
 
     it('Add fee credit', async () => {
@@ -83,7 +83,7 @@ describe('State Api Client Integration tests', () => {
           bill: bill,
           amount: amountToFeeCredit,
           systemIdentifier: SystemIdentifier.MONEY_PARTITION,
-          feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId, backlink: null },
+          feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId, counter: null },
           earliestAdditionTime: round,
           latestAdditionTime: round + 60n,
         },
@@ -185,7 +185,7 @@ describe('State Api Client Integration tests', () => {
       console.log('Unlocking bill...');
       const lockedBill = (await moneyClient.getUnit(bill.unitId, false)) as Bill;
       expect(lockedBill).not.toBeNull();
-      expect(lockedBill.backlink).not.toEqual(bill.backlink);
+      expect(lockedBill.counter).not.toEqual(bill.counter);
       const unlockHash = await moneyClient.unlockBill(
         {
           unit: lockedBill,
@@ -364,7 +364,7 @@ describe('State Api Client Integration tests', () => {
       const tokenUnitIds: IUnitId[] = await tokenClient.getUnitsByOwnerId(signingService.publicKey);
       expect(tokenUnitIds.length).toBeGreaterThan(0);
       const tokenUnit = (await tokenClient.getUnit(tokenUnitIds[0], true)) as IUnit;
-      expect(tokenUnit.backlink).not.toBeNull();
+      expect(tokenUnit.counter).not.toBeNull();
     });
 
     it('Add fee credit', async () => {
@@ -392,7 +392,7 @@ describe('State Api Client Integration tests', () => {
           bill: bill,
           amount: amountToFeeCredit,
           systemIdentifier: SystemIdentifier.TOKEN_PARTITION,
-          feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId, backlink: null },
+          feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId, counter: null },
           earliestAdditionTime: round,
           latestAdditionTime: round + 60n,
         },
@@ -653,7 +653,7 @@ describe('State Api Client Integration tests', () => {
         const transferNonFungibleTokenHash = await tokenClient.transferNonFungibleToken(
           {
             token: token,
-            backlink: token.backlink,
+            counter: token.counter,
             ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
             nonce: null,
             type: { unitId: tokenTypeUnitId },

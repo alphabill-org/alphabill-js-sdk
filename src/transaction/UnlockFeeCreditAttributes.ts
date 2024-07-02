@@ -5,7 +5,7 @@ import { PayloadType } from './PayloadAttributeFactory.js';
 /**
  * Unlock fee credit attributes array.
  */
-export type UnlockFeeCreditAttributesArray = readonly [Uint8Array];
+export type UnlockFeeCreditAttributesArray = readonly [bigint];
 
 /**
  * Unlock fee credit payload attributes.
@@ -13,10 +13,10 @@ export type UnlockFeeCreditAttributesArray = readonly [Uint8Array];
 export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * Unlock fee credit attributes constructor.
-   * @param {Uint8Array} _backlink - Backlink.
+   * @param {bigint} counter - Counter.
    */
-  public constructor(private readonly _backlink: Uint8Array) {
-    this._backlink = new Uint8Array(this._backlink);
+  public constructor(public readonly counter: bigint) {
+    this.counter = BigInt(this.counter);
   }
 
   /**
@@ -24,14 +24,6 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
    */
   public get payloadType(): PayloadType {
     return PayloadType.UnlockFeeCreditAttributes;
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
   }
 
   /**
@@ -45,7 +37,7 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public toArray(): UnlockFeeCreditAttributesArray {
-    return [this.backlink];
+    return [this.counter];
   }
 
   /**
@@ -55,7 +47,7 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
   public toString(): string {
     return dedent`
       UnlockFeeCreditAttributes
-        Backlink: ${this._backlink}`;
+        Counter: ${this.counter}`;
   }
 
   /**

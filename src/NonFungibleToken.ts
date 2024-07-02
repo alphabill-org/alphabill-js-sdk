@@ -22,7 +22,7 @@ export class NonFungibleToken {
    * @param {Uint8Array} _data Token data.
    * @param {IPredicate} dataUpdatePredicate Data update predicate.
    * @param {bigint} blockNumber Block number.
-   * @param {Uint8Array} _backlink Backlink.
+   * @param {bigint} counter Counter.
    * @param {boolean} locked Is token locked.
    * @param {IStateProof | null} stateProof State proof.
    */
@@ -35,13 +35,13 @@ export class NonFungibleToken {
     private readonly _data: Uint8Array,
     public readonly dataUpdatePredicate: IPredicate,
     public readonly blockNumber: bigint,
-    private readonly _backlink: Uint8Array,
+    public readonly counter: bigint,
     public readonly locked: boolean,
     public readonly stateProof: IStateProof | null,
   ) {
     this._data = new Uint8Array(this._data);
     this.blockNumber = BigInt(this.blockNumber);
-    this._backlink = new Uint8Array(this._backlink);
+    this.counter = BigInt(this.counter);
   }
 
   /**
@@ -50,14 +50,6 @@ export class NonFungibleToken {
    */
   public get data(): Uint8Array {
     return new Uint8Array(this._data);
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
   }
 
   /**
@@ -83,7 +75,7 @@ export class NonFungibleToken {
       Base64Converter.decode(data.Data),
       new PredicateBytes(Base64Converter.decode(data.DataUpdatePredicate)),
       BigInt(data.T),
-      Base64Converter.decode(data.Backlink),
+      BigInt(data.Counter),
       Boolean(Number(data.Locked)),
       stateProof,
     );
@@ -102,7 +94,7 @@ export class NonFungibleToken {
         Data: ${Base16Converter.encode(this._data)}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
         Block Number: ${this.blockNumber}
-        Backlink: ${Base16Converter.encode(this._backlink)}
+        Counter: ${this.counter}
         Locked: ${this.locked}`;
   }
 }

@@ -12,10 +12,10 @@ export interface IUnit {
   get unitId(): IUnitId;
 
   /**
-   * Get backlink.
-   * @returns {Uint8Array} backlink.
+   * Get counter.
+   * @returns {bigint} counter.
    */
-  get backlink(): Uint8Array;
+  get counter(): bigint;
   /**
    * Get owner predicate.
    * @returns {IPredicate} owner predicate.

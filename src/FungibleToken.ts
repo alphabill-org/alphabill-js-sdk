@@ -4,7 +4,6 @@ import { IFungibleTokenDto } from './json-rpc/IFungibleTokenDto.js';
 import { IPredicate } from './transaction/IPredicate.js';
 import { UnitId } from './UnitId.js';
 import { Base16Converter } from './util/Base16Converter.js';
-import { Base64Converter } from './util/Base64Converter.js';
 import { dedent } from './util/StringUtils.js';
 
 /**
@@ -18,7 +17,7 @@ export class FungibleToken {
    * @param {IUnitId} tokenType Token type.
    * @param {bigint} value Token value.
    * @param {bigint} blockNumber Block number.
-   * @param {Uint8Array} _backlink Backlink.
+   * @param {bigint} counter Counter.
    * @param {boolean} locked Is token locked.
    * @param {IStateProof | null} stateProof State proof.
    */
@@ -28,21 +27,13 @@ export class FungibleToken {
     public readonly tokenType: IUnitId,
     public readonly value: bigint,
     public readonly blockNumber: bigint,
-    private readonly _backlink: Uint8Array,
+    public readonly counter: bigint,
     public readonly locked: boolean,
     public readonly stateProof: IStateProof | null,
   ) {
     this.value = BigInt(this.value);
     this.blockNumber = BigInt(this.blockNumber);
-    this._backlink = new Uint8Array(this._backlink);
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
+    this.counter = BigInt(this.counter);
   }
 
   /**
@@ -65,7 +56,7 @@ export class FungibleToken {
       UnitId.fromBytes(Base16Converter.decode(data.TokenType)),
       BigInt(data.Value),
       BigInt(data.T),
-      Base64Converter.decode(data.Backlink),
+      BigInt(data.Counter),
       Boolean(Number(data.Locked)),
       stateProof,
     );
@@ -81,7 +72,7 @@ export class FungibleToken {
         Token Type: ${this.tokenType.toString()}
         Value: ${this.value}
         Block Number: ${this.blockNumber}
-        Backlink: ${Base16Converter.encode(this._backlink)}
+        Counter: ${this.counter}
         Locked: ${this.locked}`;
   }
 }

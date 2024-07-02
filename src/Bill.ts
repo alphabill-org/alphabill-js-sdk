@@ -2,7 +2,6 @@ import { IStateProof, IUnit } from './IUnit.js';
 import { IUnitId } from './IUnitId.js';
 import { IBillDataDto } from './json-rpc/IBillDataDto.js';
 import { IPredicate } from './transaction/IPredicate.js';
-import { Base16Converter } from './util/Base16Converter.js';
 import { dedent } from './util/StringUtils.js';
 
 /**
@@ -15,7 +14,7 @@ export class Bill implements IUnit {
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {bigint} value Bill value.
    * @param {bigint} lastUpdate Last update.
-   * @param {Uint8Array} _backlink Backlink.
+   * @param {bigint} counter Counter.
    * @param {boolean} locked Is locked.
    * @param {IStateProof | null} stateProof State proof.
    */
@@ -24,21 +23,13 @@ export class Bill implements IUnit {
     public readonly ownerPredicate: IPredicate,
     public readonly value: bigint,
     public readonly lastUpdate: bigint,
-    private readonly _backlink: Uint8Array,
+    public readonly counter: bigint,
     public readonly locked: boolean,
     public readonly stateProof: IStateProof | null,
   ) {
     this.value = BigInt(this.value);
     this.lastUpdate = BigInt(this.lastUpdate);
-    this._backlink = new Uint8Array(this._backlink);
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array}
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
+    this.counter = BigInt(this.counter);
   }
 
   /**
@@ -60,7 +51,7 @@ export class Bill implements IUnit {
       ownerPredicate,
       BigInt(data.value),
       BigInt(data.lastUpdate),
-      Base16Converter.decode(data.backlink),
+      BigInt(data.counter),
       Boolean(Number(data.locked)),
       stateProof,
     );
@@ -75,7 +66,7 @@ export class Bill implements IUnit {
       Bill
         Value: ${this.value}
         Last Update: ${this.lastUpdate}
-        Backlink: ${Base16Converter.encode(this._backlink)}
+        Counter: ${this.counter}
         Locked: ${this.locked}`;
   }
 }

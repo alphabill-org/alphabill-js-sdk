@@ -1,4 +1,3 @@
-import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { PayloadType } from './PayloadAttributeFactory.js';
@@ -7,7 +6,7 @@ import { SplitBillUnit, SplitBillUnitArray } from './SplitBillUnit.js';
 /**
  * Split bill attributes array.
  */
-export type SplitBillAttributesArray = [SplitBillUnitArray[], bigint, Uint8Array];
+export type SplitBillAttributesArray = [SplitBillUnitArray[], bigint, bigint];
 
 /**
  * Split bill attributes.
@@ -17,16 +16,16 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
    * Split bill attributes constructor.
    * @param {readonly SplitBillUnit[]} _targetUnits - Target units.
    * @param {bigint} remainingBillValue - Remaining bill value.
-   * @param {Uint8Array} _backlink - Backlink.
+   * @param {bigint} counter - Counter.
    */
   public constructor(
     private readonly _targetUnits: readonly SplitBillUnit[],
     public readonly remainingBillValue: bigint,
-    private readonly _backlink: Uint8Array,
+    public readonly counter: bigint,
   ) {
     this._targetUnits = Array.from(this._targetUnits);
     this.remainingBillValue = BigInt(this.remainingBillValue);
-    this._backlink = new Uint8Array(this._backlink);
+    this.counter = BigInt(this.counter);
   }
 
   /**
@@ -45,14 +44,6 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
-  }
-
-  /**
    * @see {ITransactionPayloadAttributes.toOwnerProofData}
    */
   public toOwnerProofData(): SplitBillAttributesArray {
@@ -63,7 +54,7 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public toArray(): SplitBillAttributesArray {
-    return [this.targetUnits.map((unit) => unit.toArray()), this.remainingBillValue, this.backlink];
+    return [this.targetUnits.map((unit) => unit.toArray()), this.remainingBillValue, this.counter];
   }
 
   /**
@@ -77,7 +68,7 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
           ${this._targetUnits.map((unit) => unit.toString()).join('\n')}
         ]
         Remaining Bill Value: ${this.remainingBillValue}
-        Backlink: ${Base16Converter.encode(this._backlink)}`;
+        Counter: ${this.counter}`;
   }
 
   /**

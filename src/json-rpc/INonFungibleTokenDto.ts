@@ -9,6 +9,6 @@ export interface INonFungibleTokenDto {
   Data: string;
   DataUpdatePredicate: string;
   T: string;
-  Backlink: string;
+  Counter: string;
   Locked: number;
 }

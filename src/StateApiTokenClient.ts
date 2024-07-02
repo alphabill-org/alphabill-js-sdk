@@ -59,16 +59,16 @@ interface ICreateNonFungibleTokenTransactionData {
 }
 
 interface ITransferNonFungibleTokenTransactionData {
-  token: { unitId: IUnitId; backlink: Uint8Array };
+  token: { unitId: IUnitId; counter: bigint };
   ownerPredicate: IPredicate;
   nonce: Uint8Array | null;
-  backlink: Uint8Array;
+  counter: bigint;
   type: { unitId: IUnitId };
   invariantPredicateSignatures: Uint8Array[] | null;
 }
 
 interface IUpdateNonFungibleTokenTransactionData {
-  token: { unitId: IUnitId; backlink: Uint8Array };
+  token: { unitId: IUnitId; counter: bigint };
   data: INonFungibleTokenData;
   dataUpdateSignatures: Uint8Array[] | null;
 }
@@ -95,7 +95,7 @@ interface ICreateFungibleTokenTransactionData {
 }
 
 interface ITransferFungibleTokenTransactionData {
-  token: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
+  token: { unitId: IUnitId; counter: bigint; value: bigint };
   ownerPredicate: IPredicate;
   nonce: Uint8Array | null;
   type: { unitId: IUnitId };
@@ -103,7 +103,7 @@ interface ITransferFungibleTokenTransactionData {
 }
 
 interface ISplitFungibleTokenTransactionData {
-  token: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
+  token: { unitId: IUnitId; counter: bigint; value: bigint };
   ownerPredicate: IPredicate;
   amount: bigint;
   nonce: Uint8Array | null;
@@ -112,14 +112,14 @@ interface ISplitFungibleTokenTransactionData {
 }
 
 interface IBurnFungibleTokenTransactionData {
-  token: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
-  targetToken: { unitId: IUnitId; backlink: Uint8Array };
+  token: { unitId: IUnitId; counter: bigint; value: bigint };
+  targetToken: { unitId: IUnitId; counter: bigint };
   type: { unitId: IUnitId };
   invariantPredicateSignatures: Uint8Array[] | null;
 }
 
 interface IJoinFungibleTokensTransactionData {
-  token: { unitId: IUnitId; backlink: Uint8Array };
+  token: { unitId: IUnitId; counter: bigint };
   proofs: TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[];
   invariantPredicateSignatures: Uint8Array[] | null;
 }
@@ -240,7 +240,7 @@ export class StateApiTokenClient extends StateApiClient {
           new TransferNonFungibleTokenAttributes(
             ownerPredicate,
             nonce,
-            token.backlink,
+            token.counter,
             type.unitId,
             invariantPredicateSignatures,
           ),
@@ -265,7 +265,7 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           token.unitId,
-          new UpdateNonFungibleTokenAttributes(data, token.backlink, dataUpdateSignatures),
+          new UpdateNonFungibleTokenAttributes(data, token.counter, dataUpdateSignatures),
           metadata,
         ),
       ),
@@ -356,7 +356,7 @@ export class StateApiTokenClient extends StateApiClient {
             ownerPredicate,
             token.value,
             nonce,
-            token.backlink,
+            token.counter,
             type.unitId,
             invariantPredicateSignatures,
           ),
@@ -385,7 +385,7 @@ export class StateApiTokenClient extends StateApiClient {
             ownerPredicate,
             amount,
             nonce,
-            token.backlink,
+            token.counter,
             type.unitId,
             token.value - amount,
             invariantPredicateSignatures,
@@ -415,8 +415,8 @@ export class StateApiTokenClient extends StateApiClient {
             type.unitId,
             token.value,
             targetToken.unitId,
-            targetToken.backlink,
-            token.backlink,
+            targetToken.counter,
+            token.counter,
             invariantPredicateSignatures,
           ),
           metadata,
@@ -440,7 +440,7 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           token.unitId,
-          new JoinFungibleTokenAttributes(proofs, token.backlink, invariantPredicateSignatures),
+          new JoinFungibleTokenAttributes(proofs, token.counter, invariantPredicateSignatures),
           metadata,
         ),
       ),
@@ -484,7 +484,7 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           feeCreditRecord.unitId,
-          new CloseFeeCreditAttributes(amount, bill.unitId, bill.backlink),
+          new CloseFeeCreditAttributes(amount, bill.unitId, bill.counter),
           metadata,
         ),
       ),
@@ -506,7 +506,7 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           unit.unitId,
-          new LockFeeCreditAttributes(status, unit.backlink),
+          new LockFeeCreditAttributes(status, unit.counter),
           metadata,
         ),
       ),
@@ -528,7 +528,7 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           unit.unitId,
-          new UnlockFeeCreditAttributes(unit.backlink),
+          new UnlockFeeCreditAttributes(unit.counter),
           metadata,
         ),
       ),
@@ -537,7 +537,7 @@ export class StateApiTokenClient extends StateApiClient {
 
   /**
    * Lock token.
-   * @param {{status: bigint; unit: { unitId: IUnitId; backlink: Uint8Array }}} data Lock unit data.
+   * @param {{status: bigint; unit: { unitId: IUnitId; counter: bigint }}} data Lock unit data.
    * @param {ITransactionClientMetadata} metadata Transaction client metadata.
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
@@ -550,7 +550,7 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           unit.unitId,
-          new LockTokenAttributes(status, unit.backlink),
+          new LockTokenAttributes(status, unit.counter),
           metadata,
         ),
       ),
@@ -572,7 +572,7 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           unit.unitId,
-          new UnlockTokenAttributes(unit.backlink),
+          new UnlockTokenAttributes(unit.counter),
           metadata,
         ),
       ),
