@@ -74,7 +74,7 @@ describe('State Api Client Integration tests', () => {
       expect(bill).not.toBeNull();
       const round = await moneyClient.getRoundNumber();
 
-      const amountToFeeCredit = BigInt(100);
+      const amountToFeeCredit = 100n;
       expect(bill.value).toBeGreaterThan(amountToFeeCredit);
 
       console.log('Transferring to fee credit...');
@@ -83,13 +83,13 @@ describe('State Api Client Integration tests', () => {
           bill: bill,
           amount: amountToFeeCredit,
           systemIdentifier: SystemIdentifier.MONEY_PARTITION,
-          feeCreditRecord: feeCreditRecord ? feeCreditRecord : { unitId: feeCreditRecordId, backlink: null },
+          feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId, backlink: null },
           earliestAdditionTime: round,
-          latestAdditionTime: round + BigInt(60),
+          latestAdditionTime: round + 60n,
         },
         {
-          maxTransactionFee: BigInt(5),
-          timeout: round + BigInt(60),
+          maxTransactionFee: 5n,
+          timeout: round + 60n,
           feeCreditRecordId: null,
         },
       );
@@ -106,8 +106,8 @@ describe('State Api Client Integration tests', () => {
           feeCreditRecord: { unitId: feeCreditRecordId },
         },
         {
-          maxTransactionFee: BigInt(5),
-          timeout: round + BigInt(60),
+          maxTransactionFee: 5n,
+          timeout: round + 60n,
           feeCreditRecordId: null,
         },
       );
@@ -383,7 +383,7 @@ describe('State Api Client Integration tests', () => {
       const bill = (await moneyClient.getUnit(unitIds[0], false)) as Bill;
       expect(bill).not.toBeNull();
       const round = await moneyClient.getRoundNumber();
-      const amountToFeeCredit = BigInt(100);
+      const amountToFeeCredit = 100n;
       expect(bill.value).toBeGreaterThan(amountToFeeCredit);
 
       console.log('Transferring to fee credit...');
@@ -392,13 +392,13 @@ describe('State Api Client Integration tests', () => {
           bill: bill,
           amount: amountToFeeCredit,
           systemIdentifier: SystemIdentifier.TOKEN_PARTITION,
-          feeCreditRecord: feeCreditRecord ? feeCreditRecord : { unitId: feeCreditRecordId, backlink: null },
+          feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId, backlink: null },
           earliestAdditionTime: round,
-          latestAdditionTime: round + BigInt(60),
+          latestAdditionTime: round + 60n,
         },
         {
-          maxTransactionFee: BigInt(5),
-          timeout: round + BigInt(60),
+          maxTransactionFee: 5n,
+          timeout: round + 60n,
           feeCreditRecordId: null,
         },
       );
@@ -411,11 +411,11 @@ describe('State Api Client Integration tests', () => {
         {
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           proof,
-          feeCreditRecord: feeCreditRecord ? feeCreditRecord : { unitId: feeCreditRecordId },
+          feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId },
         },
         {
-          maxTransactionFee: BigInt(5),
-          timeout: round + BigInt(60),
+          maxTransactionFee: 5n,
+          timeout: round + 60n,
           feeCreditRecordId: null,
         },
       );
