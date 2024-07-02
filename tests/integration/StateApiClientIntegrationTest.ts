@@ -363,11 +363,6 @@ describe('State Api Client Integration tests', () => {
       UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
     );
 
-    const fttUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN_TYPE);
-    const nfttUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN_TYPE);
-    const ftUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN);
-    const nftUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN);
-
     it('Get units by owner ID and get unit', async () => {
       const tokenUnitIds: IUnitId[] = await tokenClient.getUnitsByOwnerId(signingService.publicKey);
       expect(tokenUnitIds.length).toBeGreaterThan(0);
@@ -432,241 +427,251 @@ describe('State Api Client Integration tests', () => {
       console.log('Adding fee credit successful');
     }, 20000);
 
-    it('FT - Create token type and token', async () => {
-      const round = await tokenClient.getRoundNumber();
-      console.log('Creating fungible token type...');
-      const createFungibleTokenTypeHash = await tokenClient.createFungibleTokenType(
-        {
-          type: { unitId: fttUnitId },
-          symbol: 'E',
-          name: 'Big money come',
-          icon: new TokenIcon('image/png', new Uint8Array()),
-          parentTypeId: null,
-          decimalPlaces: 8,
-          subTypeCreationPredicate: new AlwaysTruePredicate(),
-          tokenCreationPredicate: new AlwaysTruePredicate(),
-          invariantPredicate: new AlwaysTruePredicate(),
-          subTypeCreationPredicateSignatures: null,
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
-      );
-      await waitTransactionProof(tokenClient, createFungibleTokenTypeHash);
-      console.log('Creating fungible token type successful');
+    describe('Fungible Token Integration Tests', () => {
+      const tokenTypeUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN_TYPE);
+      const tokenUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN);
 
-      console.log('Creating fungible token...');
-      const createFungibleTokenHash = await tokenClient.sendTransaction(
-        await transactionOrderFactory.createTransaction(
-          TransactionPayload.create(
-            SystemIdentifier.TOKEN_PARTITION,
-            ftUnitId,
-            new CreateFungibleTokenAttributes(
-              await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-              fttUnitId,
-              10n,
-              [new Uint8Array()],
-            ),
-            {
-              maxTransactionFee: 5n,
-              timeout: round + 60n,
-              feeCreditRecordId: feeCreditRecordId,
-            },
-          ),
-        ),
-      );
-      await waitTransactionProof(tokenClient, createFungibleTokenHash);
-      console.log('Creating fungible token successful');
-    }, 20000);
-
-    it('FT - Split, burn and join', async () => {
-      const round = await tokenClient.getRoundNumber();
-      const token: FungibleToken | null = await tokenClient.getUnit(ftUnitId, false);
-      console.log('Splitting fungible token...');
-      const splitFungibleTokenHash = await tokenClient.splitFungibleToken(
-        {
-          token: token!,
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-          amount: 3n,
-          nonce: null,
-          type: { unitId: fttUnitId },
-          invariantPredicateSignatures: [new Uint8Array()],
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
-      );
-      await waitTransactionProof(tokenClient, splitFungibleTokenHash);
-      console.log('Fungible token split successful');
-
-      const splitBillProof = await waitTransactionProof(tokenClient, splitFungibleTokenHash);
-      const splitTokenId = splitBillProof.transactionRecord.serverMetadata.targetUnits
-        .map((bytes) => UnitId.fromBytes(bytes))
-        .find(
-          (id) =>
-            id.type.toBase16() === UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN &&
-            Base16Converter.encode(id.bytes) !== Base16Converter.encode(token!.unitId.bytes),
+      it('Create token type and token', async () => {
+        const round = await tokenClient.getRoundNumber();
+        console.log('Creating fungible token type...');
+        const createFungibleTokenTypeHash = await tokenClient.createFungibleTokenType(
+          {
+            type: { unitId: tokenTypeUnitId },
+            symbol: 'E',
+            name: 'Big money come',
+            icon: new TokenIcon('image/png', new Uint8Array()),
+            parentTypeId: null,
+            decimalPlaces: 8,
+            subTypeCreationPredicate: new AlwaysTruePredicate(),
+            tokenCreationPredicate: new AlwaysTruePredicate(),
+            invariantPredicate: new AlwaysTruePredicate(),
+            subTypeCreationPredicateSignatures: null,
+          },
+          {
+            maxTransactionFee: 5n,
+            timeout: round + 60n,
+            feeCreditRecordId: feeCreditRecordId,
+          },
         );
-      const splitToken: FungibleToken | null = await tokenClient.getUnit(splitTokenId!, false);
-      const originalTokenAfterSplit = await tokenClient.getUnit(ftUnitId, false);
+        await waitTransactionProof(tokenClient, createFungibleTokenTypeHash);
+        console.log('Creating fungible token type successful');
 
-      console.log('Burning fungible token...');
-      const burnFungibleTokenHash = await tokenClient.burnFungibleToken(
-        {
-          token: splitToken!,
-          targetToken: originalTokenAfterSplit!,
-          type: { unitId: fttUnitId },
-          invariantPredicateSignatures: [new Uint8Array()],
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
-      );
-      await waitTransactionProof(tokenClient, burnFungibleTokenHash);
-      console.log('Fungible token burn successful');
+        console.log('Creating fungible token...');
+        const createFungibleTokenHash = await tokenClient.sendTransaction(
+          await transactionOrderFactory.createTransaction(
+            TransactionPayload.create(
+              SystemIdentifier.TOKEN_PARTITION,
+              tokenUnitId,
+              new CreateFungibleTokenAttributes(
+                await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+                tokenTypeUnitId,
+                10n,
+                [new Uint8Array()],
+              ),
+              {
+                maxTransactionFee: 5n,
+                timeout: round + 60n,
+                feeCreditRecordId: feeCreditRecordId,
+              },
+            ),
+          ),
+        );
+        await waitTransactionProof(tokenClient, createFungibleTokenHash);
+        console.log('Creating fungible token successful');
+      }, 20000);
 
-      const burnProof: TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>> =
+      it('Split, burn and join', async () => {
+        const round = await tokenClient.getRoundNumber();
+        const token: FungibleToken | null = await tokenClient.getUnit(tokenUnitId, false);
+        console.log('Splitting fungible token...');
+        const splitFungibleTokenHash = await tokenClient.splitFungibleToken(
+          {
+            token: token!,
+            ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+            amount: 3n,
+            nonce: null,
+            type: { unitId: tokenTypeUnitId },
+            invariantPredicateSignatures: [new Uint8Array()],
+          },
+          {
+            maxTransactionFee: 5n,
+            timeout: round + 60n,
+            feeCreditRecordId: feeCreditRecordId,
+          },
+        );
+        await waitTransactionProof(tokenClient, splitFungibleTokenHash);
+        console.log('Fungible token split successful');
+
+        const splitBillProof = await waitTransactionProof(tokenClient, splitFungibleTokenHash);
+        const splitTokenId = splitBillProof.transactionRecord.serverMetadata.targetUnits
+          .map((bytes) => UnitId.fromBytes(bytes))
+          .find(
+            (id) =>
+              id.type.toBase16() === UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN &&
+              Base16Converter.encode(id.bytes) !== Base16Converter.encode(token!.unitId.bytes),
+          );
+        const splitToken: FungibleToken | null = await tokenClient.getUnit(splitTokenId!, false);
+        const originalTokenAfterSplit = await tokenClient.getUnit(tokenUnitId, false);
+
+        console.log('Burning fungible token...');
+        const burnFungibleTokenHash = await tokenClient.burnFungibleToken(
+          {
+            token: splitToken!,
+            targetToken: originalTokenAfterSplit!,
+            type: { unitId: tokenTypeUnitId },
+            invariantPredicateSignatures: [new Uint8Array()],
+          },
+          {
+            maxTransactionFee: 5n,
+            timeout: round + 60n,
+            feeCreditRecordId: feeCreditRecordId,
+          },
+        );
         await waitTransactionProof(tokenClient, burnFungibleTokenHash);
-      console.log('Joining fungible token...');
-      const joinFungibleTokenHash = await tokenClient.joinFungibleTokens(
-        {
-          proofs: [burnProof],
-          token: originalTokenAfterSplit!,
-          invariantPredicateSignatures: [new Uint8Array()],
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
-      );
-      await waitTransactionProof(tokenClient, joinFungibleTokenHash);
-      console.log('Fungible token join successful');
-    }, 20000);
+        console.log('Fungible token burn successful');
 
-    it('FT - Transfer', async () => {
-      const round = await tokenClient.getRoundNumber();
-      const token: FungibleToken | null = await tokenClient.getUnit(ftUnitId, false);
+        const burnProof: TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>> =
+          await waitTransactionProof(tokenClient, burnFungibleTokenHash);
+        console.log('Joining fungible token...');
+        const joinFungibleTokenHash = await tokenClient.joinFungibleTokens(
+          {
+            proofs: [burnProof],
+            token: originalTokenAfterSplit!,
+            invariantPredicateSignatures: [new Uint8Array()],
+          },
+          {
+            maxTransactionFee: 5n,
+            timeout: round + 60n,
+            feeCreditRecordId: feeCreditRecordId,
+          },
+        );
+        await waitTransactionProof(tokenClient, joinFungibleTokenHash);
+        console.log('Fungible token join successful');
+      }, 20000);
 
-      console.log('Transferring fungible token...');
-      const transferFungibleTokenHash = await tokenClient.transferFungibleToken(
-        {
-          token: token!,
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-          nonce: null,
-          type: { unitId: fttUnitId },
-          invariantPredicateSignatures: [new Uint8Array()],
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
-      );
+      it('Transfer', async () => {
+        const round = await tokenClient.getRoundNumber();
+        const token: FungibleToken | null = await tokenClient.getUnit(tokenUnitId, false);
 
-      await waitTransactionProof(tokenClient, transferFungibleTokenHash);
-      console.log('Fungible token transfer successful');
-    }, 20000);
+        console.log('Transferring fungible token...');
+        const transferFungibleTokenHash = await tokenClient.transferFungibleToken(
+          {
+            token: token!,
+            ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+            nonce: null,
+            type: { unitId: tokenTypeUnitId },
+            invariantPredicateSignatures: [new Uint8Array()],
+          },
+          {
+            maxTransactionFee: 5n,
+            timeout: round + 60n,
+            feeCreditRecordId: feeCreditRecordId,
+          },
+        );
 
-    it('NFT - Create token type and token', async () => {
-      const round = await tokenClient.getRoundNumber();
-      console.log('Creating non fungible token type...');
-      const createNonFungibleTokenTypeHash = await tokenClient.createNonFungibleTokenType(
-        {
-          type: { unitId: nfttUnitId },
-          symbol: 'E',
-          name: 'Token Name',
-          icon: { type: 'image/png', data: new Uint8Array() },
-          parentTypeId: null,
-          subTypeCreationPredicate: new AlwaysTruePredicate(),
-          tokenCreationPredicate: new AlwaysTruePredicate(),
-          invariantPredicate: new AlwaysTruePredicate(),
-          dataUpdatePredicate: new AlwaysTruePredicate(),
-          subTypeCreationPredicateSignatures: null,
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
-      );
-      await waitTransactionProof(tokenClient, createNonFungibleTokenTypeHash);
-      console.log('Creating non fungible token type successful');
+        await waitTransactionProof(tokenClient, transferFungibleTokenHash);
+        console.log('Fungible token transfer successful');
+      }, 20000);
+    });
 
-      console.log('Creating non fungible token...');
-      const createNonFungibleTokenHash = await tokenClient.createNonFungibleToken(
-        {
-          token: { unitId: nftUnitId },
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-          type: { unitId: nfttUnitId },
-          name: 'My token',
-          uri: 'http://guardtime.com',
-          data: await NonFungibleTokenData.create(cborCodec, [
-            'user variables as primitives',
-            10000,
-            [true, new Uint8Array()],
-          ]),
-          dataUpdatePredicate: new AlwaysTruePredicate(),
-          tokenCreationPredicateSignatures: [new Uint8Array()],
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
-      );
-      await waitTransactionProof(tokenClient, createNonFungibleTokenHash);
-      console.log('Creating non fungible token successful');
-    }, 20000);
+    describe('Non Fungible Token Integration Tests', () => {
+      const tokenTypeUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN_TYPE);
+      const tokenUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN);
 
-    it('NFT - Update and transfer', async () => {
-      const round = await tokenClient.getRoundNumber();
-      let token: NonFungibleToken | null = await tokenClient.getUnit(nftUnitId, false);
-      expect(token).not.toBeNull();
+      it('Create token type and token', async () => {
+        const round = await tokenClient.getRoundNumber();
+        console.log('Creating non fungible token type...');
+        const createNonFungibleTokenTypeHash = await tokenClient.createNonFungibleTokenType(
+          {
+            type: { unitId: tokenTypeUnitId },
+            symbol: 'E',
+            name: 'Token Name',
+            icon: { type: 'image/png', data: new Uint8Array() },
+            parentTypeId: null,
+            subTypeCreationPredicate: new AlwaysTruePredicate(),
+            tokenCreationPredicate: new AlwaysTruePredicate(),
+            invariantPredicate: new AlwaysTruePredicate(),
+            dataUpdatePredicate: new AlwaysTruePredicate(),
+            subTypeCreationPredicateSignatures: null,
+          },
+          {
+            maxTransactionFee: 5n,
+            timeout: round + 60n,
+            feeCreditRecordId: feeCreditRecordId,
+          },
+        );
+        await waitTransactionProof(tokenClient, createNonFungibleTokenTypeHash);
+        console.log('Creating non fungible token type successful');
 
-      console.log('Updating non fungible token...');
-      const updateNonFungibleTokenHash = await tokenClient.updateNonFungibleToken(
-        {
-          token: token!,
-          data: await NonFungibleTokenData.create(cborCodec, [crypto.getRandomValues(new Uint8Array(32))]),
-          dataUpdateSignatures: [new Uint8Array(), new Uint8Array()],
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
-      );
-      await waitTransactionProof(tokenClient, updateNonFungibleTokenHash);
-      console.log('Updating non token fungible token successful');
+        console.log('Creating non fungible token...');
+        const createNonFungibleTokenHash = await tokenClient.createNonFungibleToken(
+          {
+            token: { unitId: tokenUnitId },
+            ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+            type: { unitId: tokenTypeUnitId },
+            name: 'My token',
+            uri: 'http://guardtime.com',
+            data: await NonFungibleTokenData.create(cborCodec, [
+              'user variables as primitives',
+              10000,
+              [true, new Uint8Array()],
+            ]),
+            dataUpdatePredicate: new AlwaysTruePredicate(),
+            tokenCreationPredicateSignatures: [new Uint8Array()],
+          },
+          {
+            maxTransactionFee: 5n,
+            timeout: round + 60n,
+            feeCreditRecordId: feeCreditRecordId,
+          },
+        );
+        await waitTransactionProof(tokenClient, createNonFungibleTokenHash);
+        console.log('Creating non fungible token successful');
+      }, 20000);
 
-      token = await tokenClient.getUnit(nftUnitId, false);
+      it('Update and transfer', async () => {
+        const round = await tokenClient.getRoundNumber();
+        let token: NonFungibleToken | null = await tokenClient.getUnit(tokenUnitId, false);
+        expect(token).not.toBeNull();
 
-      console.log('Transferring non fungible token...');
-      const transferNonFungibleTokenHash = await tokenClient.transferNonFungibleToken(
-        {
-          token: token!,
-          backlink: token!.backlink,
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-          nonce: null,
-          type: { unitId: nfttUnitId },
-          invariantPredicateSignatures: [new Uint8Array()],
-        },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
-      );
-      await waitTransactionProof(tokenClient, transferNonFungibleTokenHash);
-      console.log('Transferring non token fungible token successful');
-    }, 20000);
+        console.log('Updating non fungible token...');
+        const updateNonFungibleTokenHash = await tokenClient.updateNonFungibleToken(
+          {
+            token: token!,
+            data: await NonFungibleTokenData.create(cborCodec, [crypto.getRandomValues(new Uint8Array(32))]),
+            dataUpdateSignatures: [new Uint8Array(), new Uint8Array()],
+          },
+          {
+            maxTransactionFee: 5n,
+            timeout: round + 60n,
+            feeCreditRecordId: feeCreditRecordId,
+          },
+        );
+        await waitTransactionProof(tokenClient, updateNonFungibleTokenHash);
+        console.log('Updating non token fungible token successful');
+
+        token = await tokenClient.getUnit(tokenUnitId, false);
+
+        console.log('Transferring non fungible token...');
+        const transferNonFungibleTokenHash = await tokenClient.transferNonFungibleToken(
+          {
+            token: token!,
+            backlink: token!.backlink,
+            ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+            nonce: null,
+            type: { unitId: tokenTypeUnitId },
+            invariantPredicateSignatures: [new Uint8Array()],
+          },
+          {
+            maxTransactionFee: 5n,
+            timeout: round + 60n,
+            feeCreditRecordId: feeCreditRecordId,
+          },
+        );
+        await waitTransactionProof(tokenClient, transferNonFungibleTokenHash);
+        console.log('Transferring non token fungible token successful');
+      }, 20000);
+    });
   });
 
   /**
@@ -689,8 +694,7 @@ describe('State Api Client Integration tests', () => {
       const poller = async (): Promise<void> => {
         const proof = await client.getTransactionProof(transactionHash);
         if (proof !== null) {
-          // @ts-expect-error FIXME
-          return resolve(proof);
+          return resolve(proof as TransactionRecordWithProof<TransactionPayload<T>>);
         }
 
         if (Date.now() > start + timeout) {
