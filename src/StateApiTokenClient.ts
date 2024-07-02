@@ -70,7 +70,6 @@ interface ITransferNonFungibleTokenTransactionData {
 interface IUpdateNonFungibleTokenTransactionData {
   token: { unitId: IUnitId; backlink: Uint8Array };
   data: INonFungibleTokenData;
-  backlink: Uint8Array;
   dataUpdateSignatures: Uint8Array[] | null;
 }
 
@@ -84,7 +83,6 @@ interface ICreateFungibleTokenTypeTransactionData {
   subTypeCreationPredicate: IPredicate;
   tokenCreationPredicate: IPredicate;
   invariantPredicate: IPredicate;
-  dataUpdatePredicate: IPredicate;
   subTypeCreationPredicateSignatures: Uint8Array[] | null;
 }
 
@@ -99,9 +97,7 @@ interface ICreateFungibleTokenTransactionData {
 interface ITransferFungibleTokenTransactionData {
   token: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
   ownerPredicate: IPredicate;
-  value: bigint;
   nonce: Uint8Array | null;
-  backlink: Uint8Array;
   type: { unitId: IUnitId };
   invariantPredicateSignatures: Uint8Array[] | null;
 }
