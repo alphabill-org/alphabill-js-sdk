@@ -46,7 +46,6 @@ describe('State Api Client Integration tests', () => {
       sha256(signingService.publicKey),
       UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD,
     );
-    let feeCreditRecord: FeeCreditRecord | null;
 
     it('Get round number and get block', async () => {
       const round = await moneyClient.getRoundNumber();
@@ -64,7 +63,7 @@ describe('State Api Client Integration tests', () => {
     });
 
     it('Add fee credit', async () => {
-      feeCreditRecord = await moneyClient.getUnit(feeCreditRecordId, false);
+      const feeCreditRecord = await moneyClient.getUnit(feeCreditRecordId, false);
 
       const unitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
         (id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA,
@@ -115,10 +114,10 @@ describe('State Api Client Integration tests', () => {
 
       await waitTransactionProof(moneyClient, addFeeCreditHash);
       console.log('Adding fee credit successful');
-      feeCreditRecord = await moneyClient.getUnit(feeCreditRecordId, false);
     }, 20000);
 
     it('Lock and unlock fee credit', async () => {
+      const feeCreditRecord: FeeCreditRecord | null = await moneyClient.getUnit(feeCreditRecordId, false);
       expect(feeCreditRecord?.locked).toBe(false);
       const round = await moneyClient.getRoundNumber();
 
