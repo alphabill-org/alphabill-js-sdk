@@ -3,8 +3,8 @@
  * @interface IFeeCreditRecordDto
  */
 export interface IFeeCreditRecordDto {
-  Balance: string;
-  Counter: string;
-  Timeout: string;
-  Locked: number;
+  balance: string;
+  counter: string;
+  timeout: string;
+  locked: number;
 }

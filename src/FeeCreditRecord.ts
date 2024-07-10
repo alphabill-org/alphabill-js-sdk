@@ -49,10 +49,10 @@ export class FeeCreditRecord {
     return new FeeCreditRecord(
       unitId,
       ownerPredicate,
-      BigInt(data.Balance),
-      BigInt(data.Counter),
-      BigInt(data.Timeout),
-      Boolean(Number(data.Locked)),
+      BigInt(data.balance),
+      BigInt(data.counter),
+      BigInt(data.timeout),
+      Boolean(Number(data.locked)),
       stateProof,
     );
   }
