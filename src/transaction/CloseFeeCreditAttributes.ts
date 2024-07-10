@@ -7,7 +7,7 @@ import { PayloadType } from './PayloadAttributeFactory.js';
 /**
  * Close fee credit attributes array.
  */
-export type CloseFeeCreditAttributesArray = readonly [bigint, Uint8Array, bigint];
+export type CloseFeeCreditAttributesArray = readonly [bigint, Uint8Array, bigint, bigint];
 
 /**
  * Close fee credit payload attributes.
@@ -18,14 +18,17 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
    * @param {bigint} amount Amount.
    * @param {IUnitId} targetUnitId Target unit ID.
    * @param {bigint} targetUnitCounter Target unit counter.
+   * @param {bigint} counter Fee credit counter.
    */
   public constructor(
     public readonly amount: bigint,
     public readonly targetUnitId: IUnitId,
     public readonly targetUnitCounter: bigint,
+    public readonly counter: bigint,
   ) {
     this.amount = BigInt(this.amount);
     this.targetUnitCounter = BigInt(this.targetUnitCounter);
+    this.counter = BigInt(this.counter);
   }
 
   /**
@@ -46,7 +49,7 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public toArray(): CloseFeeCreditAttributesArray {
-    return [this.amount, this.targetUnitId.bytes, this.targetUnitCounter];
+    return [this.amount, this.targetUnitId.bytes, this.targetUnitCounter, this.counter];
   }
 
   /**
@@ -58,7 +61,8 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
       CloseFeeCreditAttributes
         Amount: ${this.amount}
         Target Unit ID: ${this.targetUnitId.toString()}
-        Target Unit Counter: ${this.targetUnitCounter}`;
+        Target Unit Counter: ${this.targetUnitCounter}
+        Counter: ${this.counter}`;
   }
 
   /**
@@ -67,6 +71,6 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
    * @returns {CloseFeeCreditAttributes} Close fee credit attributes instance.
    */
   public static fromArray(data: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {
-    return new CloseFeeCreditAttributes(data[0], UnitId.fromBytes(data[1]), data[2]);
+    return new CloseFeeCreditAttributes(data[0], UnitId.fromBytes(data[1]), data[2], data[3]);
   }
 }
