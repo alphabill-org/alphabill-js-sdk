@@ -6,7 +6,12 @@ import { TransactionPayload, TransactionPayloadArray } from './TransactionPayloa
 /**
  * Transaction order array.
  */
-export type TransactionOrderArray = readonly [TransactionPayloadArray, Uint8Array | null, Uint8Array | null];
+export type TransactionOrderArray = readonly [
+  TransactionPayloadArray,
+  Uint8Array | null,
+  Uint8Array | null,
+  Uint8Array | null,
+];
 
 /**
  * Transaction order.
@@ -18,14 +23,17 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
    * @param {T} payload - Payload.
    * @param {Uint8Array} _ownerProof - Owner proof.
    * @param {Uint8Array | null} _feeProof - Fee proof.
+   * @param {Uint8Array | null} _stateUnlock - State unlock.
    */
   public constructor(
     public readonly payload: T,
     private readonly _ownerProof: Uint8Array | null,
     private readonly _feeProof: Uint8Array | null,
+    private readonly _stateUnlock: Uint8Array | null,
   ) {
     this._ownerProof = this._ownerProof ? new Uint8Array(this._ownerProof) : null;
     this._feeProof = this._feeProof ? new Uint8Array(this._feeProof) : null;
+    this._stateUnlock = this._stateUnlock ? new Uint8Array(this._stateUnlock) : null;
   }
 
   /**
@@ -45,11 +53,19 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
   }
 
   /**
+   * Get state unlock.
+   * @returns {Uint8Array | null} State unlock.
+   */
+  public get stateUnlock(): Uint8Array | null {
+    return this._stateUnlock ? new Uint8Array(this._stateUnlock) : null;
+  }
+
+  /**
    * Convert to array.
    * @returns {TransactionOrderArray} Transaction order array.
    */
   public toArray(): TransactionOrderArray {
-    return [this.payload.toArray(), this.ownerProof, this.feeProof];
+    return [this.payload.toArray(), this.ownerProof, this.feeProof, this.stateUnlock];
   }
 
   /**
@@ -61,7 +77,8 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
       TransactionOrder
         ${this.payload.toString()}
         Owner Proof: ${this._ownerProof ? Base16Converter.encode(this._ownerProof) : null}
-        Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}`;
+        Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}
+        State Unlock: ${this._stateUnlock ? Base16Converter.encode(this._stateUnlock) : null}`;
   }
 
   /**
@@ -72,6 +89,6 @@ export class TransactionOrder<T extends TransactionPayload<ITransactionPayloadAt
   public static fromArray<T extends ITransactionPayloadAttributes>(
     data: TransactionOrderArray,
   ): TransactionOrder<TransactionPayload<T>> {
-    return new TransactionOrder(TransactionPayload.fromArray(data[0]), data[1], data[2]);
+    return new TransactionOrder(TransactionPayload.fromArray(data[0]), data[1], data[2], data[3]);
   }
 }

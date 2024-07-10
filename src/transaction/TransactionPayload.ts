@@ -1,18 +1,28 @@
 import { IUnitId } from '../IUnitId.js';
+import { PredicateBytes } from '../PredicateBytes.js';
 import { SystemIdentifier } from '../SystemIdentifier.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
+import { IStateLock } from './IStateLock.js';
 import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { createAttribute, PayloadType } from './PayloadAttributeFactory.js';
+import { StateLock, StateLockArray } from './StateLock.js';
 
-type TransactionClientMetadataArray = [bigint, bigint, Uint8Array | null];
+type TransactionClientMetadataArray = [bigint, bigint, Uint8Array | null, Uint8Array | null];
 
 /**
  * Transaction payload array.
  */
-export type TransactionPayloadArray = readonly [number, string, Uint8Array, unknown, TransactionClientMetadataArray];
+export type TransactionPayloadArray = readonly [
+  number,
+  string,
+  Uint8Array,
+  unknown,
+  StateLockArray | null,
+  TransactionClientMetadataArray,
+];
 
 /**
  * Transaction payload.
@@ -23,6 +33,7 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
     public readonly systemIdentifier: SystemIdentifier,
     public readonly unitId: IUnitId,
     public readonly attributes: T,
+    public readonly stateLock: IStateLock | null,
     public readonly clientMetadata: ITransactionClientMetadata,
   ) {}
 
@@ -36,6 +47,7 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
       this.type,
       this.unitId.bytes,
       this.attributes.toOwnerProofData(),
+      this.stateLock?.toArray() ?? null,
       this.getClientMetadataArray(),
     ];
   }
@@ -50,6 +62,7 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
       this.type,
       this.unitId.bytes,
       this.attributes.toArray(),
+      this.stateLock?.toArray() ?? null,
       this.getClientMetadataArray(),
     ];
   }
@@ -86,10 +99,12 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
       data[0],
       UnitId.fromBytes(data[2]),
       createAttribute(data[1] as PayloadType, data[3]) as T,
+      data[4] ? new StateLock(new PredicateBytes(data[4][0]), new PredicateBytes(data[4][1])) : null,
       {
-        timeout: data[4][0],
-        maxTransactionFee: data[4][1],
-        feeCreditRecordId: data[4][2] ? UnitId.fromBytes(data[4][2]) : null,
+        timeout: data[5][0],
+        maxTransactionFee: data[5][1],
+        feeCreditRecordId: data[5][2] ? UnitId.fromBytes(data[5][2]) : null,
+        referenceNumber: data[5][3],
       },
     );
   }
@@ -108,11 +123,18 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
     attributes: T,
     clientMetadata: ITransactionClientMetadata,
   ): TransactionPayload<T> {
-    return new TransactionPayload(attributes.payloadType, systemIdentifier, unitId, attributes, clientMetadata);
+    return new TransactionPayload(
+      attributes.payloadType,
+      systemIdentifier,
+      unitId,
+      attributes,
+      null,
+      clientMetadata,
+    );
   }
 
   private getClientMetadataArray(): TransactionClientMetadataArray {
-    const { timeout, maxTransactionFee, feeCreditRecordId } = this.clientMetadata;
-    return [timeout, maxTransactionFee, feeCreditRecordId?.bytes || null];
+    const { timeout, maxTransactionFee, feeCreditRecordId, referenceNumber } = this.clientMetadata;
+    return [timeout, maxTransactionFee, feeCreditRecordId?.bytes || null, referenceNumber];
   }
 }

@@ -1,5 +1,6 @@
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { ISigningService } from '../signing/ISigningService.js';
+import { AlwaysTruePredicate } from './AlwaysTruePredicate.js';
 import { ITransactionOrderFactory } from './ITransactionOrderFactory.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { TransactionOrder } from './TransactionOrder.js';
@@ -33,6 +34,7 @@ export class TransactionOrderFactory implements ITransactionOrderFactory {
       payload,
       await this.createOwnerProof(payload),
       payload.clientMetadata.feeCreditRecordId ? await this.createFeeProof(payload) : null,
+      new AlwaysTruePredicate().bytes, // FIXME allow user to define StateUnlock
     );
   }
 
