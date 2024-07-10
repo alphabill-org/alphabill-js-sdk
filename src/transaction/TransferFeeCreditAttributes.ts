@@ -13,7 +13,6 @@ export type TransferFeeCreditAttributesArray = readonly [
   SystemIdentifier,
   Uint8Array,
   bigint,
-  bigint,
   bigint | null,
   bigint,
 ];
@@ -27,7 +26,6 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
    * @param {bigint} amount - Amount.
    * @param {SystemIdentifier} targetSystemIdentifier - Target system identifier.
    * @param {IUnitId} targetUnitId - Target unit ID.
-   * @param {bigint} earliestAdditionTime - Earliest addition time.
    * @param {bigint} latestAdditionTime - Latest addition time.
    * @param {bigint | null} targetUnitCounter - Target unit counter.
    * @param {bigint} counter - Counter.
@@ -36,13 +34,11 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
     public readonly amount: bigint,
     public readonly targetSystemIdentifier: SystemIdentifier,
     public readonly targetUnitId: IUnitId,
-    public readonly earliestAdditionTime: bigint,
     public readonly latestAdditionTime: bigint,
     public readonly targetUnitCounter: bigint | null,
     public readonly counter: bigint,
   ) {
     this.amount = BigInt(this.amount);
-    this.earliestAdditionTime = BigInt(this.earliestAdditionTime);
     this.latestAdditionTime = BigInt(this.latestAdditionTime);
     this.targetUnitCounter = this.targetUnitCounter ? BigInt(this.targetUnitCounter) : null;
     this.counter = BigInt(this.counter);
@@ -70,7 +66,6 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
       this.amount,
       this.targetSystemIdentifier,
       this.targetUnitId.bytes,
-      this.earliestAdditionTime,
       this.latestAdditionTime,
       this.targetUnitCounter,
       this.counter,
@@ -87,7 +82,6 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
         Amount: ${this.amount}
         Target System Identifier: ${this.targetSystemIdentifier.toString()}
         Target Unit ID: ${this.targetUnitId.toString()}
-        Earliest Addition Time: ${this.earliestAdditionTime}
         Latest Addition Time: ${this.latestAdditionTime}
         Target Unit Counter: ${this.targetUnitCounter === null ? 'null' : this.targetUnitCounter}
         Counter: ${this.counter}`;
@@ -99,14 +93,6 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
    * @returns {TransferFeeCreditAttributes} Transfer fee credit attributes instance.
    */
   public static fromArray(data: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
-    return new TransferFeeCreditAttributes(
-      data[0],
-      data[1],
-      UnitId.fromBytes(data[2]),
-      data[3],
-      data[4],
-      data[5],
-      data[6],
-    );
+    return new TransferFeeCreditAttributes(data[0], data[1], UnitId.fromBytes(data[2]), data[3], data[4], data[5]);
   }
 }

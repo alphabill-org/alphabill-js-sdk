@@ -41,7 +41,6 @@ const transferFeeCreditTransactionHash = await moneyClient.transferToFeeCredit(
     amount: 100n,
     systemIdentifier: SystemIdentifier.MONEY_PARTITION,
     feeCreditRecord,
-    earliestAdditionTime: round,
     latestAdditionTime: round + 60n,
   },
   {
