@@ -10,7 +10,13 @@ import { PayloadType } from './PayloadAttributeFactory.js';
 /**
  * Create fungible token attributes array.
  */
-export type CreateFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Array, bigint, Uint8Array[] | null];
+export type CreateFungibleTokenAttributesArray = readonly [
+  Uint8Array,
+  Uint8Array,
+  bigint,
+  bigint | null,
+  Uint8Array[] | null,
+];
 
 /**
  * Create fungible token payload attributes.
@@ -21,15 +27,18 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {IUnitId} typeId Token type ID.
    * @param {bigint} value Token value.
+   * @param {bigint} nonce Optional nonce.
    * @param {Uint8Array[] | null} _tokenCreationPredicateSignatures Token creation predicate signatures.
    */
   public constructor(
     public readonly ownerPredicate: IPredicate,
     public readonly typeId: IUnitId,
     public readonly value: bigint,
+    public readonly nonce: bigint | null,
     private readonly _tokenCreationPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
+    this.nonce = this.nonce ? BigInt(this.nonce) : null;
     this._tokenCreationPredicateSignatures =
       this._tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
@@ -60,7 +69,13 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public toArray(): CreateFungibleTokenAttributesArray {
-    return [this.ownerPredicate.bytes, this.typeId.bytes, this.value, this.tokenCreationPredicateSignatures];
+    return [
+      this.ownerPredicate.bytes,
+      this.typeId.bytes,
+      this.value,
+      this.nonce,
+      this.tokenCreationPredicateSignatures,
+    ];
   }
 
   /**
@@ -73,6 +88,7 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
         Owner Predicate: ${this.ownerPredicate.toString()}
         Type ID: ${this.typeId.toString()}
         Value: ${this.value}
+        Nonce: ${this.nonce}
         Token Creation Predicate Signatures: ${
           this._tokenCreationPredicateSignatures
             ? dedent`
@@ -89,6 +105,12 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
    * @returns {CreateFungibleTokenAttributes} Create fungible token attributes instance.
    */
   public static fromArray(data: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
-    return new CreateFungibleTokenAttributes(new PredicateBytes(data[0]), UnitId.fromBytes(data[1]), data[2], data[3]);
+    return new CreateFungibleTokenAttributes(
+      new PredicateBytes(data[0]),
+      UnitId.fromBytes(data[1]),
+      data[2],
+      data[3],
+      data[4],
+    );
   }
 }
