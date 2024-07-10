@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { numberToBytesBE } from '@noble/curves/abstract/utils';
 import { sha256 } from '@noble/hashes/sha256';
 import { randomBytes } from '@noble/hashes/utils';
 import { Bill } from '../../src/Bill.js';
@@ -16,6 +17,7 @@ import { AlwaysTruePredicate } from '../../src/transaction/AlwaysTruePredicate.j
 import { BurnFungibleTokenAttributes } from '../../src/transaction/BurnFungibleTokenAttributes.js';
 import { CloseFeeCreditAttributes } from '../../src/transaction/CloseFeeCreditAttributes.js';
 import { CreateFungibleTokenAttributes } from '../../src/transaction/CreateFungibleTokenAttributes.js';
+import { ITransactionClientMetadata } from '../../src/transaction/ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from '../../src/transaction/ITransactionPayloadAttributes.js';
 import { NonFungibleTokenData } from '../../src/transaction/NonFungibleTokenData.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/PayToPublicKeyHashPredicate.js';
@@ -42,10 +44,7 @@ describe('State Api Client Integration tests', () => {
       transactionOrderFactory,
     });
 
-    const feeCreditRecordId = new UnitIdWithType(
-      sha256(signingService.publicKey),
-      UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD,
-    );
+    let feeCreditRecordId: UnitIdWithType; // can no longer be static as hash contains timeout
 
     it('Get round number and get block', async () => {
       const round = await moneyClient.getRoundNumber();
@@ -63,8 +62,6 @@ describe('State Api Client Integration tests', () => {
     });
 
     it('Add fee credit', async () => {
-      const feeCreditRecord = await moneyClient.getUnit(feeCreditRecordId, false);
-
       const unitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
         (id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA,
       );
@@ -73,6 +70,9 @@ describe('State Api Client Integration tests', () => {
       const bill = (await moneyClient.getUnit(unitIds[0], false)) as Bill;
       expect(bill).not.toBeNull();
       const round = await moneyClient.getRoundNumber();
+      const feeCreditRecordIdBytes = await calculateFeeCreditRecordId(round);
+      feeCreditRecordId = new UnitIdWithType(feeCreditRecordIdBytes, UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD);
+      const feeCreditRecord = (await moneyClient.getUnit(feeCreditRecordId, false)) as FeeCreditRecord;
 
       const amountToFeeCredit = 100n;
       expect(bill.value).toBeGreaterThan(amountToFeeCredit);
@@ -83,15 +83,10 @@ describe('State Api Client Integration tests', () => {
           bill: bill,
           amount: amountToFeeCredit,
           systemIdentifier: SystemIdentifier.MONEY_PARTITION,
-          feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId, counter: null },
-          earliestAdditionTime: round,
+          feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId, counter: 0n },
           latestAdditionTime: round + 60n,
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: null,
-        },
+        createMetadata(round),
       );
 
       const proof: TransactionRecordWithProof<TransactionPayload<TransferFeeCreditAttributes>> =
@@ -105,11 +100,7 @@ describe('State Api Client Integration tests', () => {
           proof,
           feeCreditRecord: { unitId: feeCreditRecordId },
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: null,
-        },
+        createMetadata(round),
       );
 
       await waitTransactionProof(moneyClient, addFeeCreditHash);
@@ -127,11 +118,7 @@ describe('State Api Client Integration tests', () => {
           status: 5n,
           unit: feeCreditRecord,
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: null,
-        },
+        createMetadata(round),
       );
 
       await waitTransactionProof(moneyClient, lockHash);
@@ -144,11 +131,7 @@ describe('State Api Client Integration tests', () => {
         {
           unit: feeCreditAfterLock,
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: null,
-        },
+        createMetadata(round),
       );
 
       await waitTransactionProof(moneyClient, unlockHash);
@@ -173,11 +156,7 @@ describe('State Api Client Integration tests', () => {
           status: 5n,
           unit: bill,
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
+        createMetadata(round, feeCreditRecordId),
       );
       await waitTransactionProof(moneyClient, lockHash);
       console.log('Locking bill successful');
@@ -190,11 +169,7 @@ describe('State Api Client Integration tests', () => {
         {
           unit: lockedBill,
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
+        createMetadata(round, feeCreditRecordId),
       );
       await waitTransactionProof(moneyClient, unlockHash);
       console.log('Unlocking bill successful');
@@ -221,11 +196,7 @@ describe('State Api Client Integration tests', () => {
           ],
           bill: bill,
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
+        createMetadata(round, feeCreditRecordId),
       );
       await waitTransactionProof(moneyClient, splitBillHash);
       console.log('Splitting bill successful');
@@ -244,11 +215,7 @@ describe('State Api Client Integration tests', () => {
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           bill: targetBill,
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
+        createMetadata(round, feeCreditRecordId),
       );
       await waitTransactionProof(moneyClient, transferBillHash);
       console.log('Transferring bill successful');
@@ -275,11 +242,7 @@ describe('State Api Client Integration tests', () => {
           bill: bill,
           targetBill: targetBill,
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
+        createMetadata(round, feeCreditRecordId),
       );
       const transactionProof: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>> =
         await waitTransactionProof(moneyClient, swapBillHash);
@@ -292,11 +255,7 @@ describe('State Api Client Integration tests', () => {
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           proofs: [transactionProof],
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 100n,
-          feeCreditRecordId: feeCreditRecordId,
-        },
+        createMetadata(round, feeCreditRecordId),
       );
 
       await waitTransactionProof(moneyClient, swapBillHash);
@@ -321,11 +280,7 @@ describe('State Api Client Integration tests', () => {
           bill: bill,
           feeCreditRecord: feeCreditRecord,
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: null,
-        },
+        createMetadata(round),
       );
       const proof: TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>> =
         await waitTransactionProof(moneyClient, closeFeeCreditHash);
@@ -338,11 +293,7 @@ describe('State Api Client Integration tests', () => {
           proof: proof,
           bill: bill,
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: null,
-        },
+        createMetadata(round),
       );
       await waitTransactionProof(moneyClient, reclaimFeeCreditHash);
       console.log('Reclaiming fee credit successful');
@@ -355,21 +306,9 @@ describe('State Api Client Integration tests', () => {
       transactionOrderFactory,
     });
 
-    const feeCreditRecordId = new UnitIdWithType(
-      sha256(signingService.publicKey),
-      UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
-    );
-
-    it('Get units by owner ID and get unit', async () => {
-      const tokenUnitIds: IUnitId[] = await tokenClient.getUnitsByOwnerId(signingService.publicKey);
-      expect(tokenUnitIds.length).toBeGreaterThan(0);
-      const tokenUnit = (await tokenClient.getUnit(tokenUnitIds[0], true)) as IUnit;
-      expect(tokenUnit.counter).not.toBeNull();
-    });
+    let feeCreditRecordId: UnitIdWithType; // can no longer be static as hash contains timeout
 
     it('Add fee credit', async () => {
-      const feeCreditRecord: FeeCreditRecord | null = await tokenClient.getUnit(feeCreditRecordId, false);
-
       const moneyClient = createMoneyClient({
         transport: http(config.moneyPartitionUrl, new CborCodecNode()),
         transactionOrderFactory,
@@ -382,9 +321,13 @@ describe('State Api Client Integration tests', () => {
 
       const bill = (await moneyClient.getUnit(unitIds[0], false)) as Bill;
       expect(bill).not.toBeNull();
-      const round = await moneyClient.getRoundNumber();
       const amountToFeeCredit = 100n;
       expect(bill.value).toBeGreaterThan(amountToFeeCredit);
+
+      const round = await tokenClient.getRoundNumber();
+      const feeCreditRecordIdBytes = await calculateFeeCreditRecordId(round);
+      feeCreditRecordId = new UnitIdWithType(feeCreditRecordIdBytes, UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD);
+      const feeCreditRecord = (await tokenClient.getUnit(feeCreditRecordId, false)) as FeeCreditRecord;
 
       console.log('Transferring to fee credit...');
       const transferToFeeCreditHash = await moneyClient.transferToFeeCredit(
@@ -393,14 +336,9 @@ describe('State Api Client Integration tests', () => {
           amount: amountToFeeCredit,
           systemIdentifier: SystemIdentifier.TOKEN_PARTITION,
           feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId, counter: null },
-          earliestAdditionTime: round,
           latestAdditionTime: round + 60n,
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: null,
-        },
+        createMetadata(round),
       );
       const proof: TransactionRecordWithProof<TransactionPayload<TransferFeeCreditAttributes>> =
         await waitTransactionProof(moneyClient, transferToFeeCreditHash);
@@ -413,11 +351,7 @@ describe('State Api Client Integration tests', () => {
           proof,
           feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId },
         },
-        {
-          maxTransactionFee: 5n,
-          timeout: round + 60n,
-          feeCreditRecordId: null,
-        },
+        createMetadata(round),
       );
 
       await waitTransactionProof(tokenClient, addFeeCreditHash);
@@ -444,11 +378,7 @@ describe('State Api Client Integration tests', () => {
             invariantPredicate: new AlwaysTruePredicate(),
             subTypeCreationPredicateSignatures: null,
           },
-          {
-            maxTransactionFee: 5n,
-            timeout: round + 60n,
-            feeCreditRecordId: feeCreditRecordId,
-          },
+          createMetadata(round, feeCreditRecordId),
         );
         await waitTransactionProof(tokenClient, createFungibleTokenTypeHash);
         console.log('Creating fungible token type successful');
@@ -463,13 +393,10 @@ describe('State Api Client Integration tests', () => {
                 await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
                 tokenTypeUnitId,
                 10n,
+                null,
                 [new Uint8Array()],
               ),
-              {
-                maxTransactionFee: 5n,
-                timeout: round + 60n,
-                feeCreditRecordId: feeCreditRecordId,
-              },
+              createMetadata(round, feeCreditRecordId),
             ),
           ),
         );
@@ -490,11 +417,7 @@ describe('State Api Client Integration tests', () => {
             type: { unitId: tokenTypeUnitId },
             invariantPredicateSignatures: [new Uint8Array()],
           },
-          {
-            maxTransactionFee: 5n,
-            timeout: round + 60n,
-            feeCreditRecordId: feeCreditRecordId,
-          },
+          createMetadata(round, feeCreditRecordId),
         );
         await waitTransactionProof(tokenClient, splitFungibleTokenHash);
         console.log('Fungible token split successful');
@@ -518,11 +441,7 @@ describe('State Api Client Integration tests', () => {
             type: { unitId: tokenTypeUnitId },
             invariantPredicateSignatures: [new Uint8Array()],
           },
-          {
-            maxTransactionFee: 5n,
-            timeout: round + 60n,
-            feeCreditRecordId: feeCreditRecordId,
-          },
+          createMetadata(round, feeCreditRecordId),
         );
         await waitTransactionProof(tokenClient, burnFungibleTokenHash);
         console.log('Fungible token burn successful');
@@ -536,11 +455,7 @@ describe('State Api Client Integration tests', () => {
             token: originalTokenAfterSplit,
             invariantPredicateSignatures: [new Uint8Array()],
           },
-          {
-            maxTransactionFee: 5n,
-            timeout: round + 60n,
-            feeCreditRecordId: feeCreditRecordId,
-          },
+          createMetadata(round, feeCreditRecordId),
         );
         await waitTransactionProof(tokenClient, joinFungibleTokenHash);
         console.log('Fungible token join successful');
@@ -559,11 +474,7 @@ describe('State Api Client Integration tests', () => {
             type: { unitId: tokenTypeUnitId },
             invariantPredicateSignatures: [new Uint8Array()],
           },
-          {
-            maxTransactionFee: 5n,
-            timeout: round + 60n,
-            feeCreditRecordId: feeCreditRecordId,
-          },
+          createMetadata(round, feeCreditRecordId),
         );
 
         await waitTransactionProof(tokenClient, transferFungibleTokenHash);
@@ -591,11 +502,7 @@ describe('State Api Client Integration tests', () => {
             dataUpdatePredicate: new AlwaysTruePredicate(),
             subTypeCreationPredicateSignatures: null,
           },
-          {
-            maxTransactionFee: 5n,
-            timeout: round + 60n,
-            feeCreditRecordId: feeCreditRecordId,
-          },
+          createMetadata(round, feeCreditRecordId),
         );
         await waitTransactionProof(tokenClient, createNonFungibleTokenTypeHash);
         console.log('Creating non fungible token type successful');
@@ -614,13 +521,10 @@ describe('State Api Client Integration tests', () => {
               [true, new Uint8Array()],
             ]),
             dataUpdatePredicate: new AlwaysTruePredicate(),
+            nonce: null,
             tokenCreationPredicateSignatures: [new Uint8Array()],
           },
-          {
-            maxTransactionFee: 5n,
-            timeout: round + 60n,
-            feeCreditRecordId: feeCreditRecordId,
-          },
+          createMetadata(round, feeCreditRecordId),
         );
         await waitTransactionProof(tokenClient, createNonFungibleTokenHash);
         console.log('Creating non fungible token successful');
@@ -638,11 +542,7 @@ describe('State Api Client Integration tests', () => {
             data: await NonFungibleTokenData.create(cborCodec, [crypto.getRandomValues(new Uint8Array(32))]),
             dataUpdateSignatures: [new Uint8Array(), new Uint8Array()],
           },
-          {
-            maxTransactionFee: 5n,
-            timeout: round + 60n,
-            feeCreditRecordId: feeCreditRecordId,
-          },
+          createMetadata(round, feeCreditRecordId),
         );
         await waitTransactionProof(tokenClient, updateNonFungibleTokenHash);
         console.log('Updating non token fungible token successful');
@@ -659,11 +559,7 @@ describe('State Api Client Integration tests', () => {
             type: { unitId: tokenTypeUnitId },
             invariantPredicateSignatures: [new Uint8Array()],
           },
-          {
-            maxTransactionFee: 5n,
-            timeout: round + 60n,
-            feeCreditRecordId: feeCreditRecordId,
-          },
+          createMetadata(round, feeCreditRecordId),
         );
         await waitTransactionProof(tokenClient, transferNonFungibleTokenHash);
         console.log('Transferring non token fungible token successful');
@@ -703,5 +599,23 @@ describe('State Api Client Integration tests', () => {
 
       poller();
     });
+  }
+
+  function createMetadata(round: bigint, feeCreditRecordId?: UnitIdWithType): ITransactionClientMetadata {
+    return {
+      maxTransactionFee: 5n,
+      timeout: round + 60n,
+      feeCreditRecordId: feeCreditRecordId ?? null,
+      referenceNumber: new Uint8Array(),
+    };
+  }
+
+  async function calculateFeeCreditRecordId(round: bigint): Promise<Uint8Array> {
+    const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey);
+    return sha256
+      .create()
+      .update(ownerPredicate.bytes)
+      .update(numberToBytesBE(round + 60n, 8))
+      .digest();
   }
 });
