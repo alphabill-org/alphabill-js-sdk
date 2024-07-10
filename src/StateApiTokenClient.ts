@@ -55,6 +55,7 @@ interface ICreateNonFungibleTokenTransactionData {
   uri: string;
   data: INonFungibleTokenData;
   dataUpdatePredicate: IPredicate;
+  nonce: bigint | null;
   tokenCreationPredicateSignatures: Uint8Array[] | null;
 }
 
@@ -91,6 +92,7 @@ interface ICreateFungibleTokenTransactionData {
   ownerPredicate: IPredicate;
   type: { unitId: IUnitId };
   value: bigint;
+  nonce: bigint | null;
   tokenCreationPredicateSignatures: Uint8Array[] | null;
 }
 
@@ -198,6 +200,7 @@ export class StateApiTokenClient extends StateApiClient {
       uri,
       data,
       dataUpdatePredicate,
+      nonce,
       tokenCreationPredicateSignatures,
     }: ICreateNonFungibleTokenTransactionData,
     metadata: ITransactionClientMetadata,
@@ -214,6 +217,7 @@ export class StateApiTokenClient extends StateApiClient {
             uri,
             data,
             dataUpdatePredicate,
+            nonce,
             tokenCreationPredicateSignatures,
           ),
           metadata,
@@ -322,7 +326,14 @@ export class StateApiTokenClient extends StateApiClient {
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async createFungibleToken(
-    { token, ownerPredicate, type, value, tokenCreationPredicateSignatures }: ICreateFungibleTokenTransactionData,
+    {
+      token,
+      ownerPredicate,
+      type,
+      value,
+      nonce,
+      tokenCreationPredicateSignatures,
+    }: ICreateFungibleTokenTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     return this.sendTransaction(
@@ -330,7 +341,13 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           token.unitId,
-          new CreateFungibleTokenAttributes(ownerPredicate, type.unitId, value, tokenCreationPredicateSignatures),
+          new CreateFungibleTokenAttributes(
+            ownerPredicate,
+            type.unitId,
+            value,
+            nonce,
+            tokenCreationPredicateSignatures,
+          ),
           metadata,
         ),
       ),
@@ -484,7 +501,7 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           feeCreditRecord.unitId,
-          new CloseFeeCreditAttributes(amount, bill.unitId, bill.counter),
+          new CloseFeeCreditAttributes(amount, bill.unitId, bill.counter, feeCreditRecord.counter),
           metadata,
         ),
       ),

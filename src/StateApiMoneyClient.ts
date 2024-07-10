@@ -24,7 +24,6 @@ import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
 interface ITransferFeeCreditTransactionData {
   amount: bigint;
   systemIdentifier: SystemIdentifier;
-  earliestAdditionTime: bigint;
   latestAdditionTime: bigint;
   feeCreditRecord: { unitId: IUnitId; counter: bigint | null };
   bill: { unitId: IUnitId; counter: bigint };
@@ -74,7 +73,7 @@ export interface IAddFeeCreditTransactionData {
 export interface ICloseFeeCreditTransactionData {
   amount: bigint;
   bill: { unitId: IUnitId; counter: bigint };
-  feeCreditRecord: { unitId: IUnitId; balance: bigint };
+  feeCreditRecord: { unitId: IUnitId; balance: bigint; counter: bigint };
 }
 
 /**
@@ -100,14 +99,7 @@ export class StateApiMoneyClient extends StateApiClient {
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async transferToFeeCredit(
-    {
-      bill,
-      amount,
-      systemIdentifier,
-      feeCreditRecord,
-      earliestAdditionTime,
-      latestAdditionTime,
-    }: ITransferFeeCreditTransactionData,
+    { bill, amount, systemIdentifier, feeCreditRecord, latestAdditionTime }: ITransferFeeCreditTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     return this.sendTransaction(
@@ -119,7 +111,6 @@ export class StateApiMoneyClient extends StateApiClient {
             amount,
             systemIdentifier,
             feeCreditRecord.unitId,
-            earliestAdditionTime,
             latestAdditionTime,
             feeCreditRecord.counter,
             bill.counter,
@@ -211,7 +202,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           feeCreditRecord.unitId,
-          new CloseFeeCreditAttributes(feeCreditRecord.balance, bill.unitId, bill.counter),
+          new CloseFeeCreditAttributes(feeCreditRecord.balance, bill.unitId, bill.counter, feeCreditRecord.counter),
           metadata,
         ),
       ),
