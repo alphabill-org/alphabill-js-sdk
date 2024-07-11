@@ -38,6 +38,10 @@ export class TransactionOrderFactory implements ITransactionOrderFactory {
     );
   }
 
+  public async encode(input: unknown): Promise<Uint8Array> {
+    return new Uint8Array(await this.cborCoder.encode(input));
+  }
+
   private async createOwnerProof(payload: TransactionPayload<ITransactionPayloadAttributes>): Promise<Uint8Array> {
     const signingBytes = await this.cborCoder.encode(payload.getSigningFields());
     return new Uint8Array(

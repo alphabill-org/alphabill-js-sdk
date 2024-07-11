@@ -1,3 +1,5 @@
+import { numberToBytesBE } from '@noble/curves/abstract/utils';
+import { sha256 } from '@noble/hashes/sha256';
 import { IStateApiService } from './IStateApiService.js';
 import { IUnitId } from './IUnitId.js';
 import { StateApiClient } from './StateApiClient.js';
@@ -27,6 +29,8 @@ import { TokenIcon } from './transaction/TokenIcon.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransferFungibleTokenAttributes } from './transaction/TransferFungibleTokenAttributes.js';
 import { TransferNonFungibleTokenAttributes } from './transaction/TransferNonFungibleTokenAttributes.js';
+import { UnitIdWithType } from './transaction/UnitIdWithType.js';
+import { UnitType } from './transaction/UnitType.js';
 import { UnlockFeeCreditAttributes } from './transaction/UnlockFeeCreditAttributes.js';
 import { UnlockTokenAttributes } from './transaction/UnlockTokenAttributes.js';
 import { UpdateNonFungibleTokenAttributes } from './transaction/UpdateNonFungibleTokenAttributes.js';
@@ -48,7 +52,6 @@ interface ICreateNonFungibleTokenTypeTransactionData {
 }
 
 interface ICreateNonFungibleTokenTransactionData {
-  token: { unitId: IUnitId };
   ownerPredicate: IPredicate;
   type: { unitId: IUnitId };
   name: string;
@@ -88,7 +91,6 @@ interface ICreateFungibleTokenTypeTransactionData {
 }
 
 interface ICreateFungibleTokenTransactionData {
-  token: { unitId: IUnitId };
   ownerPredicate: IPredicate;
   type: { unitId: IUnitId };
   value: bigint;
@@ -193,7 +195,6 @@ export class StateApiTokenClient extends StateApiClient {
    */
   public async createNonFungibleToken(
     {
-      token,
       ownerPredicate,
       type,
       name,
@@ -205,23 +206,20 @@ export class StateApiTokenClient extends StateApiClient {
     }: ICreateNonFungibleTokenTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
+    const attributes = new CreateNonFungibleTokenAttributes(
+      ownerPredicate,
+      type.unitId,
+      name,
+      uri,
+      data,
+      dataUpdatePredicate,
+      nonce,
+      tokenCreationPredicateSignatures,
+    );
+    const unitId = await this.calculateNewUnitId(attributes, metadata, UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN);
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
-        TransactionPayload.create(
-          SystemIdentifier.TOKEN_PARTITION,
-          token.unitId,
-          new CreateNonFungibleTokenAttributes(
-            ownerPredicate,
-            type.unitId,
-            name,
-            uri,
-            data,
-            dataUpdatePredicate,
-            nonce,
-            tokenCreationPredicateSignatures,
-          ),
-          metadata,
-        ),
+        TransactionPayload.create(SystemIdentifier.TOKEN_PARTITION, unitId, attributes, metadata),
       ),
     );
   }
@@ -326,30 +324,20 @@ export class StateApiTokenClient extends StateApiClient {
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async createFungibleToken(
-    {
-      token,
+    { ownerPredicate, type, value, nonce, tokenCreationPredicateSignatures }: ICreateFungibleTokenTransactionData,
+    metadata: ITransactionClientMetadata,
+  ): Promise<Uint8Array> {
+    const attributes = new CreateFungibleTokenAttributes(
       ownerPredicate,
-      type,
+      type.unitId,
       value,
       nonce,
       tokenCreationPredicateSignatures,
-    }: ICreateFungibleTokenTransactionData,
-    metadata: ITransactionClientMetadata,
-  ): Promise<Uint8Array> {
+    );
+    const unitId = await this.calculateNewUnitId(attributes, metadata, UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN);
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
-        TransactionPayload.create(
-          SystemIdentifier.TOKEN_PARTITION,
-          token.unitId,
-          new CreateFungibleTokenAttributes(
-            ownerPredicate,
-            type.unitId,
-            value,
-            nonce,
-            tokenCreationPredicateSignatures,
-          ),
-          metadata,
-        ),
+        TransactionPayload.create(SystemIdentifier.TOKEN_PARTITION, unitId, attributes, metadata),
       ),
     );
   }
@@ -594,5 +582,31 @@ export class StateApiTokenClient extends StateApiClient {
         ),
       ),
     );
+  }
+
+  public async calculateNewUnitId(
+    attributes: CreateFungibleTokenAttributes | CreateNonFungibleTokenAttributes,
+    metadata: ITransactionClientMetadata,
+    unitType: UnitType,
+  ): Promise<UnitIdWithType> {
+    const unitIdLength = 33; // UnitPartLength (32) + TypePartLength (1)
+    const attributesBytes = await this.transactionOrderFactory.encode(attributes.toArray());
+    const unitPart = sha256
+      .create()
+      .update(attributesBytes)
+      .update(numberToBytesBE(metadata.timeout, 8))
+      .update(numberToBytesBE(metadata.maxTransactionFee, 8))
+      .update(metadata.feeCreditRecordId?.bytes ?? new Uint8Array())
+      .update(metadata.referenceNumber ?? new Uint8Array())
+      .digest();
+    const newUnitId = new Uint8Array(unitIdLength);
+    // The number of bytes to reserve for unitPart in the new UnitID.
+    const unitPartMaxLength = 32;
+    // Copy unitPart, leaving zero bytes in the beginning in case unitPart is shorter than unitPartLength.
+    const unitPartStart = Math.max(0, unitPartMaxLength - unitPart.length);
+    newUnitId.set(unitPart, unitPartStart);
+    // Copy typePart
+    newUnitId.set(new Uint8Array([0x21]), unitPartMaxLength); // FIXME use byte from unitType
+    return new UnitIdWithType(newUnitId, unitType);
   }
 }

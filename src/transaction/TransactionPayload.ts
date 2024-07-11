@@ -123,14 +123,7 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
     attributes: T,
     clientMetadata: ITransactionClientMetadata,
   ): TransactionPayload<T> {
-    return new TransactionPayload(
-      attributes.payloadType,
-      systemIdentifier,
-      unitId,
-      attributes,
-      null,
-      clientMetadata,
-    );
+    return new TransactionPayload(attributes.payloadType, systemIdentifier, unitId, attributes, null, clientMetadata);
   }
 
   private getClientMetadataArray(): TransactionClientMetadataArray {
