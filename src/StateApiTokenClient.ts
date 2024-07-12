@@ -216,7 +216,12 @@ export class StateApiTokenClient extends StateApiClient {
       nonce,
       tokenCreationPredicateSignatures,
     );
-    const unitId = await this.calculateNewUnitId(attributes, metadata, UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN);
+    const unitId = await this.calculateNewUnitId(
+      attributes,
+      metadata,
+      new Uint8Array([0x23]),
+      UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN,
+    );
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(SystemIdentifier.TOKEN_PARTITION, unitId, attributes, metadata),
@@ -334,7 +339,12 @@ export class StateApiTokenClient extends StateApiClient {
       nonce,
       tokenCreationPredicateSignatures,
     );
-    const unitId = await this.calculateNewUnitId(attributes, metadata, UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN);
+    const unitId = await this.calculateNewUnitId(
+      attributes,
+      metadata,
+      new Uint8Array([0x21]),
+      UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN,
+    );
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(SystemIdentifier.TOKEN_PARTITION, unitId, attributes, metadata),
@@ -587,6 +597,7 @@ export class StateApiTokenClient extends StateApiClient {
   public async calculateNewUnitId(
     attributes: CreateFungibleTokenAttributes | CreateNonFungibleTokenAttributes,
     metadata: ITransactionClientMetadata,
+    unitTypeByte: Uint8Array,
     unitType: UnitType,
   ): Promise<UnitIdWithType> {
     const unitIdLength = 33; // UnitPartLength (32) + TypePartLength (1)
@@ -595,18 +606,22 @@ export class StateApiTokenClient extends StateApiClient {
       .create()
       .update(attributesBytes)
       .update(numberToBytesBE(metadata.timeout, 8))
-      .update(numberToBytesBE(metadata.maxTransactionFee, 8))
-      .update(metadata.feeCreditRecordId?.bytes ?? new Uint8Array())
-      .update(metadata.referenceNumber ?? new Uint8Array())
-      .digest();
+      .update(numberToBytesBE(metadata.maxTransactionFee, 8));
+    if (metadata.feeCreditRecordId != null) {
+      unitPart.update(metadata.feeCreditRecordId.bytes);
+    }
+    if (metadata.referenceNumber != null) {
+      unitPart.update(metadata.referenceNumber);
+    }
+    const unitPartHash = unitPart.digest();
     const newUnitId = new Uint8Array(unitIdLength);
     // The number of bytes to reserve for unitPart in the new UnitID.
     const unitPartMaxLength = 32;
     // Copy unitPart, leaving zero bytes in the beginning in case unitPart is shorter than unitPartLength.
-    const unitPartStart = Math.max(0, unitPartMaxLength - unitPart.length);
-    newUnitId.set(unitPart, unitPartStart);
+    const unitPartStart = Math.max(0, unitPartMaxLength - unitPartHash.length);
+    newUnitId.set(unitPartHash, unitPartStart);
     // Copy typePart
-    newUnitId.set(new Uint8Array([0x21]), unitPartMaxLength); // FIXME use byte from unitType
+    newUnitId.set(unitTypeByte, unitPartMaxLength);
     return new UnitIdWithType(newUnitId, unitType);
   }
 }
