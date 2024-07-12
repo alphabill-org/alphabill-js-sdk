@@ -16,6 +16,8 @@ import { SystemIdentifier } from '../../src/SystemIdentifier.js';
 import { AlwaysTruePredicate } from '../../src/transaction/AlwaysTruePredicate.js';
 import { BurnFungibleTokenAttributes } from '../../src/transaction/BurnFungibleTokenAttributes.js';
 import { CloseFeeCreditAttributes } from '../../src/transaction/CloseFeeCreditAttributes.js';
+import { CreateFungibleTokenAttributes } from '../../src/transaction/CreateFungibleTokenAttributes.js';
+import { CreateNonFungibleTokenAttributes } from '../../src/transaction/CreateNonFungibleTokenAttributes.js';
 import { ITransactionClientMetadata } from '../../src/transaction/ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from '../../src/transaction/ITransactionPayloadAttributes.js';
 import { NonFungibleTokenData } from '../../src/transaction/NonFungibleTokenData.js';
@@ -359,7 +361,7 @@ describe('State Api Client Integration tests', () => {
 
     describe('Fungible Token Integration Tests', () => {
       const tokenTypeUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN_TYPE);
-      let tokenUnitId: UnitIdWithType; // FIXME update after successful creation
+      let tokenUnitId: IUnitId;
 
       it('Create token type and token', async () => {
         const round = await tokenClient.getRoundNumber();
@@ -388,12 +390,15 @@ describe('State Api Client Integration tests', () => {
             ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
             type: { unitId: tokenTypeUnitId },
             value: 10n,
-            nonce: null,
+            nonce: 0n,
             tokenCreationPredicateSignatures: [new Uint8Array()],
           },
           createMetadata(round, feeCreditRecordId),
         );
-        await waitTransactionProof(tokenClient, createFungibleTokenHash);
+        const createFungibleTokenProof = await waitTransactionProof(tokenClient, createFungibleTokenHash);
+        const attr = createFungibleTokenProof.transactionRecord.transactionOrder
+          .payload as TransactionPayload<CreateFungibleTokenAttributes>;
+        tokenUnitId = attr.unitId;
         console.log('Creating fungible token successful');
       }, 20000);
 
@@ -477,7 +482,7 @@ describe('State Api Client Integration tests', () => {
 
     describe('Non Fungible Token Integration Tests', () => {
       const tokenTypeUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN_TYPE);
-      let tokenUnitId: UnitIdWithType; // FIXME update after successful creation
+      let tokenUnitId: IUnitId;
 
       it('Create token type and token', async () => {
         const round = await tokenClient.getRoundNumber();
@@ -513,12 +518,15 @@ describe('State Api Client Integration tests', () => {
               [true, new Uint8Array()],
             ]),
             dataUpdatePredicate: new AlwaysTruePredicate(),
-            nonce: null,
+            nonce: 0n,
             tokenCreationPredicateSignatures: [new Uint8Array()],
           },
           createMetadata(round, feeCreditRecordId),
         );
-        await waitTransactionProof(tokenClient, createNonFungibleTokenHash);
+        const createNonFungibleTokenProof = await waitTransactionProof(tokenClient, createNonFungibleTokenHash);
+        const attr = createNonFungibleTokenProof.transactionRecord.transactionOrder
+          .payload as TransactionPayload<CreateNonFungibleTokenAttributes>;
+        tokenUnitId = attr.unitId;
         console.log('Creating non fungible token successful');
       }, 20000);
 

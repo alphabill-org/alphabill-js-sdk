@@ -58,7 +58,7 @@ interface ICreateNonFungibleTokenTransactionData {
   uri: string;
   data: INonFungibleTokenData;
   dataUpdatePredicate: IPredicate;
-  nonce: bigint | null;
+  nonce: bigint;
   tokenCreationPredicateSignatures: Uint8Array[] | null;
 }
 
@@ -94,7 +94,7 @@ interface ICreateFungibleTokenTransactionData {
   ownerPredicate: IPredicate;
   type: { unitId: IUnitId };
   value: bigint;
-  nonce: bigint | null;
+  nonce: bigint;
   tokenCreationPredicateSignatures: Uint8Array[] | null;
 }
 
@@ -601,7 +601,7 @@ export class StateApiTokenClient extends StateApiClient {
     unitType: UnitType,
   ): Promise<UnitIdWithType> {
     const unitIdLength = 33; // UnitPartLength (32) + TypePartLength (1)
-    const attributesBytes = await this.transactionOrderFactory.encode(attributes.toArray());
+    const attributesBytes = await this.transactionOrderFactory.encode(attributes.toOwnerProofData());
     const unitPart = sha256
       .create()
       .update(attributesBytes)

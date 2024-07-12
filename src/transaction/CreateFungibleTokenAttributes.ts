@@ -14,7 +14,7 @@ export type CreateFungibleTokenAttributesArray = readonly [
   Uint8Array,
   Uint8Array,
   bigint,
-  bigint | null,
+  bigint,
   Uint8Array[] | null,
 ];
 
@@ -34,11 +34,11 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
     public readonly ownerPredicate: IPredicate,
     public readonly typeId: IUnitId,
     public readonly value: bigint,
-    public readonly nonce: bigint | null,
+    public readonly nonce: bigint,
     private readonly _tokenCreationPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
-    this.nonce = this.nonce ? BigInt(this.nonce) : null;
+    this.nonce = BigInt(this.nonce);
     this._tokenCreationPredicateSignatures =
       this._tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
@@ -62,7 +62,7 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
    * @see {ITransactionPayloadAttributes.toOwnerProofData}
    */
   public toOwnerProofData(): CreateFungibleTokenAttributesArray {
-    return this.toArray();
+    return [this.ownerPredicate.bytes, this.typeId.bytes, this.value, this.nonce, null];
   }
 
   /**
