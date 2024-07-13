@@ -10,13 +10,7 @@ import { PayloadType } from './PayloadAttributeFactory.js';
 /**
  * Create fungible token attributes array.
  */
-export type CreateFungibleTokenAttributesArray = readonly [
-  Uint8Array,
-  Uint8Array,
-  bigint,
-  bigint,
-  Uint8Array[] | null,
-];
+export type CreateFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Array, bigint, bigint, Uint8Array[] | null];
 
 /**
  * Create fungible token payload attributes.

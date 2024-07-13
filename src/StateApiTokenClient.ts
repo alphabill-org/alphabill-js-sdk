@@ -128,6 +128,17 @@ interface IJoinFungibleTokensTransactionData {
   invariantPredicateSignatures: Uint8Array[] | null;
 }
 
+export interface ILockTokenTransactionData {
+  status: bigint;
+  unit: { unitId: IUnitId; counter: bigint };
+  invariantPredicateSignatures: Uint8Array[] | null;
+}
+
+export interface IUnlockTokenTransactionData {
+  unit: { unitId: IUnitId; counter: bigint };
+  invariantPredicateSignatures: Uint8Array[] | null;
+}
+
 /**
  * State API client for token partition.
  */
@@ -557,7 +568,7 @@ export class StateApiTokenClient extends StateApiClient {
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async lockToken(
-    { status, unit }: ILockUnitTransactionData,
+    { status, unit, invariantPredicateSignatures }: ILockTokenTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     return this.sendTransaction(
@@ -565,7 +576,7 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           unit.unitId,
-          new LockTokenAttributes(status, unit.counter),
+          new LockTokenAttributes(status, unit.counter, invariantPredicateSignatures),
           metadata,
         ),
       ),
@@ -579,7 +590,7 @@ export class StateApiTokenClient extends StateApiClient {
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async unlockToken(
-    { unit }: IUnlockUnitTransactionData,
+    { unit, invariantPredicateSignatures }: IUnlockTokenTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     return this.sendTransaction(
@@ -587,7 +598,7 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           unit.unitId,
-          new UnlockTokenAttributes(unit.counter),
+          new UnlockTokenAttributes(unit.counter, invariantPredicateSignatures),
           metadata,
         ),
       ),

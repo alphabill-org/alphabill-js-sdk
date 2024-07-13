@@ -478,6 +478,34 @@ describe('State Api Client Integration tests', () => {
         await waitTransactionProof(tokenClient, transferFungibleTokenHash);
         console.log('Fungible token transfer successful');
       }, 20000);
+
+      it('Lock and unlock', async () => {
+        const round = await tokenClient.getRoundNumber();
+        const token = (await tokenClient.getUnit(tokenUnitId, false)) as FungibleToken;
+
+        console.log('Locking fungible token...');
+        const lockFungibleTokenHash = await tokenClient.lockToken(
+          {
+            status: 5n,
+            unit: { unitId: token.unitId, counter: token.counter },
+            invariantPredicateSignatures: [new Uint8Array()],
+          },
+          createMetadata(round, feeCreditRecordId),
+        );
+        await waitTransactionProof(tokenClient, lockFungibleTokenHash);
+        console.log('Fungible token lock successful');
+
+        console.log('Unlocking fungible token...');
+        const unlockFungibleTokenHash = await tokenClient.unlockToken(
+          {
+            unit: { unitId: token.unitId, counter: token.counter + 1n },
+            invariantPredicateSignatures: [new Uint8Array()],
+          },
+          createMetadata(round, feeCreditRecordId),
+        );
+        await waitTransactionProof(tokenClient, unlockFungibleTokenHash);
+        console.log('Fungible token unlock successful');
+      }, 20000);
     });
 
     describe('Non Fungible Token Integration Tests', () => {
