@@ -3,9 +3,10 @@
  * @interface IFungibleTokenDto
  */
 export interface IFungibleTokenDto {
-  TokenType: string;
-  Value: number;
-  T: string;
-  Counter: string;
-  Locked: number;
+  tokenType: string;
+  value: number;
+  lastUpdate: number;
+  counter: string;
+  t1: number;
+  locked: number;
 }

@@ -16,8 +16,9 @@ export class FungibleToken {
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {IUnitId} tokenType Token type.
    * @param {bigint} value Token value.
-   * @param {bigint} blockNumber Block number.
+   * @param {bigint} lastUpdate Round number of the last transaction with this token.
    * @param {bigint} counter Counter.
+   * @param {bigint} t1 Minimum lifetime of this token.
    * @param {boolean} locked Is token locked.
    * @param {IStateProof | null} stateProof State proof.
    */
@@ -26,14 +27,16 @@ export class FungibleToken {
     public readonly ownerPredicate: IPredicate,
     public readonly tokenType: IUnitId,
     public readonly value: bigint,
-    public readonly blockNumber: bigint,
+    public readonly lastUpdate: bigint,
     public readonly counter: bigint,
+    public readonly t1: bigint,
     public readonly locked: boolean,
     public readonly stateProof: IStateProof | null,
   ) {
     this.value = BigInt(this.value);
-    this.blockNumber = BigInt(this.blockNumber);
+    this.lastUpdate = BigInt(this.lastUpdate);
     this.counter = BigInt(this.counter);
+    this.t1 = BigInt(this.t1);
   }
 
   /**
@@ -53,11 +56,12 @@ export class FungibleToken {
     return new FungibleToken(
       unitId,
       ownerPredicate,
-      UnitId.fromBytes(Base16Converter.decode(data.TokenType)),
-      BigInt(data.Value),
-      BigInt(data.T),
-      BigInt(data.Counter),
-      Boolean(Number(data.Locked)),
+      UnitId.fromBytes(Base16Converter.decode(data.tokenType)),
+      BigInt(data.value),
+      BigInt(data.lastUpdate),
+      BigInt(data.counter),
+      BigInt(data.t1),
+      Boolean(Number(data.locked)),
       stateProof,
     );
   }
@@ -71,7 +75,7 @@ export class FungibleToken {
       FungibleToken
         Token Type: ${this.tokenType.toString()}
         Value: ${this.value}
-        Block Number: ${this.blockNumber}
+        Last Update: ${this.lastUpdate}
         Counter: ${this.counter}
         Locked: ${this.locked}`;
   }

@@ -21,7 +21,7 @@ export class NonFungibleToken {
    * @param {string} uri Token URI.
    * @param {Uint8Array} _data Token data.
    * @param {IPredicate} dataUpdatePredicate Data update predicate.
-   * @param {bigint} blockNumber Block number.
+   * @param {bigint} lastUpdate Round number of the last transaction with this token.
    * @param {bigint} counter Counter.
    * @param {boolean} locked Is token locked.
    * @param {IStateProof | null} stateProof State proof.
@@ -34,13 +34,13 @@ export class NonFungibleToken {
     public readonly uri: string,
     private readonly _data: Uint8Array,
     public readonly dataUpdatePredicate: IPredicate,
-    public readonly blockNumber: bigint,
+    public readonly lastUpdate: bigint,
     public readonly counter: bigint,
     public readonly locked: boolean,
     public readonly stateProof: IStateProof | null,
   ) {
     this._data = new Uint8Array(this._data);
-    this.blockNumber = BigInt(this.blockNumber);
+    this.lastUpdate = BigInt(this.lastUpdate);
     this.counter = BigInt(this.counter);
   }
 
@@ -69,14 +69,14 @@ export class NonFungibleToken {
     return new NonFungibleToken(
       unitId,
       ownerPredicate,
-      UnitId.fromBytes(Base16Converter.decode(data.NftType)),
-      data.Name,
-      data.URI,
-      Base64Converter.decode(data.Data),
-      new PredicateBytes(Base64Converter.decode(data.DataUpdatePredicate)),
-      BigInt(data.T),
-      BigInt(data.Counter),
-      Boolean(Number(data.Locked)),
+      UnitId.fromBytes(Base16Converter.decode(data.typeID)),
+      data.name,
+      data.uri,
+      Base64Converter.decode(data.data),
+      new PredicateBytes(Base64Converter.decode(data.dataUpdatePredicate)),
+      BigInt(data.lastUpdate),
+      BigInt(data.counter),
+      Boolean(Number(data.locked)),
       stateProof,
     );
   }
@@ -93,7 +93,7 @@ export class NonFungibleToken {
         URI: ${this.uri}
         Data: ${Base16Converter.encode(this._data)}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
-        Block Number: ${this.blockNumber}
+        Last Update: ${this.lastUpdate}
         Counter: ${this.counter}
         Locked: ${this.locked}`;
   }

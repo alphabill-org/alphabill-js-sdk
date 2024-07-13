@@ -3,12 +3,12 @@
  * @interface INonFungibleTokenDto
  */
 export interface INonFungibleTokenDto {
-  NftType: string;
-  Name: string;
-  URI: string;
-  Data: string;
-  DataUpdatePredicate: string;
-  T: string;
-  Counter: string;
-  Locked: number;
+  typeID: string;
+  name: string;
+  uri: string;
+  data: string;
+  dataUpdatePredicate: string;
+  lastUpdate: number;
+  counter: string;
+  locked: number;
 }
