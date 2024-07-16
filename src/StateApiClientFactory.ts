@@ -8,6 +8,7 @@ import { StateApiClient } from './StateApiClient.js';
 import { StateApiMoneyClient } from './StateApiMoneyClient.js';
 import { StateApiTokenClient } from './StateApiTokenClient.js';
 import { ITransactionOrderFactory } from './transaction/ITransactionOrderFactory.js';
+import { TokenUnitIdFactory } from './transaction/TokenUnitIdFactory.js';
 
 type StateApiClientOptions = {
   transport: IStateApiService;
@@ -22,7 +23,9 @@ export function createPublicClient(options: StateApiClientOptions): StateApiClie
   return new StateApiClient(options.transport);
 }
 
-type PlatformStateApiClientOptions = { transactionOrderFactory: ITransactionOrderFactory } & StateApiClientOptions;
+type PlatformStateApiClientOptions = {
+  transactionOrderFactory: ITransactionOrderFactory;
+} & StateApiClientOptions;
 
 /**
  * Create money partition client.
@@ -38,8 +41,10 @@ export function createMoneyClient(options: PlatformStateApiClientOptions): State
  * @param {PlatformStateApiClientOptions} options Options.
  * @returns {StateApiTokenClient} State API client.
  */
-export function createTokenClient(options: PlatformStateApiClientOptions): StateApiTokenClient {
-  return new StateApiTokenClient(options.transactionOrderFactory, options.transport);
+export function createTokenClient(
+  options: PlatformStateApiClientOptions & { tokenUnitIdFactory: TokenUnitIdFactory },
+): StateApiTokenClient {
+  return new StateApiTokenClient(options.transactionOrderFactory, options.tokenUnitIdFactory, options.transport);
 }
 
 /**

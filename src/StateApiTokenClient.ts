@@ -1,5 +1,3 @@
-import { numberToBytesBE } from '@noble/curves/abstract/utils';
-import { sha256 } from '@noble/hashes/sha256';
 import { IStateApiService } from './IStateApiService.js';
 import { IUnitId } from './IUnitId.js';
 import { StateApiClient } from './StateApiClient.js';
@@ -26,10 +24,10 @@ import { LockFeeCreditAttributes } from './transaction/LockFeeCreditAttributes.j
 import { LockTokenAttributes } from './transaction/LockTokenAttributes.js';
 import { SplitFungibleTokenAttributes } from './transaction/SplitFungibleTokenAttributes.js';
 import { TokenIcon } from './transaction/TokenIcon.js';
+import { TokenUnitIdFactory } from './transaction/TokenUnitIdFactory.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransferFungibleTokenAttributes } from './transaction/TransferFungibleTokenAttributes.js';
 import { TransferNonFungibleTokenAttributes } from './transaction/TransferNonFungibleTokenAttributes.js';
-import { UnitIdWithType } from './transaction/UnitIdWithType.js';
 import { UnitType } from './transaction/UnitType.js';
 import { UnlockFeeCreditAttributes } from './transaction/UnlockFeeCreditAttributes.js';
 import { UnlockTokenAttributes } from './transaction/UnlockTokenAttributes.js';
@@ -150,6 +148,7 @@ export class StateApiTokenClient extends StateApiClient {
    */
   public constructor(
     private readonly transactionOrderFactory: ITransactionOrderFactory,
+    private readonly tokenUnitIdfactory: TokenUnitIdFactory,
     service: IStateApiService,
   ) {
     super(service);
@@ -227,10 +226,9 @@ export class StateApiTokenClient extends StateApiClient {
       nonce,
       tokenCreationPredicateSignatures,
     );
-    const unitId = await this.calculateNewUnitId(
+    const unitId = await this.tokenUnitIdfactory.create(
       attributes,
       metadata,
-      new Uint8Array([0x23]),
       UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN,
     );
     return this.sendTransaction(
@@ -350,12 +348,7 @@ export class StateApiTokenClient extends StateApiClient {
       nonce,
       tokenCreationPredicateSignatures,
     );
-    const unitId = await this.calculateNewUnitId(
-      attributes,
-      metadata,
-      new Uint8Array([0x21]),
-      UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN,
-    );
+    const unitId = await this.tokenUnitIdfactory.create(attributes, metadata, UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN);
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(SystemIdentifier.TOKEN_PARTITION, unitId, attributes, metadata),
@@ -603,36 +596,5 @@ export class StateApiTokenClient extends StateApiClient {
         ),
       ),
     );
-  }
-
-  private async calculateNewUnitId(
-    attributes: CreateFungibleTokenAttributes | CreateNonFungibleTokenAttributes,
-    metadata: ITransactionClientMetadata,
-    unitTypeByte: Uint8Array,
-    unitType: UnitType,
-  ): Promise<UnitIdWithType> {
-    const unitIdLength = 33; // UnitPartLength (32) + TypePartLength (1)
-    const attributesBytes = await this.transactionOrderFactory.encode(attributes.toOwnerProofData());
-    const unitPart = sha256
-      .create()
-      .update(attributesBytes)
-      .update(numberToBytesBE(metadata.timeout, 8))
-      .update(numberToBytesBE(metadata.maxTransactionFee, 8));
-    if (metadata.feeCreditRecordId != null) {
-      unitPart.update(metadata.feeCreditRecordId.bytes);
-    }
-    if (metadata.referenceNumber != null) {
-      unitPart.update(metadata.referenceNumber);
-    }
-    const unitPartHash = unitPart.digest();
-    const newUnitId = new Uint8Array(unitIdLength);
-    // The number of bytes to reserve for unitPart in the new UnitID.
-    const unitPartMaxLength = 32;
-    // Copy unitPart, leaving zero bytes in the beginning in case unitPart is shorter than unitPartLength.
-    const unitPartStart = Math.max(0, unitPartMaxLength - unitPartHash.length);
-    newUnitId.set(unitPartHash, unitPartStart);
-    // Copy typePart
-    newUnitId.set(unitTypeByte, unitPartMaxLength);
-    return new UnitIdWithType(newUnitId, unitType);
   }
 }

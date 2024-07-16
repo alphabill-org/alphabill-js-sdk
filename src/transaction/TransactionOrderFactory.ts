@@ -12,12 +12,12 @@ import { TransactionPayload } from './TransactionPayload.js';
 export class TransactionOrderFactory implements ITransactionOrderFactory {
   /**
    * Transaction order factory constructor.
-   * @param {ICborCodec} cborCoder - CBOR codec.
+   * @param {ICborCodec} cborCodec - CBOR codec.
    * @param {ISigningService} signingService - Signing service.
    * @param {ISigningService} [feeSigningService] - Fee signing service.
    */
   public constructor(
-    private readonly cborCoder: ICborCodec,
+    private readonly cborCodec: ICborCodec,
     private readonly signingService: ISigningService,
     private readonly feeSigningService?: ISigningService,
   ) {}
@@ -38,23 +38,19 @@ export class TransactionOrderFactory implements ITransactionOrderFactory {
     );
   }
 
-  public async encode(input: unknown): Promise<Uint8Array> {
-    return new Uint8Array(await this.cborCoder.encode(input));
-  }
-
   private async createOwnerProof(payload: TransactionPayload<ITransactionPayloadAttributes>): Promise<Uint8Array> {
-    const signingBytes = await this.cborCoder.encode(payload.getSigningFields());
+    const signingBytes = await this.cborCodec.encode(payload.getSigningFields());
     return new Uint8Array(
-      await this.cborCoder.encode([await this.signingService.sign(signingBytes), this.signingService.publicKey]),
+      await this.cborCodec.encode([await this.signingService.sign(signingBytes), this.signingService.publicKey]),
     );
   }
 
   private async createFeeProof(payload: TransactionPayload<ITransactionPayloadAttributes>): Promise<Uint8Array> {
-    const signingBytes = await this.cborCoder.encode(payload.toArray());
+    const signingBytes = await this.cborCodec.encode(payload.toArray());
     const signingService = this.feeSigningService || this.signingService;
 
     return new Uint8Array(
-      await this.cborCoder.encode([await signingService.sign(signingBytes), this.signingService.publicKey]),
+      await this.cborCodec.encode([await signingService.sign(signingBytes), this.signingService.publicKey]),
     );
   }
 }

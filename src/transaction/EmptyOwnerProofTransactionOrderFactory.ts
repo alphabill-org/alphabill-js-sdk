@@ -12,6 +12,6 @@ export class EmptyOwnerProofTransactionOrderFactory implements ITransactionOrder
   public createTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
     payload: T,
   ): Promise<TransactionOrder<T>> {
-    return Promise.resolve(new TransactionOrder(payload, null, null));
+    return Promise.resolve(new TransactionOrder(payload, null, null, null));
   }
 }
