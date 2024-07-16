@@ -605,7 +605,7 @@ export class StateApiTokenClient extends StateApiClient {
     );
   }
 
-  public async calculateNewUnitId(
+  private async calculateNewUnitId(
     attributes: CreateFungibleTokenAttributes | CreateNonFungibleTokenAttributes,
     metadata: ITransactionClientMetadata,
     unitTypeByte: Uint8Array,
