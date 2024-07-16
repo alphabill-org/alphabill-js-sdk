@@ -1,6 +1,4 @@
 import crypto from 'crypto';
-import { numberToBytesBE } from '@noble/curves/abstract/utils';
-import { sha256 } from '@noble/hashes/sha256';
 import { randomBytes } from '@noble/hashes/utils';
 import { Bill } from '../../src/Bill.js';
 import { CborCodecNode } from '../../src/codec/cbor/CborCodecNode.js';
@@ -71,9 +69,7 @@ describe('State Api Client Integration tests', () => {
       const bill = (await moneyClient.getUnit(unitIds[0], false)) as Bill;
       expect(bill).not.toBeNull();
       const round = await moneyClient.getRoundNumber();
-      const feeCreditRecordIdBytes = await calculateFeeCreditRecordId(round);
-      feeCreditRecordId = new UnitIdWithType(feeCreditRecordIdBytes, UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD);
-      const feeCreditRecord = (await moneyClient.getUnit(feeCreditRecordId, false)) as FeeCreditRecord;
+      const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey);
 
       const amountToFeeCredit = 100n;
       expect(bill.value).toBeGreaterThan(amountToFeeCredit);
@@ -84,7 +80,11 @@ describe('State Api Client Integration tests', () => {
           bill: bill,
           amount: amountToFeeCredit,
           systemIdentifier: SystemIdentifier.MONEY_PARTITION,
-          feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId, counter: 0n },
+          feeCreditRecordParams: {
+            round: round,
+            ownerPredicate: ownerPredicate,
+            unitType: UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD,
+          },
           latestAdditionTime: round + 60n,
         },
         createMetadata(round),
@@ -93,11 +93,16 @@ describe('State Api Client Integration tests', () => {
       const proof: TransactionRecordWithProof<TransactionPayload<TransferFeeCreditAttributes>> =
         await waitTransactionProof(moneyClient, transferToFeeCreditHash);
       console.log('Transfer to fee credit successful');
+      const attr = proof.transactionRecord.transactionOrder.payload as TransactionPayload<TransferFeeCreditAttributes>;
+      feeCreditRecordId = new UnitIdWithType(
+        attr.attributes.targetUnitId.bytes,
+        UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD,
+      );
 
       console.log('Adding fee credit');
       const addFeeCreditHash = await moneyClient.addFeeCredit(
         {
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+          ownerPredicate: ownerPredicate,
           proof,
           feeCreditRecord: { unitId: feeCreditRecordId },
         },
@@ -326,9 +331,7 @@ describe('State Api Client Integration tests', () => {
       expect(bill.value).toBeGreaterThan(amountToFeeCredit);
 
       const round = await tokenClient.getRoundNumber();
-      const feeCreditRecordIdBytes = await calculateFeeCreditRecordId(round);
-      feeCreditRecordId = new UnitIdWithType(feeCreditRecordIdBytes, UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD);
-      const feeCreditRecord = (await tokenClient.getUnit(feeCreditRecordId, false)) as FeeCreditRecord;
+      const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey);
 
       console.log('Transferring to fee credit...');
       const transferToFeeCreditHash = await moneyClient.transferToFeeCredit(
@@ -336,7 +339,11 @@ describe('State Api Client Integration tests', () => {
           bill: bill,
           amount: amountToFeeCredit,
           systemIdentifier: SystemIdentifier.TOKEN_PARTITION,
-          feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId, counter: null },
+          feeCreditRecordParams: {
+            round: round,
+            ownerPredicate: ownerPredicate,
+            unitType: UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
+          },
           latestAdditionTime: round + 60n,
         },
         createMetadata(round),
@@ -345,10 +352,17 @@ describe('State Api Client Integration tests', () => {
         await waitTransactionProof(moneyClient, transferToFeeCreditHash);
       console.log('Transfer to fee credit successful');
 
+      const attr = proof.transactionRecord.transactionOrder.payload as TransactionPayload<TransferFeeCreditAttributes>;
+      feeCreditRecordId = new UnitIdWithType(
+        attr.attributes.targetUnitId.bytes,
+        UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
+      );
+      const feeCreditRecord: FeeCreditRecord | null = await tokenClient.getUnit(feeCreditRecordId, false);
+
       console.log('Adding fee credit');
       const addFeeCreditHash = await tokenClient.addFeeCredit(
         {
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+          ownerPredicate: ownerPredicate,
           proof,
           feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId },
         },
@@ -558,9 +572,9 @@ describe('State Api Client Integration tests', () => {
         console.log('Creating non fungible token successful');
       }, 20000);
 
-      it('Update and transfer', async () => {
+      it('Update', async () => {
         const round = await tokenClient.getRoundNumber();
-        let token = (await tokenClient.getUnit(tokenUnitId, false)) as NonFungibleToken;
+        const token = (await tokenClient.getUnit(tokenUnitId, false)) as NonFungibleToken;
         expect(token).not.toBeNull();
 
         console.log('Updating non fungible token...');
@@ -574,8 +588,12 @@ describe('State Api Client Integration tests', () => {
         );
         await waitTransactionProof(tokenClient, updateNonFungibleTokenHash);
         console.log('Updating non token fungible token successful');
+      }, 20000);
 
-        token = (await tokenClient.getUnit(tokenUnitId, false)) as NonFungibleToken;
+      it('Transfer', async () => {
+        const round = await tokenClient.getRoundNumber();
+        const token = (await tokenClient.getUnit(tokenUnitId, false)) as NonFungibleToken;
+        expect(token).not.toBeNull();
 
         console.log('Transferring non fungible token...');
         const transferNonFungibleTokenHash = await tokenClient.transferNonFungibleToken(
@@ -636,14 +654,5 @@ describe('State Api Client Integration tests', () => {
       feeCreditRecordId: feeCreditRecordId ?? null,
       referenceNumber: new Uint8Array(),
     };
-  }
-
-  async function calculateFeeCreditRecordId(round: bigint): Promise<Uint8Array> {
-    const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey);
-    return sha256
-      .create()
-      .update(ownerPredicate.bytes)
-      .update(numberToBytesBE(round + 60n, 8))
-      .digest();
   }
 });

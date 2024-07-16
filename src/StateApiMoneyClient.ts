@@ -1,3 +1,6 @@
+import { numberToBytesBE } from '@noble/curves/abstract/utils';
+import { sha256 } from '@noble/hashes/sha256';
+import { FeeCreditRecord } from './FeeCreditRecord.js';
 import { IStateApiService } from './IStateApiService.js';
 import { IUnitId } from './IUnitId.js';
 import { StateApiClient } from './StateApiClient.js';
@@ -17,6 +20,8 @@ import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransferBillAttributes } from './transaction/TransferBillAttributes.js';
 import { TransferBillToDustCollectorAttributes } from './transaction/TransferBillToDustCollectorAttributes.js';
 import { TransferFeeCreditAttributes } from './transaction/TransferFeeCreditAttributes.js';
+import { UnitIdWithType } from './transaction/UnitIdWithType.js';
+import { UnitType } from './transaction/UnitType.js';
 import { UnlockBillAttributes } from './transaction/UnlockBillAttributes.js';
 import { UnlockFeeCreditAttributes } from './transaction/UnlockFeeCreditAttributes.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
@@ -25,7 +30,7 @@ interface ITransferFeeCreditTransactionData {
   amount: bigint;
   systemIdentifier: SystemIdentifier;
   latestAdditionTime: bigint;
-  feeCreditRecord: { unitId: IUnitId; counter: bigint | null };
+  feeCreditRecordParams: { round: bigint; ownerPredicate: IPredicate; unitType: UnitType };
   bill: { unitId: IUnitId; counter: bigint };
 }
 
@@ -99,9 +104,15 @@ export class StateApiMoneyClient extends StateApiClient {
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async transferToFeeCredit(
-    { bill, amount, systemIdentifier, feeCreditRecord, latestAdditionTime }: ITransferFeeCreditTransactionData,
+    { bill, amount, systemIdentifier, feeCreditRecordParams, latestAdditionTime }: ITransferFeeCreditTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
+    const feeCreditRecordIdBytes = this.calculateFeeCreditRecordId(
+      feeCreditRecordParams.round,
+      feeCreditRecordParams.ownerPredicate,
+    );
+    const feeCreditRecordId = new UnitIdWithType(feeCreditRecordIdBytes, feeCreditRecordParams.unitType);
+    const feeCreditRecord: FeeCreditRecord | null = await this.getUnit(feeCreditRecordId, false);
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(
@@ -110,9 +121,9 @@ export class StateApiMoneyClient extends StateApiClient {
           new TransferFeeCreditAttributes(
             amount,
             systemIdentifier,
-            feeCreditRecord.unitId,
+            feeCreditRecordId,
             latestAdditionTime,
-            feeCreditRecord.counter,
+            feeCreditRecord != null ? feeCreditRecord.counter : 0n,
             bill.counter,
           ),
           metadata,
@@ -373,5 +384,13 @@ export class StateApiMoneyClient extends StateApiClient {
         ),
       ),
     );
+  }
+
+  private calculateFeeCreditRecordId(round: bigint, ownerPredicate: IPredicate): Uint8Array {
+    return sha256
+      .create()
+      .update(ownerPredicate.bytes)
+      .update(numberToBytesBE(round + 60n, 8))
+      .digest();
   }
 }

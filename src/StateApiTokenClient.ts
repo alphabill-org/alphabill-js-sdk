@@ -540,7 +540,7 @@ export class StateApiTokenClient extends StateApiClient {
   }
 
   /**
-   * Unlock fee credit..
+   * Unlock fee credit.
    * @param {IUnlockUnitTransactionData} data Transaction data.
    * @param {ITransactionClientMetadata} metadata Transaction client metadata.
    * @returns {Promise<Uint8Array>} Transaction hash.
