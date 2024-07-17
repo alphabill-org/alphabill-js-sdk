@@ -144,11 +144,12 @@ export class StateApiTokenClient extends StateApiClient {
   /**
    * State API client for token partition constructor.
    * @param transactionOrderFactory Transaction order factory.
+   * @param tokenUnitIdFactory Token unit ID factory.
    * @param service State API service.
    */
   public constructor(
     private readonly transactionOrderFactory: ITransactionOrderFactory,
-    private readonly tokenUnitIdfactory: TokenUnitIdFactory,
+    private readonly tokenUnitIdFactory: TokenUnitIdFactory,
     service: IStateApiService,
   ) {
     super(service);
@@ -226,7 +227,7 @@ export class StateApiTokenClient extends StateApiClient {
       nonce,
       tokenCreationPredicateSignatures,
     );
-    const unitId = await this.tokenUnitIdfactory.create(
+    const unitId = await this.tokenUnitIdFactory.create(
       attributes,
       metadata,
       UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN,
@@ -348,7 +349,7 @@ export class StateApiTokenClient extends StateApiClient {
       nonce,
       tokenCreationPredicateSignatures,
     );
-    const unitId = await this.tokenUnitIdfactory.create(attributes, metadata, UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN);
+    const unitId = await this.tokenUnitIdFactory.create(attributes, metadata, UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN);
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(SystemIdentifier.TOKEN_PARTITION, unitId, attributes, metadata),

@@ -13,6 +13,7 @@ import { AlwaysTruePredicate } from '../../src/transaction/AlwaysTruePredicate.j
 import { BurnFungibleTokenAttributes } from '../../src/transaction/BurnFungibleTokenAttributes.js';
 import { CreateFungibleTokenAttributes } from '../../src/transaction/CreateFungibleTokenAttributes.js';
 import { CreateNonFungibleTokenAttributes } from '../../src/transaction/CreateNonFungibleTokenAttributes.js';
+import { FeeCreditRecordUnitIdFactory } from '../../src/transaction/FeeCreditRecordUnitIdFactory.js';
 import { NonFungibleTokenData } from '../../src/transaction/NonFungibleTokenData.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/PayToPublicKeyHashPredicate.js';
 import { TokenIcon } from '../../src/transaction/TokenIcon.js';
@@ -33,6 +34,7 @@ describe('Token Client Integration Tests', () => {
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
   const tokenUnitIdFactory = new TokenUnitIdFactory(cborCodec);
+  const feeCreditRecordUnitIdFactory = new FeeCreditRecordUnitIdFactory();
 
   const tokenClient = createTokenClient({
     transport: http(config.tokenPartitionUrl, new CborCodecNode()),
@@ -46,6 +48,7 @@ describe('Token Client Integration Tests', () => {
     const moneyClient = createMoneyClient({
       transport: http(config.moneyPartitionUrl, new CborCodecNode()),
       transactionOrderFactory,
+      feeCreditRecordUnitIdFactory,
     });
 
     const unitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(

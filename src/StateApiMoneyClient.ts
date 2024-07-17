@@ -1,5 +1,3 @@
-import { numberToBytesBE } from '@noble/curves/abstract/utils';
-import { sha256 } from '@noble/hashes/sha256';
 import { FeeCreditRecord } from './FeeCreditRecord.js';
 import { IStateApiService } from './IStateApiService.js';
 import { IUnitId } from './IUnitId.js';
@@ -7,6 +5,7 @@ import { StateApiClient } from './StateApiClient.js';
 import { SystemIdentifier } from './SystemIdentifier.js';
 import { AddFeeCreditAttributes } from './transaction/AddFeeCreditAttributes.js';
 import { CloseFeeCreditAttributes } from './transaction/CloseFeeCreditAttributes.js';
+import { FeeCreditRecordUnitIdFactory } from './transaction/FeeCreditRecordUnitIdFactory.js';
 import { IPredicate } from './transaction/IPredicate.js';
 import { ITransactionClientMetadata } from './transaction/ITransactionClientMetadata.js';
 import { ITransactionOrderFactory } from './transaction/ITransactionOrderFactory.js';
@@ -20,7 +19,6 @@ import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransferBillAttributes } from './transaction/TransferBillAttributes.js';
 import { TransferBillToDustCollectorAttributes } from './transaction/TransferBillToDustCollectorAttributes.js';
 import { TransferFeeCreditAttributes } from './transaction/TransferFeeCreditAttributes.js';
-import { UnitIdWithType } from './transaction/UnitIdWithType.js';
 import { UnitType } from './transaction/UnitType.js';
 import { UnlockBillAttributes } from './transaction/UnlockBillAttributes.js';
 import { UnlockFeeCreditAttributes } from './transaction/UnlockFeeCreditAttributes.js';
@@ -88,10 +86,12 @@ export class StateApiMoneyClient extends StateApiClient {
   /**
    * State API client for money partition constructor.
    * @param transactionOrderFactory Transaction order factory.
+   * @param feeCreditRecordUnitIdFactory Fee credit record unit ID factory.
    * @param service State API service.
    */
   public constructor(
     private readonly transactionOrderFactory: ITransactionOrderFactory,
+    private readonly feeCreditRecordUnitIdFactory: FeeCreditRecordUnitIdFactory,
     service: IStateApiService,
   ) {
     super(service);
@@ -107,11 +107,11 @@ export class StateApiMoneyClient extends StateApiClient {
     { bill, amount, systemIdentifier, feeCreditRecordParams, latestAdditionTime }: ITransferFeeCreditTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
-    const feeCreditRecordIdBytes = this.calculateFeeCreditRecordId(
+    const feeCreditRecordId = this.feeCreditRecordUnitIdFactory.create(
       feeCreditRecordParams.round,
       feeCreditRecordParams.ownerPredicate,
+      feeCreditRecordParams.unitType,
     );
-    const feeCreditRecordId = new UnitIdWithType(feeCreditRecordIdBytes, feeCreditRecordParams.unitType);
     const feeCreditRecord: FeeCreditRecord | null = await this.getUnit(feeCreditRecordId, false);
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
@@ -384,13 +384,5 @@ export class StateApiMoneyClient extends StateApiClient {
         ),
       ),
     );
-  }
-
-  private calculateFeeCreditRecordId(round: bigint, ownerPredicate: IPredicate): Uint8Array {
-    return sha256
-      .create()
-      .update(ownerPredicate.bytes)
-      .update(numberToBytesBE(round + 60n, 8))
-      .digest();
   }
 }

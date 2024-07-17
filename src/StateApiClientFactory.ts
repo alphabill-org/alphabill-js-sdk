@@ -1,12 +1,12 @@
 import { ICborCodec } from './codec/cbor/ICborCodec.js';
 import { IStateApiService } from './IStateApiService.js';
-
 import { JsonRpcClient } from './json-rpc/JsonRpcClient.js';
 import { JsonRpcHttpService } from './json-rpc/JsonRpcHttpService.js';
 import { StateApiJsonRpcService } from './json-rpc/StateApiJsonRpcService.js';
 import { StateApiClient } from './StateApiClient.js';
 import { StateApiMoneyClient } from './StateApiMoneyClient.js';
 import { StateApiTokenClient } from './StateApiTokenClient.js';
+import { FeeCreditRecordUnitIdFactory } from './transaction/FeeCreditRecordUnitIdFactory.js';
 import { ITransactionOrderFactory } from './transaction/ITransactionOrderFactory.js';
 import { TokenUnitIdFactory } from './transaction/TokenUnitIdFactory.js';
 
@@ -32,8 +32,14 @@ type PlatformStateApiClientOptions = {
  * @param {PlatformStateApiClientOptions} options Options.
  * @returns {StateApiMoneyClient} State API client.
  */
-export function createMoneyClient(options: PlatformStateApiClientOptions): StateApiMoneyClient {
-  return new StateApiMoneyClient(options.transactionOrderFactory, options.transport);
+export function createMoneyClient(
+  options: PlatformStateApiClientOptions & { feeCreditRecordUnitIdFactory: FeeCreditRecordUnitIdFactory },
+): StateApiMoneyClient {
+  return new StateApiMoneyClient(
+    options.transactionOrderFactory,
+    options.feeCreditRecordUnitIdFactory,
+    options.transport,
+  );
 }
 
 /**

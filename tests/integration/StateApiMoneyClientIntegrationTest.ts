@@ -7,6 +7,7 @@ import { DefaultSigningService } from '../../src/signing/DefaultSigningService.j
 import { createMoneyClient, http } from '../../src/StateApiClientFactory.js';
 import { SystemIdentifier } from '../../src/SystemIdentifier.js';
 import { CloseFeeCreditAttributes } from '../../src/transaction/CloseFeeCreditAttributes.js';
+import { FeeCreditRecordUnitIdFactory } from '../../src/transaction/FeeCreditRecordUnitIdFactory.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/PayToPublicKeyHashPredicate.js';
 import { TransactionOrderFactory } from '../../src/transaction/TransactionOrderFactory.js';
 import { TransactionPayload } from '../../src/transaction/TransactionPayload.js';
@@ -23,10 +24,12 @@ describe('Money Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
+  const feeCreditRecordUnitIdFactory = new FeeCreditRecordUnitIdFactory();
 
   const moneyClient = createMoneyClient({
     transport: http(config.moneyPartitionUrl, new CborCodecNode()),
     transactionOrderFactory,
+    feeCreditRecordUnitIdFactory,
   });
 
   let feeCreditRecordId: UnitIdWithType; // can no longer be static as hash contains timeout
