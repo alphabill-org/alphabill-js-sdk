@@ -123,7 +123,7 @@ export class StateApiMoneyClient extends StateApiClient {
             systemIdentifier,
             feeCreditRecordId,
             latestAdditionTime,
-            feeCreditRecord != null ? feeCreditRecord.counter : 0n,
+            feeCreditRecord?.counter ?? 0n,
             bill.counter,
           ),
           metadata,
