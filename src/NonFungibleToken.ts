@@ -88,6 +88,8 @@ export class NonFungibleToken {
   public toString(): string {
     return dedent`
       NonFungibleToken
+        Unit ID: ${this.unitId.toString()}
+        Owner Predicate: ${this.ownerPredicate.toString()}
         Token Type: ${this.tokenType.toString()}
         Name: ${this.name}
         URI: ${this.uri}

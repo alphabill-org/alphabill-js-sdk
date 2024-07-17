@@ -73,10 +73,13 @@ export class FungibleToken {
   public toString(): string {
     return dedent`
       FungibleToken
+        Unit ID: ${this.unitId.toString()}
+        Owner Predicate: ${this.ownerPredicate.toString()}
         Token Type: ${this.tokenType.toString()}
         Value: ${this.value}
         Last Update: ${this.lastUpdate}
         Counter: ${this.counter}
+        T1: ${this.t1}
         Locked: ${this.locked}`;
   }
 }
