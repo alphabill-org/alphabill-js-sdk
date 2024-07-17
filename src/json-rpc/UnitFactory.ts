@@ -1,9 +1,11 @@
 import { Bill } from '../Bill.js';
 import { FeeCreditRecord } from '../FeeCreditRecord.js';
 import { FungibleToken } from '../FungibleToken.js';
+import { FungibleTokenType } from '../FungibleTokenType.js';
 import { IStateProof, IStateTreeCert, IUnit, IUnitTreeCert } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
 import { NonFungibleToken } from '../NonFungibleToken.js';
+import { NonFungibleTokenType } from '../NonFungibleTokenType.js';
 import { PredicateBytes } from '../PredicateBytes.js';
 import { PathItem, StateProof, StateTreeCert, StateTreePathItem, UnitTreeCert } from '../StateProof.js';
 import { IPredicate } from '../transaction/IPredicate.js';
@@ -19,7 +21,9 @@ const unitDataCreateMap = new Map<
   [UnitType.MONEY_PARTITION_BILL_DATA, Bill.create],
   [UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD, FeeCreditRecord.create],
   [UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN, FungibleToken.create],
+  [UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN_TYPE, FungibleTokenType.create],
   [UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN, NonFungibleToken.create],
+  [UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN_TYPE, NonFungibleTokenType.create],
   [UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD, FeeCreditRecord.create],
 ]);
 

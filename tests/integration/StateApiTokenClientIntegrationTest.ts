@@ -4,8 +4,10 @@ import { Bill } from '../../src/Bill.js';
 import { CborCodecNode } from '../../src/codec/cbor/CborCodecNode.js';
 import { FeeCreditRecord } from '../../src/FeeCreditRecord.js';
 import { FungibleToken } from '../../src/FungibleToken.js';
+import { FungibleTokenType } from '../../src/FungibleTokenType.js';
 import { IUnitId } from '../../src/IUnitId.js';
 import { NonFungibleToken } from '../../src/NonFungibleToken.js';
+import { NonFungibleTokenType } from '../../src/NonFungibleTokenType.js';
 import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, createTokenClient, http } from '../../src/StateApiClientFactory.js';
 import { SystemIdentifier } from '../../src/SystemIdentifier.js';
@@ -126,6 +128,8 @@ describe('Token Client Integration Tests', () => {
         createMetadata(round, feeCreditRecordId),
       );
       await waitTransactionProof(tokenClient, createFungibleTokenTypeHash);
+      const tokenType = (await tokenClient.getUnit(tokenTypeUnitId, false)) as FungibleTokenType;
+      expect(tokenType).not.toBeNull();
       console.log('Creating fungible token type successful');
 
       console.log('Creating fungible token...');
@@ -252,13 +256,13 @@ describe('Token Client Integration Tests', () => {
     }, 20000);
   });
 
-  describe('Non Fungible Token Integration Tests', () => {
+  describe('Non-fungible Token Integration Tests', () => {
     const tokenTypeUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN_TYPE);
     let tokenUnitId: IUnitId;
 
     it('Create token type and token', async () => {
       const round = await tokenClient.getRoundNumber();
-      console.log('Creating non fungible token type...');
+      console.log('Creating non-fungible token type...');
       const createNonFungibleTokenTypeHash = await tokenClient.createNonFungibleTokenType(
         {
           type: { unitId: tokenTypeUnitId },
@@ -275,9 +279,11 @@ describe('Token Client Integration Tests', () => {
         createMetadata(round, feeCreditRecordId),
       );
       await waitTransactionProof(tokenClient, createNonFungibleTokenTypeHash);
-      console.log('Creating non fungible token type successful');
+      const tokenType = (await tokenClient.getUnit(tokenTypeUnitId, false)) as NonFungibleTokenType;
+      expect(tokenType).not.toBeNull();
+      console.log('Creating non-fungible token type successful');
 
-      console.log('Creating non fungible token...');
+      console.log('Creating non-fungible token...');
       const createNonFungibleTokenHash = await tokenClient.createNonFungibleToken(
         {
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
@@ -299,7 +305,7 @@ describe('Token Client Integration Tests', () => {
       const attr = createNonFungibleTokenProof.transactionRecord.transactionOrder
         .payload as TransactionPayload<CreateNonFungibleTokenAttributes>;
       tokenUnitId = attr.unitId;
-      console.log('Creating non fungible token successful');
+      console.log('Creating non-fungible token successful');
     }, 20000);
 
     it('Update', async () => {
@@ -307,7 +313,7 @@ describe('Token Client Integration Tests', () => {
       const token = (await tokenClient.getUnit(tokenUnitId, false)) as NonFungibleToken;
       expect(token).not.toBeNull();
 
-      console.log('Updating non fungible token...');
+      console.log('Updating non-fungible token...');
       const updateNonFungibleTokenHash = await tokenClient.updateNonFungibleToken(
         {
           token: token,
@@ -325,7 +331,7 @@ describe('Token Client Integration Tests', () => {
       const token = (await tokenClient.getUnit(tokenUnitId, false)) as NonFungibleToken;
       expect(token).not.toBeNull();
 
-      console.log('Transferring non fungible token...');
+      console.log('Transferring non-fungible token...');
       const transferNonFungibleTokenHash = await tokenClient.transferNonFungibleToken(
         {
           token: token,

@@ -1,5 +1,5 @@
 /**
- * Non Fungible token data from getUnit.
+ * Non-fungible token data from getUnit.
  * @interface INonFungibleTokenDto
  */
 export interface INonFungibleTokenDto {
@@ -8,7 +8,7 @@ export interface INonFungibleTokenDto {
   uri: string;
   data: string;
   dataUpdatePredicate: string;
-  lastUpdate: number;
+  lastUpdate: string;
   counter: string;
-  locked: number;
+  locked: string;
 }

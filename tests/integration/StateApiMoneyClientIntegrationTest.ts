@@ -46,7 +46,7 @@ describe('Money Client Integration Tests', () => {
     const moneyUnitIds: IUnitId[] = await moneyClient.getUnitsByOwnerId(signingService.publicKey);
     expect(moneyUnitIds.length).toBeGreaterThan(0);
     const moneyUnit = (await moneyClient.getUnit(moneyUnitIds[0], true)) as IUnit;
-    expect(moneyUnit.counter).not.toBeNull();
+    expect(moneyUnit.unitId).not.toBeNull();
   });
 
   it('Add fee credit', async () => {

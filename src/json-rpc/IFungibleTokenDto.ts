@@ -4,9 +4,9 @@
  */
 export interface IFungibleTokenDto {
   tokenType: string;
-  value: number;
-  lastUpdate: number;
+  value: string;
+  lastUpdate: string;
   counter: string;
-  t1: number;
-  locked: number;
+  t1: string;
+  locked: string;
 }

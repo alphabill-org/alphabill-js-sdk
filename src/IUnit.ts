@@ -10,12 +10,6 @@ export interface IUnit {
    * @returns {IUnit} unit id.
    */
   get unitId(): IUnitId;
-
-  /**
-   * Get counter.
-   * @returns {bigint} counter.
-   */
-  get counter(): bigint;
   /**
    * Get owner predicate.
    * @returns {IPredicate} owner predicate.
