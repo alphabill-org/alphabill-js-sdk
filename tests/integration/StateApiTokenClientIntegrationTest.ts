@@ -71,7 +71,6 @@ describe('Token Client Integration Tests', () => {
         amount: amountToFeeCredit,
         systemIdentifier: SystemIdentifier.TOKEN_PARTITION,
         feeCreditRecordParams: {
-          round: round,
           ownerPredicate: ownerPredicate,
           unitType: UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
         },

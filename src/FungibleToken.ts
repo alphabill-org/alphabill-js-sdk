@@ -43,7 +43,7 @@ export class FungibleToken {
    * Create fungible token from DTO.
    * @param {IUnitId} unitId Unit ID.
    * @param {IPredicate} ownerPredicate Owner predicate.
-   * @param {IFungibleTokenDto} data Fee credit record data.
+   * @param {IFungibleTokenDto} data Fungible token data.
    * @param {IStateProof} stateProof State proof.
    * @returns {FungibleToken} Fungible token.
    */

@@ -70,7 +70,6 @@ describe('Money Client Integration Tests', () => {
         amount: amountToFeeCredit,
         systemIdentifier: SystemIdentifier.MONEY_PARTITION,
         feeCreditRecordParams: {
-          round: round,
           ownerPredicate: ownerPredicate,
           unitType: UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD,
         },

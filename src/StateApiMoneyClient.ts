@@ -28,7 +28,7 @@ interface ITransferFeeCreditTransactionData {
   amount: bigint;
   systemIdentifier: SystemIdentifier;
   latestAdditionTime: bigint;
-  feeCreditRecordParams: { round: bigint; ownerPredicate: IPredicate; unitType: UnitType };
+  feeCreditRecordParams: { ownerPredicate: IPredicate; unitType: UnitType };
   bill: { unitId: IUnitId; counter: bigint };
 }
 
@@ -108,7 +108,7 @@ export class StateApiMoneyClient extends StateApiClient {
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     const feeCreditRecordId = this.feeCreditRecordUnitIdFactory.create(
-      feeCreditRecordParams.round,
+      metadata.timeout,
       feeCreditRecordParams.ownerPredicate,
       feeCreditRecordParams.unitType,
     );

@@ -6,12 +6,8 @@ import { UnitIdWithType } from './UnitIdWithType.js';
 import { UnitType } from './UnitType.js';
 
 export class FeeCreditRecordUnitIdFactory {
-  public create(round: bigint, ownerPredicate: IPredicate, unitType: UnitType): IUnitId {
-    const unitBytes = sha256
-      .create()
-      .update(ownerPredicate.bytes)
-      .update(numberToBytesBE(round + 60n, 8))
-      .digest();
+  public create(timeout: bigint, ownerPredicate: IPredicate, unitType: UnitType): IUnitId {
+    const unitBytes = sha256.create().update(ownerPredicate.bytes).update(numberToBytesBE(timeout, 8)).digest();
     return new UnitIdWithType(unitBytes, unitType);
   }
 }
