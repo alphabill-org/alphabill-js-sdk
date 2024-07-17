@@ -22,7 +22,6 @@ export class UnlockTokenAttributes implements ITransactionPayloadAttributes {
     private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.counter = BigInt(this.counter);
-    this.counter = BigInt(this.counter);
     this._invariantPredicateSignatures =
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }

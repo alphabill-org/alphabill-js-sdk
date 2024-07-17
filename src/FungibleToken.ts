@@ -18,7 +18,7 @@ export class FungibleToken {
    * @param {bigint} value Token value.
    * @param {bigint} lastUpdate Round number of the last transaction with this token.
    * @param {bigint} counter Counter.
-   * @param {bigint} t1 Minimum lifetime of this token.
+   * @param {bigint} minimumLifetime Minimum lifetime of this token.
    * @param {boolean} locked Is token locked.
    * @param {IStateProof | null} stateProof State proof.
    */
@@ -29,14 +29,14 @@ export class FungibleToken {
     public readonly value: bigint,
     public readonly lastUpdate: bigint,
     public readonly counter: bigint,
-    public readonly t1: bigint,
+    public readonly minimumLifetime: bigint,
     public readonly locked: boolean,
     public readonly stateProof: IStateProof | null,
   ) {
     this.value = BigInt(this.value);
     this.lastUpdate = BigInt(this.lastUpdate);
     this.counter = BigInt(this.counter);
-    this.t1 = BigInt(this.t1);
+    this.minimumLifetime = BigInt(this.minimumLifetime);
   }
 
   /**
@@ -79,7 +79,7 @@ export class FungibleToken {
         Value: ${this.value}
         Last Update: ${this.lastUpdate}
         Counter: ${this.counter}
-        T1: ${this.t1}
+        Minimum Lifetime: ${this.minimumLifetime}
         Locked: ${this.locked}`;
   }
 }
