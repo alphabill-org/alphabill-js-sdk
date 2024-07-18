@@ -2,7 +2,6 @@ import dedent from 'dedent';
 import { TransactionProofArray } from '../TransactionProof.js';
 import { TransactionRecordArray } from '../TransactionRecord.js';
 import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
-import { Base16Converter } from '../util/Base16Converter.js';
 import { CloseFeeCreditAttributes } from './CloseFeeCreditAttributes.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { PayloadType } from './PayloadAttributeFactory.js';
@@ -11,7 +10,7 @@ import { TransactionPayload } from './TransactionPayload.js';
 /**
  * Reclaim fee credit attributes array.
  */
-export type ReclaimFeeCreditAttributesArray = [TransactionRecordArray, TransactionProofArray, Uint8Array];
+export type ReclaimFeeCreditAttributesArray = [TransactionRecordArray, TransactionProofArray, bigint];
 
 /**
  * Reclaim fee credit payload attributes.
@@ -20,13 +19,13 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
   /**
    * Reclaim fee credit attributes constructor.
    * @param {TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>>} proof - Transaction record with proof.
-   * @param {Uint8Array} _backlink - Backlink.
+   * @param {bigint} counter - Counter.
    */
   public constructor(
     public readonly proof: TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>>,
-    private readonly _backlink: Uint8Array,
+    public readonly counter: bigint,
   ) {
-    this._backlink = new Uint8Array(this._backlink);
+    this.counter = BigInt(this.counter);
   }
 
   /**
@@ -34,14 +33,6 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
    */
   public get payloadType(): PayloadType {
     return PayloadType.ReclaimFeeCreditAttributes;
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
   }
 
   /**
@@ -55,7 +46,7 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public toArray(): ReclaimFeeCreditAttributesArray {
-    return [this.proof.transactionRecord.toArray(), this.proof.transactionProof.toArray(), this.backlink];
+    return [this.proof.transactionRecord.toArray(), this.proof.transactionProof.toArray(), this.counter];
   }
 
   /**
@@ -67,7 +58,7 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
       ReclaimFeeCreditAttributes
         Transaction Proof: 
           ${this.proof.toString()}
-        Backlink: ${Base16Converter.encode(this._backlink)}
+        Counter: ${this.counter}
       `;
   }
 

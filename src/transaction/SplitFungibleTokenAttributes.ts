@@ -14,7 +14,7 @@ export type SplitFungibleTokenAttributesArray = readonly [
   Uint8Array,
   bigint,
   Uint8Array | null,
-  Uint8Array,
+  bigint,
   Uint8Array,
   bigint,
   Uint8Array[] | null,
@@ -29,7 +29,7 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
    * @param {IPredicate} ownerPredicate - Owner predicate.
    * @param {bigint} targetValue - Target value.
    * @param {Uint8Array | null} _nonce - Nonce.
-   * @param {Uint8Array} _backlink - Backlink.
+   * @param {bigint} counter - Counter.
    * @param {IUnitId} typeId - Type ID.
    * @param {bigint} remainingValue - Remaining value.
    * @param {Uint8Array[] | null} _invariantPredicateSignatures - Invariant predicate signatures.
@@ -38,14 +38,14 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
     public readonly ownerPredicate: IPredicate,
     public readonly targetValue: bigint,
     private readonly _nonce: Uint8Array | null,
-    private readonly _backlink: Uint8Array,
+    public readonly counter: bigint,
     public readonly typeId: IUnitId,
     public readonly remainingValue: bigint,
     private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.targetValue = BigInt(this.targetValue);
     this._nonce = this._nonce ? new Uint8Array(this._nonce) : null;
-    this._backlink = new Uint8Array(this._backlink);
+    this.counter = BigInt(this.counter);
     this.remainingValue = BigInt(this.remainingValue);
     this._invariantPredicateSignatures =
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
@@ -67,14 +67,6 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
   }
 
   /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
-  }
-
-  /**
    * Get invariant predicate signatures.
    * @returns {Uint8Array[] | null} Invariant predicate signatures.
    */
@@ -90,7 +82,7 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
       this.ownerPredicate.bytes,
       this.targetValue,
       this.nonce,
-      this.backlink,
+      this.counter,
       this.typeId.bytes,
       this.remainingValue,
       null,
@@ -105,7 +97,7 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
       this.ownerPredicate.bytes,
       this.targetValue,
       this.nonce,
-      this.backlink,
+      this.counter,
       this.typeId.bytes,
       this.remainingValue,
       this.invariantPredicateSignatures,
@@ -122,7 +114,7 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
         Owner Predicate: ${this.ownerPredicate.toString()}
         Target Value: ${this.targetValue}
         Nonce: ${this._nonce ? Base16Converter.encode(this._nonce) : 'null'}
-        Backlink: ${Base16Converter.encode(this._backlink)}
+        Counter: ${this.counter}
         Type ID: ${this.typeId.toString()}
         Remaining Value: ${this.remainingValue}
         Invariant Predicate Signatures: ${

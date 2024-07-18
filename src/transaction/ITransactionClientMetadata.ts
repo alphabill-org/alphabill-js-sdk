@@ -20,4 +20,9 @@ export interface ITransactionClientMetadata {
    * @type {IUnitId | null}
    */
   readonly feeCreditRecordId: IUnitId | null;
+  /**
+   * Reference number.
+   * @type {Uint8Array}
+   */
+  readonly referenceNumber: Uint8Array | null;
 }

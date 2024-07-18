@@ -6,7 +6,7 @@ import { PayloadType } from './PayloadAttributeFactory.js';
 /**
  * Lock token attributes array.
  */
-export type LockTokenAttributesArray = readonly [bigint, Uint8Array];
+export type LockTokenAttributesArray = readonly [bigint, bigint, Uint8Array[] | null];
 
 /**
  * Lock token payload attributes.
@@ -15,14 +15,18 @@ export class LockTokenAttributes implements ITransactionPayloadAttributes {
   /**
    * Lock token attributes constructor.
    * @param {bigint} lockStatus - Lock status.
-   * @param {Uint8Array} _backlink - Backlink.
+   * @param {bigint} counter - Counter.
+   * @param {Uint8Array[] | null} _invariantPredicateSignatures Invariant predicate signatures.
    */
   public constructor(
     public readonly lockStatus: bigint,
-    private readonly _backlink: Uint8Array,
+    public readonly counter: bigint,
+    private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.lockStatus = BigInt(this.lockStatus);
-    this._backlink = new Uint8Array(this._backlink);
+    this.counter = BigInt(this.counter);
+    this._invariantPredicateSignatures =
+      this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   /**
@@ -33,25 +37,25 @@ export class LockTokenAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
+   * Get invariant predicate signatures.
+   * @returns {Uint8Array[] | null} Invariant predicate signatures.
    */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
+  public get invariantPredicateSignatures(): Uint8Array[] | null {
+    return this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   /**
    * @see {ITransactionPayloadAttributes.toOwnerProofData}
    */
   public toOwnerProofData(): LockTokenAttributesArray {
-    return this.toArray();
+    return [this.lockStatus, this.counter, null];
   }
 
   /**
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public toArray(): LockTokenAttributesArray {
-    return [this.lockStatus, this.backlink];
+    return [this.lockStatus, this.counter, this.invariantPredicateSignatures];
   }
 
   /**
@@ -62,7 +66,15 @@ export class LockTokenAttributes implements ITransactionPayloadAttributes {
     return dedent`
       LockTokenAttributes
         Lock Status: ${this.lockStatus}
-        Backlink: ${Base16Converter.encode(this._backlink)}`;
+        Counter: ${this.counter}
+        Invariant Predicate Signatures: ${
+          this._invariantPredicateSignatures
+            ? dedent`
+        [
+          ${this._invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
+        ]`
+            : 'null'
+        }`;
   }
 
   /**
@@ -71,6 +83,6 @@ export class LockTokenAttributes implements ITransactionPayloadAttributes {
    * @returns {LockTokenAttributes} Lock token attributes instance.
    */
   public static fromArray(data: LockTokenAttributesArray): LockTokenAttributes {
-    return new LockTokenAttributes(data[0], data[1]);
+    return new LockTokenAttributes(data[0], data[1], data[2]);
   }
 }

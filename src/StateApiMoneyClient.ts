@@ -1,9 +1,11 @@
+import { FeeCreditRecord } from './FeeCreditRecord.js';
 import { IStateApiService } from './IStateApiService.js';
 import { IUnitId } from './IUnitId.js';
 import { StateApiClient } from './StateApiClient.js';
 import { SystemIdentifier } from './SystemIdentifier.js';
 import { AddFeeCreditAttributes } from './transaction/AddFeeCreditAttributes.js';
 import { CloseFeeCreditAttributes } from './transaction/CloseFeeCreditAttributes.js';
+import { FeeCreditRecordUnitIdFactory } from './transaction/FeeCreditRecordUnitIdFactory.js';
 import { IPredicate } from './transaction/IPredicate.js';
 import { ITransactionClientMetadata } from './transaction/ITransactionClientMetadata.js';
 import { ITransactionOrderFactory } from './transaction/ITransactionOrderFactory.js';
@@ -17,6 +19,7 @@ import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransferBillAttributes } from './transaction/TransferBillAttributes.js';
 import { TransferBillToDustCollectorAttributes } from './transaction/TransferBillToDustCollectorAttributes.js';
 import { TransferFeeCreditAttributes } from './transaction/TransferFeeCreditAttributes.js';
+import { UnitType } from './transaction/UnitType.js';
 import { UnlockBillAttributes } from './transaction/UnlockBillAttributes.js';
 import { UnlockFeeCreditAttributes } from './transaction/UnlockFeeCreditAttributes.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
@@ -24,45 +27,44 @@ import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
 interface ITransferFeeCreditTransactionData {
   amount: bigint;
   systemIdentifier: SystemIdentifier;
-  earliestAdditionTime: bigint;
   latestAdditionTime: bigint;
-  feeCreditRecord: { unitId: IUnitId; backlink: Uint8Array | null };
-  bill: { unitId: IUnitId; backlink: Uint8Array };
+  feeCreditRecordParams: { ownerPredicate: IPredicate; unitType: UnitType };
+  bill: { unitId: IUnitId; counter: bigint };
 }
 
 export interface ILockUnitTransactionData {
   status: bigint;
-  unit: { unitId: IUnitId; backlink: Uint8Array };
+  unit: { unitId: IUnitId; counter: bigint };
 }
 
 export interface IUnlockUnitTransactionData {
-  unit: { unitId: IUnitId; backlink: Uint8Array };
+  unit: { unitId: IUnitId; counter: bigint };
 }
 
 interface IReclaimFeeCreditTransactionData {
   proof: TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>>;
-  bill: { unitId: IUnitId; backlink: Uint8Array };
+  bill: { unitId: IUnitId; counter: bigint };
 }
 
 interface ISplitBillTransactionData {
   splits: { value: bigint; ownerPredicate: IPredicate }[];
-  bill: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
+  bill: { unitId: IUnitId; counter: bigint; value: bigint };
 }
 
 interface ITransferBillToDustCollectorTransactionData {
-  bill: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
-  targetBill: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
+  bill: { unitId: IUnitId; counter: bigint; value: bigint };
+  targetBill: { unitId: IUnitId; counter: bigint; value: bigint };
 }
 
 interface ISwapBillsWithDustCollectorTransactionData {
   ownerPredicate: IPredicate;
   proofs: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>>[];
-  bill: { unitId: IUnitId; backlink: Uint8Array };
+  bill: { unitId: IUnitId; counter: bigint };
 }
 
 interface ITransferBillTransactionData {
   ownerPredicate: IPredicate;
-  bill: { unitId: IUnitId; backlink: Uint8Array; value: bigint };
+  bill: { unitId: IUnitId; counter: bigint; value: bigint };
 }
 
 export interface IAddFeeCreditTransactionData {
@@ -73,8 +75,8 @@ export interface IAddFeeCreditTransactionData {
 
 export interface ICloseFeeCreditTransactionData {
   amount: bigint;
-  bill: { unitId: IUnitId; backlink: Uint8Array };
-  feeCreditRecord: { unitId: IUnitId; balance: bigint };
+  bill: { unitId: IUnitId; counter: bigint };
+  feeCreditRecord: { unitId: IUnitId; balance: bigint; counter: bigint };
 }
 
 /**
@@ -84,10 +86,12 @@ export class StateApiMoneyClient extends StateApiClient {
   /**
    * State API client for money partition constructor.
    * @param transactionOrderFactory Transaction order factory.
+   * @param feeCreditRecordUnitIdFactory Fee credit record unit ID factory.
    * @param service State API service.
    */
   public constructor(
     private readonly transactionOrderFactory: ITransactionOrderFactory,
+    private readonly feeCreditRecordUnitIdFactory: FeeCreditRecordUnitIdFactory,
     service: IStateApiService,
   ) {
     super(service);
@@ -100,16 +104,15 @@ export class StateApiMoneyClient extends StateApiClient {
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async transferToFeeCredit(
-    {
-      bill,
-      amount,
-      systemIdentifier,
-      feeCreditRecord,
-      earliestAdditionTime,
-      latestAdditionTime,
-    }: ITransferFeeCreditTransactionData,
+    { bill, amount, systemIdentifier, feeCreditRecordParams, latestAdditionTime }: ITransferFeeCreditTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
+    const feeCreditRecordId = this.feeCreditRecordUnitIdFactory.create(
+      metadata.timeout,
+      feeCreditRecordParams.ownerPredicate,
+      feeCreditRecordParams.unitType,
+    );
+    const feeCreditRecord: FeeCreditRecord | null = await this.getUnit(feeCreditRecordId, false);
     return this.sendTransaction(
       await this.transactionOrderFactory.createTransaction(
         TransactionPayload.create(
@@ -118,11 +121,10 @@ export class StateApiMoneyClient extends StateApiClient {
           new TransferFeeCreditAttributes(
             amount,
             systemIdentifier,
-            feeCreditRecord.unitId,
-            earliestAdditionTime,
+            feeCreditRecordId,
             latestAdditionTime,
-            feeCreditRecord.backlink,
-            bill.backlink,
+            feeCreditRecord?.counter ?? 0n,
+            bill.counter,
           ),
           metadata,
         ),
@@ -167,7 +169,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           unit.unitId,
-          new LockBillAttributes(status, unit.backlink),
+          new LockBillAttributes(status, unit.counter),
           metadata,
         ),
       ),
@@ -189,7 +191,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           unit.unitId,
-          new LockFeeCreditAttributes(status, unit.backlink),
+          new LockFeeCreditAttributes(status, unit.counter),
           metadata,
         ),
       ),
@@ -211,7 +213,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           feeCreditRecord.unitId,
-          new CloseFeeCreditAttributes(feeCreditRecord.balance, bill.unitId, bill.backlink),
+          new CloseFeeCreditAttributes(feeCreditRecord.balance, bill.unitId, bill.counter, feeCreditRecord.counter),
           metadata,
         ),
       ),
@@ -233,7 +235,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           bill.unitId,
-          new ReclaimFeeCreditAttributes(proof, bill.backlink),
+          new ReclaimFeeCreditAttributes(proof, bill.counter),
           metadata,
         ),
       ),
@@ -258,7 +260,7 @@ export class StateApiMoneyClient extends StateApiClient {
           new SplitBillAttributes(
             splits.map(({ value, ownerPredicate }) => new SplitBillUnit(value, ownerPredicate)),
             splits.reduce((previousValue, currentValue) => previousValue - currentValue.value, bill.value),
-            bill.backlink,
+            bill.counter,
           ),
           metadata,
         ),
@@ -281,7 +283,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           bill.unitId,
-          new TransferBillToDustCollectorAttributes(bill.value, targetBill.unitId, targetBill.backlink, bill.backlink),
+          new TransferBillToDustCollectorAttributes(bill.value, targetBill.unitId, targetBill.counter, bill.counter),
           metadata,
         ),
       ),
@@ -333,7 +335,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           bill.unitId,
-          new TransferBillAttributes(ownerPredicate, bill.value, bill.backlink),
+          new TransferBillAttributes(ownerPredicate, bill.value, bill.counter),
           metadata,
         ),
       ),
@@ -355,7 +357,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           unit.unitId,
-          new UnlockBillAttributes(unit.backlink),
+          new UnlockBillAttributes(unit.counter),
           metadata,
         ),
       ),
@@ -377,7 +379,7 @@ export class StateApiMoneyClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           unit.unitId,
-          new UnlockFeeCreditAttributes(unit.backlink),
+          new UnlockFeeCreditAttributes(unit.counter),
           metadata,
         ),
       ),

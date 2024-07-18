@@ -14,7 +14,7 @@ import { TransactionPayload } from './TransactionPayload.js';
 export type JoinFungibleTokenAttributesArray = [
   TransactionRecordArray[],
   TransactionProofArray[],
-  Uint8Array,
+  bigint,
   Uint8Array[] | null,
 ];
 
@@ -25,16 +25,16 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
   /**
    * Join fungible token attributes constructor.
    * @param {TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[]} _proofs - Proofs.
-   * @param {Uint8Array} _backlink - Backlink.
+   * @param {bigint} counter - Counter.
    * @param {Uint8Array[] | null} _invariantPredicateSignatures - Invariant predicate signatures.
    */
   public constructor(
     private readonly _proofs: TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[],
-    private readonly _backlink: Uint8Array,
+    public readonly counter: bigint,
     private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this._proofs = Array.from(this._proofs);
-    this._backlink = new Uint8Array(this._backlink);
+    this.counter = BigInt(this.counter);
     this._invariantPredicateSignatures =
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
@@ -52,14 +52,6 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
    */
   public get proofs(): TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[] {
     return Array.from(this._proofs);
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
   }
 
   /**
@@ -81,7 +73,7 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
       proofs.push(proof.transactionProof.toArray());
     }
 
-    return [records, proofs, this.backlink, null];
+    return [records, proofs, this.counter, null];
   }
 
   /**
@@ -95,7 +87,7 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
       proofs.push(proof.transactionProof.toArray());
     }
 
-    return [records, proofs, this.backlink, this.invariantPredicateSignatures];
+    return [records, proofs, this.counter, this.invariantPredicateSignatures];
   }
 
   /**
@@ -106,7 +98,7 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
     return dedent`
       JoinFungibleTokenAttributes
         Proofs: ${this._proofs.map((proof) => proof.toString()).join(',\n')}
-        Backlink: ${Base16Converter.encode(this._backlink)}
+        Counter: ${this.counter}
         Invariant Predicate Signatures: ${
           this._invariantPredicateSignatures
             ? dedent`

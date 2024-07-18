@@ -19,6 +19,7 @@ export type CreateNonFungibleTokenAttributesArray = readonly [
   string,
   Uint8Array,
   Uint8Array,
+  bigint,
   Uint8Array[] | null,
 ];
 
@@ -34,6 +35,7 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
    * @param {string} uri URI.
    * @param {INonFungibleTokenData} data Data.
    * @param {IPredicate} dataUpdatePredicate Data update predicate.
+   * @param {bigint} nonce Optional nonce.
    * @param {Uint8Array[] | null} _tokenCreationPredicateSignatures Token creation predicate signatures.
    */
   public constructor(
@@ -43,8 +45,10 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
     public readonly uri: string,
     public readonly data: INonFungibleTokenData,
     public readonly dataUpdatePredicate: IPredicate,
+    public readonly nonce: bigint,
     private readonly _tokenCreationPredicateSignatures: Uint8Array[] | null,
   ) {
+    this.nonce = BigInt(this.nonce);
     this._tokenCreationPredicateSignatures =
       this._tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
@@ -68,7 +72,16 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
    * @see {ITransactionPayloadAttributes.toOwnerProofData}
    */
   public toOwnerProofData(): CreateNonFungibleTokenAttributesArray {
-    return this.toArray();
+    return [
+      this.ownerPredicate.bytes,
+      this.typeId.bytes,
+      this.name,
+      this.uri,
+      this.data.bytes,
+      this.dataUpdatePredicate.bytes,
+      this.nonce,
+      null,
+    ];
   }
 
   /**
@@ -82,6 +95,7 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
       this.uri,
       this.data.bytes,
       this.dataUpdatePredicate.bytes,
+      this.nonce,
       this.tokenCreationPredicateSignatures,
     ];
   }
@@ -99,6 +113,7 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
         URI: ${this.uri}
         Data: ${this.data.toString()}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
+        Nonce: ${this.nonce}
         Token Creation Predicate Signatures: ${
           this._tokenCreationPredicateSignatures
             ? dedent`
@@ -123,6 +138,7 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
       NonFungibleTokenData.createFromBytes(data[4]),
       new PredicateBytes(data[5]),
       data[6],
+      data[7],
     );
   }
 }

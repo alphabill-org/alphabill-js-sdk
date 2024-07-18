@@ -13,7 +13,7 @@ import { PayloadType } from './PayloadAttributeFactory.js';
 export type TransferNonFungibleTokenAttributesArray = readonly [
   Uint8Array,
   Uint8Array | null,
-  Uint8Array,
+  bigint,
   Uint8Array,
   Uint8Array[] | null,
 ];
@@ -26,19 +26,19 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
    * Transfer non-fungible token attributes constructor.
    * @param {IPredicate} ownerPredicate - Owner predicate.
    * @param {Uint8Array | null} _nonce - Nonce.
-   * @param {Uint8Array} _backlink - Backlink.
+   * @param {bigint} counter - Counter.
    * @param {IUnitId} typeId - Type ID.
    * @param {Uint8Array[] | null} _invariantPredicateSignatures - Invariant predicate signatures.
    */
   public constructor(
     public readonly ownerPredicate: IPredicate,
     private readonly _nonce: Uint8Array | null,
-    private readonly _backlink: Uint8Array,
+    public readonly counter: bigint,
     public readonly typeId: IUnitId,
     private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this._nonce = this._nonce ? new Uint8Array(this._nonce) : null;
-    this._backlink = new Uint8Array(this._backlink);
+    this.counter = BigInt(this.counter);
     this._invariantPredicateSignatures =
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
@@ -59,14 +59,6 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
   }
 
   /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
-  }
-
-  /**
    * Get invariant predicate signatures.
    * @returns {Uint8Array[] | null} Invariant predicate signatures.
    */
@@ -78,14 +70,14 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
    * @see {ITransactionPayloadAttributes.toOwnerProofData}
    */
   public toOwnerProofData(): TransferNonFungibleTokenAttributesArray {
-    return [this.ownerPredicate.bytes, this.nonce, this.backlink, this.typeId.bytes, null];
+    return [this.ownerPredicate.bytes, this.nonce, this.counter, this.typeId.bytes, null];
   }
 
   /**
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public toArray(): TransferNonFungibleTokenAttributesArray {
-    return [this.ownerPredicate.bytes, this.nonce, this.backlink, this.typeId.bytes, this.invariantPredicateSignatures];
+    return [this.ownerPredicate.bytes, this.nonce, this.counter, this.typeId.bytes, this.invariantPredicateSignatures];
   }
 
   /**
@@ -97,7 +89,7 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
       TransferNonFungibleTokenAttributes
         Owner Predicate: ${this.ownerPredicate.toString()}
         Nonce: ${this._nonce ? Base16Converter.encode(this._nonce) : 'null'}
-        Backlink: ${Base16Converter.encode(this._backlink)}
+        Counter: ${this.counter}
         Type ID: ${this.typeId.toString()}
         Invariant Predicate Signatures: ${
           this._invariantPredicateSignatures

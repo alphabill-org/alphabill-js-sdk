@@ -1,4 +1,3 @@
-import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { PayloadType } from './PayloadAttributeFactory.js';
@@ -6,7 +5,7 @@ import { PayloadType } from './PayloadAttributeFactory.js';
 /**
  * Lock bill attributes array.
  */
-export type LockBillAttributesArray = readonly [bigint, Uint8Array];
+export type LockBillAttributesArray = readonly [bigint, bigint];
 
 /**
  * Lock bill payload attributes.
@@ -15,14 +14,14 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
   /**
    * Lock bill attributes constructor.
    * @param {bigint} lockStatus - Lock status.
-   * @param {Uint8Array} _backlink - Backlink.
+   * @param {bigint} counter - Counter.
    */
   public constructor(
     public readonly lockStatus: bigint,
-    private readonly _backlink: Uint8Array,
+    public readonly counter: bigint,
   ) {
     this.lockStatus = BigInt(this.lockStatus);
-    this._backlink = new Uint8Array(this._backlink);
+    this.counter = BigInt(this.counter);
   }
 
   /**
@@ -30,14 +29,6 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
    */
   public get payloadType(): PayloadType {
     return PayloadType.LockBillAttributes;
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
   }
 
   /**
@@ -51,7 +42,7 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public toArray(): LockBillAttributesArray {
-    return [this.lockStatus, this.backlink];
+    return [this.lockStatus, this.counter];
   }
 
   /**
@@ -62,7 +53,7 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
     return dedent`
       LockBillAttributes
         Lock Status: ${this.lockStatus}
-        Backlink: ${Base16Converter.encode(this._backlink)}`;
+        Counter: ${this.counter}`;
   }
 
   /**

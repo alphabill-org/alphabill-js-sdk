@@ -1,14 +1,14 @@
 /**
- * Non Fungible token data from getUnit.
+ * Non-fungible token data from getUnit.
  * @interface INonFungibleTokenDto
  */
 export interface INonFungibleTokenDto {
-  NftType: string;
-  Name: string;
-  URI: string;
-  Data: string;
-  DataUpdatePredicate: string;
-  T: string;
-  Backlink: string;
-  Locked: number;
+  typeID: string;
+  name: string;
+  uri: string;
+  data: string;
+  dataUpdatePredicate: string;
+  lastUpdate: string;
+  counter: string;
+  locked: string;
 }

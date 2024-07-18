@@ -21,8 +21,8 @@ export class NonFungibleToken {
    * @param {string} uri Token URI.
    * @param {Uint8Array} _data Token data.
    * @param {IPredicate} dataUpdatePredicate Data update predicate.
-   * @param {bigint} blockNumber Block number.
-   * @param {Uint8Array} _backlink Backlink.
+   * @param {bigint} lastUpdate Round number of the last transaction with this token.
+   * @param {bigint} counter Counter.
    * @param {boolean} locked Is token locked.
    * @param {IStateProof | null} stateProof State proof.
    */
@@ -34,14 +34,14 @@ export class NonFungibleToken {
     public readonly uri: string,
     private readonly _data: Uint8Array,
     public readonly dataUpdatePredicate: IPredicate,
-    public readonly blockNumber: bigint,
-    private readonly _backlink: Uint8Array,
+    public readonly lastUpdate: bigint,
+    public readonly counter: bigint,
     public readonly locked: boolean,
     public readonly stateProof: IStateProof | null,
   ) {
     this._data = new Uint8Array(this._data);
-    this.blockNumber = BigInt(this.blockNumber);
-    this._backlink = new Uint8Array(this._backlink);
+    this.lastUpdate = BigInt(this.lastUpdate);
+    this.counter = BigInt(this.counter);
   }
 
   /**
@@ -50,14 +50,6 @@ export class NonFungibleToken {
    */
   public get data(): Uint8Array {
     return new Uint8Array(this._data);
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
   }
 
   /**
@@ -77,14 +69,14 @@ export class NonFungibleToken {
     return new NonFungibleToken(
       unitId,
       ownerPredicate,
-      UnitId.fromBytes(Base16Converter.decode(data.NftType)),
-      data.Name,
-      data.URI,
-      Base64Converter.decode(data.Data),
-      new PredicateBytes(Base64Converter.decode(data.DataUpdatePredicate)),
-      BigInt(data.T),
-      Base64Converter.decode(data.Backlink),
-      Boolean(Number(data.Locked)),
+      UnitId.fromBytes(Base16Converter.decode(data.typeID)),
+      data.name,
+      data.uri,
+      Base64Converter.decode(data.data),
+      new PredicateBytes(Base64Converter.decode(data.dataUpdatePredicate)),
+      BigInt(data.lastUpdate),
+      BigInt(data.counter),
+      Boolean(Number(data.locked)),
       stateProof,
     );
   }
@@ -96,13 +88,15 @@ export class NonFungibleToken {
   public toString(): string {
     return dedent`
       NonFungibleToken
+        Unit ID: ${this.unitId.toString()}
+        Owner Predicate: ${this.ownerPredicate.toString()}
         Token Type: ${this.tokenType.toString()}
         Name: ${this.name}
         URI: ${this.uri}
         Data: ${Base16Converter.encode(this._data)}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
-        Block Number: ${this.blockNumber}
-        Backlink: ${Base16Converter.encode(this._backlink)}
+        Last Update: ${this.lastUpdate}
+        Counter: ${this.counter}
         Locked: ${this.locked}`;
   }
 }

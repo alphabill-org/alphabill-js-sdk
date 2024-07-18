@@ -7,7 +7,7 @@ export default {
   moduleNameMapper: {
     '^(\\.\\.?/.*)\\.js$': '$1',
   },
-  testMatch: ['<rootDir>/tests/**/*.ts'],
+  testMatch: ['<rootDir>/tests/**/*Test.ts'],
   collectCoverage: true,
   collectCoverageFrom: ['<rootDir>/src/**/*.ts'],
 };

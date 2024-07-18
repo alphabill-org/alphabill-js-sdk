@@ -1,4 +1,3 @@
-import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { PayloadType } from './PayloadAttributeFactory.js';
@@ -6,7 +5,7 @@ import { PayloadType } from './PayloadAttributeFactory.js';
 /**
  * Unlock bill attributes array.
  */
-export type UnlockBillAttributesArray = readonly [Uint8Array];
+export type UnlockBillAttributesArray = readonly [bigint];
 
 /**
  * Unlock bill payload attributes.
@@ -14,10 +13,10 @@ export type UnlockBillAttributesArray = readonly [Uint8Array];
 export class UnlockBillAttributes implements ITransactionPayloadAttributes {
   /**
    * Unlock bill attributes constructor.
-   * @param {Uint8Array} _backlink - Backlink.
+   * @param {Uint8Array} counter - Counter.
    */
-  public constructor(private readonly _backlink: Uint8Array) {
-    this._backlink = new Uint8Array(this._backlink);
+  public constructor(public readonly counter: bigint) {
+    this.counter = BigInt(this.counter);
   }
 
   /**
@@ -25,14 +24,6 @@ export class UnlockBillAttributes implements ITransactionPayloadAttributes {
    */
   public get payloadType(): PayloadType {
     return PayloadType.UnlockBillAttributes;
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
   }
 
   /**
@@ -46,7 +37,7 @@ export class UnlockBillAttributes implements ITransactionPayloadAttributes {
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public toArray(): UnlockBillAttributesArray {
-    return [this.backlink];
+    return [this.counter];
   }
 
   /**
@@ -56,7 +47,7 @@ export class UnlockBillAttributes implements ITransactionPayloadAttributes {
   public toString(): string {
     return dedent`
       UnlockBillAttributes
-        Backlink: ${Base16Converter.encode(this._backlink)}`;
+        Counter: ${this.counter}`;
   }
 
   /**

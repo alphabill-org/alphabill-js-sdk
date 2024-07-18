@@ -1,6 +1,5 @@
 import { IUnitId } from '../IUnitId.js';
 import { UnitId } from '../UnitId.js';
-import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { PayloadType } from './PayloadAttributeFactory.js';
@@ -8,7 +7,7 @@ import { PayloadType } from './PayloadAttributeFactory.js';
 /**
  * Transfer bill to dust collector attributes array.
  */
-export type TransferBillToDustCollectorAttributesArray = readonly [bigint, Uint8Array, Uint8Array, Uint8Array];
+export type TransferBillToDustCollectorAttributesArray = readonly [bigint, Uint8Array, bigint, bigint];
 
 /**
  * Transfer bill to dust collector payload attributes.
@@ -18,18 +17,18 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
    * Transfer bill to dust collector attributes constructor.
    * @param {bigint} value - Value.
    * @param {IUnitId} targetUnitId - Target unit ID.
-   * @param {Uint8Array} _targetUnitBacklink - Target unit backlink.
-   * @param {Uint8Array} _backlink - Backlink.
+   * @param {bigint} targetUnitCounter - Target unit counter.
+   * @param {bigint} counter - Counter.
    */
   public constructor(
     public readonly value: bigint,
     public readonly targetUnitId: IUnitId,
-    private readonly _targetUnitBacklink: Uint8Array,
-    private readonly _backlink: Uint8Array,
+    public readonly targetUnitCounter: bigint,
+    public readonly counter: bigint,
   ) {
     this.value = BigInt(this.value);
-    this._targetUnitBacklink = new Uint8Array(this._targetUnitBacklink);
-    this._backlink = new Uint8Array(this._backlink);
+    this.targetUnitCounter = BigInt(this.targetUnitCounter);
+    this.counter = BigInt(this.counter);
   }
 
   /**
@@ -37,22 +36,6 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
    */
   public get payloadType(): PayloadType {
     return PayloadType.TransferBillToDustCollectorAttributes;
-  }
-
-  /**
-   * Get target unit backlink.
-   * @returns {Uint8Array} Target unit backlink.
-   */
-  public get targetUnitBacklink(): Uint8Array {
-    return new Uint8Array(this._targetUnitBacklink);
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
   }
 
   /**
@@ -66,7 +49,7 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public toArray(): TransferBillToDustCollectorAttributesArray {
-    return [this.value, this.targetUnitId.bytes, this.targetUnitBacklink, this.backlink];
+    return [this.value, this.targetUnitId.bytes, this.targetUnitCounter, this.counter];
   }
 
   /**
@@ -78,8 +61,8 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
       TransferBillToDustCollectorAttributes
         Value: ${this.value}
         Target Unit ID: ${this.targetUnitId.toString()}
-        Target Unit Backlink: ${Base16Converter.encode(this._targetUnitBacklink)}
-        Backlink: ${Base16Converter.encode(this._backlink)}`;
+        Target Unit Counter: ${this.targetUnitCounter}
+        Counter: ${this.counter}`;
   }
 
   /**

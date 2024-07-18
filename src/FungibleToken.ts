@@ -4,7 +4,6 @@ import { IFungibleTokenDto } from './json-rpc/IFungibleTokenDto.js';
 import { IPredicate } from './transaction/IPredicate.js';
 import { UnitId } from './UnitId.js';
 import { Base16Converter } from './util/Base16Converter.js';
-import { Base64Converter } from './util/Base64Converter.js';
 import { dedent } from './util/StringUtils.js';
 
 /**
@@ -17,8 +16,9 @@ export class FungibleToken {
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {IUnitId} tokenType Token type.
    * @param {bigint} value Token value.
-   * @param {bigint} blockNumber Block number.
-   * @param {Uint8Array} _backlink Backlink.
+   * @param {bigint} lastUpdate Round number of the last transaction with this token.
+   * @param {bigint} counter Counter.
+   * @param {bigint} minimumLifetime Minimum lifetime of this token.
    * @param {boolean} locked Is token locked.
    * @param {IStateProof | null} stateProof State proof.
    */
@@ -27,29 +27,23 @@ export class FungibleToken {
     public readonly ownerPredicate: IPredicate,
     public readonly tokenType: IUnitId,
     public readonly value: bigint,
-    public readonly blockNumber: bigint,
-    private readonly _backlink: Uint8Array,
+    public readonly lastUpdate: bigint,
+    public readonly counter: bigint,
+    public readonly minimumLifetime: bigint,
     public readonly locked: boolean,
     public readonly stateProof: IStateProof | null,
   ) {
     this.value = BigInt(this.value);
-    this.blockNumber = BigInt(this.blockNumber);
-    this._backlink = new Uint8Array(this._backlink);
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array} Backlink.
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
+    this.lastUpdate = BigInt(this.lastUpdate);
+    this.counter = BigInt(this.counter);
+    this.minimumLifetime = BigInt(this.minimumLifetime);
   }
 
   /**
    * Create fungible token from DTO.
    * @param {IUnitId} unitId Unit ID.
    * @param {IPredicate} ownerPredicate Owner predicate.
-   * @param {IFungibleTokenDto} data Fee credit record data.
+   * @param {IFungibleTokenDto} data Fungible token data.
    * @param {IStateProof} stateProof State proof.
    * @returns {FungibleToken} Fungible token.
    */
@@ -62,11 +56,12 @@ export class FungibleToken {
     return new FungibleToken(
       unitId,
       ownerPredicate,
-      UnitId.fromBytes(Base16Converter.decode(data.TokenType)),
-      BigInt(data.Value),
-      BigInt(data.T),
-      Base64Converter.decode(data.Backlink),
-      Boolean(Number(data.Locked)),
+      UnitId.fromBytes(Base16Converter.decode(data.tokenType)),
+      BigInt(data.value),
+      BigInt(data.lastUpdate),
+      BigInt(data.counter),
+      BigInt(data.t1),
+      Boolean(Number(data.locked)),
       stateProof,
     );
   }
@@ -78,10 +73,13 @@ export class FungibleToken {
   public toString(): string {
     return dedent`
       FungibleToken
+        Unit ID: ${this.unitId.toString()}
+        Owner Predicate: ${this.ownerPredicate.toString()}
         Token Type: ${this.tokenType.toString()}
         Value: ${this.value}
-        Block Number: ${this.blockNumber}
-        Backlink: ${Base16Converter.encode(this._backlink)}
+        Last Update: ${this.lastUpdate}
+        Counter: ${this.counter}
+        Minimum Lifetime: ${this.minimumLifetime}
         Locked: ${this.locked}`;
   }
 }

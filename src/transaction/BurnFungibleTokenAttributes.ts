@@ -12,8 +12,8 @@ export type BurnFungibleTokenAttributesArray = readonly [
   Uint8Array,
   bigint,
   Uint8Array,
-  Uint8Array,
-  Uint8Array,
+  bigint,
+  bigint,
   Uint8Array[] | null,
 ];
 
@@ -26,21 +26,21 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
    * @param {IUnitId} typeId Token type ID.
    * @param {bigint} value Token value.
    * @param {IUnitId} targetTokenId Target token ID.
-   * @param {Uint8Array} _targetTokenBacklink Target token backlink.
-   * @param {Uint8Array} _backlink Backlink.
+   * @param {bigint} targetTokenCounter Target token counter.
+   * @param {bigint} counter Counter.
    * @param {Uint8Array[] | null} _invariantPredicateSignatures Invariant predicate signatures.
    */
   public constructor(
     public readonly typeId: IUnitId,
     public readonly value: bigint,
     public readonly targetTokenId: IUnitId,
-    private readonly _targetTokenBacklink: Uint8Array,
-    private readonly _backlink: Uint8Array,
+    public readonly targetTokenCounter: bigint,
+    public readonly counter: bigint,
     private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
-    this._targetTokenBacklink = new Uint8Array(this._targetTokenBacklink);
-    this._backlink = new Uint8Array(this._backlink);
+    this.targetTokenCounter = BigInt(this.targetTokenCounter);
+    this.counter = BigInt(this.counter);
     this._invariantPredicateSignatures =
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
@@ -50,22 +50,6 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
    */
   public get payloadType(): PayloadType {
     return PayloadType.BurnFungibleTokenAttributes;
-  }
-
-  /**
-   * Get target token backlink.
-   * @returns {Uint8Array}
-   */
-  public get targetTokenBacklink(): Uint8Array {
-    return new Uint8Array(this._targetTokenBacklink);
-  }
-
-  /**
-   * Get backlink.
-   * @returns {Uint8Array}
-   */
-  public get backlink(): Uint8Array {
-    return new Uint8Array(this._backlink);
   }
 
   /**
@@ -80,7 +64,7 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
    * @see {ITransactionPayloadAttributes.toOwnerProofData}
    */
   public toOwnerProofData(): BurnFungibleTokenAttributesArray {
-    return [this.typeId.bytes, this.value, this.targetTokenId.bytes, this.targetTokenBacklink, this.backlink, null];
+    return [this.typeId.bytes, this.value, this.targetTokenId.bytes, this.targetTokenCounter, this.counter, null];
   }
 
   /**
@@ -91,8 +75,8 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
       this.typeId.bytes,
       this.value,
       this.targetTokenId.bytes,
-      this.targetTokenBacklink,
-      this.backlink,
+      this.targetTokenCounter,
+      this.counter,
       this.invariantPredicateSignatures,
     ];
   }
@@ -107,8 +91,8 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
         Type ID: ${this.typeId.toString()}
         Value: ${this.value}
         Target Token ID: ${this.targetTokenId.toString()}
-        Target Token Backlink: ${Base16Converter.encode(this._targetTokenBacklink)}
-        Backlink: ${Base16Converter.encode(this._backlink)}
+        Target Token Counter: ${this.targetTokenCounter}
+        Counter: ${this.counter}
         Invariant Predicate Signatures: ${
           this._invariantPredicateSignatures
             ? dedent`

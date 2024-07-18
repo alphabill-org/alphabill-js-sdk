@@ -3,9 +3,10 @@
  * @interface IFungibleTokenDto
  */
 export interface IFungibleTokenDto {
-  TokenType: string;
-  Value: number;
-  T: string;
-  Backlink: string;
-  Locked: number;
+  tokenType: string;
+  value: string;
+  lastUpdate: string;
+  counter: string;
+  t1: string;
+  locked: string;
 }
