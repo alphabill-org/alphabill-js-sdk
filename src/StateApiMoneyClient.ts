@@ -59,7 +59,7 @@ interface ITransferBillToDustCollectorTransactionData {
 interface ISwapBillsWithDustCollectorTransactionData {
   ownerPredicate: IPredicate;
   proofs: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>>[];
-  bill: { unitId: IUnitId; counter: bigint };
+  bill: { unitId: IUnitId };
 }
 
 interface ITransferBillTransactionData {

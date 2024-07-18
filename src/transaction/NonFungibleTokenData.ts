@@ -31,16 +31,6 @@ export class NonFungibleTokenData implements INonFungibleTokenData {
   }
 
   /**
-   * Parse non-fungible token data.
-   * @param {ICborCodec} cborCodec - CBOR codec.
-   * @param {Uint8Array} data - Data.
-   * @returns {Promise<unknown>} Parsed data.
-   */
-  public static parse(cborCodec: ICborCodec, data: Uint8Array): Promise<unknown> {
-    return cborCodec.decode(data);
-  }
-
-  /**
    * Get bytes.
    * @returns {Uint8Array} Bytes.
    */
