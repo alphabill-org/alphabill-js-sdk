@@ -28,7 +28,10 @@ interface ITransferFeeCreditTransactionData {
   amount: bigint;
   systemIdentifier: SystemIdentifier;
   latestAdditionTime: bigint;
-  feeCreditRecordParams: { ownerPredicate: IPredicate; unitType: UnitType };
+  feeCreditRecordParams: {
+    ownerPredicate: IPredicate;
+    unitType: UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD | UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD;
+  };
   bill: { unitId: IUnitId; counter: bigint };
 }
 
@@ -59,7 +62,7 @@ interface ITransferBillToDustCollectorTransactionData {
 interface ISwapBillsWithDustCollectorTransactionData {
   ownerPredicate: IPredicate;
   proofs: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>>[];
-  bill: { unitId: IUnitId; counter: bigint };
+  bill: { unitId: IUnitId };
 }
 
 interface ITransferBillTransactionData {
