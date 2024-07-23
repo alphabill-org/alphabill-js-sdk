@@ -19,9 +19,3 @@ To run integration tests, configure `tests/integration/config.ts` file based on 
 ### Package
 
 Latest nightly build is in npm registry with `dev` tag. 
-
-### Examples
-
-To run examples, `npm run build` must be run to generate `lib` folder with
-ES2020 code. After that run `npm install` inside `examples` folder root and 
-everything is set.
