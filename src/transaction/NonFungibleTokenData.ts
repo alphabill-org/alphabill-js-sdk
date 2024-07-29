@@ -43,6 +43,7 @@ export class NonFungibleTokenData implements INonFungibleTokenData {
    * @returns {string} String representation.
    */
   public toString(): string {
-    return dedent`${Base16Converter.encode(this.data)}`;
+    return dedent`
+      NonFungibleTokenData: ${Base16Converter.encode(this.data)}`;
   }
 }
