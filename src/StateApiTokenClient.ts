@@ -496,7 +496,7 @@ export class StateApiTokenClient extends StateApiClient {
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async closeFeeCredit(
-    { amount, bill, feeCreditRecord }: ICloseFeeCreditTransactionData,
+    { bill, feeCreditRecord }: ICloseFeeCreditTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
     return this.sendTransaction(
@@ -504,7 +504,7 @@ export class StateApiTokenClient extends StateApiClient {
         TransactionPayload.create(
           SystemIdentifier.TOKEN_PARTITION,
           feeCreditRecord.unitId,
-          new CloseFeeCreditAttributes(amount, bill.unitId, bill.counter, feeCreditRecord.counter),
+          new CloseFeeCreditAttributes(feeCreditRecord.balance, bill.unitId, bill.counter, feeCreditRecord.counter),
           metadata,
         ),
       ),

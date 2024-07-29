@@ -270,7 +270,6 @@ describe('Money Client Integration Tests', () => {
     console.log('Closing fee credit...');
     const closeFeeCreditHash = await moneyClient.closeFeeCredit(
       {
-        amount: bill.value,
         bill: bill,
         feeCreditRecord: feeCreditRecord,
       },

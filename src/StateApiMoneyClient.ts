@@ -77,7 +77,6 @@ export interface IAddFeeCreditTransactionData {
 }
 
 export interface ICloseFeeCreditTransactionData {
-  amount: bigint;
   bill: { unitId: IUnitId; counter: bigint };
   feeCreditRecord: { unitId: IUnitId; balance: bigint; counter: bigint };
 }
