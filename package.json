@@ -15,7 +15,6 @@
     "integration-test:ci": "jest tests/integration/ --runInBand --ci --reporters=default --reporters=jest-junit",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --fix",
-    "lint:examples": "eslint \"examples/**/*.mjs\"",
     "typedoc": "npm run clean:docs && typedoc --out docs/ --entryPointStrategy expand ./src"
   },
   "dependencies": {
