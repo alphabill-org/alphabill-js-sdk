@@ -231,7 +231,7 @@ describe('Money Client Integration Tests', () => {
     expect(targetBill).not.toBeNull();
 
     console.log('Transferring bill to dust collector...');
-    const swapBillHash = await moneyClient.transferBillToDustCollector(
+    const transferBillToDustCollectorHash = await moneyClient.transferBillToDustCollector(
       {
         bill: bill,
         targetBill: targetBill,
@@ -239,11 +239,11 @@ describe('Money Client Integration Tests', () => {
       createMetadata(round, feeCreditRecordId),
     );
     const transactionProof: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>> =
-      await waitTransactionProof(moneyClient, swapBillHash);
+      await waitTransactionProof(moneyClient, transferBillToDustCollectorHash);
     console.log('Transferring bill to dust collector successful');
 
     console.log('Swapping bill with dust collector...');
-    await moneyClient.swapBillsWithDustCollector(
+    const swapBillWithDustCollectorHash = await moneyClient.swapBillsWithDustCollector(
       {
         bill: targetBill,
         ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
@@ -252,7 +252,7 @@ describe('Money Client Integration Tests', () => {
       createMetadata(round, feeCreditRecordId),
     );
 
-    await waitTransactionProof(moneyClient, swapBillHash);
+    await waitTransactionProof(moneyClient, swapBillWithDustCollectorHash);
     console.log('Swapping bill successful');
   }, 20000);
 
