@@ -15,10 +15,10 @@ export type CloseFeeCreditAttributesArray = readonly [bigint, Uint8Array, bigint
 export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * Close fee credit payload attributes constructor.
-   * @param {bigint} amount Amount.
-   * @param {IUnitId} targetUnitId Target unit ID.
-   * @param {bigint} targetUnitCounter Target unit counter.
-   * @param {bigint} counter Fee credit counter.
+   * @param {bigint} amount Amount is the current balance of the fee credit record.
+   * @param {IUnitId} targetUnitId Target unit ID is the UnitID of the existing bill in the money partition that will receive the reclaimed fee credit amount.
+   * @param {bigint} targetUnitCounter Target unit counter is the current counter value of the target bill where to reclaim fee credits in money partition.
+   * @param {bigint} counter Counter is the transaction counter of this fee credit record.
    */
   public constructor(
     public readonly amount: bigint,
