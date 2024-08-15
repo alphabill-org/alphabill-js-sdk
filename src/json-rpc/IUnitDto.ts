@@ -43,6 +43,6 @@ export interface IStateTreeCertDto {
 }
 
 interface IPathItem {
-  readonly hash: string;
-  readonly directionLeft: boolean;
+  readonly Hash: string;
+  readonly DirectionLeft: boolean;
 }

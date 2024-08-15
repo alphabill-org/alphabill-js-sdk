@@ -12,6 +12,7 @@ import { IPredicate } from '../transaction/IPredicate.js';
 import { UnitType } from '../transaction/UnitType.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
+import { Base64Converter } from '../util/Base64Converter.js';
 import { IStateProofDto, IStateTreeCertDto, IUnitDto, IUnitTreeCertDto } from './IUnitDto.js';
 
 const unitDataCreateMap = new Map<
@@ -83,6 +84,6 @@ function createUnitTreeCert(data: IUnitTreeCertDto): IUnitTreeCert {
   return new UnitTreeCert(
     Base16Converter.decode(data.txrHash),
     Base16Converter.decode(data.dataHash),
-    data.path?.map((path) => new PathItem(Base16Converter.decode(path.hash), path.directionLeft)) || null,
+    data.path?.map((path) => new PathItem(Base64Converter.decode(path.Hash), path.DirectionLeft)) || null,
   );
 }
