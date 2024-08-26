@@ -7,12 +7,17 @@ import { StateApiClient } from './StateApiClient.js';
 import { StateApiMoneyClient } from './StateApiMoneyClient.js';
 import { StateApiTokenClient } from './StateApiTokenClient.js';
 import { FeeCreditRecordUnitIdFactory } from './transaction/FeeCreditRecordUnitIdFactory.js';
-import { ITransactionOrderFactory } from './transaction/ITransactionOrderFactory.js';
 import { TokenUnitIdFactory } from './transaction/TokenUnitIdFactory.js';
 
 type StateApiClientOptions = {
   transport: IStateApiService;
 };
+
+type StateApiMoneyClientOptions = StateApiClientOptions & {
+  feeCreditRecordUnitIdFactory: FeeCreditRecordUnitIdFactory;
+};
+
+type StateApiTokenClientOptions = StateApiClientOptions & { tokenUnitIdFactory: TokenUnitIdFactory };
 
 /**
  * Create public client.
@@ -23,34 +28,22 @@ export function createPublicClient(options: StateApiClientOptions): StateApiClie
   return new StateApiClient(options.transport);
 }
 
-type PlatformStateApiClientOptions = {
-  transactionOrderFactory: ITransactionOrderFactory;
-} & StateApiClientOptions;
-
 /**
  * Create money partition client.
- * @param {PlatformStateApiClientOptions} options Options.
+ * @param {StateApiMoneyClientOptions} options Options.
  * @returns {StateApiMoneyClient} State API client.
  */
-export function createMoneyClient(
-  options: PlatformStateApiClientOptions & { feeCreditRecordUnitIdFactory: FeeCreditRecordUnitIdFactory },
-): StateApiMoneyClient {
-  return new StateApiMoneyClient(
-    options.transactionOrderFactory,
-    options.feeCreditRecordUnitIdFactory,
-    options.transport,
-  );
+export function createMoneyClient(options: StateApiMoneyClientOptions): StateApiMoneyClient {
+  return new StateApiMoneyClient(options.feeCreditRecordUnitIdFactory, options.transport);
 }
 
 /**
  * Create token partition client.
- * @param {PlatformStateApiClientOptions} options Options.
+ * @param {StateApiTokenClientOptions} options Options.
  * @returns {StateApiTokenClient} State API client.
  */
-export function createTokenClient(
-  options: PlatformStateApiClientOptions & { tokenUnitIdFactory: TokenUnitIdFactory },
-): StateApiTokenClient {
-  return new StateApiTokenClient(options.transactionOrderFactory, options.tokenUnitIdFactory, options.transport);
+export function createTokenClient(options: StateApiTokenClientOptions): StateApiTokenClient {
+  return new StateApiTokenClient(options.tokenUnitIdFactory, options.transport);
 }
 
 /**

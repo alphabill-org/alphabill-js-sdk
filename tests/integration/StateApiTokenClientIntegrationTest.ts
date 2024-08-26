@@ -20,7 +20,6 @@ import { NonFungibleTokenData } from '../../src/transaction/NonFungibleTokenData
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/PayToPublicKeyHashPredicate.js';
 import { TokenIcon } from '../../src/transaction/TokenIcon.js';
 import { TokenUnitIdFactory } from '../../src/transaction/TokenUnitIdFactory.js';
-import { TransactionOrderFactory } from '../../src/transaction/TransactionOrderFactory.js';
 import { TransactionPayload } from '../../src/transaction/TransactionPayload.js';
 import { TransferFeeCreditAttributes } from '../../src/transaction/TransferFeeCreditAttributes.js';
 import { UnitIdWithType } from '../../src/transaction/UnitIdWithType.js';
@@ -34,13 +33,11 @@ import { createMetadata, waitTransactionProof } from './utils/TestUtils.js';
 describe('Token Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
-  const transactionOrderFactory = new TransactionOrderFactory(cborCodec, signingService);
   const tokenUnitIdFactory = new TokenUnitIdFactory(cborCodec);
   const feeCreditRecordUnitIdFactory = new FeeCreditRecordUnitIdFactory();
 
   const tokenClient = createTokenClient({
     transport: http(config.tokenPartitionUrl, new CborCodecNode()),
-    transactionOrderFactory,
     tokenUnitIdFactory,
   });
 
@@ -49,7 +46,6 @@ describe('Token Client Integration Tests', () => {
   it('Add fee credit', async () => {
     const moneyClient = createMoneyClient({
       transport: http(config.moneyPartitionUrl, new CborCodecNode()),
-      transactionOrderFactory,
       feeCreditRecordUnitIdFactory,
     });
 

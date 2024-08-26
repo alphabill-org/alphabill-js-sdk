@@ -18,7 +18,6 @@ import { CreateNonFungibleTokenTypeAttributes } from './transaction/CreateNonFun
 import { INonFungibleTokenData } from './transaction/INonFungibleTokenData.js';
 import { IPredicate } from './transaction/IPredicate.js';
 import { ITransactionClientMetadata } from './transaction/ITransactionClientMetadata.js';
-import { ITransactionOrderFactory } from './transaction/ITransactionOrderFactory.js';
 import { JoinFungibleTokenAttributes } from './transaction/JoinFungibleTokenAttributes.js';
 import { LockFeeCreditAttributes } from './transaction/LockFeeCreditAttributes.js';
 import { LockTokenAttributes } from './transaction/LockTokenAttributes.js';
@@ -142,13 +141,11 @@ export interface IUnlockTokenTransactionData {
  */
 export class StateApiTokenClient extends StateApiClient {
   /**
-   * State API client for token partition constructor.
-   * @param transactionOrderFactory Transaction order factory.
+   * State API client for money partition constructor.
    * @param tokenUnitIdFactory Token unit ID factory.
    * @param service State API service.
    */
   public constructor(
-    private readonly transactionOrderFactory: ITransactionOrderFactory,
     private readonly tokenUnitIdFactory: TokenUnitIdFactory,
     service: IStateApiService,
   ) {
