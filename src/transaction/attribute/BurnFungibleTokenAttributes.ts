@@ -1,9 +1,9 @@
-import { IUnitId } from '../IUnitId.js';
-import { UnitId } from '../UnitId.js';
-import { Base16Converter } from '../util/Base16Converter.js';
-import { dedent } from '../util/StringUtils.js';
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadType } from './PayloadAttributeFactory.js';
+import { IUnitId } from '../../IUnitId.js';
+import { UnitId } from '../../UnitId.js';
+import { Base16Converter } from '../../util/Base16Converter.js';
+import { dedent } from '../../util/StringUtils.js';
+import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
+import { PayloadType } from '../PayloadAttributeFactory.js';
 
 /**
  * Burn fungible token attributes array.

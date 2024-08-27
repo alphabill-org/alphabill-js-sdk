@@ -8,29 +8,29 @@ import {
   IUnlockUnitTransactionData,
 } from './StateApiMoneyClient.js';
 import { SystemIdentifier } from './SystemIdentifier.js';
-import { AddFeeCreditAttributes } from './transaction/AddFeeCreditAttributes.js';
-import { BurnFungibleTokenAttributes } from './transaction/BurnFungibleTokenAttributes.js';
-import { CloseFeeCreditAttributes } from './transaction/CloseFeeCreditAttributes.js';
-import { CreateFungibleTokenAttributes } from './transaction/CreateFungibleTokenAttributes.js';
-import { CreateFungibleTokenTypeAttributes } from './transaction/CreateFungibleTokenTypeAttributes.js';
-import { CreateNonFungibleTokenAttributes } from './transaction/CreateNonFungibleTokenAttributes.js';
-import { CreateNonFungibleTokenTypeAttributes } from './transaction/CreateNonFungibleTokenTypeAttributes.js';
+import { AddFeeCreditAttributes } from './transaction/attribute/AddFeeCreditAttributes.js';
+import { BurnFungibleTokenAttributes } from './transaction/attribute/BurnFungibleTokenAttributes.js';
+import { CloseFeeCreditAttributes } from './transaction/attribute/CloseFeeCreditAttributes.js';
+import { CreateFungibleTokenAttributes } from './transaction/attribute/CreateFungibleTokenAttributes.js';
+import { CreateFungibleTokenTypeAttributes } from './transaction/attribute/CreateFungibleTokenTypeAttributes.js';
+import { CreateNonFungibleTokenAttributes } from './transaction/attribute/CreateNonFungibleTokenAttributes.js';
+import { CreateNonFungibleTokenTypeAttributes } from './transaction/attribute/CreateNonFungibleTokenTypeAttributes.js';
+import { JoinFungibleTokenAttributes } from './transaction/attribute/JoinFungibleTokenAttributes.js';
+import { LockFeeCreditAttributes } from './transaction/attribute/LockFeeCreditAttributes.js';
+import { LockTokenAttributes } from './transaction/attribute/LockTokenAttributes.js';
+import { SplitFungibleTokenAttributes } from './transaction/attribute/SplitFungibleTokenAttributes.js';
+import { TransferFungibleTokenAttributes } from './transaction/attribute/TransferFungibleTokenAttributes.js';
+import { TransferNonFungibleTokenAttributes } from './transaction/attribute/TransferNonFungibleTokenAttributes.js';
+import { UnlockFeeCreditAttributes } from './transaction/attribute/UnlockFeeCreditAttributes.js';
+import { UnlockTokenAttributes } from './transaction/attribute/UnlockTokenAttributes.js';
+import { UpdateNonFungibleTokenAttributes } from './transaction/attribute/UpdateNonFungibleTokenAttributes.js';
 import { INonFungibleTokenData } from './transaction/INonFungibleTokenData.js';
 import { IPredicate } from './transaction/IPredicate.js';
 import { ITransactionClientMetadata } from './transaction/ITransactionClientMetadata.js';
-import { JoinFungibleTokenAttributes } from './transaction/JoinFungibleTokenAttributes.js';
-import { LockFeeCreditAttributes } from './transaction/LockFeeCreditAttributes.js';
-import { LockTokenAttributes } from './transaction/LockTokenAttributes.js';
-import { SplitFungibleTokenAttributes } from './transaction/SplitFungibleTokenAttributes.js';
 import { TokenIcon } from './transaction/TokenIcon.js';
 import { TokenUnitIdFactory } from './transaction/TokenUnitIdFactory.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
-import { TransferFungibleTokenAttributes } from './transaction/TransferFungibleTokenAttributes.js';
-import { TransferNonFungibleTokenAttributes } from './transaction/TransferNonFungibleTokenAttributes.js';
 import { UnitType } from './transaction/UnitType.js';
-import { UnlockFeeCreditAttributes } from './transaction/UnlockFeeCreditAttributes.js';
-import { UnlockTokenAttributes } from './transaction/UnlockTokenAttributes.js';
-import { UpdateNonFungibleTokenAttributes } from './transaction/UpdateNonFungibleTokenAttributes.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
 
 // TODO: Move interfaces to separate file for token and money client

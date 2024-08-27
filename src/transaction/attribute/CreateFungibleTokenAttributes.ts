@@ -1,11 +1,11 @@
-import { IUnitId } from '../IUnitId.js';
-import { PredicateBytes } from '../PredicateBytes.js';
-import { UnitId } from '../UnitId.js';
-import { Base16Converter } from '../util/Base16Converter.js';
-import { dedent } from '../util/StringUtils.js';
-import { IPredicate } from './IPredicate.js';
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadType } from './PayloadAttributeFactory.js';
+import { IUnitId } from '../../IUnitId.js';
+import { PredicateBytes } from '../../PredicateBytes.js';
+import { UnitId } from '../../UnitId.js';
+import { Base16Converter } from '../../util/Base16Converter.js';
+import { dedent } from '../../util/StringUtils.js';
+import { IPredicate } from '../IPredicate.js';
+import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
+import { PayloadType } from '../PayloadAttributeFactory.js';
 
 /**
  * Create fungible token attributes array.

@@ -1,8 +1,8 @@
-import { PredicateBytes } from '../PredicateBytes.js';
-import { dedent } from '../util/StringUtils.js';
-import { IPredicate } from './IPredicate.js';
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadType } from './PayloadAttributeFactory.js';
+import { PredicateBytes } from '../../PredicateBytes.js';
+import { dedent } from '../../util/StringUtils.js';
+import { IPredicate } from '../IPredicate.js';
+import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
+import { PayloadType } from '../PayloadAttributeFactory.js';
 
 /**
  * Transfer bill attributes array.

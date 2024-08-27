@@ -1,6 +1,6 @@
 import { IUnit } from './IUnit.js';
 import { IUnitId } from './IUnitId.js';
-import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
+import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes';
 import { TransactionOrder } from './transaction/TransactionOrder.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';

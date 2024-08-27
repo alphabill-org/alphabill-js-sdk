@@ -1,11 +1,11 @@
-import { TransactionProofArray } from '../TransactionProof.js';
-import { TransactionRecordArray } from '../TransactionRecord.js';
-import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
-import { dedent } from '../util/StringUtils.js';
+import { TransactionProofArray } from '../../TransactionProof.js';
+import { TransactionRecordArray } from '../../TransactionRecord.js';
+import { TransactionRecordWithProof } from '../../TransactionRecordWithProof.js';
+import { dedent } from '../../util/StringUtils.js';
+import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
+import { PayloadType } from '../PayloadAttributeFactory.js';
+import { TransactionPayload } from '../TransactionPayload.js';
 import { CloseFeeCreditAttributes } from './CloseFeeCreditAttributes.js';
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadType } from './PayloadAttributeFactory.js';
-import { TransactionPayload } from './TransactionPayload.js';
 
 /**
  * Reclaim fee credit attributes array.

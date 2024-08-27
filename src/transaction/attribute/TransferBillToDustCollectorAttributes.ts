@@ -1,8 +1,8 @@
-import { IUnitId } from '../IUnitId.js';
-import { UnitId } from '../UnitId.js';
-import { dedent } from '../util/StringUtils.js';
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadType } from './PayloadAttributeFactory.js';
+import { IUnitId } from '../../IUnitId.js';
+import { UnitId } from '../../UnitId.js';
+import { dedent } from '../../util/StringUtils.js';
+import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
+import { PayloadType } from '../PayloadAttributeFactory.js';
 
 /**
  * Transfer bill to dust collector attributes array.

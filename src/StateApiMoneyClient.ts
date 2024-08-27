@@ -3,59 +3,25 @@ import { IStateApiService } from './IStateApiService.js';
 import { IUnitId } from './IUnitId.js';
 import { StateApiClient } from './StateApiClient.js';
 import { SystemIdentifier } from './SystemIdentifier.js';
-import { AddFeeCreditAttributes } from './transaction/AddFeeCreditAttributes.js';
-import { CloseFeeCreditAttributes } from './transaction/CloseFeeCreditAttributes.js';
+import { AddFeeCreditAttributes } from './transaction/attribute/AddFeeCreditAttributes.js';
+import { CloseFeeCreditAttributes } from './transaction/attribute/CloseFeeCreditAttributes.js';
+import { LockBillAttributes } from './transaction/attribute/LockBillAttributes.js';
+import { LockFeeCreditAttributes } from './transaction/attribute/LockFeeCreditAttributes.js';
+import { ReclaimFeeCreditAttributes } from './transaction/attribute/ReclaimFeeCreditAttributes.js';
+import { SplitBillAttributes } from './transaction/attribute/SplitBillAttributes.js';
+import { SwapBillsWithDustCollectorAttributes } from './transaction/attribute/SwapBillsWithDustCollectorAttributes.js';
+import { TransferBillAttributes } from './transaction/attribute/TransferBillAttributes.js';
+import { TransferBillToDustCollectorAttributes } from './transaction/attribute/TransferBillToDustCollectorAttributes.js';
+import { TransferFeeCreditAttributes } from './transaction/attribute/TransferFeeCreditAttributes.js';
+import { UnlockBillAttributes } from './transaction/attribute/UnlockBillAttributes.js';
+import { UnlockFeeCreditAttributes } from './transaction/attribute/UnlockFeeCreditAttributes.js';
 import { FeeCreditRecordUnitIdFactory } from './transaction/FeeCreditRecordUnitIdFactory.js';
 import { IPredicate } from './transaction/IPredicate.js';
 import { ITransactionClientMetadata } from './transaction/ITransactionClientMetadata.js';
-import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
-import { LockBillAttributes } from './transaction/LockBillAttributes.js';
-import { LockFeeCreditAttributes } from './transaction/LockFeeCreditAttributes.js';
-import { ReclaimFeeCreditAttributes } from './transaction/ReclaimFeeCreditAttributes.js';
-import { SplitBillAttributes } from './transaction/SplitBillAttributes.js';
 import { SplitBillUnit } from './transaction/SplitBillUnit.js';
-import { SwapBillsWithDustCollectorAttributes } from './transaction/SwapBillsWithDustCollectorAttributes.js';
-import {
-  ITransactionOrderFeeProofSigner,
-  ITransactionOrderOwnerProofSigner,
-  TransactionOrder,
-} from './transaction/TransactionOrder.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
-import { TransferBillAttributes } from './transaction/TransferBillAttributes.js';
-import { TransferBillToDustCollectorAttributes } from './transaction/TransferBillToDustCollectorAttributes.js';
-import { TransferFeeCreditAttributes } from './transaction/TransferFeeCreditAttributes.js';
 import { UnitType } from './transaction/UnitType.js';
-import { UnlockBillAttributes } from './transaction/UnlockBillAttributes.js';
-import { UnlockFeeCreditAttributes } from './transaction/UnlockFeeCreditAttributes.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
-
-class StateApiUnsignedTransactionRequest<T extends TransactionPayload<ITransactionPayloadAttributes>> {
-  public constructor(
-    public readonly transactionOrder: TransactionOrder<T>,
-    private readonly client: StateApiClient,
-  ) {}
-
-  public async sign(
-    ownerProofSigner: ITransactionOrderOwnerProofSigner,
-    feeProofSigner: ITransactionOrderFeeProofSigner,
-  ): Promise<StateApiTransactionRequest<T>> {
-    return new StateApiTransactionRequest(
-      await this.transactionOrder.sign(ownerProofSigner, feeProofSigner),
-      this.client,
-    );
-  }
-}
-
-class StateApiTransactionRequest<T extends TransactionPayload<ITransactionPayloadAttributes>> {
-  public constructor(
-    private readonly transactionOrder: TransactionOrder<T>,
-    private readonly client: StateApiClient,
-  ) {}
-
-  public send(): Promise<Uint8Array> {
-    return this.client.sendTransaction(this.transactionOrder);
-  }
-}
 
 interface ITransferFeeCreditTransactionData {
   amount: bigint;
@@ -417,14 +383,5 @@ export class StateApiMoneyClient extends StateApiClient {
         ),
       ),
     );
-  }
-
-  private async createTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
-    payload: T,
-  ): TransactionOrder<T> {
-    const builder = new TransactionOrderBuilder(payload);
-    builder.addOwnerProof();
-    builder.addFeeProof();
-    return builder.build();
   }
 }

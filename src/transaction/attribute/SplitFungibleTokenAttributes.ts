@@ -1,48 +1,52 @@
-import { IUnitId } from '../IUnitId.js';
-import { PredicateBytes } from '../PredicateBytes.js';
-import { UnitId } from '../UnitId.js';
-import { Base16Converter } from '../util/Base16Converter.js';
-import { dedent } from '../util/StringUtils.js';
-import { IPredicate } from './IPredicate.js';
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadType } from './PayloadAttributeFactory.js';
+import { IUnitId } from '../../IUnitId.js';
+import { PredicateBytes } from '../../PredicateBytes.js';
+import { UnitId } from '../../UnitId.js';
+import { Base16Converter } from '../../util/Base16Converter.js';
+import { dedent } from '../../util/StringUtils.js';
+import { IPredicate } from '../IPredicate.js';
+import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
+import { PayloadType } from '../PayloadAttributeFactory.js';
 
 /**
- * Transfer fungible token attributes array.
+ * Split fungible token attributes array.
  */
-export type TransferFungibleTokenAttributesArray = readonly [
+export type SplitFungibleTokenAttributesArray = readonly [
   Uint8Array,
   bigint,
   Uint8Array | null,
   bigint,
   Uint8Array,
+  bigint,
   Uint8Array[] | null,
 ];
 
 /**
- * Transfer fungible token payload attributes.
+ * Split fungible token payload attributes.
  */
-export class TransferFungibleTokenAttributes implements ITransactionPayloadAttributes {
+export class SplitFungibleTokenAttributes implements ITransactionPayloadAttributes {
   /**
-   * Transfer fungible token attributes constructor.
+   * Split fungible token attributes constructor.
    * @param {IPredicate} ownerPredicate - Owner predicate.
-   * @param {bigint} value - Value.
+   * @param {bigint} targetValue - Target value.
    * @param {Uint8Array | null} _nonce - Nonce.
    * @param {bigint} counter - Counter.
    * @param {IUnitId} typeId - Type ID.
+   * @param {bigint} remainingValue - Remaining value.
    * @param {Uint8Array[] | null} _invariantPredicateSignatures - Invariant predicate signatures.
    */
   public constructor(
     public readonly ownerPredicate: IPredicate,
-    public readonly value: bigint,
+    public readonly targetValue: bigint,
     private readonly _nonce: Uint8Array | null,
     public readonly counter: bigint,
     public readonly typeId: IUnitId,
+    public readonly remainingValue: bigint,
     private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
-    this.value = BigInt(this.value);
+    this.targetValue = BigInt(this.targetValue);
     this._nonce = this._nonce ? new Uint8Array(this._nonce) : null;
     this.counter = BigInt(this.counter);
+    this.remainingValue = BigInt(this.remainingValue);
     this._invariantPredicateSignatures =
       this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
@@ -51,7 +55,7 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
    * @see {ITransactionPayloadAttributes.payloadType}
    */
   public get payloadType(): PayloadType {
-    return PayloadType.TransferFungibleTokenAttributes;
+    return PayloadType.SplitFungibleTokenAttributes;
   }
 
   /**
@@ -73,20 +77,29 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
   /**
    * @see {ITransactionPayloadAttributes.toOwnerProofData}
    */
-  public toOwnerProofData(): TransferFungibleTokenAttributesArray {
-    return [this.ownerPredicate.bytes, this.value, this.nonce, this.counter, this.typeId.bytes, null];
+  public toOwnerProofData(): SplitFungibleTokenAttributesArray {
+    return [
+      this.ownerPredicate.bytes,
+      this.targetValue,
+      this.nonce,
+      this.counter,
+      this.typeId.bytes,
+      this.remainingValue,
+      null,
+    ];
   }
 
   /**
    * @see {ITransactionPayloadAttributes.toArray}
    */
-  public toArray(): TransferFungibleTokenAttributesArray {
+  public toArray(): SplitFungibleTokenAttributesArray {
     return [
       this.ownerPredicate.bytes,
-      this.value,
+      this.targetValue,
       this.nonce,
       this.counter,
       this.typeId.bytes,
+      this.remainingValue,
       this.invariantPredicateSignatures,
     ];
   }
@@ -97,12 +110,13 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
    */
   public toString(): string {
     return dedent`
-      TransferFungibleTokenAttributes
+      SplitFungibleTokenAttributes
         Owner Predicate: ${this.ownerPredicate.toString()}
-        Value: ${this.value}
-        Nonce: ${this._nonce}
+        Target Value: ${this.targetValue}
+        Nonce: ${this._nonce ? Base16Converter.encode(this._nonce) : 'null'}
         Counter: ${this.counter}
         Type ID: ${this.typeId.toString()}
+        Remaining Value: ${this.remainingValue}
         Invariant Predicate Signatures: ${
           this._invariantPredicateSignatures
             ? dedent`
@@ -114,18 +128,19 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
   }
 
   /**
-   * Create TransferFungibleTokenAttributesArray from array.
-   * @param {TransferFungibleTokenAttributesArray} data - Transfer fungible token attributes array.
-   * @returns {TransferFungibleTokenAttributes} Transfer fungible token attributes instance.
+   * Create a SplitFungibleTokenAttributes from an array.
+   * @param {SplitFungibleTokenAttributesArray} data - Split fungible token attributes array.
+   * @returns {SplitFungibleTokenAttributes} Split fungible token attributes instance.
    */
-  public static fromArray(data: TransferFungibleTokenAttributesArray): TransferFungibleTokenAttributes {
-    return new TransferFungibleTokenAttributes(
+  public static fromArray(data: SplitFungibleTokenAttributesArray): SplitFungibleTokenAttributes {
+    return new SplitFungibleTokenAttributes(
       new PredicateBytes(data[0]),
       data[1],
       data[2],
       data[3],
       UnitId.fromBytes(data[4]),
       data[5],
+      data[6],
     );
   }
 }

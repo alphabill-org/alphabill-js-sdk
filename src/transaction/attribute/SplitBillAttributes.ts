@@ -1,7 +1,7 @@
-import { dedent } from '../util/StringUtils.js';
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { PayloadType } from './PayloadAttributeFactory.js';
-import { SplitBillUnit, SplitBillUnitArray } from './SplitBillUnit.js';
+import { dedent } from '../../util/StringUtils.js';
+import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
+import { PayloadType } from '../PayloadAttributeFactory.js';
+import { SplitBillUnit, SplitBillUnitArray } from '../SplitBillUnit.js';
 
 /**
  * Split bill attributes array.
