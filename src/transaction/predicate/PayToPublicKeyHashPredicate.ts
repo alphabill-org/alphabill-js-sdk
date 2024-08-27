@@ -1,7 +1,7 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { ICborCodec } from '../codec/cbor/ICborCodec.js';
-import { Base16Converter } from '../util/Base16Converter.js';
-import { IPredicate } from './IPredicate.js';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { Base16Converter } from '../../util/Base16Converter.js';
+import { IPredicate } from '../IPredicate.js';
 
 /**
  * Pay to public key hash predicate.

@@ -1,8 +1,8 @@
-import { IStateProof, IUnit } from './IUnit.js';
-import { IUnitId } from './IUnitId.js';
-import { IBillDataDto } from './json-rpc/IBillDataDto.js';
-import { IPredicate } from './transaction/IPredicate.js';
-import { dedent } from './util/StringUtils.js';
+import { IStateProof, IUnit } from '../IUnit.js';
+import { IUnitId } from '../IUnitId.js';
+import { IBillDataDto } from '../json-rpc/IBillDataDto.js';
+import { IPredicate } from '../transaction/IPredicate.js';
+import { dedent } from '../util/StringUtils.js';
 
 /**
  * Bill.

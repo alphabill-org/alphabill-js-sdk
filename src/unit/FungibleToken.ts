@@ -1,10 +1,10 @@
-import { IStateProof } from './IUnit.js';
-import { IUnitId } from './IUnitId.js';
-import { IFungibleTokenDto } from './json-rpc/IFungibleTokenDto.js';
-import { IPredicate } from './transaction/IPredicate.js';
-import { UnitId } from './UnitId.js';
-import { Base16Converter } from './util/Base16Converter.js';
-import { dedent } from './util/StringUtils.js';
+import { IStateProof } from '../IUnit.js';
+import { IUnitId } from '../IUnitId.js';
+import { IFungibleTokenDto } from '../json-rpc/IFungibleTokenDto.js';
+import { IPredicate } from '../transaction/IPredicate.js';
+import { UnitId } from '../UnitId.js';
+import { Base16Converter } from '../util/Base16Converter.js';
+import { dedent } from '../util/StringUtils.js';
 
 /**
  * Fungible token.

@@ -1,12 +1,12 @@
-import { IStateProof } from './IUnit.js';
-import { IUnitId } from './IUnitId.js';
-import { INonFungibleTokenDto } from './json-rpc/INonFungibleTokenDto.js';
-import { PredicateBytes } from './PredicateBytes.js';
-import { IPredicate } from './transaction/IPredicate.js';
-import { UnitId } from './UnitId.js';
-import { Base16Converter } from './util/Base16Converter.js';
-import { Base64Converter } from './util/Base64Converter.js';
-import { dedent } from './util/StringUtils.js';
+import { IStateProof } from '../IUnit.js';
+import { IUnitId } from '../IUnitId.js';
+import { INonFungibleTokenDto } from '../json-rpc/INonFungibleTokenDto.js';
+import { PredicateBytes } from '../PredicateBytes.js';
+import { IPredicate } from '../transaction/IPredicate.js';
+import { UnitId } from '../UnitId.js';
+import { Base16Converter } from '../util/Base16Converter.js';
+import { Base64Converter } from '../util/Base64Converter.js';
+import { dedent } from '../util/StringUtils.js';
 
 /**
  * Non-fungible token.

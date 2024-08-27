@@ -1,8 +1,8 @@
-import { IStateProof } from './IUnit.js';
-import { IUnitId } from './IUnitId.js';
-import { IFeeCreditRecordDto } from './json-rpc/IFeeCreditRecordDto.js';
-import { IPredicate } from './transaction/IPredicate.js';
-import { dedent } from './util/StringUtils.js';
+import { IStateProof } from '../IUnit.js';
+import { IUnitId } from '../IUnitId.js';
+import { IFeeCreditRecordDto } from '../json-rpc/IFeeCreditRecordDto.js';
+import { IPredicate } from '../transaction/IPredicate.js';
+import { dedent } from '../util/StringUtils.js';
 
 /**
  * Fee credit record.

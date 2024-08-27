@@ -1,4 +1,3 @@
-import { FeeCreditRecord } from './FeeCreditRecord.js';
 import { IStateApiService } from './IStateApiService.js';
 import { IUnitId } from './IUnitId.js';
 import { StateApiClient } from './StateApiClient.js';
@@ -22,6 +21,7 @@ import { SplitBillUnit } from './transaction/SplitBillUnit.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { UnitType } from './transaction/UnitType.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
+import { FeeCreditRecord } from './unit/FeeCreditRecord.js';
 
 interface ITransferFeeCreditTransactionData {
   amount: bigint;
