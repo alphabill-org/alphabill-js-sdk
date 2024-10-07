@@ -2,7 +2,8 @@ import { IUnitId } from '../../IUnitId.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Transfer bill to dust collector attributes array.
@@ -34,8 +35,8 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.TransferBillToDustCollectorAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.TransferBillToDustCollector;
   }
 
   /**

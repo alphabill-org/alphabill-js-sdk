@@ -6,7 +6,6 @@ import { StateApiJsonRpcService } from './json-rpc/StateApiJsonRpcService.js';
 import { StateApiClient } from './StateApiClient.js';
 import { StateApiMoneyClient } from './StateApiMoneyClient.js';
 import { StateApiTokenClient } from './StateApiTokenClient.js';
-import { FeeCreditRecordUnitIdFactory } from './transaction/FeeCreditRecordUnitIdFactory.js';
 import { TokenUnitIdFactory } from './transaction/TokenUnitIdFactory.js';
 
 type StateApiClientOptions = {
@@ -14,7 +13,7 @@ type StateApiClientOptions = {
 };
 
 type StateApiMoneyClientOptions = StateApiClientOptions & {
-  feeCreditRecordUnitIdFactory: FeeCreditRecordUnitIdFactory;
+  cborCodec: ICborCodec;
 };
 
 type StateApiTokenClientOptions = StateApiClientOptions & { tokenUnitIdFactory: TokenUnitIdFactory };
@@ -34,7 +33,7 @@ export function createPublicClient(options: StateApiClientOptions): StateApiClie
  * @returns {StateApiMoneyClient} State API client.
  */
 export function createMoneyClient(options: StateApiMoneyClientOptions): StateApiMoneyClient {
-  return new StateApiMoneyClient(options.feeCreditRecordUnitIdFactory, options.transport);
+  return new StateApiMoneyClient(options.transport, options.cborCodec);
 }
 
 /**

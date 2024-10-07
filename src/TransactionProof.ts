@@ -21,7 +21,7 @@ export class TransactionProof {
   public constructor(
     private readonly _blockHeaderHash: Uint8Array,
     public readonly chain: TransactionProofChainItem[],
-    private readonly unicityCertificate: unknown,
+    public readonly unicityCertificate: unknown,
   ) {
     this._blockHeaderHash = new Uint8Array(this._blockHeaderHash);
   }
@@ -33,8 +33,6 @@ export class TransactionProof {
   public get blockHeaderHash(): Uint8Array {
     return new Uint8Array(this._blockHeaderHash);
   }
-
-  // TODO: Return unicity certificate
 
   /**
    * Convert to array.

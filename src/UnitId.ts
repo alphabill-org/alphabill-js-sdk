@@ -38,10 +38,21 @@ export class UnitId implements IUnitId {
     return `${Base16Converter.encode(this._bytes)}`;
   }
 
+  /**
+   * Compare unit ID with another unit id.
+   * @param {IUnitId} obj Unit id.
+   * @returns {boolean} true if equal.
+   */
   public equals(obj: IUnitId): boolean {
     return UnitId.equals(this, obj);
   }
 
+  /**
+   * Compare 2 objects if they are equal unit id.
+   * @param {unknown} a First object.
+   * @param {unknown} b Second object.
+   * @returns {boolean} true if equal.
+   */
   public static equals(a: unknown, b: unknown): boolean {
     if (!UnitId.isUnitId(a) || !UnitId.isUnitId(b)) {
       return false;
@@ -53,6 +64,11 @@ export class UnitId implements IUnitId {
     return areUint8ArraysEqual(obj1.bytes, obj2.bytes) && obj1.type.toBase16() === obj2.type.toBase16();
   }
 
+  /**
+   * Check if object is unit id.
+   * @param {unknown} obj Object to check.
+   * @returns {boolean} true if unit id.
+   */
   public static isUnitId(obj: unknown): boolean {
     if (!(obj instanceof Object) || !('bytes' in obj) || !('type' in obj)) {
       return false;

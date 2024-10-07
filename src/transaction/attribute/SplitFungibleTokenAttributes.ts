@@ -5,7 +5,8 @@ import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { IPredicate } from '../IPredicate.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Split fungible token attributes array.
@@ -54,8 +55,8 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.SplitFungibleTokenAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.SplitFungibleToken;
   }
 
   /**

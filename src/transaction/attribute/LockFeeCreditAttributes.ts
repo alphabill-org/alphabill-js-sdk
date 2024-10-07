@@ -1,6 +1,7 @@
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Lock fee credit attributes array.
@@ -27,8 +28,8 @@ export class LockFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.LockFeeCreditAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.LockFeeCredit;
   }
 
   /**

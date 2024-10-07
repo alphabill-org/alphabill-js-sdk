@@ -4,7 +4,7 @@ import { TransactionRecordWithProof } from '../../TransactionRecordWithProof.js'
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+import { TransactionOrderType } from '../TransactionOrderType';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { BurnFungibleTokenAttributes } from './BurnFungibleTokenAttributes.js';
 
@@ -24,12 +24,12 @@ export type JoinFungibleTokenAttributesArray = [
 export class JoinFungibleTokenAttributes implements ITransactionPayloadAttributes {
   /**
    * Join fungible token attributes constructor.
-   * @param {TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[]} _proofs - Proofs.
+   * @param {TransactionRecordWithProof<BurnFungibleTokenAttributes>[]} _proofs - Proofs.
    * @param {bigint} counter - Counter.
    * @param {Uint8Array[] | null} _invariantPredicateSignatures - Invariant predicate signatures.
    */
   public constructor(
-    private readonly _proofs: TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[],
+    private readonly _proofs: TransactionRecordWithProof<BurnFungibleTokenAttributes>[],
     public readonly counter: bigint,
     private readonly _invariantPredicateSignatures: Uint8Array[] | null,
   ) {
@@ -42,15 +42,15 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.JoinFungibleTokenAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.JoinFungibleToken;
   }
 
   /**
    * Get proofs.
-   * @returns {TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[]} Proofs.
+   * @returns {TransactionRecordWithProof<BurnFungibleTokenAttributes>[]} Proofs.
    */
-  public get proofs(): TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[] {
+  public get proofs(): TransactionRecordWithProof<BurnFungibleTokenAttributes>[] {
     return Array.from(this._proofs);
   }
 
@@ -115,7 +115,7 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
    * @returns {JoinFungibleTokenAttributes} Join fungible token attributes instance.
    */
   public static fromArray(data: JoinFungibleTokenAttributesArray): JoinFungibleTokenAttributes {
-    const proofs: TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[] = [];
+    const proofs: TransactionRecordWithProof<BurnFungibleTokenAttributes>[] = [];
 
     for (let i = 0; i < data[0].length; i++) {
       proofs.push(TransactionRecordWithProof.fromArray([data[0][i], data[1][i]]));

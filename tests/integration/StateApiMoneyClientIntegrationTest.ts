@@ -75,7 +75,7 @@ describe('Money Client Integration Tests', () => {
       createMetadata(round),
     );
 
-    const proof: TransactionRecordWithProof<TransactionPayload<TransferFeeCreditAttributes>> =
+    const proof: TransactionRecordWithProof<TransferFeeCreditAttributes> =
       await waitTransactionProof(moneyClient, transferToFeeCreditHash);
     console.log('Transfer to fee credit successful');
     const attr = proof.transactionRecord.transactionOrder.payload as TransactionPayload<TransferFeeCreditAttributes>;
@@ -235,7 +235,7 @@ describe('Money Client Integration Tests', () => {
       },
       createMetadata(round, feeCreditRecordId),
     );
-    const transactionProof: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>> =
+    const transactionProof: TransactionRecordWithProof<TransferBillToDustCollectorAttributes> =
       await waitTransactionProof(moneyClient, transferBillToDustCollectorHash);
     console.log('Transferring bill to dust collector successful');
 
@@ -272,7 +272,7 @@ describe('Money Client Integration Tests', () => {
       },
       createMetadata(round),
     );
-    const proof: TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>> = await waitTransactionProof(
+    const proof: TransactionRecordWithProof<CloseFeeCreditAttributes> = await waitTransactionProof(
       moneyClient,
       closeFeeCreditHash,
     );

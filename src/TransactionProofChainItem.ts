@@ -31,14 +31,6 @@ export class TransactionProofChainItem {
   }
 
   /**
-   * Convert to array.
-   * @returns {TransactionProofChainItemArray} Transaction proof chain item array.
-   */
-  public toArray(): TransactionProofChainItemArray {
-    return [this.hash, this.left];
-  }
-
-  /**
    * Convert to string.
    * @returns {string} String representation.
    */

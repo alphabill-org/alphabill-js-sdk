@@ -3,19 +3,8 @@ import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
-
-/**
- * Transfer fee credit attributes array.
- */
-export type TransferFeeCreditAttributesArray = readonly [
-  bigint,
-  SystemIdentifier,
-  Uint8Array,
-  bigint,
-  bigint | null,
-  bigint,
-];
+import { TransferFeeCreditAttributesArray } from '../serializer/TransferFeeCreditTransactionOrderSerializer';
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Transfer fee credit payload attributes.
@@ -45,34 +34,6 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.payloadType}
-   */
-  public get payloadType(): PayloadType {
-    return PayloadType.TransferFeeCreditAttributes;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): TransferFeeCreditAttributesArray {
-    return this.toArray();
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): TransferFeeCreditAttributesArray {
-    return [
-      this.amount,
-      this.targetSystemIdentifier,
-      this.targetUnitId.bytes,
-      this.latestAdditionTime,
-      this.targetUnitCounter,
-      this.counter,
-    ];
-  }
-
-  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -85,14 +46,5 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
         Latest Addition Time: ${this.latestAdditionTime}
         Target Unit Counter: ${this.targetUnitCounter === null ? 'null' : this.targetUnitCounter}
         Counter: ${this.counter}`;
-  }
-
-  /**
-   * Create TransferFeeCreditAttributes from array.
-   * @param {TransferFeeCreditAttributesArray} data - Transfer fee credit attributes array.
-   * @returns {TransferFeeCreditAttributes} Transfer fee credit attributes instance.
-   */
-  public static fromArray(data: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
-    return new TransferFeeCreditAttributes(data[0], data[1], UnitId.fromBytes(data[2]), data[3], data[4], data[5]);
   }
 }

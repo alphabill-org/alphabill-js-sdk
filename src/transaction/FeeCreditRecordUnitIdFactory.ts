@@ -6,7 +6,11 @@ import { UnitIdWithType } from './UnitIdWithType.js';
 import { UnitType } from './UnitType.js';
 
 export class FeeCreditRecordUnitIdFactory {
-  public create(timeout: bigint, ownerPredicate: IPredicate, unitType: UnitType): IUnitId {
+  public create(
+    timeout: bigint,
+    ownerPredicate: IPredicate,
+    unitType: UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD | UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
+  ): IUnitId {
     const unitBytes = sha256.create().update(ownerPredicate.bytes).update(numberToBytesBE(timeout, 8)).digest();
     return new UnitIdWithType(unitBytes, unitType);
   }

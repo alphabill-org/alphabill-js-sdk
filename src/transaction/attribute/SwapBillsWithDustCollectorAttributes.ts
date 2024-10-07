@@ -5,8 +5,7 @@ import { TransactionRecordWithProof } from '../../TransactionRecordWithProof.js'
 import { dedent } from '../../util/StringUtils.js';
 import { IPredicate } from '../IPredicate.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
-import { TransactionPayload } from '../TransactionPayload.js';
+import { TransactionOrderType } from '../TransactionOrderType';
 import { TransferBillToDustCollectorAttributes } from './TransferBillToDustCollectorAttributes.js';
 
 /**
@@ -26,14 +25,12 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
   /**
    * Swap bills with dust collector attributes constructor.
    * @param {IPredicate} ownerPredicate - Owner predicate.
-   * @param {TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>>[]} _proofs - Transaction proofs.
+   * @param {TransactionRecordWithProof<TransferBillToDustCollectorAttributes>[]} _proofs - Transaction proofs.
    * @param {bigint} targetValue - Target value.
    */
   public constructor(
     public readonly ownerPredicate: IPredicate,
-    private readonly _proofs: readonly TransactionRecordWithProof<
-      TransactionPayload<TransferBillToDustCollectorAttributes>
-    >[],
+    private readonly _proofs: readonly TransactionRecordWithProof<TransferBillToDustCollectorAttributes>[],
     public readonly targetValue: bigint,
   ) {
     this._proofs = Array.from(this._proofs);
@@ -43,25 +40,16 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.SwapBillsWithDustCollectorAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.SwapBillsWithDustCollector;
   }
 
   /**
    * Get transaction proofs.
-   * @returns {readonly TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>>[]} Transaction proofs.
+   * @returns {readonly TransactionRecordWithProof<TransferBillToDustCollectorAttributes>[]} Transaction proofs.
    */
-  public get proofs(): readonly TransactionRecordWithProof<
-    TransactionPayload<TransferBillToDustCollectorAttributes>
-  >[] {
+  public get proofs(): readonly TransactionRecordWithProof<TransferBillToDustCollectorAttributes>[] {
     return Array.from(this._proofs);
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): SwapBillsWithDustCollectorAttributesArray {
-    return this.toArray();
   }
 
   /**
@@ -99,7 +87,7 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
    * @returns {SwapBillsWithDustCollectorAttributes} Swap bills with dust collector attributes instance.
    */
   public static fromArray(data: SwapBillsWithDustCollectorAttributesArray): SwapBillsWithDustCollectorAttributes {
-    const proofs: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>>[] = [];
+    const proofs: TransactionRecordWithProof<TransferBillToDustCollectorAttributes>[] = [];
 
     for (let i = 0; i < data[1].length; i++) {
       proofs.push(TransactionRecordWithProof.fromArray([data[1][i], data[2][i]]));

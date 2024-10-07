@@ -1,0 +1,1 @@
+export type TransactionClientMetadataArray = [bigint, bigint, Uint8Array | null, Uint8Array | null];

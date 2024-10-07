@@ -121,7 +121,7 @@ interface IBurnFungibleTokenTransactionData {
 
 interface IJoinFungibleTokensTransactionData {
   token: { unitId: IUnitId; counter: bigint };
-  proofs: TransactionRecordWithProof<TransactionPayload<BurnFungibleTokenAttributes>>[];
+  proofs: TransactionRecordWithProof<BurnFungibleTokenAttributes>[];
   invariantPredicateSignatures: Uint8Array[] | null;
 }
 

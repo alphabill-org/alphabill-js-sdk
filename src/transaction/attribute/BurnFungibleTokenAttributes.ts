@@ -3,7 +3,8 @@ import { UnitId } from '../../UnitId.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Burn fungible token attributes array.
@@ -48,8 +49,8 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.BurnFungibleTokenAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.BurnFungibleToken;
   }
 
   /**

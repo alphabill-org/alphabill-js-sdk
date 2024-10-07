@@ -1,8 +1,8 @@
 import { IUnit } from './IUnit.js';
 import { IUnitId } from './IUnitId.js';
 import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
-import { TransactionOrder } from './transaction/TransactionOrder.js';
-import { TransactionPayload } from './transaction/TransactionPayload.js';
+import { TransactionOrder } from './transaction/order/TransactionOrder.js';
+import { TransactionOrderSerializer } from './transaction/serializer/TransactionOrderSerializer';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
 
 /**
@@ -37,17 +37,17 @@ export interface IStateApiService {
   /**
    * Get transaction proof.
    * @param {Uint8Array} transactionHash Transaction hash.
-   * @returns {Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null} Transaction proof.
+   * @returns {Promise<TransactionRecordWithProof<ITransactionPayloadAttributes> | null} Transaction proof.
    */
-  getTransactionProof(
+  getTransactionProof<Attributes extends ITransactionPayloadAttributes, Proof>(
     transactionHash: Uint8Array,
-  ): Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null>;
+  ): Promise<TransactionRecordWithProof<Attributes, Proof> | null>;
   /**
    * Send transaction.
-   * @param {TransactionOrder<TransactionPayload<ITransactionPayloadAttributes>>} transaction Transaction.
+   * @param {TransactionOrder<ITransactionPayloadAttributes>} transaction Transaction.
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
-  sendTransaction(
-    transaction: TransactionOrder<TransactionPayload<ITransactionPayloadAttributes>>,
+  sendTransaction<Attributes extends ITransactionPayloadAttributes, Proof>(
+    transaction: TransactionOrder<Attributes, Proof>,
   ): Promise<Uint8Array>;
 }

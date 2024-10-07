@@ -3,8 +3,9 @@ import { IStateApiService } from '../IStateApiService.js';
 import { IUnit } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
-import { TransactionOrder } from '../transaction/TransactionOrder.js';
-import { TransactionPayload } from '../transaction/TransactionPayload.js';
+import { TransactionOrder } from '../transaction/order/TransactionOrder.js';
+import { TransactionOrderSerializerProvider } from '../transaction/serializer/TransactionOrderSerializerProvider.js';
+import { TransactionRecordWithProofSerializer } from '../transaction/serializer/TransactionRecordWithProofSerializer.js';
 import { TransactionProofArray } from '../TransactionProof.js';
 import { TransactionRecordArray } from '../TransactionRecord.js';
 import { TransactionRecordWithProof } from '../TransactionRecordWithProof.js';
@@ -21,10 +22,14 @@ export type TransactionProofDto = { txRecord: string; txProof: string };
  * @implements {IStateApiService}
  */
 export class StateApiJsonRpcService implements IStateApiService {
+  private readonly transactionOrderSerializerProvider: TransactionOrderSerializerProvider;
+
   public constructor(
     private readonly client: JsonRpcClient,
-    private readonly cborCodec: ICborCodec,
-  ) {}
+    public readonly cborCodec: ICborCodec,
+  ) {
+    this.transactionOrderSerializerProvider = new TransactionOrderSerializerProvider(cborCodec);
+  }
 
   /**
    * @see {IStateApiService.getRoundNumber}
@@ -78,32 +83,49 @@ export class StateApiJsonRpcService implements IStateApiService {
   /**
    * @see {IStateApiService.getTransactionProof}
    */
-  public async getTransactionProof(
+  public async getTransactionProof<Attributes extends ITransactionPayloadAttributes, Proof>(
     transactionHash: Uint8Array,
-  ): Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null> {
+  ): Promise<TransactionRecordWithProof<Attributes, Proof> | null> {
     const response = (await this.client.request(
       'state_getTransactionProof',
       Base16Converter.encode(transactionHash),
     )) as TransactionProofDto | null;
 
-    return response
-      ? TransactionRecordWithProof.fromArray([
-          (await this.cborCodec.decode(Base16Converter.decode(response.txRecord))) as TransactionRecordArray,
-          (await this.cborCodec.decode(Base16Converter.decode(response.txProof))) as TransactionProofArray,
-        ])
-      : null;
+    if (!response) {
+      return null;
+    }
+
+    const transactionRecord = (await this.cborCodec.decode(
+      Base16Converter.decode(response.txRecord),
+    )) as TransactionRecordArray;
+    const transactionProof = (await this.cborCodec.decode(
+      Base16Converter.decode(response.txProof),
+    )) as TransactionProofArray;
+    const type = transactionRecord[0][3];
+    const serializer = this.transactionOrderSerializerProvider.getSerializer<Attributes, Proof>(type);
+    if (!serializer) {
+      throw new Error(`Could not find serializer for unknown transaction order ${type}.`);
+    }
+
+    return TransactionRecordWithProofSerializer.fromArray([transactionRecord, transactionProof], serializer);
   }
 
   /**
    * @see {IStateApiService.sendTransaction}
    */
   public async sendTransaction(
-    transaction: TransactionOrder<TransactionPayload<ITransactionPayloadAttributes>>,
+    transaction: TransactionOrder<ITransactionPayloadAttributes, unknown>,
   ): Promise<Uint8Array> {
+    const serializer = this.transactionOrderSerializerProvider.getSerializer(transaction.type);
+    if (!serializer) {
+      throw new Error(`Could not find serializer for unknown transaction order ${transaction.type}.`);
+    }
+
     const response = (await this.client.request(
       'state_sendTransaction',
-      Base16Converter.encode(await this.cborCodec.encode(transaction.toArray())),
+      Base16Converter.encode(await serializer.serialize(transaction)),
     )) as string;
+
     return Base16Converter.decode(response);
   }
 }

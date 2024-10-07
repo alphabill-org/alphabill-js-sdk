@@ -2,7 +2,8 @@ import { PredicateBytes } from '../../PredicateBytes.js';
 import { dedent } from '../../util/StringUtils.js';
 import { IPredicate } from '../IPredicate.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Transfer bill attributes array.
@@ -31,8 +32,8 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.TransferBillAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.TransferBill;
   }
 
   /**

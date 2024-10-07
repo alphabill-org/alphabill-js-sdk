@@ -2,7 +2,8 @@ import { IUnitId } from '../../IUnitId.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Close fee credit attributes array.
@@ -34,8 +35,8 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.CloseFeeCreditAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.CloseFeeCredit;
   }
 
   /**

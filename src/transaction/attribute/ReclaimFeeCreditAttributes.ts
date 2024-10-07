@@ -3,7 +3,7 @@ import { TransactionRecordArray } from '../../TransactionRecord.js';
 import { TransactionRecordWithProof } from '../../TransactionRecordWithProof.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+import { TransactionOrderType } from '../TransactionOrderType';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { CloseFeeCreditAttributes } from './CloseFeeCreditAttributes.js';
 
@@ -18,11 +18,11 @@ export type ReclaimFeeCreditAttributesArray = [TransactionRecordArray, Transacti
 export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * Reclaim fee credit attributes constructor.
-   * @param {TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>>} proof - Transaction record with proof.
+   * @param {TransactionRecordWithProof<CloseFeeCreditAttributes>} proof - Transaction record with proof.
    * @param {bigint} counter - Counter.
    */
   public constructor(
-    public readonly proof: TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>>,
+    public readonly proof: TransactionRecordWithProof<CloseFeeCreditAttributes>,
     public readonly counter: bigint,
   ) {
     this.counter = BigInt(this.counter);
@@ -31,8 +31,8 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.ReclaimFeeCreditAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.ReclaimFeeCredit;
   }
 
   /**

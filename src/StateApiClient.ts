@@ -3,8 +3,9 @@ import { IStateApiService } from './IStateApiService.js';
 import { IUnit } from './IUnit.js';
 import { IUnitId } from './IUnitId.js';
 import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
-import { TransactionOrder } from './transaction/TransactionOrder.js';
-import { TransactionPayload } from './transaction/TransactionPayload.js';
+import { TransactionOrder } from './transaction/order/TransactionOrder.js';
+import { ITransactionOrderSerializer } from './transaction/serializer/ITransactionOrderSerializer';
+import { TransactionOrderSerializer } from './transaction/serializer/TransactionOrderSerializer';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
 
 /**
@@ -57,22 +58,23 @@ export class StateApiClient {
   /**
    * Get transaction proof.
    * @param {Uint8Array} transactionHash Transaction hash.
-   * @returns {Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null>} Transaction proof.
+   * @param {TransactionOrderSerializer} serializer Transaction order serializer.
+   * @returns {Promise<TransactionRecordWithProof | null>} Transaction proof.
    */
-  public getTransactionProof(
+  public getTransactionProof<Attributes extends ITransactionPayloadAttributes, Proof>(
     transactionHash: Uint8Array,
-  ): Promise<TransactionRecordWithProof<TransactionPayload<ITransactionPayloadAttributes>> | null> {
-    return this.service.getTransactionProof(transactionHash);
+  ): Promise<TransactionRecordWithProof<Attributes, Proof> | null> {
+    return this.service.getTransactionProof<Attributes, Proof>(transactionHash);
   }
 
   /**
    * Send transaction.
-   * @template {TransactionPayload<ITransactionPayloadAttributes>} T
+   * @template {ITransactionPayloadAttributes} T
    * @param {TransactionOrder} transaction Transaction.
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
-  public sendTransaction<T extends TransactionPayload<ITransactionPayloadAttributes>>(
-    transaction: TransactionOrder<T>,
+  public sendTransaction<Attributes extends ITransactionPayloadAttributes, Proof>(
+    transaction: TransactionOrder<Attributes, Proof>,
   ): Promise<Uint8Array> {
     return this.service.sendTransaction(transaction);
   }

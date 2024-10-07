@@ -1,6 +1,7 @@
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Unlock bill attributes array.
@@ -22,8 +23,8 @@ export class UnlockBillAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.UnlockBillAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.UnlockBill;
   }
 
   /**

@@ -3,7 +3,8 @@ import { dedent } from '../../util/StringUtils.js';
 import { INonFungibleTokenData } from '../INonFungibleTokenData.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { NonFungibleTokenData } from '../NonFungibleTokenData.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Update non-fungible token attributes array.
@@ -32,8 +33,8 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.UpdateNonFungibleTokenAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.UpdateNonFungibleToken;
   }
 
   /**

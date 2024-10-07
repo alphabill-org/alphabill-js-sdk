@@ -1,7 +1,8 @@
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Unlock token attributes array.
@@ -29,8 +30,8 @@ export class UnlockTokenAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.UnlockTokenAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.UnlockToken;
   }
 
   /**

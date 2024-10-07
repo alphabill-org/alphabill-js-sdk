@@ -19,13 +19,13 @@ export function waitTransactionProof<T extends ITransactionPayloadAttributes>(
   transactionHash: Uint8Array,
   timeout = 10000,
   interval = 1000,
-): Promise<TransactionRecordWithProof<TransactionPayload<T>>> {
+): Promise<TransactionRecordWithProof<T>> {
   return new Promise((resolve, reject) => {
     const start = Date.now();
     const poller = async (): Promise<void> => {
       const proof = await client.getTransactionProof(transactionHash);
       if (proof !== null) {
-        return resolve(proof as TransactionRecordWithProof<TransactionPayload<T>>);
+        return resolve(proof as TransactionRecordWithProof<T>);
       }
 
       if (Date.now() > start + timeout) {

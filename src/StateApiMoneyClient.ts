@@ -1,5 +1,6 @@
 import { IStateApiService } from './IStateApiService.js';
 import { IUnitId } from './IUnitId.js';
+import { ISigningService } from './signing/ISigningService.js';
 import { StateApiClient } from './StateApiClient.js';
 import { SystemIdentifier } from './SystemIdentifier.js';
 import { AddFeeCreditAttributes } from './transaction/attribute/AddFeeCreditAttributes.js';
@@ -10,26 +11,31 @@ import { ReclaimFeeCreditAttributes } from './transaction/attribute/ReclaimFeeCr
 import { SplitBillAttributes } from './transaction/attribute/SplitBillAttributes.js';
 import { SwapBillsWithDustCollectorAttributes } from './transaction/attribute/SwapBillsWithDustCollectorAttributes.js';
 import { TransferBillAttributes } from './transaction/attribute/TransferBillAttributes.js';
-import { TransferBillToDustCollectorAttributes } from './transaction/attribute/TransferBillToDustCollectorAttributes.js';
+import {
+  TransferBillToDustCollectorAttributes
+} from './transaction/attribute/TransferBillToDustCollectorAttributes.js';
 import { TransferFeeCreditAttributes } from './transaction/attribute/TransferFeeCreditAttributes.js';
 import { UnlockBillAttributes } from './transaction/attribute/UnlockBillAttributes.js';
 import { UnlockFeeCreditAttributes } from './transaction/attribute/UnlockFeeCreditAttributes.js';
-import { FeeCreditRecordUnitIdFactory } from './transaction/FeeCreditRecordUnitIdFactory.js';
 import { IPredicate } from './transaction/IPredicate.js';
 import { ITransactionClientMetadata } from './transaction/ITransactionClientMetadata.js';
+import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
+import { IUnsignedTransactionOrder } from './transaction/order/IUnsignedTransactionOrder.js';
+import { TransactionOrder } from './transaction/order/TransactionOrder.js';
+import {
+  UnsignedTransferFeeCreditTransactionOrder
+} from './transaction/order/UnsignedTransferFeeCreditTransactionOrder.js';
 import { SplitBillUnit } from './transaction/SplitBillUnit.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
-import { UnitType } from './transaction/UnitType.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
-import { FeeCreditRecord } from './unit/FeeCreditRecord.js';
 
 interface ITransferFeeCreditTransactionData {
   amount: bigint;
   systemIdentifier: SystemIdentifier;
   latestAdditionTime: bigint;
-  feeCreditRecordParams: {
-    ownerPredicate: IPredicate;
-    unitType: UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD | UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD;
+  feeCreditRecord: {
+    unitId: IUnitId;
+    counter: bigint;
   };
   bill: { unitId: IUnitId; counter: bigint };
 }
@@ -44,7 +50,7 @@ export interface IUnlockUnitTransactionData {
 }
 
 interface IReclaimFeeCreditTransactionData {
-  proof: TransactionRecordWithProof<TransactionPayload<CloseFeeCreditAttributes>>;
+  proof: TransactionRecordWithProof<CloseFeeCreditAttributes>;
   bill: { unitId: IUnitId; counter: bigint };
 }
 
@@ -60,7 +66,7 @@ interface ITransferBillToDustCollectorTransactionData {
 
 interface ISwapBillsWithDustCollectorTransactionData {
   ownerPredicate: IPredicate;
-  proofs: TransactionRecordWithProof<TransactionPayload<TransferBillToDustCollectorAttributes>>[];
+  proofs: TransactionRecordWithProof<TransferBillToDustCollectorAttributes>[];
   bill: { unitId: IUnitId };
 }
 
@@ -71,7 +77,7 @@ interface ITransferBillTransactionData {
 
 export interface IAddFeeCreditTransactionData {
   ownerPredicate: IPredicate;
-  proof: TransactionRecordWithProof<TransactionPayload<TransferFeeCreditAttributes>>;
+  proof: TransactionRecordWithProof<TransferFeeCreditAttributes>;
   feeCreditRecord: { unitId: IUnitId };
 }
 
@@ -80,19 +86,41 @@ export interface ICloseFeeCreditTransactionData {
   feeCreditRecord: { unitId: IUnitId; balance: bigint; counter: bigint };
 }
 
+// THIS OR PUT ON METHOD
+class UnsignedTransactionRequest {
+  public constructor(
+    private readonly client: StateApiClient,
+    private readonly unsignedTransactionOrder: IUnsignedTransactionOrder<ITransactionPayloadAttributes>,
+  ) {}
+
+  public sign(ownerProofSigner: ISigningService, feeProofSigner: ISigningService): SignedTransactionRequest {
+    return new SignedTransactionRequest(
+      this.client,
+      this.unsignedTransactionOrder.sign(ownerProofSigner, feeProofSigner),
+    );
+  }
+}
+
+class SignedTransactionRequest {
+  public constructor(
+    private readonly client: StateApiClient,
+    private readonly signedTransactionOrderPromise: Promise<TransactionOrder<ITransactionPayloadAttributes>>,
+  ) {}
+
+  public send(): Promise<Uint8Array> {
+    return this.signedTransactionOrderPromise.then((transactionOrder) => this.client.sendTransaction(transactionOrder));
+  }
+}
+
 /**
  * State API client for money partition.
  */
 export class StateApiMoneyClient extends StateApiClient {
   /**
    * State API client for money partition constructor.
-   * @param {FeeCreditRecordUnitIdFactory} feeCreditRecordUnitIdFactory Fee credit record unit ID factory.
    * @param service State API service.
    */
-  public constructor(
-    private readonly feeCreditRecordUnitIdFactory: FeeCreditRecordUnitIdFactory,
-    service: IStateApiService,
-  ) {
+  public constructor(service: IStateApiService) {
     super(service);
   }
 
@@ -103,24 +131,19 @@ export class StateApiMoneyClient extends StateApiClient {
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async transferToFeeCredit(
-    { bill, amount, systemIdentifier, feeCreditRecordParams, latestAdditionTime }: ITransferFeeCreditTransactionData,
+    { bill, amount, systemIdentifier, feeCreditRecord, latestAdditionTime }: ITransferFeeCreditTransactionData,
     metadata: ITransactionClientMetadata,
   ): Promise<Uint8Array> {
-    const feeCreditRecordId = this.feeCreditRecordUnitIdFactory.create(
-      metadata.timeout,
-      feeCreditRecordParams.ownerPredicate,
-      feeCreditRecordParams.unitType,
-    );
-    const feeCreditRecord: FeeCreditRecord | null = await this.getUnit(feeCreditRecordId, false);
-    return this.sendTransaction(
-      await this.transactionOrderFactory.createTransaction(
+    return new UnsignedTransactionRequest(
+      this,
+      new UnsignedTransferFeeCreditTransactionOrder(
         TransactionPayload.create(
           SystemIdentifier.MONEY_PARTITION,
           bill.unitId,
           new TransferFeeCreditAttributes(
             amount,
             systemIdentifier,
-            feeCreditRecordId,
+            feeCreditRecord.unitId,
             latestAdditionTime,
             feeCreditRecord?.counter ?? 0n,
             bill.counter,

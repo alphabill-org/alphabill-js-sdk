@@ -1,7 +1,7 @@
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
 import { SplitBillUnit, SplitBillUnitArray } from '../SplitBillUnit.js';
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Split bill attributes array.
@@ -31,8 +31,8 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.SplitBillAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.SplitBill;
   }
 
   /**

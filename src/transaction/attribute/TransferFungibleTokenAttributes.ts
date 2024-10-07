@@ -5,7 +5,8 @@ import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { IPredicate } from '../IPredicate.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Transfer fungible token attributes array.
@@ -50,8 +51,8 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.TransferFungibleTokenAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.TransferFungibleToken;
   }
 
   /**

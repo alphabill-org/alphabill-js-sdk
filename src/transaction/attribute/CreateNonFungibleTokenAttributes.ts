@@ -7,7 +7,8 @@ import { INonFungibleTokenData } from '../INonFungibleTokenData.js';
 import { IPredicate } from '../IPredicate.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { NonFungibleTokenData } from '../NonFungibleTokenData.js';
-import { PayloadType } from '../PayloadAttributeFactory.js';
+
+import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Create non-fungible token attributes array.
@@ -56,8 +57,8 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   /**
    * @see {ITransactionPayloadAttributes.payloadType}
    */
-  public get payloadType(): PayloadType {
-    return PayloadType.CreateNonFungibleTokenAttributes;
+  public get payloadType(): TransactionOrderType {
+    return TransactionOrderType.CreateNonFungibleToken;
   }
 
   /**
