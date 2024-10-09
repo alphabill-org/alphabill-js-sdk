@@ -1,40 +1,57 @@
-import { Base16Converter } from '../../util/Base16Converter.js';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { NetworkIdentifier } from '../../NetworkIdentifier.js';
+import { SystemIdentifier } from '../../SystemIdentifier.js';
+import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
 import { IPredicate } from '../IPredicate.js';
+import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { TransactionOrderType } from '../TransactionOrderType';
+import { ITransactionOrderProof } from '../proof/ITransactionOrderProof.js';
+import { StateLockArray } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
+
+type UnitIdType = Uint8Array;
+type TransactionAttributesType = unknown;
+type TransactionOrderType = number;
+type StateUnlockType = Uint8Array | null;
+type TransactionProofType = Uint8Array | null;
+type FeeProofType = Uint8Array | null;
+
+export type TransactionClientMetadataArray = [bigint, bigint, Uint8Array | null, Uint8Array | null];
+
+export type TransactionOrderArray = readonly [
+  NetworkIdentifier,
+  SystemIdentifier,
+  UnitIdType,
+  TransactionOrderType,
+  TransactionAttributesType,
+    StateLockArray | null,
+  TransactionClientMetadataArray,
+  StateUnlockType,
+  TransactionProofType,
+  FeeProofType,
+];
 
 /**
  * Transaction order.
  * @template T - Transaction payload type.
  */
-export class TransactionOrder<Attributes extends ITransactionPayloadAttributes, TransactionProof> {
+export abstract class TransactionOrder<Attributes extends ITransactionPayloadAttributes, TransactionProof extends ITransactionOrderProof, FeeProof extends ITransactionOrderProof> {
   /**
    * Transaction order constructor.
    * @param {TransactionOrderType} type Transaction type
-   * @param {T} payload Payload.
-   * @param {U} transactionProof Transaction proof.
-   * @param {Uint8Array | null} _feeProof Fee proof.
+   * @param {TransactionPayload<Attributes>} payload Payload.
+   * @param {TransactionProof | null} transactionProof Transaction proof.
+   * @param {FeeProof | null} feeProof Fee proof.
    * @param {Uint8Array | null} stateUnlock State unlock.
    */
   public constructor(
-    public readonly type: TransactionOrderType,
+    public readonly type: number,
     public readonly payload: TransactionPayload<Attributes>,
     public readonly transactionProof: TransactionProof | null,
-    private readonly _feeProof: Uint8Array | null,
+    public readonly feeProof: FeeProof | null,
     public readonly stateUnlock: IPredicate | null,
-  ) {
-    this._feeProof = this._feeProof ? new Uint8Array(this._feeProof) : null;
-  }
-
-  /**
-   * Get fee proof.
-   * @returns {Uint8Array | null} Fee proof.
-   */
-  public get feeProof(): Uint8Array | null {
-    return this._feeProof ? new Uint8Array(this._feeProof) : null;
-  }
+  ) {}
 
   /**
    * Convert to string.
@@ -45,7 +62,45 @@ export class TransactionOrder<Attributes extends ITransactionPayloadAttributes, 
       TransactionOrder
         ${this.payload.toString()}
         Transaction Proof: ${this.transactionProof?.toString() ?? null}
-        Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}
+        Fee Proof: ${this.feeProof?.toString() ?? null}
         State Unlock: ${this.stateUnlock?.toString() ?? null}`;
+  }
+
+  public async encode(cborCodec: ICborCodec): Promise<TransactionOrderArray> {
+    return [
+      this.payload.networkIdentifier,
+      this.payload.systemIdentifier,
+      this.payload.unitId.bytes,
+      this.type,
+      await this.payload.attributes.encode(cborCodec),
+      this.payload.stateLock ? this.payload.stateLock.encode() : null,
+      TransactionOrder.encodeClientMetadata(this.payload.clientMetadata),
+      this.stateUnlock?.bytes ?? null,
+      await this.transactionProof?.encode(cborCodec) ?? null,
+      await this.feeProof?.encode(cborCodec) ?? null
+    ];
+  }
+
+  public static encodeClientMetadata({
+                                       timeout,
+                                       maxTransactionFee,
+                                       feeCreditRecordId,
+                                       referenceNumber,
+                                     }: ITransactionClientMetadata): TransactionClientMetadataArray {
+    return [timeout, maxTransactionFee, feeCreditRecordId?.bytes ?? null, referenceNumber];
+  }
+
+  public static decodeClientMetadata([
+                            timeout,
+                            maxTransactionFee,
+                            feeCreditRecordId,
+                            referenceNumber,
+                          ]: TransactionClientMetadataArray): ITransactionClientMetadata {
+    return {
+      timeout,
+      maxTransactionFee,
+      feeCreditRecordId: feeCreditRecordId ? UnitId.fromBytes(feeCreditRecordId) : null,
+      referenceNumber,
+    };
   }
 }

@@ -1,8 +1,19 @@
-import { TransactionRecordWithProof } from '../../TransactionRecordWithProof.js';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { PredicateBytes } from '../../PredicateBytes.js';
+import { TransactionRecordWithProof, TransactionRecordWithProofArray } from '../../TransactionRecordWithProof.js';
 import { dedent } from '../../util/StringUtils.js';
 import { IPredicate } from '../IPredicate.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { TransferFeeCreditTransactionOrder } from '../order/TransferFeeCreditTransactionOrder.js';
+import { TransactionOrder } from '../order/TransactionOrder.js';
+import { OwnerProofTransactionProof } from '../proof/OwnerProofTransactionProof.js';
+import { TransferFeeCreditTransactionRecordWithProof } from '../record/TransferFeeCreditTransactionRecordWithProof.js';
+import { TransferFeeCreditAttributes } from './TransferFeeCreditAttributes.js';
+
+
+/**
+ * Add fee credit attributes array.
+ */
+export type AddFeeCreditAttributesArray = [Uint8Array, ...TransactionRecordWithProofArray];
 
 /**
  * Add fee credit payload attributes.
@@ -15,7 +26,7 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
    */
   public constructor(
     public readonly ownerPredicate: IPredicate,
-    public readonly transactionProof: TransactionRecordWithProof<TransferFeeCreditTransactionOrder>,
+    public readonly transactionProof: TransactionRecordWithProof<TransactionOrder<TransferFeeCreditAttributes, OwnerProofTransactionProof, OwnerProofTransactionProof>>,
   ) {}
 
   /**
@@ -28,5 +39,26 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
         Owner Predicate: ${this.ownerPredicate.toString()}
         Transaction Proof: 
           ${this.transactionProof.toString()}`;
+  }
+
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
+  public async encode(cborCodec: ICborCodec): Promise<AddFeeCreditAttributesArray> {
+    const proof = await this.transactionProof.encode(cborCodec);
+    return [this.ownerPredicate.bytes, ...proof];
+  }
+
+  /**
+   * Create AddFeeCreditAttributes from array.
+   * @param {AddFeeCreditAttributesArray} data Add fee credit attributes array.
+   * @param {ICborCodec} cborCodec
+   * @returns {Promise<AddFeeCreditAttributes>} Add fee credit attributes.
+   */
+  public static async fromArray(data: AddFeeCreditAttributesArray, cborCodec: ICborCodec): Promise<AddFeeCreditAttributes> {
+    return new AddFeeCreditAttributes(
+      new PredicateBytes(data[0]),
+      await TransferFeeCreditTransactionRecordWithProof.fromArray([data[1], data[2]], cborCodec),
+    );
   }
 }

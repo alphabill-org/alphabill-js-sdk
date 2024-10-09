@@ -3,8 +3,18 @@ import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { TransferFeeCreditAttributesArray } from '../serializer/TransferFeeCreditTransactionOrderSerializer';
-import { TransactionOrderType } from '../TransactionOrderType';
+
+/**
+ * Transfer fee credit attributes array.
+ */
+export type TransferFeeCreditAttributesArray = readonly [
+  bigint,
+  SystemIdentifier,
+  Uint8Array,
+  bigint,
+    bigint | null,
+  bigint,
+];
 
 /**
  * Transfer fee credit payload attributes.
@@ -25,7 +35,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
     public readonly targetUnitId: IUnitId,
     public readonly latestAdditionTime: bigint,
     public readonly targetUnitCounter: bigint | null,
-    public readonly counter: bigint,
+    public readonly counter: bigint
   ) {
     this.amount = BigInt(this.amount);
     this.latestAdditionTime = BigInt(this.latestAdditionTime);
@@ -46,5 +56,28 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
         Latest Addition Time: ${this.latestAdditionTime}
         Target Unit Counter: ${this.targetUnitCounter === null ? 'null' : this.targetUnitCounter}
         Counter: ${this.counter}`;
+  }
+
+  /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
+  public encode(): Promise<TransferFeeCreditAttributesArray> {
+    return Promise.resolve([
+      this.amount,
+      this.targetSystemIdentifier,
+      this.targetUnitId.bytes,
+      this.latestAdditionTime,
+      this.targetUnitCounter,
+      this.counter,
+    ]);
+  }
+
+  /**
+   * Create TransferFeeCreditAttributes from array.
+   * @param {TransferFeeCreditAttributesArray} data - Transfer fee credit attributes array.
+   * @returns {TransferFeeCreditAttributes} Transfer fee credit attributes instance.
+   */
+  public static fromArray(data: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
+    return new TransferFeeCreditAttributes(data[0], data[1], UnitId.fromBytes(data[2]), data[3], data[4], data[5]);
   }
 }

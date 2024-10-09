@@ -1,8 +1,8 @@
 import { ICborCodec } from './codec/cbor/ICborCodec.js';
 import { IStateApiService } from './IStateApiService.js';
+import { JsonRpcClient } from './json-rpc/JsonRpcClient';
 import { JsonRpcClient } from './json-rpc/JsonRpcClient.js';
 import { JsonRpcHttpService } from './json-rpc/JsonRpcHttpService.js';
-import { StateApiJsonRpcService } from './json-rpc/StateApiJsonRpcService.js';
 import { StateApiClient } from './StateApiClient.js';
 import { StateApiMoneyClient } from './StateApiMoneyClient.js';
 import { StateApiTokenClient } from './StateApiTokenClient.js';
@@ -52,5 +52,5 @@ export function createTokenClient(options: StateApiTokenClientOptions): StateApi
  * @returns {IStateApiService} State API service.
  */
 export function http(url: string, cborCodec: ICborCodec): IStateApiService {
-  return new StateApiJsonRpcService(new JsonRpcClient(new JsonRpcHttpService(url)), cborCodec);
+  return new JsonRpcClient(new JsonRpcClient(new JsonRpcHttpService(url)), cborCodec);
 }

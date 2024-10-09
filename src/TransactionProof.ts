@@ -35,14 +35,6 @@ export class TransactionProof {
   }
 
   /**
-   * Convert to array.
-   * @returns {TransactionProofArray} Transaction proof array.
-   */
-  public toArray(): TransactionProofArray {
-    return [this.blockHeaderHash, this.chain.map((item) => item.toArray()), this.unicityCertificate];
-  }
-
-  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -51,6 +43,10 @@ export class TransactionProof {
       TransactionProof
         Block header hash: ${Base16Converter.encode(this._blockHeaderHash)}
         Chain: [${this.chain.length ? `\n${this.chain.map((item) => item.toString()).join('\n')}\n` : ''}]`;
+  }
+
+  public encode(): TransactionProofArray {
+    return [this.blockHeaderHash, this.chain.map((item) => item.encode()), this.unicityCertificate];
   }
 
   /**

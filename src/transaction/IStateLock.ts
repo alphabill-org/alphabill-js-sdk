@@ -22,5 +22,5 @@ export interface IStateLock {
    * Convert to array.
    * @returns {readonly Uint8Array[]} Array of payload state lock predicates.
    */
-  toArray(): StateLockArray;
+  encode(): StateLockArray;
 }

@@ -1,5 +1,7 @@
+import { ICborCodec } from './codec/cbor/ICborCodec.js';
 import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
-import { TransactionOrder } from './transaction/order/TransactionOrder';
+import { TransactionOrder } from './transaction/order/TransactionOrder.js';
+import { ITransactionOrderProof } from './transaction/proof/ITransactionOrderProof.js';
 import { TransactionProof, TransactionProofArray } from './TransactionProof.js';
 import { TransactionRecord, TransactionRecordArray } from './TransactionRecord.js';
 import { dedent } from './util/StringUtils.js';
@@ -13,16 +15,17 @@ export type TransactionRecordWithProofArray = readonly [TransactionRecordArray, 
  * Transaction record with proof.
  * @template T - Transaction payload type.
  */
-export class TransactionRecordWithProof<Attributes extends ITransactionPayloadAttributes, Proof> {
+export class TransactionRecordWithProof<T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof, ITransactionOrderProof>> {
   /**
    * Transaction record with proof constructor.
    * @param {TransactionRecord<T>} transactionRecord - transaction record.
    * @param {TransactionProof} transactionProof - transaction proof.
    */
   public constructor(
-    public readonly transactionRecord: TransactionRecord<Attributes, Proof>,
-    public readonly transactionProof: TransactionProof,
-  ) {}
+    public readonly transactionRecord: TransactionRecord<T>,
+    public readonly transactionProof: TransactionProof
+  ) {
+  }
 
   /**
    * Convert to string.
@@ -33,5 +36,29 @@ export class TransactionRecordWithProof<Attributes extends ITransactionPayloadAt
       TransactionRecordWithProof
         ${this.transactionRecord.toString()}
         ${this.transactionProof.toString()}`;
+  }
+
+  /**
+   * Encode transaction record with proof to array.
+   * @param {ICborCodec} cborCodec
+   * @returns {TransactionRecordWithProofArray} Transaction record with proof array structure.
+   */
+  public async encode(cborCodec: ICborCodec): Promise<TransactionRecordWithProofArray> {
+    return [
+      [
+        await this.transactionRecord.transactionOrder.encode(cborCodec),
+        [
+          this.transactionRecord.serverMetadata.actualFee,
+          this.transactionRecord.serverMetadata.targetUnits,
+          this.transactionRecord.serverMetadata.successIndicator,
+          this.transactionRecord.serverMetadata.processingDetails
+        ]
+      ],
+      [
+        this.transactionProof.blockHeaderHash,
+        this.transactionProof.chain.map((item) => [item.hash, item.left]),
+        this.transactionProof.unicityCertificate
+      ]
+    ];
   }
 }

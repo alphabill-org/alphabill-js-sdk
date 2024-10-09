@@ -42,6 +42,14 @@ export class TransactionProofChainItem {
   }
 
   /**
+   * Convert to array.
+   * @returns {TransactionProofChainItemArray} Transaction proof chain item array.
+   */
+  public encode(): TransactionProofChainItemArray {
+    return [this.hash, this.left];
+  }
+
+  /**
    * Create transaction proof chain item from array.
    * @param {TransactionProofChainItemArray} data - Transaction proof chain item array.
    * @returns {TransactionProofChainItem} Transaction proof chain item.
