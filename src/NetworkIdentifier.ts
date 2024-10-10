@@ -1,3 +1,3 @@
 export enum NetworkIdentifier {
-  MAINNET = 0
+  MAINNET = 0,
 }

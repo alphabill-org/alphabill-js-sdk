@@ -6,4 +6,3 @@ export enum SystemIdentifier {
   TOKEN_PARTITION = 2,
   EVM_PARTITION = 3,
 }
-

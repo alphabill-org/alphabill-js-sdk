@@ -8,7 +8,9 @@ import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
 import { TransactionOrder } from './TransactionOrder.js';
 
-export class UnsignedAddFeeCreditTransactionOrder implements IUnsignedTransactionOrder<AddFeeCreditAttributes, Uint8Array> {
+export class UnsignedAddFeeCreditTransactionOrder
+  implements IUnsignedTransactionOrder<AddFeeCreditAttributes, Uint8Array>
+{
   private readonly serializer: AddFeeCreditTransactionOrderSerializer;
 
   public constructor(
@@ -17,7 +19,6 @@ export class UnsignedAddFeeCreditTransactionOrder implements IUnsignedTransactio
     public readonly codec: ICborCodec,
   ) {
     this.serializer = new AddFeeCreditTransactionOrderSerializer(codec);
-    
   }
 
   public async sign(
@@ -25,7 +26,13 @@ export class UnsignedAddFeeCreditTransactionOrder implements IUnsignedTransactio
     feeProofSigner: ISigningService,
   ): Promise<TransactionOrder<AddFeeCreditAttributes, Uint8Array>> {
     const bytes = await this.serializer.serialize(
-      new TransactionOrder<AddFeeCreditAttributes, Uint8Array>(TransactionOrderType.AddFeeCredit, this.payload, null, null, null)
+      new TransactionOrder<AddFeeCreditAttributes, Uint8Array>(
+        TransactionOrderType.AddFeeCredit,
+        this.payload,
+        null,
+        null,
+        null,
+      ),
     );
 
     return new TransactionOrder(

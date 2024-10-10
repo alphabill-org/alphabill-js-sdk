@@ -1,6 +1,6 @@
+import { PredicateBytes } from '../PredicateBytes.js';
 import { IPredicate } from './IPredicate.js';
 import { IStateLock } from './IStateLock.js';
-import { PredicateBytes } from '../PredicateBytes';
 
 export type StateLockArray = [Uint8Array, Uint8Array];
 

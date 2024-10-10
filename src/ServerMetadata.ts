@@ -1,12 +1,10 @@
 import { Base16Converter } from './util/Base16Converter.js';
 import { dedent } from './util/StringUtils.js';
 
-
 /**
  * Server metadata array.
  */
 export type ServerMetadataArray = readonly [bigint, Uint8Array[], bigint, Uint8Array | null];
-
 
 /**
  * Server metadata.

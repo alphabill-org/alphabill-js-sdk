@@ -11,9 +11,7 @@ import { ReclaimFeeCreditAttributes } from './transaction/attribute/ReclaimFeeCr
 import { SplitBillAttributes } from './transaction/attribute/SplitBillAttributes.js';
 import { SwapBillsWithDustCollectorAttributes } from './transaction/attribute/SwapBillsWithDustCollectorAttributes.js';
 import { TransferBillAttributes } from './transaction/attribute/TransferBillAttributes.js';
-import {
-  TransferBillToDustCollectorAttributes
-} from './transaction/attribute/TransferBillToDustCollectorAttributes.js';
+import { TransferBillToDustCollectorAttributes } from './transaction/attribute/TransferBillToDustCollectorAttributes.js';
 import { TransferFeeCreditAttributes } from './transaction/attribute/TransferFeeCreditAttributes.js';
 import { UnlockBillAttributes } from './transaction/attribute/UnlockBillAttributes.js';
 import { UnlockFeeCreditAttributes } from './transaction/attribute/UnlockFeeCreditAttributes.js';
@@ -22,9 +20,7 @@ import { ITransactionClientMetadata } from './transaction/ITransactionClientMeta
 import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
 import { IUnsignedTransactionOrder } from './transaction/order/IUnsignedTransactionOrder.js';
 import { TransactionOrder } from './transaction/order/TransactionOrder.js';
-import {
-  UnsignedTransferFeeCreditTransactionOrder
-} from './transaction/order/UnsignedTransferFeeCreditTransactionOrder.js';
+import { UnsignedTransferFeeCreditTransactionOrder } from './transaction/order/UnsignedTransferFeeCreditTransactionOrder.js';
 import { SplitBillUnit } from './transaction/SplitBillUnit.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
 import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';

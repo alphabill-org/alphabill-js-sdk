@@ -75,8 +75,10 @@ describe('Money Client Integration Tests', () => {
       createMetadata(round),
     );
 
-    const proof: TransactionRecordWithProof<TransferFeeCreditAttributes> =
-      await waitTransactionProof(moneyClient, transferToFeeCreditHash);
+    const proof: TransactionRecordWithProof<TransferFeeCreditAttributes> = await waitTransactionProof(
+      moneyClient,
+      transferToFeeCreditHash,
+    );
     console.log('Transfer to fee credit successful');
     const attr = proof.transactionRecord.transactionOrder.payload as TransactionPayload<TransferFeeCreditAttributes>;
     feeCreditRecordId = new UnitIdWithType(

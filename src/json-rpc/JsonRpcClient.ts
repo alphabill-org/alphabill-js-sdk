@@ -5,18 +5,15 @@ import { Base16Converter } from '../util/Base16Converter.js';
 import { IJsonRpcService } from './IJsonRpcService.js';
 import { JsonRpcError } from './JsonRpcError.js';
 
-
 /**
  * State API JSON-RPC service.
  * @implements {IStateApiService}
  */
 export class JsonRpcClient {
-
   public constructor(
     private readonly service: IJsonRpcService,
     public readonly cborCodec: ICborCodec,
-  ) {
-  }
+  ) {}
 
   /**
    * @see {IStateApiService.getRoundNumber}
@@ -29,10 +26,7 @@ export class JsonRpcClient {
    * @see {IStateApiService.getUnitsByOwnerId}
    */
   public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
-    const response = await this.request<string[] | null>(
-      'state_getUnitsByOwnerID',
-      Base16Converter.encode(ownerId),
-    );
+    const response = await this.request<string[] | null>('state_getUnitsByOwnerID', Base16Converter.encode(ownerId));
 
     const identifiers: IUnitId[] = [];
     for (const id of response ?? []) {
@@ -49,7 +43,6 @@ export class JsonRpcClient {
     const response = (await this.request('state_getBlock', String(blockNumber))) as string;
     return Base16Converter.decode(response);
   }
-
 
   /**
    * Send a JSON-RPC request.

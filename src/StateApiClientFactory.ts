@@ -1,9 +1,7 @@
 import { ICborCodec } from './codec/cbor/ICborCodec.js';
 import { IStateApiService } from './IStateApiService.js';
-import { JsonRpcClient } from './json-rpc/JsonRpcClient';
 import { JsonRpcClient } from './json-rpc/JsonRpcClient.js';
 import { JsonRpcHttpService } from './json-rpc/JsonRpcHttpService.js';
-import { StateApiClient } from './StateApiClient.js';
 import { StateApiMoneyClient } from './StateApiMoneyClient.js';
 import { StateApiTokenClient } from './StateApiTokenClient.js';
 import { TokenUnitIdFactory } from './transaction/TokenUnitIdFactory.js';

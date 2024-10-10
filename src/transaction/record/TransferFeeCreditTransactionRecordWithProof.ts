@@ -6,13 +6,16 @@ import { TransactionRecordWithProof, TransactionRecordWithProofArray } from '../
 import { TransferFeeCreditTransactionOrder } from '../order/TransferFeeCreditTransactionOrder.js';
 
 export class TransferFeeCreditTransactionRecordWithProof extends TransactionRecordWithProof<TransferFeeCreditTransactionOrder> {
-  public static async fromArray([[transactionOrder, serverMetadata], transactionProof]: TransactionRecordWithProofArray, cborCodec: ICborCodec): Promise<TransferFeeCreditTransactionRecordWithProof> {
+  public static async fromArray(
+    [[transactionOrder, serverMetadata], transactionProof]: TransactionRecordWithProofArray,
+    cborCodec: ICborCodec,
+  ): Promise<TransferFeeCreditTransactionRecordWithProof> {
     return new TransferFeeCreditTransactionRecordWithProof(
       new TransactionRecord(
         await TransferFeeCreditTransactionOrder.fromArray(transactionOrder, cborCodec),
-        ServerMetadata.fromArray(serverMetadata)
+        ServerMetadata.fromArray(serverMetadata),
       ),
-      TransactionProof.fromArray(transactionProof)
+      TransactionProof.fromArray(transactionProof),
     );
   }
 }

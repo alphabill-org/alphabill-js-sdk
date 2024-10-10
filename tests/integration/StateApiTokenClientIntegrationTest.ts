@@ -76,8 +76,10 @@ describe('Token Client Integration Tests', () => {
       },
       createMetadata(round),
     );
-    const proof: TransactionRecordWithProof<TransferFeeCreditAttributes> =
-      await waitTransactionProof(moneyClient, transferToFeeCreditHash);
+    const proof: TransactionRecordWithProof<TransferFeeCreditAttributes> = await waitTransactionProof(
+      moneyClient,
+      transferToFeeCreditHash,
+    );
     console.log('Transfer to fee credit successful');
 
     const attr = proof.transactionRecord.transactionOrder.payload as TransactionPayload<TransferFeeCreditAttributes>;
@@ -188,8 +190,10 @@ describe('Token Client Integration Tests', () => {
       await waitTransactionProof(tokenClient, burnFungibleTokenHash);
       console.log('Fungible token burn successful');
 
-      const burnProof: TransactionRecordWithProof<BurnFungibleTokenAttributes> =
-        await waitTransactionProof(tokenClient, burnFungibleTokenHash);
+      const burnProof: TransactionRecordWithProof<BurnFungibleTokenAttributes> = await waitTransactionProof(
+        tokenClient,
+        burnFungibleTokenHash,
+      );
       console.log('Joining fungible token...');
       const joinFungibleTokenHash = await tokenClient.joinFungibleTokens(
         {

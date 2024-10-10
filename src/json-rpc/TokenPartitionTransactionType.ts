@@ -10,5 +10,5 @@ export enum TokenPartitionTransactionType {
   SplitFungibleToken = 9,
   BurnFungibleToken = 10,
   JoinFungibleToken = 11,
-  UpdateNonFungibleToken = 12
+  UpdateNonFungibleToken = 12,
 }

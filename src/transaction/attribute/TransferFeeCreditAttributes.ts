@@ -12,7 +12,7 @@ export type TransferFeeCreditAttributesArray = readonly [
   SystemIdentifier,
   Uint8Array,
   bigint,
-    bigint | null,
+  bigint | null,
   bigint,
 ];
 
@@ -35,7 +35,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
     public readonly targetUnitId: IUnitId,
     public readonly latestAdditionTime: bigint,
     public readonly targetUnitCounter: bigint | null,
-    public readonly counter: bigint
+    public readonly counter: bigint,
   ) {
     this.amount = BigInt(this.amount);
     this.latestAdditionTime = BigInt(this.latestAdditionTime);

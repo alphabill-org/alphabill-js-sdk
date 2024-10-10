@@ -26,22 +26,24 @@ type GetUnitTypes = FungibleToken | NonFungibleToken | FeeCreditRecord | Fungibl
  * JSON-RPC client.
  */
 export class TokenPartitionJsonRpcClient extends JsonRpcClient {
-
-  public constructor(
-    service: IJsonRpcService,
-    cborCodec: ICborCodec
-  ) {
+  public constructor(service: IJsonRpcService, cborCodec: ICborCodec) {
     super(service, cborCodec);
   }
 
   /**
    * @see {IStateApiService.getUnit}
    */
-  public async getUnit<T extends GetUnitTypes>(unitId: IUnitId, includeStateProof: boolean, unitFactory: { create: (unitId: IUnitId, ownerPredicate: IPredicate, input: unknown, stateProof: IStateProof | null) => T } ): Promise<T | null> {
+  public async getUnit<T extends GetUnitTypes>(
+    unitId: IUnitId,
+    includeStateProof: boolean,
+    unitFactory: {
+      create: (unitId: IUnitId, ownerPredicate: IPredicate, input: unknown, stateProof: IStateProof | null) => T;
+    },
+  ): Promise<T | null> {
     const response = await this.request<IUnitDto>(
       'state_getUnit',
       Base16Converter.encode(unitId.bytes),
-      includeStateProof
+      includeStateProof,
     );
 
     if (response) {
@@ -58,40 +60,47 @@ export class TokenPartitionJsonRpcClient extends JsonRpcClient {
     return null;
   }
 
-
   /**
    * @see {IStateApiService.getTransactionProof}
    */
-  public async getTransactionProof<TO extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof, ITransactionOrderProof>>(
+  public async getTransactionProof<
+    TO extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof, ITransactionOrderProof>,
+  >(
     transactionHash: Uint8Array,
     // TODO: Rename fromArray
-    transactionProofFactory: { fromArray: (transactionRecordWithProof: TransactionRecordWithProofArray, cborCodec: ICborCodec) => TransactionRecordWithProof<TO> }
+    transactionRecordWithProofFactory: {
+      fromArray: (
+        transactionRecordWithProof: TransactionRecordWithProofArray,
+        cborCodec: ICborCodec,
+      ) => TransactionRecordWithProof<TO>;
+    },
   ): Promise<TransactionRecordWithProof<TO> | null> {
     const response = (await this.request(
       'state_getTransactionProof',
-      Base16Converter.encode(transactionHash)
+      Base16Converter.encode(transactionHash),
     )) as TransactionProofDto | null;
 
     if (!response) {
       return null;
     }
 
-    const transactionRecordWithProof = await this.cborCodec.decode(Base16Converter.decode(response.txRecordProof)) as TransactionRecordWithProofArray;
-    return transactionProofFactory.fromArray(transactionRecordWithProof, this.cborCodec);
+    const transactionRecordWithProof = (await this.cborCodec.decode(
+      Base16Converter.decode(response.txRecordProof),
+    )) as TransactionRecordWithProofArray;
+    return transactionRecordWithProofFactory.fromArray(transactionRecordWithProof, this.cborCodec);
   }
 
   /**
    * @see {IStateApiService.sendTransaction}
    */
   public async sendTransaction(
-    transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof, ITransactionOrderProof>
+    transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof, ITransactionOrderProof>,
   ): Promise<Uint8Array> {
     const response = (await this.request(
       'state_sendTransaction',
-      Base16Converter.encode(await this.cborCodec.encode(await transaction.encode(this.cborCodec)))
+      Base16Converter.encode(await this.cborCodec.encode(await transaction.encode(this.cborCodec))),
     )) as string;
 
     return Base16Converter.decode(response);
   }
 }
-

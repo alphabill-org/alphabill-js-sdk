@@ -4,5 +4,5 @@ export enum MoneyPartitionTransactionType {
   TransferBillToDustCollector = 3,
   SwapBillsWithDustCollector = 4,
   LockBill = 5,
-  UnlockBill = 6
+  UnlockBill = 6,
 }

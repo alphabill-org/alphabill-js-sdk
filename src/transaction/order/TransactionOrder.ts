@@ -25,7 +25,7 @@ export type TransactionOrderArray = readonly [
   UnitIdType,
   TransactionOrderType,
   TransactionAttributesType,
-    StateLockArray | null,
+  StateLockArray | null,
   TransactionClientMetadataArray,
   StateUnlockType,
   TransactionProofType,
@@ -36,19 +36,23 @@ export type TransactionOrderArray = readonly [
  * Transaction order.
  * @template T - Transaction payload type.
  */
-export abstract class TransactionOrder<Attributes extends ITransactionPayloadAttributes, TransactionProof extends ITransactionOrderProof, FeeProof extends ITransactionOrderProof> {
+export abstract class TransactionOrder<
+  Attributes extends ITransactionPayloadAttributes,
+  TransactionProof extends ITransactionOrderProof,
+  FeeProof extends ITransactionOrderProof,
+> {
   /**
    * Transaction order constructor.
    * @param {TransactionOrderType} type Transaction type
    * @param {TransactionPayload<Attributes>} payload Payload.
-   * @param {TransactionProof | null} transactionProof Transaction proof.
+   * @param {TransactionProof | null} authProof Transaction proof.
    * @param {FeeProof | null} feeProof Fee proof.
    * @param {Uint8Array | null} stateUnlock State unlock.
    */
   public constructor(
     public readonly type: number,
     public readonly payload: TransactionPayload<Attributes>,
-    public readonly transactionProof: TransactionProof | null,
+    public readonly authProof: TransactionProof | null,
     public readonly feeProof: FeeProof | null,
     public readonly stateUnlock: IPredicate | null,
   ) {}
@@ -61,7 +65,7 @@ export abstract class TransactionOrder<Attributes extends ITransactionPayloadAtt
     return dedent`
       TransactionOrder
         ${this.payload.toString()}
-        Transaction Proof: ${this.transactionProof?.toString() ?? null}
+        Auth Proof: ${this.authProof?.toString() ?? null}
         Fee Proof: ${this.feeProof?.toString() ?? null}
         State Unlock: ${this.stateUnlock?.toString() ?? null}`;
   }
@@ -76,26 +80,26 @@ export abstract class TransactionOrder<Attributes extends ITransactionPayloadAtt
       this.payload.stateLock ? this.payload.stateLock.encode() : null,
       TransactionOrder.encodeClientMetadata(this.payload.clientMetadata),
       this.stateUnlock?.bytes ?? null,
-      await this.transactionProof?.encode(cborCodec) ?? null,
-      await this.feeProof?.encode(cborCodec) ?? null
+      (await this.authProof?.encode(cborCodec)) ?? null,
+      (await this.feeProof?.encode(cborCodec)) ?? null,
     ];
   }
 
   public static encodeClientMetadata({
-                                       timeout,
-                                       maxTransactionFee,
-                                       feeCreditRecordId,
-                                       referenceNumber,
-                                     }: ITransactionClientMetadata): TransactionClientMetadataArray {
+    timeout,
+    maxTransactionFee,
+    feeCreditRecordId,
+    referenceNumber,
+  }: ITransactionClientMetadata): TransactionClientMetadataArray {
     return [timeout, maxTransactionFee, feeCreditRecordId?.bytes ?? null, referenceNumber];
   }
 
   public static decodeClientMetadata([
-                            timeout,
-                            maxTransactionFee,
-                            feeCreditRecordId,
-                            referenceNumber,
-                          ]: TransactionClientMetadataArray): ITransactionClientMetadata {
+    timeout,
+    maxTransactionFee,
+    feeCreditRecordId,
+    referenceNumber,
+  ]: TransactionClientMetadataArray): ITransactionClientMetadata {
     return {
       timeout,
       maxTransactionFee,

@@ -1,3 +1,3 @@
 export type TransactionProofDto = {
-  txRecordProof: string
-}
+  txRecordProof: string;
+};

@@ -4,34 +4,40 @@ import { PredicateBytes } from '../../PredicateBytes.js';
 import { UnitId } from '../../UnitId.js';
 import { AddFeeCreditAttributes, AddFeeCreditAttributesArray } from '../attribute/AddFeeCreditAttributes.js';
 import { IPredicate } from '../IPredicate.js';
-import { OwnerProofTransactionProof } from '../proof/OwnerProofTransactionProof.js';
+import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from './TransactionOrder.js';
 
-export class AddFeeCreditTransactionOrder extends TransactionOrder<AddFeeCreditAttributes, OwnerProofTransactionProof, OwnerProofTransactionProof> {
+export class AddFeeCreditTransactionOrder extends TransactionOrder<
+  AddFeeCreditAttributes,
+  OwnerProofAuthProof,
+  OwnerProofAuthProof
+> {
   public constructor(
     payload: TransactionPayload<AddFeeCreditAttributes>,
-    transactionProof: OwnerProofTransactionProof | null,
-    feeProof: OwnerProofTransactionProof | null,
+    authProof: OwnerProofAuthProof | null,
+    feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(FeeCreditTransactionType.AddFeeCredit, payload, transactionProof, feeProof, stateUnlock);
+    super(FeeCreditTransactionType.AddFeeCredit, payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray([
-                            networkIdentifier,
-                            systemIdentifier,
-                            unitId,
-                            ,
-                            attributes,
-                            stateLock,
-                            clientMetadata,
-                            stateUnlock,
-                            transactionProof,
-                            feeProof
-                          ]: TransactionOrderArray,
-                          cborCodec: ICborCodec): Promise<AddFeeCreditTransactionOrder> {
+  public static async fromArray(
+    [
+      networkIdentifier,
+      systemIdentifier,
+      unitId,
+      ,
+      attributes,
+      stateLock,
+      clientMetadata,
+      stateUnlock,
+      authProof,
+      feeProof,
+    ]: TransactionOrderArray,
+    cborCodec: ICborCodec,
+  ): Promise<AddFeeCreditTransactionOrder> {
     return new AddFeeCreditTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
@@ -39,12 +45,11 @@ export class AddFeeCreditTransactionOrder extends TransactionOrder<AddFeeCreditA
         UnitId.fromBytes(unitId),
         await AddFeeCreditAttributes.fromArray(attributes as AddFeeCreditAttributesArray, cborCodec),
         stateLock ? StateLock.fromArray(stateLock) : null,
-        TransactionOrder.decodeClientMetadata(clientMetadata)
+        TransactionOrder.decodeClientMetadata(clientMetadata),
       ),
-      transactionProof ? await OwnerProofTransactionProof.decode(transactionProof, cborCodec) : null,
-      feeProof ? await OwnerProofTransactionProof.decode(feeProof, cborCodec) : null,
-      stateUnlock ? new PredicateBytes(stateUnlock) : null
+      authProof ? await OwnerProofAuthProof.decode(authProof, cborCodec) : null,
+      feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
+      stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }
 }
-

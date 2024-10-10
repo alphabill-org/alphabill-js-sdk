@@ -15,7 +15,9 @@ export type TransactionRecordWithProofArray = readonly [TransactionRecordArray, 
  * Transaction record with proof.
  * @template T - Transaction payload type.
  */
-export class TransactionRecordWithProof<T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof, ITransactionOrderProof>> {
+export class TransactionRecordWithProof<
+  T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof, ITransactionOrderProof>,
+> {
   /**
    * Transaction record with proof constructor.
    * @param {TransactionRecord<T>} transactionRecord - transaction record.
@@ -23,9 +25,8 @@ export class TransactionRecordWithProof<T extends TransactionOrder<ITransactionP
    */
   public constructor(
     public readonly transactionRecord: TransactionRecord<T>,
-    public readonly transactionProof: TransactionProof
-  ) {
-  }
+    public readonly transactionProof: TransactionProof,
+  ) {}
 
   /**
    * Convert to string.
@@ -51,14 +52,14 @@ export class TransactionRecordWithProof<T extends TransactionOrder<ITransactionP
           this.transactionRecord.serverMetadata.actualFee,
           this.transactionRecord.serverMetadata.targetUnits,
           this.transactionRecord.serverMetadata.successIndicator,
-          this.transactionRecord.serverMetadata.processingDetails
-        ]
+          this.transactionRecord.serverMetadata.processingDetails,
+        ],
       ],
       [
         this.transactionProof.blockHeaderHash,
         this.transactionProof.chain.map((item) => [item.hash, item.left]),
-        this.transactionProof.unicityCertificate
-      ]
+        this.transactionProof.unicityCertificate,
+      ],
     ];
   }
 }
