@@ -38,21 +38,21 @@ export type TransactionOrderArray = readonly [
  */
 export abstract class TransactionOrder<
   Attributes extends ITransactionPayloadAttributes,
-  TransactionProof extends ITransactionOrderProof,
+  AuthProof extends ITransactionOrderProof,
   FeeProof extends ITransactionOrderProof,
 > {
   /**
    * Transaction order constructor.
    * @param {TransactionOrderType} type Transaction type
    * @param {TransactionPayload<Attributes>} payload Payload.
-   * @param {TransactionProof | null} authProof Transaction proof.
+   * @param {AuthProof | null} authProof Transaction proof.
    * @param {FeeProof | null} feeProof Fee proof.
    * @param {Uint8Array | null} stateUnlock State unlock.
    */
   public constructor(
     public readonly type: number,
     public readonly payload: TransactionPayload<Attributes>,
-    public readonly authProof: TransactionProof | null,
+    public readonly authProof: AuthProof | null,
     public readonly feeProof: FeeProof | null,
     public readonly stateUnlock: IPredicate | null,
   ) {}

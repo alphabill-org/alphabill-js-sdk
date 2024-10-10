@@ -1,12 +1,12 @@
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 
-import { TransactionOrderType } from '../TransactionOrderType';
-
 /**
  * Unlock bill attributes array.
  */
-export type UnlockBillAttributesArray = readonly [bigint];
+export type UnlockBillAttributesArray = readonly [
+  bigint, // Counter
+];
 
 /**
  * Unlock bill payload attributes.
@@ -14,31 +14,10 @@ export type UnlockBillAttributesArray = readonly [bigint];
 export class UnlockBillAttributes implements ITransactionPayloadAttributes {
   /**
    * Unlock bill attributes constructor.
-   * @param {Uint8Array} counter - Counter.
+   * @param {Uint8Array} counter Counter.
    */
   public constructor(public readonly counter: bigint) {
     this.counter = BigInt(this.counter);
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.payloadType}
-   */
-  public get payloadType(): TransactionOrderType {
-    return TransactionOrderType.UnlockBill;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): UnlockBillAttributesArray {
-    return this.toArray();
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): UnlockBillAttributesArray {
-    return [this.counter];
   }
 
   /**
@@ -52,11 +31,18 @@ export class UnlockBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * @see {ITransactionPayloadAttributes.encode}
+   */
+  public encode(): Promise<UnlockBillAttributesArray> {
+    return Promise.resolve([this.counter]);
+  }
+
+  /**
    * Create UnlockBillAttributes from array.
    * @param {UnlockBillAttributesArray} data Unlock bill attributes array.
    * @returns {UnlockBillAttributes} Unlock bill attributes instance.
    */
-  public static fromArray(data: UnlockBillAttributesArray): UnlockBillAttributes {
-    return new UnlockBillAttributes(data[0]);
+  public static fromArray([counter]: UnlockBillAttributesArray): UnlockBillAttributes {
+    return new UnlockBillAttributes(counter);
   }
 }

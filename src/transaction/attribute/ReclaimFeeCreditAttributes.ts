@@ -1,16 +1,15 @@
-import { TransactionProofArray } from '../../TransactionProof.js';
-import { TransactionRecordArray } from '../../TransactionRecord.js';
-import { TransactionRecordWithProof } from '../../TransactionRecordWithProof.js';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { TransactionRecordWithProofArray } from '../../TransactionRecordWithProof.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { TransactionOrderType } from '../TransactionOrderType';
-import { TransactionPayload } from '../TransactionPayload.js';
-import { CloseFeeCreditAttributes } from './CloseFeeCreditAttributes.js';
+import { CloseFeeCreditTransactionRecordWithProof } from '../record/CloseFeeCreditTransactionRecordWithProof.js';
 
 /**
  * Reclaim fee credit attributes array.
  */
-export type ReclaimFeeCreditAttributesArray = [TransactionRecordArray, TransactionProofArray, bigint];
+export type ReclaimFeeCreditAttributesArray = [
+  TransactionRecordWithProofArray, // Close Fee Credit Transaction Record With Proof
+];
 
 /**
  * Reclaim fee credit payload attributes.
@@ -19,34 +18,14 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
   /**
    * Reclaim fee credit attributes constructor.
    * @param {TransactionRecordWithProof<CloseFeeCreditAttributes>} proof - Transaction record with proof.
-   * @param {bigint} counter - Counter.
    */
-  public constructor(
-    public readonly proof: TransactionRecordWithProof<CloseFeeCreditAttributes>,
-    public readonly counter: bigint,
-  ) {
-    this.counter = BigInt(this.counter);
-  }
+  public constructor(public readonly proof: CloseFeeCreditTransactionRecordWithProof) {}
 
   /**
-   * @see {ITransactionPayloadAttributes.payloadType}
+   * @see {ITransactionPayloadAttributes.encode}
    */
-  public get payloadType(): TransactionOrderType {
-    return TransactionOrderType.ReclaimFeeCredit;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): ReclaimFeeCreditAttributesArray {
-    return this.toArray();
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): ReclaimFeeCreditAttributesArray {
-    return [this.proof.transactionRecord.toArray(), this.proof.transactionProof.toArray(), this.counter];
+  public async encode(cborCodec: ICborCodec): Promise<ReclaimFeeCreditAttributesArray> {
+    return [await this.proof.encode(cborCodec)];
   }
 
   /**
@@ -56,18 +35,23 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
   public toString(): string {
     return dedent`
       ReclaimFeeCreditAttributes
-        Transaction Proof: 
+        Transaction Record With Proof: 
           ${this.proof.toString()}
-        Counter: ${this.counter}
       `;
   }
 
   /**
    * Create ReclaimFeeCreditAttributes from array.
    * @param {ReclaimFeeCreditAttributesArray} data - Reclaim fee credit attributes data array.
+   * @param {ICborCodec} cborCodec Cbor codec.
    * @returns {ReclaimFeeCreditAttributes} Reclaim fee credit attributes instance.
    */
-  public static fromArray(data: ReclaimFeeCreditAttributesArray): ReclaimFeeCreditAttributes {
-    return new ReclaimFeeCreditAttributes(TransactionRecordWithProof.fromArray([data[0], data[1]]), data[2]);
+  public static async fromArray(
+    [transactionRecordWithProof]: ReclaimFeeCreditAttributesArray,
+    cborCodec: ICborCodec,
+  ): Promise<ReclaimFeeCreditAttributes> {
+    return new ReclaimFeeCreditAttributes(
+      await CloseFeeCreditTransactionRecordWithProof.fromArray(transactionRecordWithProof, cborCodec),
+    );
   }
 }

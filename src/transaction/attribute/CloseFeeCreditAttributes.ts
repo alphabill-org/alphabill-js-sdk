@@ -3,12 +3,15 @@ import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 
-import { TransactionOrderType } from '../TransactionOrderType';
-
 /**
  * Close fee credit attributes array.
  */
-export type CloseFeeCreditAttributesArray = readonly [bigint, Uint8Array, bigint, bigint];
+export type CloseFeeCreditAttributesArray = readonly [
+  bigint, // Amount
+  Uint8Array, // Target unit ID
+  bigint, // Target unit counter
+  bigint, // Counter
+];
 
 /**
  * Close fee credit payload attributes.
@@ -33,27 +36,6 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.payloadType}
-   */
-  public get payloadType(): TransactionOrderType {
-    return TransactionOrderType.CloseFeeCredit;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): CloseFeeCreditAttributesArray {
-    return this.toArray();
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): CloseFeeCreditAttributesArray {
-    return [this.amount, this.targetUnitId.bytes, this.targetUnitCounter, this.counter];
-  }
-
-  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -67,11 +49,23 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * @see {ITransactionPayloadAttributes.encode}
+   */
+  public encode(): Promise<CloseFeeCreditAttributesArray> {
+    return Promise.resolve([this.amount, this.targetUnitId.bytes, this.targetUnitCounter, this.counter]);
+  }
+
+  /**
    * Create CloseFeeCreditAttributes from array.
    * @param {CloseFeeCreditAttributesArray} data Close fee credit attributes array.
    * @returns {CloseFeeCreditAttributes} Close fee credit attributes instance.
    */
-  public static fromArray(data: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {
-    return new CloseFeeCreditAttributes(data[0], UnitId.fromBytes(data[1]), data[2], data[3]);
+  public static fromArray([
+    amount,
+    targetUnitId,
+    targetUnitCounter,
+    counter,
+  ]: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {
+    return new CloseFeeCreditAttributes(amount, UnitId.fromBytes(targetUnitId), targetUnitCounter, counter);
   }
 }

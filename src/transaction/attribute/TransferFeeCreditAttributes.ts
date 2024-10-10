@@ -8,12 +8,12 @@ import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.
  * Transfer fee credit attributes array.
  */
 export type TransferFeeCreditAttributesArray = readonly [
-  bigint,
-  SystemIdentifier,
-  Uint8Array,
-  bigint,
-  bigint | null,
-  bigint,
+  bigint, // Amount
+  SystemIdentifier, // Target system identifier
+  Uint8Array, // Target Unit ID
+  bigint, // Latest addition time
+  bigint | null, // Target unit counter
+  bigint, // Counter
 ];
 
 /**
@@ -77,7 +77,21 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
    * @param {TransferFeeCreditAttributesArray} data - Transfer fee credit attributes array.
    * @returns {TransferFeeCreditAttributes} Transfer fee credit attributes instance.
    */
-  public static fromArray(data: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
-    return new TransferFeeCreditAttributes(data[0], data[1], UnitId.fromBytes(data[2]), data[3], data[4], data[5]);
+  public static fromArray([
+    amount,
+    targetSystemIdentifier,
+    targetUnitId,
+    latestAdditionTime,
+    targetUnitCounter,
+    counter,
+  ]: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
+    return new TransferFeeCreditAttributes(
+      amount,
+      targetSystemIdentifier,
+      UnitId.fromBytes(targetUnitId),
+      latestAdditionTime,
+      targetUnitCounter,
+      counter,
+    );
   }
 }

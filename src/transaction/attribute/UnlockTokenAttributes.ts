@@ -1,13 +1,12 @@
-import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-
-import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Unlock token attributes array.
  */
-export type UnlockTokenAttributesArray = readonly [bigint, Uint8Array[] | null];
+export type UnlockTokenAttributesArray = readonly [
+  bigint, // Counter
+];
 
 /**
  * Unlock token payload attributes.
@@ -16,44 +15,16 @@ export class UnlockTokenAttributes implements ITransactionPayloadAttributes {
   /**
    * Unlock token attributes constructor.
    * @param {bigint} counter - Counter.
-   * @param {Uint8Array[] | null} _invariantPredicateSignatures Invariant predicate signatures.
    */
-  public constructor(
-    public readonly counter: bigint,
-    private readonly _invariantPredicateSignatures: Uint8Array[] | null,
-  ) {
+  public constructor(public readonly counter: bigint) {
     this.counter = BigInt(this.counter);
-    this._invariantPredicateSignatures =
-      this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.payloadType}
+   * @see {ITransactionPayloadAttributes.encode}
    */
-  public get payloadType(): TransactionOrderType {
-    return TransactionOrderType.UnlockToken;
-  }
-
-  /**
-   * Get invariant predicate signatures.
-   * @returns {Uint8Array[] | null} Invariant predicate signatures.
-   */
-  public get invariantPredicateSignatures(): Uint8Array[] | null {
-    return this._invariantPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): UnlockTokenAttributesArray {
-    return [this.counter, null];
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): UnlockTokenAttributesArray {
-    return [this.counter, this.invariantPredicateSignatures];
+  public encode(): Promise<UnlockTokenAttributesArray> {
+    return Promise.resolve([this.counter]);
   }
 
   /**
@@ -63,15 +34,7 @@ export class UnlockTokenAttributes implements ITransactionPayloadAttributes {
   public toString(): string {
     return dedent`
       UnlockTokenAttributes
-        Counter: ${this.counter}
-        Invariant Predicate Signatures: ${
-          this._invariantPredicateSignatures
-            ? dedent`
-        [
-          ${this._invariantPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
-        ]`
-            : 'null'
-        }`;
+        Counter: ${this.counter}`;
   }
 
   /**
@@ -79,7 +42,7 @@ export class UnlockTokenAttributes implements ITransactionPayloadAttributes {
    * @param {UnlockTokenAttributesArray} data Unlock token attributes array.
    * @returns {UnlockTokenAttributes} Unlock token attributes instance.
    */
-  public static fromArray(data: UnlockTokenAttributesArray): UnlockTokenAttributes {
-    return new UnlockTokenAttributes(data[0], data[1]);
+  public static fromArray([counter]: UnlockTokenAttributesArray): UnlockTokenAttributes {
+    return new UnlockTokenAttributes(counter);
   }
 }

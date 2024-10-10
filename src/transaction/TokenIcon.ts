@@ -30,19 +30,19 @@ export class TokenIcon {
   }
 
   /**
-   * Convert to array.
-   * @returns {TokenIconArray} Token icon array.
-   */
-  public toArray(): TokenIconArray {
-    return [this.type, this.data];
-  }
-
-  /**
    * Convert to string.
    * @returns {string} String representation.
    */
   public toString(): string {
     return `TokenIcon: ${this.type}; ${Base16Converter.encode(this._data)}`;
+  }
+
+  /**
+   * Convert to array.
+   * @returns {TokenIconArray} Token icon array.
+   */
+  public encode(): TokenIconArray {
+    return [this.type, this.data];
   }
 
   /**

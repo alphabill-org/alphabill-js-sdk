@@ -1,12 +1,12 @@
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 
-import { TransactionOrderType } from '../TransactionOrderType';
-
 /**
  * Unlock fee credit attributes array.
  */
-export type UnlockFeeCreditAttributesArray = readonly [bigint];
+export type UnlockFeeCreditAttributesArray = readonly [
+  bigint, // Counter
+];
 
 /**
  * Unlock fee credit payload attributes.
@@ -21,27 +21,6 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.payloadType}
-   */
-  public get payloadType(): TransactionOrderType {
-    return TransactionOrderType.UnlockFeeCredit;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): UnlockFeeCreditAttributesArray {
-    return this.toArray();
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): UnlockFeeCreditAttributesArray {
-    return [this.counter];
-  }
-
-  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -52,11 +31,18 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
   }
 
   /**
+   * @see {ITransactionPayloadAttributes.toArray}
+   */
+  public encode(): Promise<UnlockFeeCreditAttributesArray> {
+    return Promise.resolve([this.counter]);
+  }
+
+  /**
    * Create UnlockFeeCreditAttributes from array.
    * @param {UnlockFeeCreditAttributesArray} data - Unlock fee credit attributes data array.
    * @returns {UnlockFeeCreditAttributes} Unlock fee credit attributes instance.
    */
-  public static fromArray(data: UnlockFeeCreditAttributesArray): UnlockFeeCreditAttributes {
-    return new UnlockFeeCreditAttributes(data[0]);
+  public static fromArray([counter]: UnlockFeeCreditAttributesArray): UnlockFeeCreditAttributes {
+    return new UnlockFeeCreditAttributes(counter);
   }
 }

@@ -1,17 +1,19 @@
 import { IUnitId } from '../../IUnitId.js';
 import { PredicateBytes } from '../../PredicateBytes.js';
 import { UnitId } from '../../UnitId.js';
-import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { IPredicate } from '../IPredicate.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 
-import { TransactionOrderType } from '../TransactionOrderType';
-
 /**
  * Create fungible token attributes array.
  */
-export type CreateFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Array, bigint, bigint, Uint8Array[] | null];
+export type CreateFungibleTokenAttributesArray = readonly [
+  Uint8Array, // Type ID
+  bigint, // Value
+  Uint8Array, // Owner predicate
+  bigint, // Nonce
+];
 
 /**
  * Create fungible token payload attributes.
@@ -19,58 +21,19 @@ export type CreateFungibleTokenAttributesArray = readonly [Uint8Array, Uint8Arra
 export class CreateFungibleTokenAttributes implements ITransactionPayloadAttributes {
   /**
    * Create fungible token payload attributes constructor.
-   * @param {IPredicate} ownerPredicate Owner predicate.
+   * @param {IPredicate} ownerPredicate Initial owner predicate of the new token.
    * @param {IUnitId} typeId Token type ID.
    * @param {bigint} value Token value.
    * @param {bigint} nonce Optional nonce.
-   * @param {Uint8Array[] | null} _tokenCreationPredicateSignatures Token creation predicate signatures.
    */
   public constructor(
     public readonly ownerPredicate: IPredicate,
     public readonly typeId: IUnitId,
     public readonly value: bigint,
     public readonly nonce: bigint,
-    private readonly _tokenCreationPredicateSignatures: Uint8Array[] | null,
   ) {
     this.value = BigInt(this.value);
     this.nonce = BigInt(this.nonce);
-    this._tokenCreationPredicateSignatures =
-      this._tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.payloadType}
-   */
-  public get payloadType(): TransactionOrderType {
-    return TransactionOrderType.CreateFungibleToken;
-  }
-
-  /**
-   * Get token creation predicate signatures.
-   * @returns {Uint8Array[] | null}
-   */
-  public get tokenCreationPredicateSignatures(): Uint8Array[] | null {
-    return this._tokenCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): CreateFungibleTokenAttributesArray {
-    return [this.ownerPredicate.bytes, this.typeId.bytes, this.value, this.nonce, null];
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): CreateFungibleTokenAttributesArray {
-    return [
-      this.ownerPredicate.bytes,
-      this.typeId.bytes,
-      this.value,
-      this.nonce,
-      this.tokenCreationPredicateSignatures,
-    ];
   }
 
   /**
@@ -83,15 +46,14 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
         Owner Predicate: ${this.ownerPredicate.toString()}
         Type ID: ${this.typeId.toString()}
         Value: ${this.value}
-        Nonce: ${this.nonce}
-        Token Creation Predicate Signatures: ${
-          this._tokenCreationPredicateSignatures
-            ? dedent`
-        [
-          ${this._tokenCreationPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
-        ]`
-            : 'null'
-        }`;
+        Nonce: ${this.nonce}`;
+  }
+
+  /**
+   * @see {ITransactionPayloadAttributes.encode}
+   */
+  public encode(): Promise<CreateFungibleTokenAttributesArray> {
+    return Promise.resolve([this.typeId.bytes, this.value, this.ownerPredicate.bytes, this.nonce]);
   }
 
   /**
@@ -99,13 +61,17 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
    * @param {CreateFungibleTokenAttributesArray} data Create fungible token attributes array.
    * @returns {CreateFungibleTokenAttributes} Create fungible token attributes instance.
    */
-  public static fromArray(data: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
+  public static fromArray([
+    typeId,
+    value,
+    ownerPredicate,
+    nonce,
+  ]: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
     return new CreateFungibleTokenAttributes(
-      new PredicateBytes(data[0]),
-      UnitId.fromBytes(data[1]),
-      data[2],
-      data[3],
-      data[4],
+      new PredicateBytes(ownerPredicate),
+      UnitId.fromBytes(typeId),
+      value,
+      nonce,
     );
   }
 }

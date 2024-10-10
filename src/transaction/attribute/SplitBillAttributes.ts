@@ -1,12 +1,14 @@
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { SplitBillUnit, SplitBillUnitArray } from '../SplitBillUnit.js';
-import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Split bill attributes array.
  */
-export type SplitBillAttributesArray = [SplitBillUnitArray[], bigint, bigint];
+export type SplitBillAttributesArray = [
+  SplitBillUnitArray[], // Target Split Bill Units
+  bigint, // Counter
+];
 
 /**
  * Split bill attributes.
@@ -15,24 +17,14 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   /**
    * Split bill attributes constructor.
    * @param {readonly SplitBillUnit[]} _targetUnits - Target units.
-   * @param {bigint} remainingBillValue - Remaining bill value.
    * @param {bigint} counter - Counter.
    */
   public constructor(
     private readonly _targetUnits: readonly SplitBillUnit[],
-    public readonly remainingBillValue: bigint,
     public readonly counter: bigint,
   ) {
     this._targetUnits = Array.from(this._targetUnits);
-    this.remainingBillValue = BigInt(this.remainingBillValue);
     this.counter = BigInt(this.counter);
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.payloadType}
-   */
-  public get payloadType(): TransactionOrderType {
-    return TransactionOrderType.SplitBill;
   }
 
   /**
@@ -44,17 +36,10 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
+   * @see {ITransactionPayloadAttributes.encode}
    */
-  public toOwnerProofData(): SplitBillAttributesArray {
-    return this.toArray();
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): SplitBillAttributesArray {
-    return [this.targetUnits.map((unit) => unit.toArray()), this.remainingBillValue, this.counter];
+  public encode(): Promise<SplitBillAttributesArray> {
+    return Promise.resolve([this.targetUnits.map((unit) => unit.encode()), this.counter]);
   }
 
   /**
@@ -67,7 +52,6 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
         Target Units: [
           ${this._targetUnits.map((unit) => unit.toString()).join('\n')}
         ]
-        Remaining Bill Value: ${this.remainingBillValue}
         Counter: ${this.counter}`;
   }
 
@@ -76,13 +60,10 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
    * @param {SplitBillAttributesArray} data - Split bill attributes array.
    * @returns {SplitBillAttributes} Split bill attributes instance.
    */
-  public static fromArray(data: SplitBillAttributesArray): SplitBillAttributes {
-    const targetUnits: SplitBillUnit[] = [];
-
-    for (let i = 0; i < data[0].length; i++) {
-      targetUnits.push(SplitBillUnit.fromArray(data[0][i]));
-    }
-
-    return new SplitBillAttributes(targetUnits, data[1], data[2]);
+  public static fromArray([targetUnits, counter]: SplitBillAttributesArray): SplitBillAttributes {
+    return new SplitBillAttributes(
+      targetUnits.map((unit) => SplitBillUnit.fromArray(unit)),
+      counter,
+    );
   }
 }

@@ -3,12 +3,14 @@ import { dedent } from '../../util/StringUtils.js';
 import { IPredicate } from '../IPredicate.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 
-import { TransactionOrderType } from '../TransactionOrderType';
-
 /**
  * Transfer bill attributes array.
  */
-export type TransferBillAttributesArray = [Uint8Array, bigint, bigint];
+export type TransferBillAttributesArray = [
+  bigint, // Target Value
+  Uint8Array, // Owner Predicate
+  bigint, // Counter
+];
 
 /**
  * Transfer bill payload attributes.
@@ -30,27 +32,6 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.payloadType}
-   */
-  public get payloadType(): TransactionOrderType {
-    return TransactionOrderType.TransferBill;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): TransferBillAttributesArray {
-    return this.toArray();
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): TransferBillAttributesArray {
-    return [this.ownerPredicate.bytes, this.targetValue, this.counter];
-  }
-
-  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -63,11 +44,18 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * @see {ITransactionPayloadAttributes.encode}
+   */
+  public encode(): Promise<TransferBillAttributesArray> {
+    return Promise.resolve([this.targetValue, this.ownerPredicate.bytes, this.counter]);
+  }
+
+  /**
    * Create TransferBillAttributes from array.
    * @param {TransferBillAttributesArray} data - Transfer bill attributes array.
    * @returns {TransferBillAttributes} Transfer bill attributes instance.
    */
-  public static fromArray(data: TransferBillAttributesArray): TransferBillAttributes {
-    return new TransferBillAttributes(new PredicateBytes(data[0]), data[1], data[2]);
+  public static fromArray([targetValue, ownerPredicate, counter]: TransferBillAttributesArray): TransferBillAttributes {
+    return new TransferBillAttributes(new PredicateBytes(ownerPredicate), targetValue, counter);
   }
 }

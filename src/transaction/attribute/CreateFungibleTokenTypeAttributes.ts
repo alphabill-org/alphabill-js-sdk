@@ -1,26 +1,23 @@
 import { IUnitId } from '../../IUnitId.js';
 import { PredicateBytes } from '../../PredicateBytes.js';
 import { UnitId } from '../../UnitId.js';
-import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { IPredicate } from '../IPredicate.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { TokenIcon, TokenIconArray } from '../TokenIcon.js';
-import { TransactionOrderType } from '../TransactionOrderType';
 
 /**
  * Create fungible token type attributes array.
  */
 export type CreateFungibleTokenTypeAttributesArray = readonly [
-  string,
-  string,
-  TokenIconArray,
-  Uint8Array | null,
-  number,
-  Uint8Array,
-  Uint8Array,
-  Uint8Array,
-  Uint8Array[] | null,
+  string, // Symbol
+  string, // Name
+  TokenIconArray, // Icon
+  Uint8Array | null, // Parent Type ID
+  number, // Decimal places
+  Uint8Array, // SubType Creation Predicate
+  Uint8Array, // Token creation predicate
+  Uint8Array, // Token type owner predicate
 ];
 
 /**
@@ -34,10 +31,9 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
    * @param {TokenIcon} icon Icon.
    * @param {IUnitId | null} parentTypeId Parent type ID.
    * @param {number} decimalPlaces Decimal places.
-   * @param {IPredicate} subTypeCreationPredicate Sub type creation predicate.
-   * @param {IPredicate} tokenCreationPredicate Token creation predicate.
-   * @param {IPredicate} invariantPredicate Invariant predicate.
-   * @param {Uint8Array[] | null} _subTypeCreationPredicateSignatures Sub type creation predicate signatures.
+   * @param {IPredicate} subTypeCreationPredicate Predicate clause that controls defining new subtypes of this type.
+   * @param {IPredicate} tokenCreationPredicate Predicate clause that controls minting new tokens of this type.
+   * @param {IPredicate} tokenTypeOwnerPredicate Predicate clause that all tokens of this type (and of subtypes of this type) inherit into their owner predicates.
    */
   public constructor(
     public readonly symbol: string,
@@ -47,51 +43,8 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
     public readonly decimalPlaces: number,
     public readonly subTypeCreationPredicate: IPredicate,
     public readonly tokenCreationPredicate: IPredicate,
-    public readonly invariantPredicate: IPredicate,
-    private readonly _subTypeCreationPredicateSignatures: Uint8Array[] | null,
-  ) {
-    this._subTypeCreationPredicateSignatures =
-      this._subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.payloadType}
-   */
-  public get payloadType(): TransactionOrderType {
-    return TransactionOrderType.CreateFungibleTokenType;
-  }
-
-  /**
-   * Get sub type creation predicate signatures.
-   * @returns {Uint8Array[] | null}
-   */
-  public get subTypeCreationPredicateSignatures(): Uint8Array[] | null {
-    return this._subTypeCreationPredicateSignatures?.map((signature) => new Uint8Array(signature)) || null;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): CreateFungibleTokenTypeAttributesArray {
-    return this.toArray();
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): CreateFungibleTokenTypeAttributesArray {
-    return [
-      this.symbol,
-      this.name,
-      this.icon.toArray(),
-      this.parentTypeId?.bytes || null,
-      this.decimalPlaces,
-      this.subTypeCreationPredicate.bytes,
-      this.tokenCreationPredicate.bytes,
-      this.invariantPredicate.bytes,
-      this.subTypeCreationPredicateSignatures,
-    ];
-  }
+    public readonly tokenTypeOwnerPredicate: IPredicate,
+  ) {}
 
   /**
    * Convert to string.
@@ -107,15 +60,23 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
         Decimal Places: ${this.decimalPlaces}
         Sub Type Creation Predicate: ${this.subTypeCreationPredicate.toString()}
         Token Creation Predicate: ${this.tokenCreationPredicate.toString()}
-        Invariant Predicate: ${this.invariantPredicate.toString()}
-        Sub Type Creation Predicate Signatures: ${
-          this._subTypeCreationPredicateSignatures
-            ? dedent`
-        [
-          ${this._subTypeCreationPredicateSignatures.map((signature) => Base16Converter.encode(signature)).join(',\n')}
-        ]`
-            : 'null'
-        }`;
+        Token Type Owner Predicate: ${this.tokenTypeOwnerPredicate.toString()}`;
+  }
+
+  /**
+   * @see {ITransactionPayloadAttributes.encode}
+   */
+  public encode(): Promise<CreateFungibleTokenTypeAttributesArray> {
+    return Promise.resolve([
+      this.symbol,
+      this.name,
+      this.icon.encode(),
+      this.parentTypeId?.bytes || null,
+      this.decimalPlaces,
+      this.subTypeCreationPredicate.bytes,
+      this.tokenCreationPredicate.bytes,
+      this.tokenTypeOwnerPredicate.bytes,
+    ]);
   }
 
   /**
@@ -123,17 +84,25 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
    * @param {CreateFungibleTokenTypeAttributesArray} data Create fungible token type attributes array.
    * @returns {CreateFungibleTokenTypeAttributes} Create fungible token type attributes instance.
    */
-  public static fromArray(data: CreateFungibleTokenTypeAttributesArray): CreateFungibleTokenTypeAttributes {
+  public static fromArray([
+    symbol,
+    name,
+    icon,
+    parentTypeId,
+    decimalPlaces,
+    subTypeCreationPredicate,
+    tokenCreationPredicate,
+    tokenTypeOwnerPredicate,
+  ]: CreateFungibleTokenTypeAttributesArray): CreateFungibleTokenTypeAttributes {
     return new CreateFungibleTokenTypeAttributes(
-      data[0],
-      data[1],
-      TokenIcon.fromArray(data[2]),
-      data[3] ? UnitId.fromBytes(data[3]) : null,
-      data[4],
-      new PredicateBytes(data[5]),
-      new PredicateBytes(data[6]),
-      new PredicateBytes(data[7]),
-      data[8],
+      symbol,
+      name,
+      TokenIcon.fromArray(icon),
+      parentTypeId ? UnitId.fromBytes(parentTypeId) : null,
+      decimalPlaces,
+      new PredicateBytes(subTypeCreationPredicate),
+      new PredicateBytes(tokenCreationPredicate),
+      new PredicateBytes(tokenTypeOwnerPredicate),
     );
   }
 }

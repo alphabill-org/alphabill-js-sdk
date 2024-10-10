@@ -1,35 +1,57 @@
-import { PredicateBytes } from '../../PredicateBytes';
-import { BurnFungibleTokenAttributes } from '../attribute/BurnFungibleTokenAttributes';
-import { IPredicate } from '../IPredicate';
-import { TransactionOrderType } from '../TransactionOrderType';
-import { TransactionPayload } from '../TransactionPayload';
-import { TransactionOrder } from './TransactionOrder';
-import { TransactionOrderArray } from './TransactionOrderArray';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { TokenPartitionTransactionType } from '../../json-rpc/TokenPartitionTransactionType.js';
+import { PredicateBytes } from '../../PredicateBytes.js';
+import { UnitId } from '../../UnitId.js';
+import {
+  BurnFungibleTokenAttributes,
+  BurnFungibleTokenAttributesArray,
+} from '../attribute/BurnFungibleTokenAttributes.js';
+import { IPredicate } from '../IPredicate.js';
+import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
+import { StateLock } from '../StateLock.js';
+import { TransactionPayload } from '../TransactionPayload.js';
+import { TransactionOrder, TransactionOrderArray } from './TransactionOrder.js';
 
-export class BurnFungibleTokenTransactionOrder extends TransactionOrder<BurnFungibleTokenAttributes> {
+export class BurnFungibleTokenTransactionOrder extends TransactionOrder<
+  BurnFungibleTokenAttributes,
+  OwnerProofAuthProof,
+  OwnerProofAuthProof
+> {
   public constructor(
     payload: TransactionPayload<BurnFungibleTokenAttributes>,
-    transactionProof: Uint8Array | null,
-    feeProof: Uint8Array | null,
+    authProof: OwnerProofAuthProof | null,
+    feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(payload, transactionProof, feeProof, stateUnlock);
+    super(TokenPartitionTransactionType.BurnFungibleToken, payload, authProof, feeProof, stateUnlock);
   }
 
-  public get type(): TransactionOrderType {
-    return TransactionOrderType.BurnFungibleToken;
-  }
-
-  public static fromArray([
-    payload,
-    ownerProof,
-    feeProof,
-    stateUnlock,
-  ]: TransactionOrderArray): BurnFungibleTokenTransactionOrder {
-    return new BurnFungibleTokenTransactionOrder(
-      TransactionPayload.fromArray(payload, BurnFungibleTokenAttributes.fromArray),
-      ownerProof,
+  public static async fromArray(
+    [
+      networkIdentifier,
+      systemIdentifier,
+      unitId,
+      ,
+      attributes,
+      stateLock,
+      clientMetadata,
+      stateUnlock,
+      authProof,
       feeProof,
+    ]: TransactionOrderArray,
+    cborCodec: ICborCodec,
+  ): Promise<BurnFungibleTokenTransactionOrder> {
+    return new BurnFungibleTokenTransactionOrder(
+      new TransactionPayload(
+        networkIdentifier,
+        systemIdentifier,
+        UnitId.fromBytes(unitId),
+        BurnFungibleTokenAttributes.fromArray(attributes as BurnFungibleTokenAttributesArray),
+        stateLock ? StateLock.fromArray(stateLock) : null,
+        TransactionOrder.decodeClientMetadata(clientMetadata),
+      ),
+      authProof ? await OwnerProofAuthProof.decode(authProof, cborCodec) : null,
+      feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

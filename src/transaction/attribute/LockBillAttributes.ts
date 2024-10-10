@@ -1,12 +1,13 @@
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 
-import { TransactionOrderType } from '../TransactionOrderType';
-
 /**
  * Lock bill attributes array.
  */
-export type LockBillAttributesArray = readonly [bigint, bigint];
+export type LockBillAttributesArray = readonly [
+  bigint, // Lock Status
+  bigint, // Counter
+];
 
 /**
  * Lock bill payload attributes.
@@ -26,27 +27,6 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.payloadType}
-   */
-  public get payloadType(): TransactionOrderType {
-    return TransactionOrderType.LockBill;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): LockBillAttributesArray {
-    return this.toArray();
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): LockBillAttributesArray {
-    return [this.lockStatus, this.counter];
-  }
-
-  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -58,11 +38,18 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * @see {ITransactionPayloadAttributes.encode}
+   */
+  public encode(): Promise<LockBillAttributesArray> {
+    return Promise.resolve([this.lockStatus, this.counter]);
+  }
+
+  /**
    * Create LockBillAttributes from array.
    * @param {LockBillAttributesArray} data - Lock bill attributes data array.
    * @returns {LockBillAttributes} Lock bill attributes instance.
    */
-  public static fromArray(data: LockBillAttributesArray): LockBillAttributes {
-    return new LockBillAttributes(data[0], data[1]);
+  public static fromArray([lockStatus, counter]: LockBillAttributesArray): LockBillAttributes {
+    return new LockBillAttributes(lockStatus, counter);
   }
 }

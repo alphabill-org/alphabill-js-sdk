@@ -3,12 +3,15 @@ import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 
-import { TransactionOrderType } from '../TransactionOrderType';
-
 /**
  * Transfer bill to dust collector attributes array.
  */
-export type TransferBillToDustCollectorAttributesArray = readonly [bigint, Uint8Array, bigint, bigint];
+export type TransferBillToDustCollectorAttributesArray = readonly [
+  bigint, // Value
+  Uint8Array, // Target Unit ID
+  bigint, // Target Unit Counter
+  bigint, // Counter
+];
 
 /**
  * Transfer bill to dust collector payload attributes.
@@ -33,24 +36,10 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.payloadType}
+   * @see {ITransactionPayloadAttributes.encode}
    */
-  public get payloadType(): TransactionOrderType {
-    return TransactionOrderType.TransferBillToDustCollector;
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toOwnerProofData}
-   */
-  public toOwnerProofData(): TransferBillToDustCollectorAttributesArray {
-    return this.toArray();
-  }
-
-  /**
-   * @see {ITransactionPayloadAttributes.toArray}
-   */
-  public toArray(): TransferBillToDustCollectorAttributesArray {
-    return [this.value, this.targetUnitId.bytes, this.targetUnitCounter, this.counter];
+  public encode(): Promise<TransferBillToDustCollectorAttributesArray> {
+    return Promise.resolve([this.value, this.targetUnitId.bytes, this.targetUnitCounter, this.counter]);
   }
 
   /**
@@ -71,7 +60,12 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
    * @param {TransferBillToDustCollectorAttributesArray} data - Transfer bill to dust collector attributes data array.
    * @returns {TransferBillToDustCollectorAttributes} Transfer bill to dust collector attributes instance.
    */
-  public static fromArray(data: TransferBillToDustCollectorAttributesArray): TransferBillToDustCollectorAttributes {
-    return new TransferBillToDustCollectorAttributes(data[0], UnitId.fromBytes(data[1]), data[2], data[3]);
+  public static fromArray([
+    value,
+    targetUnitId,
+    targetUnitCounter,
+    counter,
+  ]: TransferBillToDustCollectorAttributesArray): TransferBillToDustCollectorAttributes {
+    return new TransferBillToDustCollectorAttributes(value, UnitId.fromBytes(targetUnitId), targetUnitCounter, counter);
   }
 }
