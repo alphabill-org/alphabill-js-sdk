@@ -1,30 +1,54 @@
-import { PredicateBytes } from '../../PredicateBytes';
-import { SplitBillAttributes } from '../attribute/SplitBillAttributes';
-import { IPredicate } from '../IPredicate';
-import { TransactionPayload } from '../TransactionPayload';
-import { TransactionOrder } from './TransactionOrder';
-import { TransactionOrderArray } from './TransactionOrderArray';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { MoneyPartitionTransactionType } from '../../json-rpc/MoneyPartitionTransactionType.js';
+import { PredicateBytes } from '../../PredicateBytes.js';
+import { UnitId } from '../../UnitId.js';
+import { SplitBillAttributes, SplitBillAttributesArray } from '../attribute/SplitBillAttributes.js';
+import { IPredicate } from '../IPredicate.js';
+import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
+import { StateLock } from '../StateLock.js';
+import { TransactionPayload } from '../TransactionPayload.js';
+import { TransactionOrder, TransactionOrderArray } from './TransactionOrder.js';
 
-export class SplitBillTransactionOrder extends TransactionOrder<SplitBillAttributes> {
+export class SplitBillTransactionOrder extends TransactionOrder<
+  SplitBillAttributes,
+  OwnerProofAuthProof,
+  OwnerProofAuthProof
+> {
   public constructor(
     payload: TransactionPayload<SplitBillAttributes>,
-    ownerProof: Uint8Array | null,
-    feeProof: Uint8Array | null,
+    authProof: OwnerProofAuthProof | null,
+    feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(payload, ownerProof, feeProof, stateUnlock);
+    super(MoneyPartitionTransactionType.SplitBill, payload, authProof, feeProof, stateUnlock);
   }
 
-  public static fromArray([
-    payload,
-    ownerProof,
-    feeProof,
-    stateUnlock,
-  ]: TransactionOrderArray): SplitBillTransactionOrder {
-    return new SplitBillTransactionOrder(
-      TransactionPayload.fromArray(payload, SplitBillAttributes.fromArray),
-      ownerProof,
+  public static async fromArray(
+    [
+      networkIdentifier,
+      systemIdentifier,
+      unitId,
+      ,
+      attributes,
+      stateLock,
+      clientMetadata,
+      stateUnlock,
+      authProof,
       feeProof,
+    ]: TransactionOrderArray,
+    cborCodec: ICborCodec,
+  ): Promise<SplitBillTransactionOrder> {
+    return new SplitBillTransactionOrder(
+      new TransactionPayload(
+        networkIdentifier,
+        systemIdentifier,
+        UnitId.fromBytes(unitId),
+        SplitBillAttributes.fromArray(attributes as SplitBillAttributesArray),
+        stateLock ? StateLock.fromArray(stateLock) : null,
+        TransactionOrder.decodeClientMetadata(clientMetadata),
+      ),
+      authProof ? await OwnerProofAuthProof.decode(authProof, cborCodec) : null,
+      feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

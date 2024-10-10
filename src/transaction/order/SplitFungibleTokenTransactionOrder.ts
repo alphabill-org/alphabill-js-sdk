@@ -1,30 +1,57 @@
-import { PredicateBytes } from '../../PredicateBytes';
-import { SplitFungibleTokenAttributes } from '../attribute/SplitFungibleTokenAttributes';
-import { IPredicate } from '../IPredicate';
-import { TransactionPayload } from '../TransactionPayload';
-import { TransactionOrder } from './TransactionOrder';
-import { TransactionOrderArray } from './TransactionOrderArray';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { TokenPartitionTransactionType } from '../../json-rpc/TokenPartitionTransactionType.js';
+import { PredicateBytes } from '../../PredicateBytes.js';
+import { UnitId } from '../../UnitId.js';
+import {
+  SplitFungibleTokenAttributes,
+  SplitFungibleTokenAttributesArray,
+} from '../attribute/SplitFungibleTokenAttributes.js';
+import { IPredicate } from '../IPredicate.js';
+import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
+import { StateLock } from '../StateLock.js';
+import { TransactionPayload } from '../TransactionPayload.js';
+import { TransactionOrder, TransactionOrderArray } from './TransactionOrder.js';
 
-export class SplitFungibleTokenTransactionOrder extends TransactionOrder<SplitFungibleTokenAttributes> {
+export class SplitFungibleTokenTransactionOrder extends TransactionOrder<
+  SplitFungibleTokenAttributes,
+  OwnerProofAuthProof,
+  OwnerProofAuthProof
+> {
   public constructor(
     payload: TransactionPayload<SplitFungibleTokenAttributes>,
-    ownerProof: Uint8Array | null,
-    feeProof: Uint8Array | null,
+    authProof: OwnerProofAuthProof | null,
+    feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(payload, ownerProof, feeProof, stateUnlock);
+    super(TokenPartitionTransactionType.SplitFungibleToken, payload, authProof, feeProof, stateUnlock);
   }
 
-  public static fromArray([
-    payload,
-    ownerProof,
-    feeProof,
-    stateUnlock,
-  ]: TransactionOrderArray): SplitFungibleTokenTransactionOrder {
-    return new SplitFungibleTokenTransactionOrder(
-      TransactionPayload.fromArray(payload, SplitFungibleTokenAttributes.fromArray),
-      ownerProof,
+  public static async fromArray(
+    [
+      networkIdentifier,
+      systemIdentifier,
+      unitId,
+      ,
+      attributes,
+      stateLock,
+      clientMetadata,
+      stateUnlock,
+      authProof,
       feeProof,
+    ]: TransactionOrderArray,
+    cborCodec: ICborCodec,
+  ): Promise<SplitFungibleTokenTransactionOrder> {
+    return new SplitFungibleTokenTransactionOrder(
+      new TransactionPayload(
+        networkIdentifier,
+        systemIdentifier,
+        UnitId.fromBytes(unitId),
+        SplitFungibleTokenAttributes.fromArray(attributes as SplitFungibleTokenAttributesArray),
+        stateLock ? StateLock.fromArray(stateLock) : null,
+        TransactionOrder.decodeClientMetadata(clientMetadata),
+      ),
+      authProof ? await OwnerProofAuthProof.decode(authProof, cborCodec) : null,
+      feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

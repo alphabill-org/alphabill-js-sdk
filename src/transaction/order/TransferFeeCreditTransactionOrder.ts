@@ -7,7 +7,7 @@ import {
   TransferFeeCreditAttributesArray,
 } from '../attribute/TransferFeeCreditAttributes.js';
 import { IPredicate } from '../IPredicate.js';
-import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof';
+import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from './TransactionOrder.js';
@@ -46,31 +46,13 @@ export class TransferFeeCreditTransactionOrder extends TransactionOrder<
         networkIdentifier,
         systemIdentifier,
         UnitId.fromBytes(unitId),
-        TransferFeeCreditTransactionOrder.createAttributesFromArray(attributes as TransferFeeCreditAttributesArray),
+        TransferFeeCreditAttributes.fromArray(attributes as TransferFeeCreditAttributesArray),
         stateLock ? StateLock.fromArray(stateLock) : null,
         TransactionOrder.decodeClientMetadata(clientMetadata),
       ),
       authProof ? await OwnerProofAuthProof.decode(authProof, cborCodec) : null,
       feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
-    );
-  }
-
-  public static createAttributesFromArray([
-    amount,
-    targetSystemIdentifier,
-    targetUnitId,
-    latestAdditionTime,
-    targetUnitCounter,
-    counter,
-  ]: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
-    return new TransferFeeCreditAttributes(
-      BigInt(amount),
-      targetSystemIdentifier,
-      UnitId.fromBytes(targetUnitId),
-      BigInt(latestAdditionTime),
-      targetUnitCounter ? BigInt(targetUnitCounter) : null,
-      BigInt(counter),
     );
   }
 }

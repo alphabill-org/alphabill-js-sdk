@@ -1,30 +1,57 @@
-import { PredicateBytes } from '../../PredicateBytes';
-import { UpdateNonFungibleTokenAttributes } from '../attribute/UpdateNonFungibleTokenAttributes';
-import { IPredicate } from '../IPredicate';
-import { TransactionPayload } from '../TransactionPayload';
-import { TransactionOrder } from './TransactionOrder';
-import { TransactionOrderArray } from './TransactionOrderArray';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { TokenPartitionTransactionType } from '../../json-rpc/TokenPartitionTransactionType.js';
+import { PredicateBytes } from '../../PredicateBytes.js';
+import { UnitId } from '../../UnitId.js';
+import {
+  UpdateNonFungibleTokenAttributes,
+  UpdateNonFungibleTokenAttributesArray,
+} from '../attribute/UpdateNonFungibleTokenAttributes.js';
+import { IPredicate } from '../IPredicate.js';
+import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
+import { StateLock } from '../StateLock.js';
+import { TransactionPayload } from '../TransactionPayload.js';
+import { TransactionOrder, TransactionOrderArray } from './TransactionOrder.js';
 
-export class UpdateNonFungibleTokenTransactionOrder extends TransactionOrder<UpdateNonFungibleTokenAttributes> {
+export class UpdateNonFungibleTokenTransactionOrder extends TransactionOrder<
+  UpdateNonFungibleTokenAttributes,
+  OwnerProofAuthProof,
+  OwnerProofAuthProof
+> {
   public constructor(
     payload: TransactionPayload<UpdateNonFungibleTokenAttributes>,
-    ownerProof: Uint8Array | null,
-    feeProof: Uint8Array | null,
+    authProof: OwnerProofAuthProof | null,
+    feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(payload, ownerProof, feeProof, stateUnlock);
+    super(TokenPartitionTransactionType.UpdateNonFungibleToken, payload, authProof, feeProof, stateUnlock);
   }
 
-  public static fromArray([
-    payload,
-    ownerProof,
-    feeProof,
-    stateUnlock,
-  ]: TransactionOrderArray): UpdateNonFungibleTokenTransactionOrder {
-    return new UpdateNonFungibleTokenTransactionOrder(
-      TransactionPayload.fromArray(payload, UpdateNonFungibleTokenAttributes.fromArray),
-      ownerProof,
+  public static async fromArray(
+    [
+      networkIdentifier,
+      systemIdentifier,
+      unitId,
+      ,
+      attributes,
+      stateLock,
+      clientMetadata,
+      stateUnlock,
+      authProof,
       feeProof,
+    ]: TransactionOrderArray,
+    cborCodec: ICborCodec,
+  ): Promise<UpdateNonFungibleTokenTransactionOrder> {
+    return new UpdateNonFungibleTokenTransactionOrder(
+      new TransactionPayload(
+        networkIdentifier,
+        systemIdentifier,
+        UnitId.fromBytes(unitId),
+        UpdateNonFungibleTokenAttributes.fromArray(attributes as UpdateNonFungibleTokenAttributesArray),
+        stateLock ? StateLock.fromArray(stateLock) : null,
+        TransactionOrder.decodeClientMetadata(clientMetadata),
+      ),
+      authProof ? await OwnerProofAuthProof.decode(authProof, cborCodec) : null,
+      feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

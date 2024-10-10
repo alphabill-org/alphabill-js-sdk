@@ -1,30 +1,57 @@
-import { PredicateBytes } from '../../PredicateBytes';
-import { ReclaimFeeCreditAttributes } from '../attribute/ReclaimFeeCreditAttributes';
-import { IPredicate } from '../IPredicate';
-import { TransactionPayload } from '../TransactionPayload';
-import { TransactionOrder } from './TransactionOrder';
-import { TransactionOrderArray } from './TransactionOrderArray';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { FeeCreditTransactionType } from '../../json-rpc/FeeCreditTransactionType.js';
+import { PredicateBytes } from '../../PredicateBytes.js';
+import { UnitId } from '../../UnitId.js';
+import {
+  ReclaimFeeCreditAttributes,
+  ReclaimFeeCreditAttributesArray,
+} from '../attribute/ReclaimFeeCreditAttributes.js';
+import { IPredicate } from '../IPredicate.js';
+import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
+import { StateLock } from '../StateLock.js';
+import { TransactionPayload } from '../TransactionPayload.js';
+import { TransactionOrder, TransactionOrderArray } from './TransactionOrder.js';
 
-export class ReclaimFeeCreditTransactionOrder extends TransactionOrder<ReclaimFeeCreditAttributes> {
+export class ReclaimFeeCreditTransactionOrder extends TransactionOrder<
+  ReclaimFeeCreditAttributes,
+  OwnerProofAuthProof,
+  OwnerProofAuthProof
+> {
   public constructor(
     payload: TransactionPayload<ReclaimFeeCreditAttributes>,
-    ownerProof: Uint8Array | null,
-    feeProof: Uint8Array | null,
+    authProof: OwnerProofAuthProof | null,
+    feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(payload, ownerProof, feeProof, stateUnlock);
+    super(FeeCreditTransactionType.ReclaimFeeCredit, payload, authProof, feeProof, stateUnlock);
   }
 
-  public static fromArray([
-    payload,
-    ownerProof,
-    feeProof,
-    stateUnlock,
-  ]: TransactionOrderArray): ReclaimFeeCreditTransactionOrder {
-    return new ReclaimFeeCreditTransactionOrder(
-      TransactionPayload.fromArray(payload, ReclaimFeeCreditAttributes.fromArray),
-      ownerProof,
+  public static async fromArray(
+    [
+      networkIdentifier,
+      systemIdentifier,
+      unitId,
+      ,
+      attributes,
+      stateLock,
+      clientMetadata,
+      stateUnlock,
+      authProof,
       feeProof,
+    ]: TransactionOrderArray,
+    cborCodec: ICborCodec,
+  ): Promise<ReclaimFeeCreditTransactionOrder> {
+    return new ReclaimFeeCreditTransactionOrder(
+      new TransactionPayload(
+        networkIdentifier,
+        systemIdentifier,
+        UnitId.fromBytes(unitId),
+        await ReclaimFeeCreditAttributes.fromArray(attributes as ReclaimFeeCreditAttributesArray, cborCodec),
+        stateLock ? StateLock.fromArray(stateLock) : null,
+        TransactionOrder.decodeClientMetadata(clientMetadata),
+      ),
+      authProof ? await OwnerProofAuthProof.decode(authProof, cborCodec) : null,
+      feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

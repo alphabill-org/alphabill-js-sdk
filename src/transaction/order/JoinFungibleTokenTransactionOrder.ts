@@ -1,30 +1,57 @@
-import { PredicateBytes } from '../../PredicateBytes';
-import { JoinFungibleTokenAttributes } from '../attribute/JoinFungibleTokenAttributes';
-import { IPredicate } from '../IPredicate';
-import { TransactionPayload } from '../TransactionPayload';
-import { TransactionOrder } from './TransactionOrder';
-import { TransactionOrderArray } from './TransactionOrderArray';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { TokenPartitionTransactionType } from '../../json-rpc/TokenPartitionTransactionType.js';
+import { PredicateBytes } from '../../PredicateBytes.js';
+import { UnitId } from '../../UnitId.js';
+import {
+  JoinFungibleTokenAttributes,
+  JoinFungibleTokenAttributesArray,
+} from '../attribute/JoinFungibleTokenAttributes.js';
+import { IPredicate } from '../IPredicate.js';
+import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
+import { StateLock } from '../StateLock.js';
+import { TransactionPayload } from '../TransactionPayload.js';
+import { TransactionOrder, TransactionOrderArray } from './TransactionOrder.js';
 
-export class JoinFungibleTokenTransactionOrder extends TransactionOrder<JoinFungibleTokenAttributes> {
+export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
+  JoinFungibleTokenAttributes,
+  OwnerProofAuthProof,
+  OwnerProofAuthProof
+> {
   public constructor(
     payload: TransactionPayload<JoinFungibleTokenAttributes>,
-    ownerProof: Uint8Array | null,
-    feeProof: Uint8Array | null,
+    authProof: OwnerProofAuthProof | null,
+    feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(payload, ownerProof, feeProof, stateUnlock);
+    super(TokenPartitionTransactionType.JoinFungibleToken, payload, authProof, feeProof, stateUnlock);
   }
 
-  public static fromArray([
-    payload,
-    ownerProof,
-    feeProof,
-    stateUnlock,
-  ]: TransactionOrderArray): JoinFungibleTokenTransactionOrder {
-    return new JoinFungibleTokenTransactionOrder(
-      TransactionPayload.fromArray(payload, JoinFungibleTokenAttributes.fromArray),
-      ownerProof,
+  public static async fromArray(
+    [
+      networkIdentifier,
+      systemIdentifier,
+      unitId,
+      ,
+      attributes,
+      stateLock,
+      clientMetadata,
+      stateUnlock,
+      authProof,
       feeProof,
+    ]: TransactionOrderArray,
+    cborCodec: ICborCodec,
+  ): Promise<JoinFungibleTokenTransactionOrder> {
+    return new JoinFungibleTokenTransactionOrder(
+      new TransactionPayload(
+        networkIdentifier,
+        systemIdentifier,
+        UnitId.fromBytes(unitId),
+        await JoinFungibleTokenAttributes.fromArray(attributes as JoinFungibleTokenAttributesArray, cborCodec),
+        stateLock ? StateLock.fromArray(stateLock) : null,
+        TransactionOrder.decodeClientMetadata(clientMetadata),
+      ),
+      authProof ? await OwnerProofAuthProof.decode(authProof, cborCodec) : null,
+      feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }
