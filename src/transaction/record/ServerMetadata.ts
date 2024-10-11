@@ -1,5 +1,5 @@
-import { Base16Converter } from './util/Base16Converter.js';
-import { dedent } from './util/StringUtils.js';
+import { Base16Converter } from '../../util/Base16Converter.js';
+import { dedent } from '../../util/StringUtils.js';
 
 /**
  * Server metadata array.

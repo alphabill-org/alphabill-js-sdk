@@ -1,5 +1,5 @@
-import { IPathItem, IStateProof, IStateTreeCert, IStateTreePathItem, IUnitTreeCert } from './IUnit.js';
-import { IUnitId } from './IUnitId.js';
+import { IPathItem, IStateProof, IStateTreeCert, IStateTreePathItem, IUnitTreeCert } from '../IUnit.js';
+import { IUnitId } from '../IUnitId.js';
 
 /**
  * State proof.
