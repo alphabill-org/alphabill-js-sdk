@@ -8,6 +8,7 @@ import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
+import { ClientMetadata } from '../../ClientMetadata.js';
 
 export class LockTokenTransactionOrder extends TransactionOrder<
   LockTokenAttributes,
@@ -45,7 +46,7 @@ export class LockTokenTransactionOrder extends TransactionOrder<
         UnitId.fromBytes(unitId),
         LockTokenAttributes.fromArray(attributes as LockTokenAttributesArray),
         stateLock ? StateLock.fromArray(stateLock) : null,
-        TransactionOrder.decodeClientMetadata(clientMetadata),
+        ClientMetadata.fromArray(clientMetadata),
       ),
       authProof ? await OwnerProofAuthProof.decode(authProof, cborCodec) : null,
       feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,

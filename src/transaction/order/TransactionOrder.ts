@@ -1,14 +1,13 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { NetworkIdentifier } from '../../NetworkIdentifier.js';
 import { SystemIdentifier } from '../../SystemIdentifier.js';
-import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
-import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { ITransactionOrderProof } from '../proof/ITransactionOrderProof.js';
 import { StateLockArray } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
+import { ClientMetadata } from '../ClientMetadata.js';
 
 type UnitIdType = Uint8Array;
 type TransactionAttributesType = unknown;
@@ -78,33 +77,10 @@ export abstract class TransactionOrder<
       this.type,
       await this.payload.attributes.encode(cborCodec),
       this.payload.stateLock ? this.payload.stateLock.encode() : null,
-      TransactionOrder.encodeClientMetadata(this.payload.clientMetadata),
+      ClientMetadata.encode(this.payload.clientMetadata),
       this.stateUnlock?.bytes ?? null,
       (await this.authProof?.encode(cborCodec)) ?? null,
       (await this.feeProof?.encode(cborCodec)) ?? null,
     ];
-  }
-
-  public static encodeClientMetadata({
-    timeout,
-    maxTransactionFee,
-    feeCreditRecordId,
-    referenceNumber,
-  }: ITransactionClientMetadata): TransactionClientMetadataArray {
-    return [timeout, maxTransactionFee, feeCreditRecordId?.bytes ?? null, referenceNumber];
-  }
-
-  public static decodeClientMetadata([
-    timeout,
-    maxTransactionFee,
-    feeCreditRecordId,
-    referenceNumber,
-  ]: TransactionClientMetadataArray): ITransactionClientMetadata {
-    return {
-      timeout,
-      maxTransactionFee,
-      feeCreditRecordId: feeCreditRecordId ? UnitId.fromBytes(feeCreditRecordId) : null,
-      referenceNumber,
-    };
   }
 }

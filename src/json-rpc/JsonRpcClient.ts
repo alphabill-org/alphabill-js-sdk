@@ -15,9 +15,17 @@ import { JsonRpcError } from './JsonRpcError.js';
 import { createStateProof } from './StateProofFactory.js';
 import { TransactionProofDto } from './TransactionProofDto.js';
 
+export type CreateUnit<T> = {
+  create: (unitId: IUnitId, ownerPredicate: IPredicate, input: unknown, stateProof: IStateProof | null) => T;
+};
+
+export type CreateTransactionRecordWithProof<T> = {
+  // TODO: Rename fromArray
+  fromArray: (transactionRecordWithProof: TransactionRecordWithProofArray, cborCodec: ICborCodec) => Promise<T>;
+};
+
 /**
  * State API JSON-RPC service.
- * @implements {IStateApiService}
  */
 export class JsonRpcClient {
   public constructor(
@@ -57,11 +65,7 @@ export class JsonRpcClient {
   /**
    * @see {IStateApiService.getUnit}
    */
-  public async getUnit<
-    T extends {
-      create: (unitId: IUnitId, ownerPredicate: IPredicate, input: unknown, stateProof: IStateProof | null) => T;
-    },
-  >(unitId: IUnitId, includeStateProof: boolean, unitFactory: T): Promise<T | null> {
+  public async getUnit<T>(unitId: IUnitId, includeStateProof: boolean, factory: CreateUnit<T>): Promise<T | null> {
     const response = await this.request<IUnitDto>(
       'state_getUnit',
       Base16Converter.encode(unitId.bytes),
@@ -71,7 +75,7 @@ export class JsonRpcClient {
     if (response) {
       const unitId = UnitId.fromBytes(Base16Converter.decode(response.unitId));
 
-      return unitFactory.create(
+      return factory.create(
         unitId,
         new PredicateBytes(Base16Converter.decode(response.ownerPredicate)),
         response.data,
@@ -85,12 +89,10 @@ export class JsonRpcClient {
   /**
    * @see {IStateApiService.getTransactionProof}
    */
-  public async getTransactionProof<
-    TRP extends {
-      // TODO: Rename fromArray
-      fromArray: (transactionRecordWithProof: TransactionRecordWithProofArray, cborCodec: ICborCodec) => TRP;
-    },
-  >(transactionHash: Uint8Array, transactionRecordWithProofFactory: TRP): Promise<TRP | null> {
+  public async getTransactionProof<TRP>(
+    transactionHash: Uint8Array,
+    transactionRecordWithProofFactory: CreateTransactionRecordWithProof<TRP>,
+  ): Promise<TRP | null> {
     const response = (await this.request(
       'state_getTransactionProof',
       Base16Converter.encode(transactionHash),

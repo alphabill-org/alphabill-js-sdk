@@ -1,5 +1,3 @@
-import { ICborCodec } from '../codec/cbor/ICborCodec.js';
-import { IStateProof } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
 import { AddFeeCreditTransactionOrder } from '../transaction/order/types/AddFeeCreditTransactionOrder.js';
 import { BurnFungibleTokenTransactionOrder } from '../transaction/order/types/BurnFungibleTokenTransactionOrder.js';
@@ -16,7 +14,6 @@ import { TransferFungibleTokenTransactionOrder } from '../transaction/order/type
 import { TransferNonFungibleTokenTransactionOrder } from '../transaction/order/types/TransferNonFungibleTokenTransactionOrder.js';
 import { UnlockFeeCreditTransactionOrder } from '../transaction/order/types/UnlockFeeCreditTransactionOrder.js';
 import { UnlockTokenTransactionOrder } from '../transaction/order/types/UnlockTokenTransactionOrder.js';
-import { IPredicate } from '../transaction/predicate/IPredicate.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../transaction/record/AddFeeCreditTransactionRecordWithProof.js';
 import { BurnFungibleTokenTransactionRecordWithProof } from '../transaction/record/BurnFungibleTokenTransactionRecordWithProof.js';
 import { CloseFeeCreditTransactionRecordWithProof } from '../transaction/record/CloseFeeCreditTransactionRecordWithProof.js';
@@ -28,7 +25,6 @@ import { JoinFungibleTokenTransactionRecordWithProof } from '../transaction/reco
 import { LockFeeCreditTransactionRecordWithProof } from '../transaction/record/LockFeeCreditTransactionRecordWithProof.js';
 import { LockTokenTransactionRecordWithProof } from '../transaction/record/LockTokenTransactionRecordWithProof.js';
 import { SplitFungibleTokenTransactionRecordWithProof } from '../transaction/record/SplitFungibleTokenTransactionRecordWithProof.js';
-import { TransactionRecordWithProofArray } from '../transaction/record/TransactionRecordWithProof.js';
 import { TransferFungibleTokenTransactionRecordWithProof } from '../transaction/record/TransferFungibleTokenTransactionRecordWithProof.js';
 import { TransferNonFungibleTokenTransactionRecordWithProof } from '../transaction/record/TransferNonFungibleTokenTransactionRecordWithProof.js';
 import { UnlockFeeCreditTransactionRecordWithProof } from '../transaction/record/UnlockFeeCreditTransactionRecordWithProof.js';
@@ -38,23 +34,16 @@ import { FungibleToken } from '../unit/FungibleToken.js';
 import { FungibleTokenType } from '../unit/FungibleTokenType.js';
 import { NonFungibleToken } from '../unit/NonFungibleToken.js';
 import { NonFungibleTokenType } from '../unit/NonFungibleTokenType.js';
-import { JsonRpcClient } from './JsonRpcClient.js';
+import { CreateTransactionRecordWithProof, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
 
-type GetUnitTypes = {
-  create: <T extends GetUnitTypes>(
-    unitId: IUnitId,
-    ownerPredicate: IPredicate,
-    input: unknown,
-    stateProof: IStateProof | null,
-  ) => T;
-} & (FungibleToken | NonFungibleToken | FeeCreditRecord | FungibleTokenType | NonFungibleTokenType);
+type TokenPartitionUnitTypes =
+  | FungibleToken
+  | NonFungibleToken
+  | FeeCreditRecord
+  | FungibleTokenType
+  | NonFungibleTokenType;
 
-type GetTransactionProofTypes = {
-  fromArray: <T extends GetTransactionProofTypes>(
-    transactionRecordWithProof: TransactionRecordWithProofArray,
-    cborCodec: ICborCodec,
-  ) => T;
-} & (
+export type TokenPartitionTransactionRecordWithProofTypes =
   | AddFeeCreditTransactionRecordWithProof
   | BurnFungibleTokenTransactionRecordWithProof
   | CloseFeeCreditTransactionRecordWithProof
@@ -69,10 +58,9 @@ type GetTransactionProofTypes = {
   | TransferFungibleTokenTransactionRecordWithProof
   | TransferNonFungibleTokenTransactionRecordWithProof
   | UnlockFeeCreditTransactionRecordWithProof
-  | UnlockTokenTransactionRecordWithProof
-);
+  | UnlockTokenTransactionRecordWithProof;
 
-type SendTransactionTypes =
+type TokenPartitionTransactionOrderTypes =
   | AddFeeCreditTransactionOrder
   | BurnFungibleTokenTransactionOrder
   | CloseFeeCreditTransactionOrder
@@ -90,13 +78,10 @@ type SendTransactionTypes =
   | UnlockTokenTransactionOrder;
 
 /**
- * JSON-RPC client.
+ * JSON-RPC token partition client.
  */
 export class TokenPartitionJsonRpcClient {
-  public constructor(
-    public readonly client: JsonRpcClient,
-    public readonly cborCodec: ICborCodec,
-  ) {}
+  public constructor(public readonly client: JsonRpcClient) {}
 
   /**
    * @see {JsonRpcClient.getRoundNumber}
@@ -122,28 +107,28 @@ export class TokenPartitionJsonRpcClient {
   /**
    * @see {JsonRpcClient.getUnit}
    */
-  public getUnit<T extends GetUnitTypes>(
+  public getUnit<T extends TokenPartitionUnitTypes>(
     unitId: IUnitId,
     includeStateProof: boolean,
-    unitFactory: T,
+    factory: CreateUnit<T>,
   ): Promise<T | null> {
-    return this.client.getUnit(unitId, includeStateProof, unitFactory);
+    return this.client.getUnit(unitId, includeStateProof, factory);
   }
 
   /**
    * @see {JsonRpcClient.getTransactionProof}
    */
-  public getTransactionProof<TRP extends GetTransactionProofTypes>(
+  public getTransactionProof<TRP extends TokenPartitionTransactionRecordWithProofTypes>(
     transactionHash: Uint8Array,
-    transactionRecordWithProofFactory: TRP,
+    factory: CreateTransactionRecordWithProof<TRP>,
   ): Promise<TRP | null> {
-    return this.client.getTransactionProof(transactionHash, transactionRecordWithProofFactory);
+    return this.client.getTransactionProof(transactionHash, factory);
   }
 
   /**
    * @see {JsonRpcClient.sendTransaction}
    */
-  public sendTransaction(transaction: SendTransactionTypes): Promise<Uint8Array> {
+  public sendTransaction(transaction: TokenPartitionTransactionOrderTypes): Promise<Uint8Array> {
     return this.client.sendTransaction(transaction);
   }
 }
