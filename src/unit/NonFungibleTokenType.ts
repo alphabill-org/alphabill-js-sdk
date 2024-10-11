@@ -1,13 +1,13 @@
-import { IStateProof } from './IUnit.js';
-import { IUnitId } from './IUnitId.js';
-import { INonFungibleTokenTypeDto } from './json-rpc/INonFungibleTokenTypeDto.js';
-import { PredicateBytes } from './PredicateBytes.js';
-import { IPredicate } from './transaction/IPredicate.js';
-import { TokenIcon } from './transaction/TokenIcon.js';
-import { UnitId } from './UnitId.js';
-import { Base16Converter } from './util/Base16Converter.js';
-import { Base64Converter } from './util/Base64Converter.js';
-import { dedent } from './util/StringUtils.js';
+import { IStateProof } from '../IUnit.js';
+import { IUnitId } from '../IUnitId.js';
+import { INonFungibleTokenTypeDto } from '../json-rpc/INonFungibleTokenTypeDto.js';
+import { IPredicate } from '../transaction/predicate/IPredicate.js';
+import { PredicateBytes } from '../transaction/predicate/PredicateBytes.js';
+import { TokenIcon } from '../transaction/TokenIcon.js';
+import { UnitId } from '../UnitId.js';
+import { Base16Converter } from '../util/Base16Converter.js';
+import { Base64Converter } from '../util/Base64Converter.js';
+import { dedent } from '../util/StringUtils.js';
 
 /**
  * Non-fungible token type.

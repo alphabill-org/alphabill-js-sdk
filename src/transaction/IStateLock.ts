@@ -1,4 +1,4 @@
-import { IPredicate } from './IPredicate.js';
+import { IPredicate } from './predicate/IPredicate.js';
 import { StateLockArray } from './StateLock.js';
 
 /**

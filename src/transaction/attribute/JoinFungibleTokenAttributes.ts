@@ -1,8 +1,8 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
-import { TransactionRecordWithProofArray } from '../../TransactionRecordWithProof.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { BurnFungibleTokenTransactionRecordWithProof } from '../record/BurnFungibleTokenTransactionRecordWithProof.js';
+import { TransactionRecordWithProofArray } from '../record/TransactionRecordWithProof.js';
 
 /**
  * Join fungible token attributes array.

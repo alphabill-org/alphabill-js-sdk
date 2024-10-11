@@ -1,8 +1,6 @@
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { IStateProof } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
-import { NonFungibleTokenType } from '../NonFungibleTokenType.js';
-import { IPredicate } from '../transaction/IPredicate.js';
 import { AddFeeCreditTransactionOrder } from '../transaction/order/types/AddFeeCreditTransactionOrder.js';
 import { BurnFungibleTokenTransactionOrder } from '../transaction/order/types/BurnFungibleTokenTransactionOrder.js';
 import { CloseFeeCreditTransactionOrder } from '../transaction/order/types/CloseFeeCreditTransactionOrder.js';
@@ -18,6 +16,7 @@ import { TransferFungibleTokenTransactionOrder } from '../transaction/order/type
 import { TransferNonFungibleTokenTransactionOrder } from '../transaction/order/types/TransferNonFungibleTokenTransactionOrder.js';
 import { UnlockFeeCreditTransactionOrder } from '../transaction/order/types/UnlockFeeCreditTransactionOrder.js';
 import { UnlockTokenTransactionOrder } from '../transaction/order/types/UnlockTokenTransactionOrder.js';
+import { IPredicate } from '../transaction/predicate/IPredicate.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../transaction/record/AddFeeCreditTransactionRecordWithProof.js';
 import { BurnFungibleTokenTransactionRecordWithProof } from '../transaction/record/BurnFungibleTokenTransactionRecordWithProof.js';
 import { CloseFeeCreditTransactionRecordWithProof } from '../transaction/record/CloseFeeCreditTransactionRecordWithProof.js';
@@ -29,15 +28,16 @@ import { JoinFungibleTokenTransactionRecordWithProof } from '../transaction/reco
 import { LockFeeCreditTransactionRecordWithProof } from '../transaction/record/LockFeeCreditTransactionRecordWithProof.js';
 import { LockTokenTransactionRecordWithProof } from '../transaction/record/LockTokenTransactionRecordWithProof.js';
 import { SplitFungibleTokenTransactionRecordWithProof } from '../transaction/record/SplitFungibleTokenTransactionRecordWithProof.js';
+import { TransactionRecordWithProofArray } from '../transaction/record/TransactionRecordWithProof.js';
 import { TransferFungibleTokenTransactionRecordWithProof } from '../transaction/record/TransferFungibleTokenTransactionRecordWithProof.js';
 import { TransferNonFungibleTokenTransactionRecordWithProof } from '../transaction/record/TransferNonFungibleTokenTransactionRecordWithProof.js';
 import { UnlockFeeCreditTransactionRecordWithProof } from '../transaction/record/UnlockFeeCreditTransactionRecordWithProof.js';
 import { UnlockTokenTransactionRecordWithProof } from '../transaction/record/UnlockTokenTransactionRecordWithProof.js';
-import { TransactionRecordWithProofArray } from '../TransactionRecordWithProof.js';
 import { FeeCreditRecord } from '../unit/FeeCreditRecord.js';
 import { FungibleToken } from '../unit/FungibleToken.js';
 import { FungibleTokenType } from '../unit/FungibleTokenType.js';
 import { NonFungibleToken } from '../unit/NonFungibleToken.js';
+import { NonFungibleTokenType } from '../unit/NonFungibleTokenType.js';
 import { JsonRpcClient } from './JsonRpcClient.js';
 
 type GetUnitTypes = {

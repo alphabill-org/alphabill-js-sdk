@@ -1,10 +1,10 @@
-import { ICborCodec } from './codec/cbor/ICborCodec.js';
-import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
-import { TransactionOrder } from './transaction/order/TransactionOrder.js';
-import { ITransactionOrderProof } from './transaction/proof/ITransactionOrderProof.js';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { dedent } from '../../util/StringUtils.js';
+import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
+import { TransactionOrder } from '../order/TransactionOrder.js';
+import { ITransactionOrderProof } from '../proof/ITransactionOrderProof.js';
 import { TransactionProof, TransactionProofArray } from './TransactionProof.js';
 import { TransactionRecord, TransactionRecordArray } from './TransactionRecord.js';
-import { dedent } from './util/StringUtils.js';
 
 /**
  * Transaction record with proof array.

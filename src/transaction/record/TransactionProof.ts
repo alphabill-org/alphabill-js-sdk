@@ -1,6 +1,6 @@
+import { Base16Converter } from '../../util/Base16Converter.js';
+import { dedent } from '../../util/StringUtils.js';
 import { TransactionProofChainItem, TransactionProofChainItemArray } from './TransactionProofChainItem.js';
-import { Base16Converter } from './util/Base16Converter.js';
-import { dedent } from './util/StringUtils.js';
 
 /**
  * Transaction proof array.

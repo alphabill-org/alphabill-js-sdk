@@ -9,10 +9,10 @@ import { TransferBillToDustCollectorAttributes } from '../../src/transaction/att
 import { TransferFeeCreditAttributes } from '../../src/transaction/attribute/TransferFeeCreditAttributes.js';
 import { FeeCreditRecordUnitIdFactory } from '../../src/transaction/FeeCreditRecordUnitIdFactory.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicate/PayToPublicKeyHashPredicate.js';
+import { TransactionRecordWithProof } from '../../src/transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../src/transaction/TransactionPayload.js';
 import { UnitIdWithType } from '../../src/transaction/UnitIdWithType.js';
 import { UnitType } from '../../src/transaction/UnitType.js';
-import { TransactionRecordWithProof } from '../../src/TransactionRecordWithProof.js';
 import { Bill } from '../../src/unit/Bill.js';
 import { FeeCreditRecord } from '../../src/unit/FeeCreditRecord.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';

@@ -15,15 +15,15 @@ import { TransferBillToDustCollectorAttributes } from './transaction/attribute/T
 import { TransferFeeCreditAttributes } from './transaction/attribute/TransferFeeCreditAttributes.js';
 import { UnlockBillAttributes } from './transaction/attribute/UnlockBillAttributes.js';
 import { UnlockFeeCreditAttributes } from './transaction/attribute/UnlockFeeCreditAttributes.js';
-import { IPredicate } from './transaction/IPredicate.js';
 import { ITransactionClientMetadata } from './transaction/ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
 import { IUnsignedTransactionOrder } from './transaction/order/IUnsignedTransactionOrder.js';
 import { TransactionOrder } from './transaction/order/TransactionOrder.js';
 import { UnsignedTransferFeeCreditTransactionOrder } from './transaction/order/UnsignedTransferFeeCreditTransactionOrder.js';
+import { IPredicate } from './transaction/predicate/IPredicate.js';
+import { TransactionRecordWithProof } from './transaction/record/TransactionRecordWithProof.js';
 import { SplitBillUnit } from './transaction/SplitBillUnit.js';
 import { TransactionPayload } from './transaction/TransactionPayload.js';
-import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
 
 interface ITransferFeeCreditTransactionData {
   amount: bigint;

@@ -1,8 +1,8 @@
 import { IStateProof } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
 import { IFungibleTokenTypeDto } from '../json-rpc/IFungibleTokenTypeDto.js';
-import { PredicateBytes } from '../PredicateBytes.js';
-import { IPredicate } from '../transaction/IPredicate.js';
+import { IPredicate } from '../transaction/predicate/IPredicate.js';
+import { PredicateBytes } from '../transaction/predicate/PredicateBytes.js';
 import { TokenIcon } from '../transaction/TokenIcon.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';

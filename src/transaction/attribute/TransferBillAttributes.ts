@@ -1,7 +1,7 @@
-import { PredicateBytes } from '../../PredicateBytes.js';
 import { dedent } from '../../util/StringUtils.js';
-import { IPredicate } from '../IPredicate.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
+import { IPredicate } from '../predicate/IPredicate.js';
+import { PredicateBytes } from '../predicate/PredicateBytes.js';
 
 /**
  * Transfer bill attributes array.

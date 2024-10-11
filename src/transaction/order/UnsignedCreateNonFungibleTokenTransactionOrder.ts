@@ -1,10 +1,10 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ISigningService } from '../../signing/ISigningService.js';
 import { CreateNonFungibleTokenAttributes } from '../attribute/CreateNonFungibleTokenAttributes.js';
-import { IPredicate } from '../IPredicate.js';
+import { IPredicate } from '../predicate/IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
-import { CreateNonFungibleTokenTransactionOrder } from './types/CreateNonFungibleTokenTransactionOrder.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
+import { CreateNonFungibleTokenTransactionOrder } from './types/CreateNonFungibleTokenTransactionOrder.js';
 
 export class UnsignedCreateNonFungibleTokenTransactionOrder
   implements IUnsignedTransactionOrder<CreateNonFungibleTokenTransactionOrder>

@@ -1,10 +1,9 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ISigningService } from '../../signing/ISigningService.js';
 import { TransferBillToDustCollectorAttributes } from '../attribute/TransferBillToDustCollectorAttributes.js';
-import { IPredicate } from '../IPredicate.js';
+import { IPredicate } from '../predicate/IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
-import { TransactionOrder } from './TransactionOrder.js';
 import { TransferBillToDustCollectorTransactionOrder } from './types/TransferBillToDustCollectorTransactionOrder.js';
 
 export class UnsignedTransferBillToDustCollectorTransactionOrder

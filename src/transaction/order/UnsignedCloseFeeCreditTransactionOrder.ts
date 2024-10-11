@@ -1,10 +1,10 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ISigningService } from '../../signing/ISigningService.js';
 import { CloseFeeCreditAttributes } from '../attribute/CloseFeeCreditAttributes.js';
-import { IPredicate } from '../IPredicate.js';
+import { IPredicate } from '../predicate/IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
-import { CloseFeeCreditTransactionOrder } from './types/CloseFeeCreditTransactionOrder.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
+import { CloseFeeCreditTransactionOrder } from './types/CloseFeeCreditTransactionOrder.js';
 
 export class UnsignedCloseFeeCreditTransactionOrder
   implements IUnsignedTransactionOrder<CloseFeeCreditTransactionOrder>

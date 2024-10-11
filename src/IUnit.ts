@@ -1,5 +1,5 @@
 import { IUnitId } from './IUnitId.js';
-import { IPredicate } from './transaction/IPredicate.js';
+import { IPredicate } from './transaction/predicate/IPredicate.js';
 
 /**
  * Unit interface.

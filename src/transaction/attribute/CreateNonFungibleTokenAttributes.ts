@@ -1,11 +1,11 @@
 import { IUnitId } from '../../IUnitId.js';
-import { PredicateBytes } from '../../PredicateBytes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
 import { INonFungibleTokenData } from '../INonFungibleTokenData.js';
-import { IPredicate } from '../IPredicate.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { NonFungibleTokenData } from '../NonFungibleTokenData.js';
+import { IPredicate } from '../predicate/IPredicate.js';
+import { PredicateBytes } from '../predicate/PredicateBytes.js';
 
 /**
  * Create non-fungible token attributes array.

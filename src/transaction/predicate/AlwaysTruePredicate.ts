@@ -1,4 +1,4 @@
-import { IPredicate } from '../IPredicate.js';
+import { IPredicate } from './IPredicate.js';
 
 /**
  * Always true predicate.

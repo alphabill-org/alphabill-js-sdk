@@ -1,7 +1,7 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ISigningService } from '../../signing/ISigningService.js';
 import { TransferFungibleTokenAttributes } from '../attribute/TransferFungibleTokenAttributes.js';
-import { IPredicate } from '../IPredicate.js';
+import { IPredicate } from '../predicate/IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
 import { TransferFungibleTokenTransactionOrder } from './types/TransferFungibleTokenTransactionOrder.js';

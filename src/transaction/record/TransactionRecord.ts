@@ -1,8 +1,8 @@
-import { ServerMetadata, ServerMetadataArray } from './ServerMetadata.js';
-import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
-import { TransactionOrder, TransactionOrderArray } from './transaction/order/TransactionOrder.js';
-import { ITransactionOrderProof } from './transaction/proof/ITransactionOrderProof.js';
-import { dedent } from './util/StringUtils.js';
+import { ServerMetadata, ServerMetadataArray } from '../../ServerMetadata.js';
+import { dedent } from '../../util/StringUtils.js';
+import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
+import { TransactionOrder, TransactionOrderArray } from '../order/TransactionOrder.js';
+import { ITransactionOrderProof } from '../proof/ITransactionOrderProof.js';
 
 /**
  * Transaction record array.

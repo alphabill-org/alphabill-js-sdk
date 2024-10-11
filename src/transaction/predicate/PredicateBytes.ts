@@ -1,5 +1,5 @@
-import { IPredicate } from './transaction/IPredicate.js';
-import { Base16Converter } from './util/Base16Converter.js';
+import { Base16Converter } from '../../util/Base16Converter.js';
+import { IPredicate } from './IPredicate.js';
 
 /**
  * Predicate bytes.

@@ -1,12 +1,14 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ISigningService } from '../../signing/ISigningService.js';
 import { UnlockFeeCreditAttributes } from '../attribute/UnlockFeeCreditAttributes.js';
-import { IPredicate } from '../IPredicate.js';
+import { IPredicate } from '../predicate/IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
 import { UnlockFeeCreditTransactionOrder } from './types/UnlockFeeCreditTransactionOrder.js';
 
-export class UnsignedUnlockFeeCreditTransactionOrder implements IUnsignedTransactionOrder<UnlockFeeCreditTransactionOrder> {
+export class UnsignedUnlockFeeCreditTransactionOrder
+  implements IUnsignedTransactionOrder<UnlockFeeCreditTransactionOrder>
+{
   public constructor(
     public readonly payload: TransactionPayload<UnlockFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,

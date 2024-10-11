@@ -1,9 +1,9 @@
 import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
 import { FeeCreditTransactionType } from '../../../json-rpc/FeeCreditTransactionType.js';
-import { PredicateBytes } from '../../../PredicateBytes.js';
 import { UnitId } from '../../../UnitId.js';
 import { CloseFeeCreditAttributes, CloseFeeCreditAttributesArray } from '../../attribute/CloseFeeCreditAttributes.js';
-import { IPredicate } from '../../IPredicate.js';
+import { IPredicate } from '../../predicate/IPredicate.js';
+import { PredicateBytes } from '../../predicate/PredicateBytes.js';
 import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';

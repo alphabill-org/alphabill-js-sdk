@@ -1,9 +1,8 @@
 import { StateApiClient } from '../../../src/StateApiClient.js';
 import { ITransactionClientMetadata } from '../../../src/transaction/ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from '../../../src/transaction/ITransactionPayloadAttributes.js';
-import { TransactionPayload } from '../../../src/transaction/TransactionPayload.js';
+import { TransactionRecordWithProof } from '../../../src/transaction/record/TransactionRecordWithProof.js';
 import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
-import { TransactionRecordWithProof } from '../../../src/TransactionRecordWithProof.js';
 
 /**
  * Wait for a transaction proof to be available.

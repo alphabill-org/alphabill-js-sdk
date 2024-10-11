@@ -1,12 +1,12 @@
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { IStateProof } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
-import { PredicateBytes } from '../PredicateBytes.js';
-import { IPredicate } from '../transaction/IPredicate.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../transaction/order/TransactionOrder.js';
+import { IPredicate } from '../transaction/predicate/IPredicate.js';
+import { PredicateBytes } from '../transaction/predicate/PredicateBytes.js';
 import { ITransactionOrderProof } from '../transaction/proof/ITransactionOrderProof.js';
-import { TransactionRecordWithProofArray } from '../TransactionRecordWithProof.js';
+import { TransactionRecordWithProofArray } from '../transaction/record/TransactionRecordWithProof.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { IJsonRpcService } from './IJsonRpcService.js';

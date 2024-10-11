@@ -1,6 +1,6 @@
-import { PredicateBytes } from '../PredicateBytes.js';
 import { dedent } from '../util/StringUtils.js';
-import { IPredicate } from './IPredicate.js';
+import { IPredicate } from './predicate/IPredicate.js';
+import { PredicateBytes } from './predicate/PredicateBytes.js';
 
 /**
  * Split bill unit array.

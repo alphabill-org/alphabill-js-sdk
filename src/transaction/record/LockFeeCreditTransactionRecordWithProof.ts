@@ -1,9 +1,9 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ServerMetadata } from '../../ServerMetadata.js';
-import { TransactionProof } from '../../TransactionProof.js';
-import { TransactionRecord } from '../../TransactionRecord.js';
-import { TransactionRecordWithProof, TransactionRecordWithProofArray } from '../../TransactionRecordWithProof.js';
 import { LockFeeCreditTransactionOrder } from '../order/types/LockFeeCreditTransactionOrder.js';
+import { TransactionProof } from './TransactionProof.js';
+import { TransactionRecord } from './TransactionRecord.js';
+import { TransactionRecordWithProof, TransactionRecordWithProofArray } from './TransactionRecordWithProof.js';
 
 export class LockFeeCreditTransactionRecordWithProof extends TransactionRecordWithProof<LockFeeCreditTransactionOrder> {
   public static async fromArray(

@@ -1,8 +1,8 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
-import { TransactionRecordWithProofArray } from '../../TransactionRecordWithProof.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { CloseFeeCreditTransactionRecordWithProof } from '../record/CloseFeeCreditTransactionRecordWithProof.js';
+import { TransactionRecordWithProofArray } from '../record/TransactionRecordWithProof.js';
 
 /**
  * Reclaim fee credit attributes array.

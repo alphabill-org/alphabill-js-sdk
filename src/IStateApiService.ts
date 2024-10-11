@@ -2,7 +2,7 @@ import { IUnit } from './IUnit.js';
 import { IUnitId } from './IUnitId.js';
 import { ITransactionPayloadAttributes } from './transaction/ITransactionPayloadAttributes.js';
 import { TransactionOrder } from './transaction/order/TransactionOrder.js';
-import { TransactionRecordWithProof } from './TransactionRecordWithProof.js';
+import { TransactionRecordWithProof } from './transaction/record/TransactionRecordWithProof.js';
 
 /**
  * State API service interface.
