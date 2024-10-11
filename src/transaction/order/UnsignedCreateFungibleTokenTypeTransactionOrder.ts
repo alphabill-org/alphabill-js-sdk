@@ -1,14 +1,13 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec';
-import { ISigningService } from '../../signing/ISigningService';
-import { CreateFungibleTokenTypeAttributes } from '../attribute/CreateFungibleTokenTypeAttributes';
-import { IPredicate } from '../IPredicate';
-import { TransactionPayload } from '../TransactionPayload';
-import { CreateFungibleTokenTypeTransactionOrder } from './CreateFungibleTokenTypeTransactionOrder';
-import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder';
-import { TransactionOrder } from './TransactionOrder';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { ISigningService } from '../../signing/ISigningService.js';
+import { CreateFungibleTokenTypeAttributes } from '../attribute/CreateFungibleTokenTypeAttributes.js';
+import { IPredicate } from '../IPredicate.js';
+import { TransactionPayload } from '../TransactionPayload.js';
+import { CreateFungibleTokenTypeTransactionOrder } from './CreateFungibleTokenTypeTransactionOrder.js';
+import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
 
 export class UnsignedCreateFungibleTokenTypeTransactionOrder
-  implements IUnsignedTransactionOrder<CreateFungibleTokenTypeAttributes>
+  implements IUnsignedTransactionOrder<CreateFungibleTokenTypeTransactionOrder>
 {
   public constructor(
     public readonly payload: TransactionPayload<CreateFungibleTokenTypeAttributes>,
@@ -19,7 +18,7 @@ export class UnsignedCreateFungibleTokenTypeTransactionOrder
   public async sign(
     ownerProofSigner: ISigningService,
     feeProofSigner: ISigningService,
-  ): Promise<TransactionOrder<CreateFungibleTokenTypeAttributes>> {
+  ): Promise<CreateFungibleTokenTypeTransactionOrder> {
     const bytes = await this.codec.encode(this.payload.toArray());
     return new CreateFungibleTokenTypeTransactionOrder(
       this.payload,

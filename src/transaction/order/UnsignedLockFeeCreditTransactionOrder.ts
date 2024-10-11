@@ -1,13 +1,12 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec';
-import { ISigningService } from '../../signing/ISigningService';
-import { LockFeeCreditAttributes } from '../attribute/LockFeeCreditAttributes';
-import { IPredicate } from '../IPredicate';
-import { TransactionPayload } from '../TransactionPayload';
-import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder';
-import { LockFeeCreditTransactionOrder } from './LockFeeCreditTransactionOrder';
-import { TransactionOrder } from './TransactionOrder';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { ISigningService } from '../../signing/ISigningService.js';
+import { LockFeeCreditAttributes } from '../attribute/LockFeeCreditAttributes.js';
+import { IPredicate } from '../IPredicate.js';
+import { TransactionPayload } from '../TransactionPayload.js';
+import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
+import { LockFeeCreditTransactionOrder } from './LockFeeCreditTransactionOrder.js';
 
-export class UnsignedLockFeeCreditTransactionOrder implements IUnsignedTransactionOrder<LockFeeCreditAttributes> {
+export class UnsignedLockFeeCreditTransactionOrder implements IUnsignedTransactionOrder<LockFeeCreditTransactionOrder> {
   public constructor(
     public readonly payload: TransactionPayload<LockFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
@@ -17,7 +16,7 @@ export class UnsignedLockFeeCreditTransactionOrder implements IUnsignedTransacti
   public async sign(
     ownerProofSigner: ISigningService,
     feeProofSigner: ISigningService,
-  ): Promise<TransactionOrder<LockFeeCreditAttributes>> {
+  ): Promise<LockFeeCreditTransactionOrder> {
     const bytes = await this.codec.encode(this.payload.toArray());
     return new LockFeeCreditTransactionOrder(
       this.payload,

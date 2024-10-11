@@ -1,14 +1,13 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec';
-import { ISigningService } from '../../signing/ISigningService';
-import { TransferNonFungibleTokenAttributes } from '../attribute/TransferNonFungibleTokenAttributes';
-import { IPredicate } from '../IPredicate';
-import { TransactionPayload } from '../TransactionPayload';
-import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder';
-import { TransactionOrder } from './TransactionOrder';
-import { TransferNonFungibleTokenTransactionOrder } from './TransferNonFungibleTokenTransactionOrder';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { ISigningService } from '../../signing/ISigningService.js';
+import { TransferNonFungibleTokenAttributes } from '../attribute/TransferNonFungibleTokenAttributes.js';
+import { IPredicate } from '../IPredicate.js';
+import { TransactionPayload } from '../TransactionPayload.js';
+import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
+import { TransferNonFungibleTokenTransactionOrder } from './TransferNonFungibleTokenTransactionOrder.js';
 
 export class UnsignedTransferNonFungibletokenTransactionOrder
-  implements IUnsignedTransactionOrder<TransferNonFungibleTokenAttributes>
+  implements IUnsignedTransactionOrder<TransferNonFungibleTokenTransactionOrder>
 {
   public constructor(
     public readonly payload: TransactionPayload<TransferNonFungibleTokenAttributes>,
@@ -19,7 +18,7 @@ export class UnsignedTransferNonFungibletokenTransactionOrder
   public async sign(
     ownerProofSigner: ISigningService,
     feeProofSigner: ISigningService,
-  ): Promise<TransactionOrder<TransferNonFungibleTokenAttributes>> {
+  ): Promise<TransferNonFungibleTokenTransactionOrder> {
     const bytes = await this.codec.encode(this.payload.toArray());
     return new TransferNonFungibleTokenTransactionOrder(
       this.payload,

@@ -1,14 +1,14 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec';
-import { ISigningService } from '../../signing/ISigningService';
-import { TransferBillToDustCollectorAttributes } from '../attribute/TransferBillToDustCollectorAttributes';
-import { IPredicate } from '../IPredicate';
-import { TransactionPayload } from '../TransactionPayload';
-import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder';
-import { TransactionOrder } from './TransactionOrder';
-import { TransferBillToDustCollectorTransactionOrder } from './TransferBillToDustCollectorTransactionOrder';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { ISigningService } from '../../signing/ISigningService.js';
+import { TransferBillToDustCollectorAttributes } from '../attribute/TransferBillToDustCollectorAttributes.js';
+import { IPredicate } from '../IPredicate.js';
+import { TransactionPayload } from '../TransactionPayload.js';
+import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
+import { TransactionOrder } from './TransactionOrder.js';
+import { TransferBillToDustCollectorTransactionOrder } from './TransferBillToDustCollectorTransactionOrder.js';
 
 export class UnsignedTransferBillToDustCollectorTransactionOrder
-  implements IUnsignedTransactionOrder<TransferBillToDustCollectorAttributes>
+  implements IUnsignedTransactionOrder<TransferBillToDustCollectorTransactionOrder>
 {
   public constructor(
     public readonly payload: TransactionPayload<TransferBillToDustCollectorAttributes>,
@@ -19,7 +19,7 @@ export class UnsignedTransferBillToDustCollectorTransactionOrder
   public async sign(
     ownerProofSigner: ISigningService,
     feeProofSigner: ISigningService,
-  ): Promise<TransactionOrder<TransferBillToDustCollectorAttributes>> {
+  ): Promise<TransferBillToDustCollectorTransactionOrder> {
     const bytes = await this.codec.encode(this.payload.toArray());
     return new TransferBillToDustCollectorTransactionOrder(
       this.payload,

@@ -1,13 +1,12 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec';
-import { ISigningService } from '../../signing/ISigningService';
-import { SplitBillAttributes } from '../attribute/SplitBillAttributes';
-import { IPredicate } from '../IPredicate';
-import { TransactionPayload } from '../TransactionPayload';
-import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder';
-import { SplitBillTransactionOrder } from './SplitBillTransactionOrder';
-import { TransactionOrder } from './TransactionOrder';
+import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { ISigningService } from '../../signing/ISigningService.js';
+import { SplitBillAttributes } from '../attribute/SplitBillAttributes.js';
+import { IPredicate } from '../IPredicate.js';
+import { TransactionPayload } from '../TransactionPayload.js';
+import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
+import { SplitBillTransactionOrder } from './SplitBillTransactionOrder.js';
 
-export class UnsignedSplitBillTransactionOrder implements IUnsignedTransactionOrder<SplitBillAttributes> {
+export class UnsignedSplitBillTransactionOrder implements IUnsignedTransactionOrder<SplitBillTransactionOrder> {
   public constructor(
     public readonly payload: TransactionPayload<SplitBillAttributes>,
     public readonly stateUnlock: IPredicate | null,
@@ -17,7 +16,7 @@ export class UnsignedSplitBillTransactionOrder implements IUnsignedTransactionOr
   public async sign(
     ownerProofSigner: ISigningService,
     feeProofSigner: ISigningService,
-  ): Promise<TransactionOrder<SplitBillAttributes>> {
+  ): Promise<SplitBillTransactionOrder> {
     const bytes = await this.codec.encode(this.payload.toArray());
     return new SplitBillTransactionOrder(
       this.payload,

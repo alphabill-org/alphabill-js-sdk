@@ -4,12 +4,7 @@ import { ITransactionOrderProof } from '../proof/ITransactionOrderProof.js';
 import { TransactionOrder } from './TransactionOrder.js';
 
 export interface IUnsignedTransactionOrder<
-  Attributes extends ITransactionPayloadAttributes,
-  AuthProof extends ITransactionOrderProof,
-  FeeProof extends ITransactionOrderProof,
+  T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof, ITransactionOrderProof>,
 > {
-  sign(
-    authProofSigner: ISigningService,
-    feeProofSigner: ISigningService,
-  ): Promise<TransactionOrder<Attributes, AuthProof, FeeProof>>;
+  sign(authProofSigner: ISigningService, feeProofSigner: ISigningService): Promise<T>;
 }
