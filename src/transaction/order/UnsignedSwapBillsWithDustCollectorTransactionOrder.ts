@@ -4,7 +4,7 @@ import { SwapBillsWithDustCollectorAttributes } from '../attribute/SwapBillsWith
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
-import { SwapBillsWithDustCollectorTransactionOrder } from './SwapBillsWithDustCollectorTransactionOrder.js';
+import { SwapBillsWithDustCollectorTransactionOrder } from './types/SwapBillsWithDustCollectorTransactionOrder.js';
 
 export class UnsignedSwapBillsWithDustCollectorTransactionOrder
   implements IUnsignedTransactionOrder<SwapBillsWithDustCollectorTransactionOrder>

@@ -1,13 +1,13 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
-import { MoneyPartitionTransactionType } from '../../json-rpc/MoneyPartitionTransactionType.js';
-import { PredicateBytes } from '../../PredicateBytes.js';
-import { UnitId } from '../../UnitId.js';
-import { LockBillAttributes, LockBillAttributesArray } from '../attribute/LockBillAttributes.js';
-import { IPredicate } from '../IPredicate.js';
-import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
-import { StateLock } from '../StateLock.js';
-import { TransactionPayload } from '../TransactionPayload.js';
-import { TransactionOrder, TransactionOrderArray } from './TransactionOrder.js';
+import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
+import { MoneyPartitionTransactionType } from '../../../json-rpc/MoneyPartitionTransactionType.js';
+import { PredicateBytes } from '../../../PredicateBytes.js';
+import { UnitId } from '../../../UnitId.js';
+import { LockBillAttributes, LockBillAttributesArray } from '../../attribute/LockBillAttributes.js';
+import { IPredicate } from '../../IPredicate.js';
+import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
+import { StateLock } from '../../StateLock.js';
+import { TransactionPayload } from '../../TransactionPayload.js';
+import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
 
 export class LockBillTransactionOrder extends TransactionOrder<
   LockBillAttributes,

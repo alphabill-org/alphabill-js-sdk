@@ -4,7 +4,7 @@ import { JoinFungibleTokenAttributes } from '../attribute/JoinFungibleTokenAttri
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
-import { JoinFungibleTokenTransactionOrder } from './JoinFungibleTokenTransactionOrder.js';
+import { JoinFungibleTokenTransactionOrder } from './types/JoinFungibleTokenTransactionOrder.js';
 
 export class UnsignedJoinFungibleTokenTransactionOrder
   implements IUnsignedTransactionOrder<JoinFungibleTokenTransactionOrder>

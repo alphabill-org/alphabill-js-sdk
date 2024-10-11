@@ -1,13 +1,13 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
-import { FeeCreditTransactionType } from '../../json-rpc/FeeCreditTransactionType.js';
-import { PredicateBytes } from '../../PredicateBytes.js';
-import { UnitId } from '../../UnitId.js';
-import { AddFeeCreditAttributes, AddFeeCreditAttributesArray } from '../attribute/AddFeeCreditAttributes.js';
-import { IPredicate } from '../IPredicate.js';
-import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
-import { StateLock } from '../StateLock.js';
-import { TransactionPayload } from '../TransactionPayload.js';
-import { TransactionOrder, TransactionOrderArray } from './TransactionOrder.js';
+import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
+import { FeeCreditTransactionType } from '../../../json-rpc/FeeCreditTransactionType.js';
+import { PredicateBytes } from '../../../PredicateBytes.js';
+import { UnitId } from '../../../UnitId.js';
+import { AddFeeCreditAttributes, AddFeeCreditAttributesArray } from '../../attribute/AddFeeCreditAttributes.js';
+import { IPredicate } from '../../IPredicate.js';
+import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
+import { StateLock } from '../../StateLock.js';
+import { TransactionPayload } from '../../TransactionPayload.js';
+import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
 
 export class AddFeeCreditTransactionOrder extends TransactionOrder<
   AddFeeCreditAttributes,

@@ -4,7 +4,7 @@ import { UnlockFeeCreditAttributes } from '../attribute/UnlockFeeCreditAttribute
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
-import { UnlockFeeCreditTransactionOrder } from './UnlockFeeCreditTransactionOrder.js';
+import { UnlockFeeCreditTransactionOrder } from './types/UnlockFeeCreditTransactionOrder.js';
 
 export class UnsignedUnlockFeeCreditTransactionOrder implements IUnsignedTransactionOrder<UnlockFeeCreditTransactionOrder> {
   public constructor(

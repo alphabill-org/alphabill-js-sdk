@@ -3,7 +3,7 @@ import { ServerMetadata } from '../../ServerMetadata.js';
 import { TransactionProof } from '../../TransactionProof.js';
 import { TransactionRecord } from '../../TransactionRecord.js';
 import { TransactionRecordWithProof, TransactionRecordWithProofArray } from '../../TransactionRecordWithProof.js';
-import { UnlockFeeCreditTransactionOrder } from '../order/UnlockFeeCreditTransactionOrder.js';
+import { UnlockFeeCreditTransactionOrder } from '../order/types/UnlockFeeCreditTransactionOrder.js';
 
 export class UnlockFeeCreditTransactionRecordWithProof extends TransactionRecordWithProof<UnlockFeeCreditTransactionOrder> {
   public static async fromArray(

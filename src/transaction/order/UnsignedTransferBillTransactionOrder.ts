@@ -4,7 +4,7 @@ import { TransferBillAttributes } from '../attribute/TransferBillAttributes.js';
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
-import { TransferBillTransactionOrder } from './TransferBillTransactionOrder.js';
+import { TransferBillTransactionOrder } from './types/TransferBillTransactionOrder.js';
 
 export class UnsignedTransferBillTransactionOrder implements IUnsignedTransactionOrder<TransferBillTransactionOrder> {
   public constructor(

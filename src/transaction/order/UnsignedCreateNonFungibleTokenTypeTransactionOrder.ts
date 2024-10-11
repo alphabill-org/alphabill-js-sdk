@@ -3,7 +3,7 @@ import { ISigningService } from '../../signing/ISigningService.js';
 import { CreateNonFungibleTokenTypeAttributes } from '../attribute/CreateNonFungibleTokenTypeAttributes.js';
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
-import { CreateNonFungibleTokenTypeTransactionOrder } from './CreateNonFungibleTokenTypeTransactionOrder.js';
+import { CreateNonFungibleTokenTypeTransactionOrder } from './types/CreateNonFungibleTokenTypeTransactionOrder.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
 
 export class UnsignedCreateNonFungibleTokenTypeTransactionOrder

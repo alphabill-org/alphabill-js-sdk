@@ -3,7 +3,7 @@ import { ISigningService } from '../../signing/ISigningService.js';
 import { CreateFungibleTokenAttributes } from '../attribute/CreateFungibleTokenAttributes.js';
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
-import { CreateFungibleTokenTransactionOrder } from './CreateFungibleTokenTransactionOrder.js';
+import { CreateFungibleTokenTransactionOrder } from './types/CreateFungibleTokenTransactionOrder.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
 
 export class UnsignedCreateFungibleTokenTransactionOrder

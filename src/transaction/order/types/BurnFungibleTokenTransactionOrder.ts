@@ -1,16 +1,16 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
-import { TokenPartitionTransactionType } from '../../json-rpc/TokenPartitionTransactionType.js';
-import { PredicateBytes } from '../../PredicateBytes.js';
-import { UnitId } from '../../UnitId.js';
+import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
+import { TokenPartitionTransactionType } from '../../../json-rpc/TokenPartitionTransactionType.js';
+import { PredicateBytes } from '../../../PredicateBytes.js';
+import { UnitId } from '../../../UnitId.js';
 import {
   BurnFungibleTokenAttributes,
   BurnFungibleTokenAttributesArray,
-} from '../attribute/BurnFungibleTokenAttributes.js';
-import { IPredicate } from '../IPredicate.js';
-import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
-import { StateLock } from '../StateLock.js';
-import { TransactionPayload } from '../TransactionPayload.js';
-import { TransactionOrder, TransactionOrderArray } from './TransactionOrder.js';
+} from '../../attribute/BurnFungibleTokenAttributes.js';
+import { IPredicate } from '../../IPredicate.js';
+import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
+import { StateLock } from '../../StateLock.js';
+import { TransactionPayload } from '../../TransactionPayload.js';
+import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
 
 export class BurnFungibleTokenTransactionOrder extends TransactionOrder<
   BurnFungibleTokenAttributes,

@@ -3,7 +3,7 @@ import { ServerMetadata } from '../../ServerMetadata.js';
 import { TransactionProof } from '../../TransactionProof.js';
 import { TransactionRecord } from '../../TransactionRecord.js';
 import { TransactionRecordWithProof, TransactionRecordWithProofArray } from '../../TransactionRecordWithProof.js';
-import { SplitBillTransactionOrder } from '../order/SplitBillTransactionOrder.js';
+import { SplitBillTransactionOrder } from '../order/types/SplitBillTransactionOrder.js';
 
 export class SplitBillTransactionRecordWithProof extends TransactionRecordWithProof<SplitBillTransactionOrder> {
   public static async fromArray(

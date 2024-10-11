@@ -4,7 +4,7 @@ import { SplitFungibleTokenAttributes } from '../attribute/SplitFungibleTokenAtt
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
-import { SplitFungibleTokenTransactionOrder } from './SplitFungibleTokenTransactionOrder.js';
+import { SplitFungibleTokenTransactionOrder } from './types/SplitFungibleTokenTransactionOrder.js';
 
 export class UnsignedSplitFungibleTokenTransactionOrder
   implements IUnsignedTransactionOrder<SplitFungibleTokenTransactionOrder>

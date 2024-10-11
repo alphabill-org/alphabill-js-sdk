@@ -4,7 +4,7 @@ import { ReclaimFeeCreditAttributes } from '../attribute/ReclaimFeeCreditAttribu
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
-import { ReclaimFeeCreditTransactionOrder } from './ReclaimFeeCreditTransactionOrder.js';
+import { ReclaimFeeCreditTransactionOrder } from './types/ReclaimFeeCreditTransactionOrder.js';
 
 export class UnsignedReclaimFeeCreditTransactionOrder
   implements IUnsignedTransactionOrder<ReclaimFeeCreditTransactionOrder>

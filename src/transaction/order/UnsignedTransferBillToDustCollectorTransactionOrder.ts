@@ -5,7 +5,7 @@ import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
 import { TransactionOrder } from './TransactionOrder.js';
-import { TransferBillToDustCollectorTransactionOrder } from './TransferBillToDustCollectorTransactionOrder.js';
+import { TransferBillToDustCollectorTransactionOrder } from './types/TransferBillToDustCollectorTransactionOrder.js';
 
 export class UnsignedTransferBillToDustCollectorTransactionOrder
   implements IUnsignedTransactionOrder<TransferBillToDustCollectorTransactionOrder>

@@ -4,7 +4,7 @@ import { UpdateNonFungibleTokenAttributes } from '../attribute/UpdateNonFungible
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
-import { UpdateNonFungibleTokenTransactionOrder } from './UpdateNonFungibleTokenTransactionOrder.js';
+import { UpdateNonFungibleTokenTransactionOrder } from './types/UpdateNonFungibleTokenTransactionOrder.js';
 
 export class UnsignedUpdateNonFungibleTokenTransactionOrder
   implements IUnsignedTransactionOrder<UpdateNonFungibleTokenTransactionOrder>

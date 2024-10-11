@@ -1,19 +1,19 @@
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
-import { IStateProof } from '../IUnit';
+import { IStateProof } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
-import { PredicateBytes } from '../PredicateBytes';
-import { IPredicate } from '../transaction/IPredicate';
-import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes';
-import { TransactionOrder } from '../transaction/order/TransactionOrder';
-import { ITransactionOrderProof } from '../transaction/proof/ITransactionOrderProof';
-import { TransactionRecordWithProofArray } from '../TransactionRecordWithProof';
+import { PredicateBytes } from '../PredicateBytes.js';
+import { IPredicate } from '../transaction/IPredicate.js';
+import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
+import { TransactionOrder } from '../transaction/order/TransactionOrder.js';
+import { ITransactionOrderProof } from '../transaction/proof/ITransactionOrderProof.js';
+import { TransactionRecordWithProofArray } from '../TransactionRecordWithProof.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { IJsonRpcService } from './IJsonRpcService.js';
-import { IUnitDto } from './IUnitDto';
+import { IUnitDto } from './IUnitDto.js';
 import { JsonRpcError } from './JsonRpcError.js';
-import { createStateProof } from './StateProofFactory';
-import { TransactionProofDto } from './TransactionProofDto';
+import { createStateProof } from './StateProofFactory.js';
+import { TransactionProofDto } from './TransactionProofDto.js';
 
 /**
  * State API JSON-RPC service.

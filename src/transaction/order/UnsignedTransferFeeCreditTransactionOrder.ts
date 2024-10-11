@@ -4,7 +4,7 @@ import { TransferFeeCreditAttributes } from '../attribute/TransferFeeCreditAttri
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
-import { TransferFeeCreditTransactionOrder } from './TransferFeeCreditTransactionOrder.js';
+import { TransferFeeCreditTransactionOrder } from './types/TransferFeeCreditTransactionOrder.js';
 
 export class UnsignedTransferFeeCreditTransactionOrder
   implements IUnsignedTransactionOrder<TransferFeeCreditTransactionOrder>

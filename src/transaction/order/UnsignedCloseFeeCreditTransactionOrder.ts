@@ -3,7 +3,7 @@ import { ISigningService } from '../../signing/ISigningService.js';
 import { CloseFeeCreditAttributes } from '../attribute/CloseFeeCreditAttributes.js';
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
-import { CloseFeeCreditTransactionOrder } from './CloseFeeCreditTransactionOrder.js';
+import { CloseFeeCreditTransactionOrder } from './types/CloseFeeCreditTransactionOrder.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
 
 export class UnsignedCloseFeeCreditTransactionOrder

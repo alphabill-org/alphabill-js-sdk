@@ -3,7 +3,7 @@ import { ServerMetadata } from '../../ServerMetadata.js';
 import { TransactionProof } from '../../TransactionProof.js';
 import { TransactionRecord } from '../../TransactionRecord.js';
 import { TransactionRecordWithProof, TransactionRecordWithProofArray } from '../../TransactionRecordWithProof.js';
-import { CreateNonFungibleTokenTypeTransactionOrder } from '../order/CreateNonFungibleTokenTypeTransactionOrder.js';
+import { CreateNonFungibleTokenTypeTransactionOrder } from '../order/types/CreateNonFungibleTokenTypeTransactionOrder.js';
 
 export class CreateNonFungibleTokenTypeTransactionRecordWithProof extends TransactionRecordWithProof<CreateNonFungibleTokenTypeTransactionOrder> {
   public static async fromArray(

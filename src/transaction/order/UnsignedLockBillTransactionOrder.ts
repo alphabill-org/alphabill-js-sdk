@@ -4,7 +4,7 @@ import { LockBillAttributes } from '../attribute/LockBillAttributes.js';
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
-import { LockBillTransactionOrder } from './LockBillTransactionOrder.js';
+import { LockBillTransactionOrder } from './types/LockBillTransactionOrder.js';
 
 export class UnsignedLockBillTransactionOrder implements IUnsignedTransactionOrder<LockBillTransactionOrder> {
   public constructor(

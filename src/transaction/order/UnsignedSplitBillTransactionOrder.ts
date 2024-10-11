@@ -4,7 +4,7 @@ import { SplitBillAttributes } from '../attribute/SplitBillAttributes.js';
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
-import { SplitBillTransactionOrder } from './SplitBillTransactionOrder.js';
+import { SplitBillTransactionOrder } from './types/SplitBillTransactionOrder.js';
 
 export class UnsignedSplitBillTransactionOrder implements IUnsignedTransactionOrder<SplitBillTransactionOrder> {
   public constructor(

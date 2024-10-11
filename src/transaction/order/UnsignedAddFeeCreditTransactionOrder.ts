@@ -3,7 +3,7 @@ import { ISigningService } from '../../signing/ISigningService.js';
 import { AddFeeCreditAttributes } from '../attribute/AddFeeCreditAttributes.js';
 import { IPredicate } from '../IPredicate.js';
 import { TransactionPayload } from '../TransactionPayload.js';
-import { AddFeeCreditTransactionOrder } from './AddFeeCreditTransactionOrder.js';
+import { AddFeeCreditTransactionOrder } from './types/AddFeeCreditTransactionOrder.js';
 import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
 
 export class UnsignedAddFeeCreditTransactionOrder implements IUnsignedTransactionOrder<AddFeeCreditTransactionOrder> {

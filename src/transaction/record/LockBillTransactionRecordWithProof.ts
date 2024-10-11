@@ -3,7 +3,7 @@ import { ServerMetadata } from '../../ServerMetadata.js';
 import { TransactionProof } from '../../TransactionProof.js';
 import { TransactionRecord } from '../../TransactionRecord.js';
 import { TransactionRecordWithProof, TransactionRecordWithProofArray } from '../../TransactionRecordWithProof.js';
-import { LockBillTransactionOrder } from '../order/LockBillTransactionOrder.js';
+import { LockBillTransactionOrder } from '../order/types/LockBillTransactionOrder.js';
 
 export class LockBillTransactionRecordWithProof extends TransactionRecordWithProof<LockBillTransactionOrder> {
   public static async fromArray(
