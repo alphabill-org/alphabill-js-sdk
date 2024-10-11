@@ -49,7 +49,7 @@ export abstract class TransactionOrder<
    * @param {FeeProof | null} feeProof Fee proof.
    * @param {Uint8Array | null} stateUnlock State unlock.
    */
-  public constructor(
+  protected constructor(
     public readonly type: number,
     public readonly payload: TransactionPayload<Attributes>,
     public readonly authProof: AuthProof | null,
