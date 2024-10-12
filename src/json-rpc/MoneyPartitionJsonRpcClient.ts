@@ -61,7 +61,7 @@ type MoneyPartitionTransactionOrderTypes =
  * JSON-RPC money partition client.
  */
 export class MoneyPartitionJsonRpcClient {
-  public constructor(public readonly client: JsonRpcClient) {}
+  public constructor(private readonly client: JsonRpcClient) {}
 
   /**
    * @see {JsonRpcClient.getRoundNumber}
@@ -103,6 +103,16 @@ export class MoneyPartitionJsonRpcClient {
     factory: CreateTransactionRecordWithProof<TRP>,
   ): Promise<TRP | null> {
     return this.client.getTransactionProof(transactionHash, factory);
+  }
+
+  /**
+   * @see {JsonRpcClient.waitTransactionProof}
+   */
+  public waitTransactionProof<TRP extends MoneyPartitionTransactionRecordWithProofTypes>(
+    transactionHash: Uint8Array,
+    factory: CreateTransactionRecordWithProof<TRP>,
+  ): Promise<TRP> {
+    return this.client.waitTransactionProof(transactionHash, factory);
   }
 
   /**

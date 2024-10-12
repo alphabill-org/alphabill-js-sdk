@@ -2,18 +2,21 @@ import crypto from 'crypto';
 import { randomBytes } from '@noble/hashes/utils';
 import { CborCodecNode } from '../../src/codec/cbor/CborCodecNode.js';
 import { IUnitId } from '../../src/IUnitId.js';
+import { NetworkIdentifier } from '../../src/NetworkIdentifier';
 import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, createTokenClient, http } from '../../src/StateApiClientFactory.js';
 import { SystemIdentifier } from '../../src/SystemIdentifier.js';
 import { BurnFungibleTokenAttributes } from '../../src/transaction/attribute/BurnFungibleTokenAttributes.js';
 import { CreateFungibleTokenAttributes } from '../../src/transaction/attribute/CreateFungibleTokenAttributes.js';
 import { CreateNonFungibleTokenAttributes } from '../../src/transaction/attribute/CreateNonFungibleTokenAttributes.js';
-import { TransferFeeCreditAttributes } from '../../src/transaction/attribute/TransferFeeCreditAttributes.js';
+import { TransferFeeCreditAttributes } from '../../src/transaction/attribute/TransferFeeCreditAttributes';
 import { FeeCreditRecordUnitIdFactory } from '../../src/transaction/FeeCreditRecordUnitIdFactory.js';
 import { NonFungibleTokenData } from '../../src/transaction/NonFungibleTokenData.js';
+import { UnsignedTransferFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedTransferFeeCreditTransactionOrder';
 import { AlwaysTruePredicate } from '../../src/transaction/predicate/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicate/PayToPublicKeyHashPredicate.js';
 import { TransactionRecordWithProof } from '../../src/transaction/record/TransactionRecordWithProof.js';
+import { TransferFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/TransferFeeCreditTransactionRecordWithProof.js';
 import { TokenIcon } from '../../src/transaction/TokenIcon.js';
 import { TokenUnitIdFactory } from '../../src/transaction/TokenUnitIdFactory.js';
 import { TransactionPayload } from '../../src/transaction/TransactionPayload.js';
@@ -28,17 +31,14 @@ import { NonFungibleTokenType } from '../../src/unit/NonFungibleTokenType.js';
 import { UnitId } from '../../src/UnitId.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
 import config from './config/config.js';
-import { createMetadata, waitTransactionProof } from './utils/TestUtils.js';
+import { createMetadata } from './utils/TestUtils.js';
 
 describe('Token Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
-  const tokenUnitIdFactory = new TokenUnitIdFactory(cborCodec);
-  const feeCreditRecordUnitIdFactory = new FeeCreditRecordUnitIdFactory();
 
   const tokenClient = createTokenClient({
     transport: http(config.tokenPartitionUrl, new CborCodecNode()),
-    tokenUnitIdFactory,
   });
 
   let feeCreditRecordId: UnitIdWithType; // can no longer be static as hash contains timeout
@@ -46,7 +46,6 @@ describe('Token Client Integration Tests', () => {
   it('Add fee credit', async () => {
     const moneyClient = createMoneyClient({
       transport: http(config.moneyPartitionUrl, new CborCodecNode()),
-      feeCreditRecordUnitIdFactory,
     });
 
     const unitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
@@ -54,8 +53,11 @@ describe('Token Client Integration Tests', () => {
     );
     expect(unitIds.length).toBeGreaterThan(0);
 
-    const bill = (await moneyClient.getUnit(unitIds[0], false)) as Bill;
+    const bill = await moneyClient.getUnit(unitIds[0], false, Bill);
     expect(bill).not.toBeNull();
+    if (!bill) {
+      throw new Error('No bill');
+    }
     const amountToFeeCredit = 100n;
     expect(bill.value).toBeGreaterThan(amountToFeeCredit);
 
@@ -63,31 +65,53 @@ describe('Token Client Integration Tests', () => {
     const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey);
 
     console.log('Transferring to fee credit...');
-    const transferToFeeCreditHash = await moneyClient.transferToFeeCredit(
-      {
-        bill: bill,
-        amount: amountToFeeCredit,
-        systemIdentifier: SystemIdentifier.TOKEN_PARTITION,
-        feeCreditRecordParams: {
-          ownerPredicate: ownerPredicate,
-          unitType: UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
-        },
-        latestAdditionTime: round + 60n,
-      },
-      createMetadata(round),
-    );
-    const proof: TransactionRecordWithProof<TransferFeeCreditAttributes> = await waitTransactionProof(
-      moneyClient,
-      transferToFeeCreditHash,
-    );
-    console.log('Transfer to fee credit successful');
+    const transactionOrder = await new UnsignedTransferFeeCreditTransactionOrder(
+      new TransactionPayload(
+        NetworkIdentifier.MAINNET,
+        SystemIdentifier.MONEY_PARTITION, // TODO: This is also known and must be optional
+        bill.unitId,
+        new TransferFeeCreditAttributes(
+          amountToFeeCredit,
+          SystemIdentifier.TOKEN_PARTITION,
+          UnitId.fromBytes(new Uint8Array()), // TODO: This must be optional field in parent so it can be generated,
+          round + 60n,
+          0n, // TODO: This must be fee credit record counter if it exists
+          bill.counter,
+        ),
+        null,
+        createMetadata(round),
+      ),
+      new AlwaysTruePredicate(),
+      cborCodec,
+    ).sign(signingService, signingService);
 
-    const attr = proof.transactionRecord.transactionOrder.payload as TransactionPayload<TransferFeeCreditAttributes>;
+    const transferToFeeCreditHash = await moneyClient.sendTransaction(transactionOrder);
+    //
+    // const transferToFeeCreditHash = await moneyClient.transferToFeeCredit(
+    //   {
+    //     bill: bill,
+    //     amount: amountToFeeCredit,
+    //     systemIdentifier: SystemIdentifier.TOKEN_PARTITION,
+    //     feeCreditRecordParams: {
+    //       ownerPredicate: ownerPredicate,
+    //       unitType: UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
+    //     },
+    //     latestAdditionTime: round + 60n,
+    //   },
+    //   createMetadata(round),
+    // );
+
+    const proof = await moneyClient.waitTransactionProof(
+      transferToFeeCreditHash,
+      TransferFeeCreditTransactionRecordWithProof,
+    );
+
+    console.log('Transfer to fee credit successful');
     feeCreditRecordId = new UnitIdWithType(
-      attr.attributes.targetUnitId.bytes,
+      transactionOrder.payload.attributes.targetUnitId.bytes,
       UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
     );
-    const feeCreditRecord: FeeCreditRecord | null = await tokenClient.getUnit(feeCreditRecordId, false);
+    const feeCreditRecord = await tokenClient.getUnit(feeCreditRecordId, false, FeeCreditRecord);
 
     console.log('Adding fee credit');
     const addFeeCreditHash = await tokenClient.addFeeCredit(

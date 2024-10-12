@@ -123,6 +123,44 @@ export class JsonRpcClient {
   }
 
   /**
+   * Wait for a transaction proof to be available.
+   * @param {Uint8Array} transactionHash Transaction hash.
+   * @param {CreateTransactionRecordWithProof<TRP>} transactionRecordWithProofFactory
+   * @param {AbortSignal} signal Abort signal to abort action early.
+   * @param {number} [interval=1000] Interval in milliseconds for polling.
+   * @returns {Promise<TransactionRecordWithProof>} Transaction proof.
+   * @throws {string} Timeout.
+   */
+  public waitTransactionProof<TRP>(
+    transactionHash: Uint8Array,
+    transactionRecordWithProofFactory: CreateTransactionRecordWithProof<TRP>,
+    signal: AbortSignal = AbortSignal.timeout(10000),
+    interval = 1000,
+  ): Promise<TRP> {
+    return new Promise((resolve, reject) => {
+      const abortListener = () => {
+        signal.removeEventListener('abort', abortListener);
+        reject(signal.reason);
+      };
+
+      signal.addEventListener('abort', abortListener);
+
+      const fetchTransactionProof = () => {
+        this.getTransactionProof(transactionHash, transactionRecordWithProofFactory).then((proof) => {
+          if (proof !== null) {
+            signal.removeEventListener('abort', abortListener);
+            return resolve(proof);
+          }
+
+          setTimeout(fetchTransactionProof, interval);
+        });
+      };
+
+      fetchTransactionProof();
+    });
+  }
+
+  /**
    * Send a JSON-RPC request.
    * @see {IJsonRpcService.request}
    */
