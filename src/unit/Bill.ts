@@ -3,7 +3,6 @@ import { IUnitId } from '../IUnitId.js';
 import { IBillDataDto } from '../json-rpc/IBillDataDto.js';
 import { IPredicate } from '../transaction/predicate/IPredicate.js';
 import { dedent } from '../util/StringUtils.js';
-import { Base16Converter } from '../util/Base16Converter';
 
 /**
  * Bill.

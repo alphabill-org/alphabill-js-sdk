@@ -5,8 +5,6 @@ import { IPredicate } from '../predicate/IPredicate.js';
 import { ITransactionOrderProof } from '../proof/ITransactionOrderProof.js';
 import { PayloadArray, TransactionPayload } from '../TransactionPayload.js';
 
-export type UnitIdType = Uint8Array;
-export type TransactionAttributesType = unknown;
 type StateUnlockType = Uint8Array | null;
 type TransactionProofType = Uint8Array | null;
 type FeeProofType = Uint8Array | null;
@@ -53,6 +51,7 @@ export abstract class TransactionOrder<
 
   public async encode(cborCodec: ICborCodec): Promise<TransactionOrderArray> {
     const payloadArray: PayloadArray = await this.payload.encode(cborCodec);
+    // TODO: Rename
     const txoBytes: [StateUnlockType, TransactionProofType, FeeProofType] = [
       this.stateUnlock?.bytes ?? null,
       (await this.authProof?.encode(cborCodec)) ?? null,

@@ -8,8 +8,11 @@ import { ClientMetadata } from './ClientMetadata.js';
 import { IStateLock } from './IStateLock.js';
 import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { TransactionAttributesType, TransactionClientMetadataArray, UnitIdType } from './order/TransactionOrder.js';
+import { TransactionClientMetadataArray } from './order/TransactionOrder.js';
 import { StateLockArray } from './StateLock.js';
+
+type UnitIdType = Uint8Array;
+type TransactionAttributesType = unknown;
 
 export type PayloadArray = readonly [
   NetworkIdentifier,

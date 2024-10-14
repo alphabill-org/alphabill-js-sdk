@@ -45,6 +45,7 @@ export default [
           modifiers: ['static', 'readonly'],
         },
       ],
+      '@typescript-eslint/member-ordering': 'error',
       'import/order': ['error', { alphabetize: { order: 'asc', caseInsensitive: true } }],
     },
   },

@@ -7,19 +7,19 @@ import { NetworkIdentifier } from '../../src/NetworkIdentifier.js';
 import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, createTokenClient, http } from '../../src/StateApiClientFactory.js';
 import { SystemIdentifier } from '../../src/SystemIdentifier.js';
-import { BurnFungibleTokenAttributes } from '../../src/transaction/attribute/BurnFungibleTokenAttributes.js';
 import { CreateFungibleTokenAttributes } from '../../src/transaction/attribute/CreateFungibleTokenAttributes.js';
 import { CreateNonFungibleTokenAttributes } from '../../src/transaction/attribute/CreateNonFungibleTokenAttributes.js';
 import { NonFungibleTokenData } from '../../src/transaction/NonFungibleTokenData.js';
+import { UnsignedBurnFungibleTokenTransactionOrder } from '../../src/transaction/order/UnsignedBurnFungibleTokenTransactionOrder.js';
 import { UnsignedTransferFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedTransferFeeCreditTransactionOrder.js';
 import { AlwaysTruePredicate } from '../../src/transaction/predicate/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicate/PayToPublicKeyHashPredicate.js';
-import { TransactionRecordWithProof } from '../../src/transaction/record/TransactionRecordWithProof.js';
+import { BurnFungibleTokenTransactionRecordWithProof } from '../../src/transaction/record/BurnFungibleTokenTransactionRecordWithProof.js';
 import { TransferFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/TransferFeeCreditTransactionRecordWithProof.js';
 import { TokenIcon } from '../../src/transaction/TokenIcon.js';
+import { TokenPartitionUnitType } from '../../src/transaction/TokenPartitionUnitType.js';
 import { TransactionPayload } from '../../src/transaction/TransactionPayload.js';
 import { UnitIdWithType } from '../../src/transaction/UnitIdWithType.js';
-import { UnitType } from '../../src/transaction/UnitType.js';
 import { Bill } from '../../src/unit/Bill.js';
 import { FeeCreditRecord } from '../../src/unit/FeeCreditRecord.js';
 import { FungibleToken } from '../../src/unit/FungibleToken.js';
@@ -30,6 +30,7 @@ import { UnitId } from '../../src/UnitId.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
 import config from './config/config.js';
 import { createMetadata } from './utils/TestUtils.js';
+import { MoneyPartitionUnitType } from '../../src/transaction/MoneyPartitionUnitType';
 
 describe('Token Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
@@ -47,7 +48,7 @@ describe('Token Client Integration Tests', () => {
     });
 
     const unitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
-      (id) => id.type.toBase16() === UnitType.MONEY_PARTITION_BILL_DATA,
+      (id) => id.type.toBase16() === Base16Converter.encode(new Uint8Array([MoneyPartitionUnitType.BILL])),
     );
     expect(unitIds.length).toBeGreaterThan(0);
 
@@ -68,7 +69,7 @@ describe('Token Client Integration Tests', () => {
         targetSystemIdentifier: SystemIdentifier.TOKEN_PARTITION,
         feeCreditRecord: {
           ownerPredicate: ownerPredicate,
-          unitType: UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
+          unitType: TokenPartitionUnitType.FEE_CREDIT_RECORD,
         },
         bill,
         latestAdditionTime: round + 60n,
@@ -103,7 +104,7 @@ describe('Token Client Integration Tests', () => {
     console.log('Transfer to fee credit successful');
     feeCreditRecordId = new UnitIdWithType(
       transactionOrder.payload.attributes.targetUnitId.bytes,
-      UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
+      TokenPartitionUnitType.FEE_CREDIT_RECORD,
     );
     const feeCreditRecord = await tokenClient.getUnit(feeCreditRecordId, false, FeeCreditRecord);
 
@@ -122,7 +123,7 @@ describe('Token Client Integration Tests', () => {
   }, 20000);
 
   describe('Fungible Token Integration Tests', () => {
-    const tokenTypeUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN_TYPE);
+    const tokenTypeUnitId = new UnitIdWithType(randomBytes(12), TokenPartitionUnitType.FUNGIBLE_TOKEN_TYPE);
     let tokenUnitId: IUnitId;
 
     it('Create token type and token', async () => {
@@ -168,7 +169,7 @@ describe('Token Client Integration Tests', () => {
 
     it('Split, burn and join', async () => {
       const round = await tokenClient.getRoundNumber();
-      const token = (await tokenClient.getUnit(tokenUnitId, false)) as FungibleToken;
+      const token = await tokenClient.getUnit(tokenUnitId, false, FungibleToken);
       console.log('Splitting fungible token...');
       const splitFungibleTokenHash = await tokenClient.splitFungibleToken(
         {
@@ -189,29 +190,35 @@ describe('Token Client Integration Tests', () => {
         .map((bytes) => UnitId.fromBytes(bytes))
         .find(
           (id) =>
-            id.type.toBase16() === UnitType.TOKEN_PARTITION_FUNGIBLE_TOKEN &&
+            id.type.toBase16() === Base16Converter.encode(new Uint8Array([TokenPartitionUnitType.FUNGIBLE_TOKEN])) &&
             Base16Converter.encode(id.bytes) !== Base16Converter.encode(token.unitId.bytes),
         ) as IUnitId;
       const splitToken = (await tokenClient.getUnit(splitTokenId, false)) as FungibleToken;
-      const originalTokenAfterSplit = (await tokenClient.getUnit(tokenUnitId, false)) as FungibleToken;
+      const originalTokenAfterSplit = await tokenClient.getUnit(tokenUnitId, false, FungibleToken);
 
       console.log('Burning fungible token...');
-      const burnFungibleTokenHash = await tokenClient.burnFungibleToken(
-        {
-          token: splitToken,
-          targetToken: originalTokenAfterSplit,
-          type: { unitId: tokenTypeUnitId },
-          invariantPredicateSignatures: [new Uint8Array()],
-        },
-        createMetadata(round, feeCreditRecordId),
+      const burnFungibleTokenHash = await tokenClient.sendTransaction(
+        await new UnsignedBurnFungibleTokenTransactionOrder(
+          {
+            networkIdentifier: NetworkIdentifier.LOCAL,
+            type: { unitId: tokenTypeUnitId },
+            token: splitToken,
+            targetToken: originalTokenAfterSplit,
+            stateLock: null,
+            stateUnlock: new AlwaysTruePredicate(),
+            tokenTypeOwnerProofs: [new Uint8Array()],
+            metadata: createMetadata(round, feeCreditRecordId),
+          },
+          cborCodec,
+        ).sign(signingService, signingService),
       );
-      await waitTransactionProof(tokenClient, burnFungibleTokenHash);
+
+      const burnProof = await tokenClient.waitTransactionProof(
+        burnFungibleTokenHash,
+        BurnFungibleTokenTransactionRecordWithProof,
+      );
       console.log('Fungible token burn successful');
 
-      const burnProof: TransactionRecordWithProof<BurnFungibleTokenAttributes> = await waitTransactionProof(
-        tokenClient,
-        burnFungibleTokenHash,
-      );
       console.log('Joining fungible token...');
       const joinFungibleTokenHash = await tokenClient.joinFungibleTokens(
         {
@@ -275,7 +282,7 @@ describe('Token Client Integration Tests', () => {
   });
 
   describe('Non-fungible Token Integration Tests', () => {
-    const tokenTypeUnitId = new UnitIdWithType(randomBytes(12), UnitType.TOKEN_PARTITION_NON_FUNGIBLE_TOKEN_TYPE);
+    const tokenTypeUnitId = new UnitIdWithType(randomBytes(12), TokenPartitionUnitType.NON_FUNGIBLE_TOKEN_TYPE);
     let tokenUnitId: IUnitId;
 
     it('Create token type and token', async () => {

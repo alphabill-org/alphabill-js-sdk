@@ -12,15 +12,16 @@ import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
+import { TokenTypeOwnerProofsAuthProof } from '../../proof/TokenTypeOwnerProofsAuthProof';
 
 export class TransferFungibleTokenTransactionOrder extends TransactionOrder<
   TransferFungibleTokenAttributes,
-  OwnerProofAuthProof,
+  TokenTypeOwnerProofsAuthProof,
   OwnerProofAuthProof
 > {
   public constructor(
     payload: TransactionPayload<TransferFungibleTokenAttributes>,
-    authProof: OwnerProofAuthProof | null,
+    authProof: TokenTypeOwnerProofsAuthProof | null,
     feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
@@ -46,7 +47,7 @@ export class TransferFungibleTokenTransactionOrder extends TransactionOrder<
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),
       ),
-      authProof ? await OwnerProofAuthProof.decode(authProof, cborCodec) : null,
+      authProof ? await TokenTypeOwnerProofsAuthProof.decode(authProof, cborCodec) : null,
       feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
