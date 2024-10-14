@@ -9,9 +9,7 @@ type StateUnlockType = Uint8Array | null;
 type AuthProofType = Uint8Array;
 type FeeProofType = Uint8Array;
 
-export type TransactionClientMetadataArray = [bigint, bigint, Uint8Array | null, Uint8Array | null];
-
-export type TransactionOrderArray = readonly [PayloadArray, StateUnlockType, AuthProofType, FeeProofType];
+export type TransactionOrderArray = readonly [...PayloadArray, StateUnlockType, AuthProofType, FeeProofType];
 
 /**
  * Transaction order.
@@ -50,13 +48,11 @@ export abstract class TransactionOrder<
   }
 
   public async encode(cborCodec: ICborCodec): Promise<TransactionOrderArray> {
-    const payloadArray: PayloadArray = await this.payload.encode(cborCodec);
-    // TODO: Rename
-    const txoBytes: [StateUnlockType, AuthProofType, FeeProofType] = [
+    return [
+      ...(await this.payload.encode(cborCodec)),
       this.stateUnlock?.bytes ?? null,
       await this.authProof.encode(cborCodec),
       await this.feeProof.encode(cborCodec),
     ];
-    return [payloadArray, ...txoBytes];
   }
 }

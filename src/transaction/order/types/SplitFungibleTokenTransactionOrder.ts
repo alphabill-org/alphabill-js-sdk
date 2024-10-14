@@ -30,7 +30,13 @@ export class SplitFungibleTokenTransactionOrder extends TransactionOrder<
 
   public static async fromArray(
     [
-      [networkIdentifier, systemIdentifier, unitId, , attributes, stateLock, clientMetadata],
+      networkIdentifier,
+      systemIdentifier,
+      unitId,
+      ,
+      attributes,
+      stateLock,
+      clientMetadata,
       stateUnlock,
       authProof,
       feeProof,

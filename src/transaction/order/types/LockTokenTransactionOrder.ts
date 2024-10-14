@@ -26,7 +26,13 @@ export class LockTokenTransactionOrder extends TransactionOrder<
 
   public static async fromArray(
     [
-      [networkIdentifier, systemIdentifier, unitId, , attributes, stateLock, clientMetadata],
+      networkIdentifier,
+      systemIdentifier,
+      unitId,
+      ,
+      attributes,
+      stateLock,
+      clientMetadata,
       stateUnlock,
       authProof,
       feeProof,

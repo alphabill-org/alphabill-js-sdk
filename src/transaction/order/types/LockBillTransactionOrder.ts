@@ -8,6 +8,8 @@ import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
+import { FeeCreditTransactionType } from '../../../json-rpc/FeeCreditTransactionType';
+import { MoneyPartitionTransactionType } from '../../../json-rpc/MoneyPartitionTransactionType';
 
 export class LockBillTransactionOrder extends TransactionOrder<
   LockBillAttributes,
@@ -25,7 +27,13 @@ export class LockBillTransactionOrder extends TransactionOrder<
 
   public static async fromArray(
     [
-      [networkIdentifier, systemIdentifier, unitId, type, attributes, stateLock, clientMetadata],
+      networkIdentifier,
+      systemIdentifier,
+      unitId,
+      ,
+      attributes,
+      stateLock,
+      clientMetadata,
       stateUnlock,
       authProof,
       feeProof,
@@ -37,7 +45,7 @@ export class LockBillTransactionOrder extends TransactionOrder<
         networkIdentifier,
         systemIdentifier,
         UnitId.fromBytes(unitId),
-        type,
+        MoneyPartitionTransactionType.LockBill,
         LockBillAttributes.fromArray(attributes as LockBillAttributesArray),
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),

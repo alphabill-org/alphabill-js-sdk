@@ -12,6 +12,8 @@ import { TypeOwnerProofsAuthProof } from '../../proof/TypeOwnerProofsAuthProof.j
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
+import { FeeCreditTransactionType } from '../../../json-rpc/FeeCreditTransactionType';
+import { TokenPartitionTransactionType } from '../../../json-rpc/TokenPartitionTransactionType';
 
 export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
   JoinFungibleTokenAttributes,
@@ -29,7 +31,13 @@ export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
 
   public static async fromArray(
     [
-      [networkIdentifier, systemIdentifier, unitId, type, attributes, stateLock, clientMetadata],
+      networkIdentifier,
+      systemIdentifier,
+      unitId,
+      ,
+      attributes,
+      stateLock,
+      clientMetadata,
       stateUnlock,
       authProof,
       feeProof,
@@ -41,7 +49,7 @@ export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
         networkIdentifier,
         systemIdentifier,
         UnitId.fromBytes(unitId),
-        type,
+        TokenPartitionTransactionType.JoinFungibleToken,
         await JoinFungibleTokenAttributes.fromArray(attributes as JoinFungibleTokenAttributesArray, cborCodec),
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),

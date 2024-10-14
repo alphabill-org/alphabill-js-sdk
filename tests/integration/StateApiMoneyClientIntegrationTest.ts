@@ -38,6 +38,7 @@ import { UnitId } from '../../src/UnitId.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
 import config from './config/config.js';
 import { createMetadata } from './utils/TestUtils.js';
+import { AlwaysTrueProofSigningService } from '../../src/transaction/proof/AlwaysTrueProofSigningService';
 
 describe('Money Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
@@ -422,16 +423,12 @@ describe('Money Client Integration Tests', () => {
   }, 20000);
 });
 
+// TODO: Remove test
 describe('spend initial bill', () => {
   it('', async () => {
     const cborCodec = new CborCodecNode();
     const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
-    const emptySigningService = {
-      // TODO: Fix this in future to allow null
-      // @ts-expect-error Must return null
-      sign: (): Promise<Uint8Array> => Promise.resolve(null),
-      publicKey: signingService.publicKey,
-    };
+    const proofSigningService = new AlwaysTrueProofSigningService(cborCodec);
 
     const moneyClient = createMoneyClient({
       transport: http(config.moneyPartitionUrl, cborCodec),
@@ -460,7 +457,7 @@ describe('spend initial bill', () => {
           stateUnlock: new AlwaysTruePredicate(),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(emptySigningService, emptySigningService)),
+      ).then((transactionOrder) => transactionOrder.sign(proofSigningService, proofSigningService)),
     );
 
     const transactionProof = await moneyClient.waitTransactionProof(
@@ -481,7 +478,7 @@ describe('spend initial bill', () => {
           stateUnlock: new AlwaysTruePredicate(),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(emptySigningService, emptySigningService)),
+      ).then((transactionOrder) => transactionOrder.sign(proofSigningService, proofSigningService)),
     );
 
     await moneyClient.waitTransactionProof(addFeeCreditTransactionHash, AddFeeCreditTransactionRecordWithProof);
@@ -499,7 +496,7 @@ describe('spend initial bill', () => {
           stateUnlock: new AlwaysTruePredicate(),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(emptySigningService, emptySigningService)),
+      ).then((transactionOrder) => transactionOrder.sign(proofSigningService, proofSigningService)),
     );
-  });
+  }, 20000);
 });

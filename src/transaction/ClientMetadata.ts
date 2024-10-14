@@ -1,7 +1,8 @@
 import { IUnitId } from '../IUnitId.js';
 import { UnitId } from '../UnitId.js';
 import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
-import { TransactionClientMetadataArray } from './order/TransactionOrder.js';
+
+export type TransactionClientMetadataArray = [bigint, bigint, Uint8Array | null, Uint8Array | null];
 
 export class ClientMetadata {
   public static create(

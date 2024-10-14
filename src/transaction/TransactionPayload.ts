@@ -4,11 +4,10 @@ import { NetworkIdentifier } from '../NetworkIdentifier.js';
 import { SystemIdentifier } from '../SystemIdentifier.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
-import { ClientMetadata } from './ClientMetadata.js';
+import { ClientMetadata, TransactionClientMetadataArray } from './ClientMetadata.js';
 import { IStateLock } from './IStateLock.js';
 import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { TransactionClientMetadataArray } from './order/TransactionOrder.js';
 import { StateLockArray } from './StateLock.js';
 
 type UnitIdType = Uint8Array;
