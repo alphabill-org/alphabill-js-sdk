@@ -4,32 +4,72 @@ import { NetworkIdentifier } from '../../src/NetworkIdentifier.js';
 import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, http } from '../../src/StateApiClientFactory.js';
 import { SystemIdentifier } from '../../src/SystemIdentifier.js';
-import { UnsignedAddFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedAddFeeCreditTransactionOrder.js';
-import { UnsignedCloseFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedCloseFeeCreditTransactionOrder.js';
+import {
+  UnsignedAddFeeCreditTransactionOrder
+} from '../../src/transaction/order/UnsignedAddFeeCreditTransactionOrder.js';
+import {
+  UnsignedCloseFeeCreditTransactionOrder
+} from '../../src/transaction/order/UnsignedCloseFeeCreditTransactionOrder.js';
 import { UnsignedLockBillTransactionOrder } from '../../src/transaction/order/UnsignedLockBillTransactionOrder.js';
-import { UnsignedLockFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedLockFeeCreditTransactionOrder.js';
-import { UnsignedReclaimFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedReclaimFeeCreditTransactionOrder.js';
+import {
+  UnsignedLockFeeCreditTransactionOrder
+} from '../../src/transaction/order/UnsignedLockFeeCreditTransactionOrder.js';
+import {
+  UnsignedReclaimFeeCreditTransactionOrder
+} from '../../src/transaction/order/UnsignedReclaimFeeCreditTransactionOrder.js';
 import { UnsignedSplitBillTransactionOrder } from '../../src/transaction/order/UnsignedSplitBillTransactionOrder.js';
-import { UnsignedSwapBillsWithDustCollectorTransactionOrder } from '../../src/transaction/order/UnsignedSwapBillsWithDustCollectorTransactionOrder.js';
-import { UnsignedTransferBillToDustCollectorTransactionOrder } from '../../src/transaction/order/UnsignedTransferBillToDustCollectorTransactionOrder.js';
-import { UnsignedTransferBillTransactionOrder } from '../../src/transaction/order/UnsignedTransferBillTransactionOrder.js';
-import { UnsignedTransferFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedTransferFeeCreditTransactionOrder.js';
+import {
+  UnsignedSwapBillsWithDustCollectorTransactionOrder
+} from '../../src/transaction/order/UnsignedSwapBillsWithDustCollectorTransactionOrder.js';
+import {
+  UnsignedTransferBillToDustCollectorTransactionOrder
+} from '../../src/transaction/order/UnsignedTransferBillToDustCollectorTransactionOrder.js';
+import {
+  UnsignedTransferBillTransactionOrder
+} from '../../src/transaction/order/UnsignedTransferBillTransactionOrder.js';
+import {
+  UnsignedTransferFeeCreditTransactionOrder
+} from '../../src/transaction/order/UnsignedTransferFeeCreditTransactionOrder.js';
 import { UnsignedUnlockBillTransactionOrder } from '../../src/transaction/order/UnsignedUnlockBillTransactionOrder.js';
-import { UnsignedUnlockFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedUnlockFeeCreditTransactionOrder.js';
+import {
+  UnsignedUnlockFeeCreditTransactionOrder
+} from '../../src/transaction/order/UnsignedUnlockFeeCreditTransactionOrder.js';
 import { AlwaysTruePredicate } from '../../src/transaction/predicate/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicate/PayToPublicKeyHashPredicate.js';
-import { AddFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/AddFeeCreditTransactionRecordWithProof.js';
-import { CloseFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/CloseFeeCreditTransactionRecordWithProof.js';
+import {
+  AddFeeCreditTransactionRecordWithProof
+} from '../../src/transaction/record/AddFeeCreditTransactionRecordWithProof.js';
+import {
+  CloseFeeCreditTransactionRecordWithProof
+} from '../../src/transaction/record/CloseFeeCreditTransactionRecordWithProof.js';
 import { LockBillTransactionRecordWithProof } from '../../src/transaction/record/LockBillTransactionRecordWithProof.js';
-import { LockFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/LockFeeCreditTransactionRecordWithProof.js';
-import { ReclaimFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/ReclaimFeeCreditTransactionRecordWithProof.js';
-import { SplitBillTransactionRecordWithProof } from '../../src/transaction/record/SplitBillTransactionRecordWithProof.js';
-import { SwapBillsWithDustCollectorTransactionRecordWithProof } from '../../src/transaction/record/SwapBillsWithDustCollectorTransactionRecordWithProof.js';
-import { TransferBillToDustCollectorTransactionRecordWithProof } from '../../src/transaction/record/TransferBillToDustCollectorTransactionRecordWithProof.js';
-import { TransferBillTransactionRecordWithProof } from '../../src/transaction/record/TransferBillTransactionRecordWithProof.js';
-import { TransferFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/TransferFeeCreditTransactionRecordWithProof.js';
-import { UnlockBillTransactionRecordWithProof } from '../../src/transaction/record/UnlockBillTransactionRecordWithProof.js';
-import { UnlockFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/UnlockFeeCreditTransactionRecordWithProof.js';
+import {
+  LockFeeCreditTransactionRecordWithProof
+} from '../../src/transaction/record/LockFeeCreditTransactionRecordWithProof.js';
+import {
+  ReclaimFeeCreditTransactionRecordWithProof
+} from '../../src/transaction/record/ReclaimFeeCreditTransactionRecordWithProof.js';
+import {
+  SplitBillTransactionRecordWithProof
+} from '../../src/transaction/record/SplitBillTransactionRecordWithProof.js';
+import {
+  SwapBillsWithDustCollectorTransactionRecordWithProof
+} from '../../src/transaction/record/SwapBillsWithDustCollectorTransactionRecordWithProof.js';
+import {
+  TransferBillToDustCollectorTransactionRecordWithProof
+} from '../../src/transaction/record/TransferBillToDustCollectorTransactionRecordWithProof.js';
+import {
+  TransferBillTransactionRecordWithProof
+} from '../../src/transaction/record/TransferBillTransactionRecordWithProof.js';
+import {
+  TransferFeeCreditTransactionRecordWithProof
+} from '../../src/transaction/record/TransferFeeCreditTransactionRecordWithProof.js';
+import {
+  UnlockBillTransactionRecordWithProof
+} from '../../src/transaction/record/UnlockBillTransactionRecordWithProof.js';
+import {
+  UnlockFeeCreditTransactionRecordWithProof
+} from '../../src/transaction/record/UnlockFeeCreditTransactionRecordWithProof.js';
 import { UnitIdWithType } from '../../src/transaction/UnitIdWithType.js';
 import { UnitType } from '../../src/transaction/UnitType.js';
 import { Bill } from '../../src/unit/Bill.js';
@@ -37,6 +77,7 @@ import { FeeCreditRecord } from '../../src/unit/FeeCreditRecord.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
 import config from './config/config.js';
 import { createMetadata } from './utils/TestUtils.js';
+import { UnitId } from '../../src/UnitId';
 
 describe('Money Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
@@ -57,6 +98,8 @@ describe('Money Client Integration Tests', () => {
   });
 
   it('Get units by owner ID and get unit', async () => {
+    console.log((await moneyClient.getUnit(UnitId.fromBytes(Base16Converter.decode('0x000000000000000000000000000000000000000000000000000000000000001101')), false, Bill))?.toString());
+    console.log(await moneyClient.getUnitsByOwnerId(Base16Converter.decode('0x830041025820f52022bb450407d92f13bf1c53128a676bcf304818e9f41a5ef4ebeae9c0d6b0')))
     const moneyUnitIds: IUnitId[] = await moneyClient.getUnitsByOwnerId(signingService.publicKey);
     expect(moneyUnitIds.length).toBeGreaterThan(0);
     const moneyUnit = await moneyClient.getUnit(moneyUnitIds[0], true, Bill);

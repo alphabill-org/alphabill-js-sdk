@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import assert from 'node:assert';
 import { randomBytes } from '@noble/hashes/utils';
 import { CborCodecNode } from '../../src/codec/cbor/CborCodecNode.js';
 import { IUnitId } from '../../src/IUnitId.js';
@@ -9,7 +10,6 @@ import { SystemIdentifier } from '../../src/SystemIdentifier.js';
 import { BurnFungibleTokenAttributes } from '../../src/transaction/attribute/BurnFungibleTokenAttributes.js';
 import { CreateFungibleTokenAttributes } from '../../src/transaction/attribute/CreateFungibleTokenAttributes.js';
 import { CreateNonFungibleTokenAttributes } from '../../src/transaction/attribute/CreateNonFungibleTokenAttributes.js';
-import { TransferFeeCreditAttributes } from '../../src/transaction/attribute/TransferFeeCreditAttributes.js';
 import { NonFungibleTokenData } from '../../src/transaction/NonFungibleTokenData.js';
 import { UnsignedTransferFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedTransferFeeCreditTransactionOrder.js';
 import { AlwaysTruePredicate } from '../../src/transaction/predicate/AlwaysTruePredicate.js';
@@ -52,10 +52,8 @@ describe('Token Client Integration Tests', () => {
     expect(unitIds.length).toBeGreaterThan(0);
 
     const bill = await moneyClient.getUnit(unitIds[0], false, Bill);
-    expect(bill).not.toBeNull();
-    if (!bill) {
-      throw new Error('No bill');
-    }
+    assert(bill, 'No bill found.');
+
     const amountToFeeCredit = 100n;
     expect(bill.value).toBeGreaterThan(amountToFeeCredit);
 
@@ -63,25 +61,23 @@ describe('Token Client Integration Tests', () => {
     const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey);
 
     console.log('Transferring to fee credit...');
-    const transactionOrder = await new UnsignedTransferFeeCreditTransactionOrder(
-      new TransactionPayload(
-        NetworkIdentifier.MAINNET,
-        SystemIdentifier.MONEY_PARTITION, // TODO: This is also known and must be optional
-        bill.unitId,
-        new TransferFeeCreditAttributes(
-          amountToFeeCredit,
-          SystemIdentifier.TOKEN_PARTITION,
-          UnitId.fromBytes(new Uint8Array()), // TODO: This must be optional field in parent so it can be generated,
-          round + 60n,
-          0n, // TODO: This must be fee credit record counter if it exists
-          bill.counter,
-        ),
-        null,
-        createMetadata(round),
-      ),
-      new AlwaysTruePredicate(),
+    const transactionOrder = await UnsignedTransferFeeCreditTransactionOrder.create(
+      {
+        networkIdentifier: NetworkIdentifier.LOCAL,
+        amount: amountToFeeCredit,
+        targetSystemIdentifier: SystemIdentifier.TOKEN_PARTITION,
+        feeCreditRecord: {
+          ownerPredicate: ownerPredicate,
+          unitType: UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD,
+        },
+        bill,
+        latestAdditionTime: round + 60n,
+        stateLock: null,
+        metadata: createMetadata(round),
+        stateUnlock: new AlwaysTruePredicate(),
+      },
       cborCodec,
-    ).sign(signingService, signingService);
+    ).then((transactionOrder) => transactionOrder.sign(signingService, signingService));
 
     const transferToFeeCreditHash = await moneyClient.sendTransaction(transactionOrder);
     //

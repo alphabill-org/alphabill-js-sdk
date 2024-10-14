@@ -9,12 +9,13 @@ import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { UnitId } from '../../UnitId.js';
 import { TransferFeeCreditAttributes } from '../attribute/TransferFeeCreditAttributes.js';
 import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
+import { MoneyPartitionUnitType } from '../MoneyPartitionUnitType.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../StateLock.js';
+import { TokenPartitionUnitType } from '../TokenPartitionUnitType.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { UnitIdWithType } from '../UnitIdWithType.js';
-import { UnitType } from '../UnitType.js';
 import { TransferFeeCreditTransactionOrder } from './types/TransferFeeCreditTransactionOrder.js';
 
 interface ITransferFeeCreditTransactionData {
@@ -23,7 +24,7 @@ interface ITransferFeeCreditTransactionData {
   latestAdditionTime: bigint;
   feeCreditRecord: {
     ownerPredicate: IPredicate;
-    unitType: UnitType.MONEY_PARTITION_FEE_CREDIT_RECORD | UnitType.TOKEN_PARTITION_FEE_CREDIT_RECORD;
+    unitType: MoneyPartitionUnitType.FEE_CREDIT_RECORD | TokenPartitionUnitType.FEE_CREDIT_RECORD;
     unitId?: IUnitId;
     counter?: bigint;
   };
@@ -100,7 +101,7 @@ export class UnsignedTransferFeeCreditTransactionOrder {
     );
   }
 
-  private static createUnitId(timeout: bigint, ownerPredicate: IPredicate, unitType: UnitType): UnitId {
+  private static createUnitId(timeout: bigint, ownerPredicate: IPredicate, unitType: number): UnitId {
     const unitBytes = sha256.create().update(ownerPredicate.bytes).update(numberToBytesBE(timeout, 8)).digest();
     return new UnitIdWithType(unitBytes, unitType);
   }
