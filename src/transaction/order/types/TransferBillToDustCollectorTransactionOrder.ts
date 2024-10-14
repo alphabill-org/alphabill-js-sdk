@@ -5,13 +5,13 @@ import {
   TransferBillToDustCollectorAttributes,
   TransferBillToDustCollectorAttributesArray,
 } from '../../attribute/TransferBillToDustCollectorAttributes.js';
+import { ClientMetadata } from '../../ClientMetadata.js';
 import { IPredicate } from '../../predicate/IPredicate.js';
 import { PredicateBytes } from '../../predicate/PredicateBytes.js';
 import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
-import { ClientMetadata } from '../../ClientMetadata.js';
 
 export class TransferBillToDustCollectorTransactionOrder extends TransactionOrder<
   TransferBillToDustCollectorAttributes,
@@ -24,18 +24,12 @@ export class TransferBillToDustCollectorTransactionOrder extends TransactionOrde
     feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(MoneyPartitionTransactionType.TransferBillToDustCollector, payload, authProof, feeProof, stateUnlock);
+    super(payload, authProof, feeProof, stateUnlock);
   }
 
   public static async fromArray(
     [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
+      [networkIdentifier, systemIdentifier, unitId, , attributes, stateLock, clientMetadata],
       stateUnlock,
       authProof,
       feeProof,
@@ -47,6 +41,7 @@ export class TransferBillToDustCollectorTransactionOrder extends TransactionOrde
         networkIdentifier,
         systemIdentifier,
         UnitId.fromBytes(unitId),
+        MoneyPartitionTransactionType.TransferBillToDustCollector,
         TransferBillToDustCollectorAttributes.fromArray(attributes as TransferBillToDustCollectorAttributesArray),
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),

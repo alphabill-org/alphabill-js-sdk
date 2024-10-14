@@ -2,13 +2,13 @@ import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
 import { FeeCreditTransactionType } from '../../../json-rpc/FeeCreditTransactionType.js';
 import { UnitId } from '../../../UnitId.js';
 import { CloseFeeCreditAttributes, CloseFeeCreditAttributesArray } from '../../attribute/CloseFeeCreditAttributes.js';
+import { ClientMetadata } from '../../ClientMetadata.js';
 import { IPredicate } from '../../predicate/IPredicate.js';
 import { PredicateBytes } from '../../predicate/PredicateBytes.js';
 import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
-import { ClientMetadata } from '../../ClientMetadata.js';
 
 export class CloseFeeCreditTransactionOrder extends TransactionOrder<
   CloseFeeCreditAttributes,
@@ -21,18 +21,12 @@ export class CloseFeeCreditTransactionOrder extends TransactionOrder<
     feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(FeeCreditTransactionType.CloseFeeCredit, payload, ownerProof, feeProof, stateUnlock);
+    super(payload, ownerProof, feeProof, stateUnlock);
   }
 
   public static async fromArray(
     [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
+      [networkIdentifier, systemIdentifier, unitId, , attributes, stateLock, clientMetadata],
       stateUnlock,
       authProof,
       feeProof,
@@ -44,6 +38,7 @@ export class CloseFeeCreditTransactionOrder extends TransactionOrder<
         networkIdentifier,
         systemIdentifier,
         UnitId.fromBytes(unitId),
+        FeeCreditTransactionType.CloseFeeCredit,
         CloseFeeCreditAttributes.fromArray(attributes as CloseFeeCreditAttributesArray),
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),

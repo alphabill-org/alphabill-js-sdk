@@ -1,14 +1,13 @@
 import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
-import { MoneyPartitionTransactionType } from '../../../json-rpc/MoneyPartitionTransactionType.js';
 import { UnitId } from '../../../UnitId.js';
 import { LockBillAttributes, LockBillAttributesArray } from '../../attribute/LockBillAttributes.js';
+import { ClientMetadata } from '../../ClientMetadata.js';
 import { IPredicate } from '../../predicate/IPredicate.js';
 import { PredicateBytes } from '../../predicate/PredicateBytes.js';
 import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
-import { ClientMetadata } from '../../ClientMetadata.js';
 
 export class LockBillTransactionOrder extends TransactionOrder<
   LockBillAttributes,
@@ -21,18 +20,12 @@ export class LockBillTransactionOrder extends TransactionOrder<
     feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(MoneyPartitionTransactionType.LockBill, payload, authProof, feeProof, stateUnlock);
+    super(payload, authProof, feeProof, stateUnlock);
   }
 
   public static async fromArray(
     [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
+      [networkIdentifier, systemIdentifier, unitId, type, attributes, stateLock, clientMetadata],
       stateUnlock,
       authProof,
       feeProof,
@@ -44,6 +37,7 @@ export class LockBillTransactionOrder extends TransactionOrder<
         networkIdentifier,
         systemIdentifier,
         UnitId.fromBytes(unitId),
+        type,
         LockBillAttributes.fromArray(attributes as LockBillAttributesArray),
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),

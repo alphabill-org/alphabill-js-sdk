@@ -5,13 +5,13 @@ import {
   CreateFungibleTokenAttributes,
   CreateFungibleTokenAttributesArray,
 } from '../../attribute/CreateFungibleTokenAttributes.js';
+import { ClientMetadata } from '../../ClientMetadata.js';
 import { IPredicate } from '../../predicate/IPredicate.js';
 import { PredicateBytes } from '../../predicate/PredicateBytes.js';
 import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
-import { ClientMetadata } from '../../ClientMetadata.js';
 
 export class CreateFungibleTokenTransactionOrder extends TransactionOrder<
   CreateFungibleTokenAttributes,
@@ -24,18 +24,12 @@ export class CreateFungibleTokenTransactionOrder extends TransactionOrder<
     feeProof: OwnerProofAuthProof | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(TokenPartitionTransactionType.CreateFungibleToken, payload, authProof, feeProof, stateUnlock);
+    super(payload, authProof, feeProof, stateUnlock);
   }
 
   public static async fromArray(
     [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
+      [networkIdentifier, systemIdentifier, unitId, , attributes, stateLock, clientMetadata],
       stateUnlock,
       authProof,
       feeProof,
@@ -47,6 +41,7 @@ export class CreateFungibleTokenTransactionOrder extends TransactionOrder<
         networkIdentifier,
         systemIdentifier,
         UnitId.fromBytes(unitId),
+        TokenPartitionTransactionType.CreateFungibleToken,
         CreateFungibleTokenAttributes.fromArray(attributes as CreateFungibleTokenAttributesArray),
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),
