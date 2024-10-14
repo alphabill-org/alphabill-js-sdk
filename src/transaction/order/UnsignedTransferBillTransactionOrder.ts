@@ -1,28 +1,22 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 import { MoneyPartitionTransactionType } from '../../json-rpc/MoneyPartitionTransactionType.js';
-import { NetworkIdentifier } from '../../NetworkIdentifier.js';
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { TransferBillAttributes } from '../attribute/TransferBillAttributes.js';
-import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { IProofSigningService } from '../proof/IProofSigningService.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
-import { StateLock } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
+import { ITransactionData } from './ITransactionData.js';
 import { TransferBillTransactionOrder } from './types/TransferBillTransactionOrder.js';
 
-export interface ITransferBillTransactionData {
+export interface ITransferBillTransactionData extends ITransactionData {
   ownerPredicate: IPredicate;
   bill: {
     unitId: IUnitId;
     counter: bigint;
     value: bigint;
   };
-  networkIdentifier: NetworkIdentifier;
-  stateLock: StateLock | null;
-  metadata: ITransactionClientMetadata;
-  stateUnlock: IPredicate | null;
 }
 
 export class UnsignedTransferBillTransactionOrder {

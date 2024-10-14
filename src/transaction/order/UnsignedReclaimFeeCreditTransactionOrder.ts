@@ -1,28 +1,22 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 import { FeeCreditTransactionType } from '../../json-rpc/FeeCreditTransactionType.js';
-import { NetworkIdentifier } from '../../NetworkIdentifier.js';
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { ReclaimFeeCreditAttributes } from '../attribute/ReclaimFeeCreditAttributes.js';
-import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { IProofSigningService } from '../proof/IProofSigningService.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { CloseFeeCreditTransactionRecordWithProof } from '../record/CloseFeeCreditTransactionRecordWithProof.js';
-import { StateLock } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
+import { ITransactionData } from './ITransactionData.js';
 import { ReclaimFeeCreditTransactionOrder } from './types/ReclaimFeeCreditTransactionOrder.js';
 
-interface IReclaimFeeCreditTransactionData {
+interface IReclaimFeeCreditTransactionData extends ITransactionData {
   proof: CloseFeeCreditTransactionRecordWithProof;
   bill: {
     unitId: IUnitId;
     counter: bigint;
   };
-  networkIdentifier: NetworkIdentifier;
-  stateLock: StateLock | null;
-  metadata: ITransactionClientMetadata;
-  stateUnlock: IPredicate | null;
 }
 
 export class UnsignedReclaimFeeCreditTransactionOrder {

@@ -1,19 +1,17 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 import { MoneyPartitionTransactionType } from '../../json-rpc/MoneyPartitionTransactionType.js';
-import { NetworkIdentifier } from '../../NetworkIdentifier.js';
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { SplitBillAttributes } from '../attribute/SplitBillAttributes.js';
-import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { IProofSigningService } from '../proof/IProofSigningService.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { SplitBillUnit } from '../SplitBillUnit.js';
-import { StateLock } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
+import { ITransactionData } from './ITransactionData.js';
 import { SplitBillTransactionOrder } from './types/SplitBillTransactionOrder.js';
 
-export interface ISplitBillTransactionData {
+export interface ISplitBillTransactionData extends ITransactionData {
   splits: {
     value: bigint;
     ownerPredicate: IPredicate;
@@ -22,10 +20,6 @@ export interface ISplitBillTransactionData {
     unitId: IUnitId;
     counter: bigint;
   };
-  networkIdentifier: NetworkIdentifier;
-  stateLock: StateLock | null;
-  metadata: ITransactionClientMetadata;
-  stateUnlock: IPredicate | null;
 }
 
 export class UnsignedSplitBillTransactionOrder {

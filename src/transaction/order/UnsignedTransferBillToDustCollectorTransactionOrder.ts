@@ -1,18 +1,16 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 import { MoneyPartitionTransactionType } from '../../json-rpc/MoneyPartitionTransactionType.js';
-import { NetworkIdentifier } from '../../NetworkIdentifier.js';
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { TransferBillToDustCollectorAttributes } from '../attribute/TransferBillToDustCollectorAttributes.js';
-import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { IProofSigningService } from '../proof/IProofSigningService.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
-import { StateLock } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
+import { ITransactionData } from './ITransactionData.js';
 import { TransferBillToDustCollectorTransactionOrder } from './types/TransferBillToDustCollectorTransactionOrder.js';
 
-export interface ISwapBillsWithDustCollectorTransactionData {
+export interface ISwapBillsWithDustCollectorTransactionData extends ITransactionData {
   bill: {
     unitId: IUnitId;
     counter: bigint;
@@ -23,10 +21,6 @@ export interface ISwapBillsWithDustCollectorTransactionData {
     counter: bigint;
     value: bigint;
   };
-  networkIdentifier: NetworkIdentifier;
-  stateLock: StateLock | null;
-  metadata: ITransactionClientMetadata;
-  stateUnlock: IPredicate | null;
 }
 
 export class UnsignedTransferBillToDustCollectorTransactionOrder {

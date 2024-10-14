@@ -12,7 +12,7 @@ import { LockTokenTransactionOrder } from './types/LockTokenTransactionOrder.js'
 
 export interface ILockTokenTransactionData extends ITransactionData {
   status: bigint;
-  unit: { unitId: IUnitId; counter: bigint };
+  token: { unitId: IUnitId; counter: bigint };
 }
 
 export class UnsignedLockTokenTransactionOrder {
@@ -28,9 +28,9 @@ export class UnsignedLockTokenTransactionOrder {
         new TransactionPayload(
           data.networkIdentifier,
           SystemIdentifier.TOKEN_PARTITION,
-          data.unit.unitId,
+          data.token.unitId,
           TokenPartitionTransactionType.LockToken,
-          new LockTokenAttributes(data.status, data.unit.counter),
+          new LockTokenAttributes(data.status, data.token.counter),
           data.stateLock,
           data.metadata,
         ),

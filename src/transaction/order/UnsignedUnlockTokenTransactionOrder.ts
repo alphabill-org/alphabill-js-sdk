@@ -11,7 +11,7 @@ import { ITransactionData } from './ITransactionData.js';
 import { UnlockTokenTransactionOrder } from './types/UnlockTokenTransactionOrder.js';
 
 export interface IUnlockTokenTransactionData extends ITransactionData {
-  unit: { unitId: IUnitId; counter: bigint };
+  token: { unitId: IUnitId; counter: bigint };
 }
 
 export class UnsignedUnlockTokenTransactionOrder {
@@ -30,9 +30,9 @@ export class UnsignedUnlockTokenTransactionOrder {
         new TransactionPayload(
           data.networkIdentifier,
           SystemIdentifier.TOKEN_PARTITION,
-          data.unit.unitId,
+          data.token.unitId,
           TokenPartitionTransactionType.LockToken,
-          new UnlockTokenAttributes(data.unit.counter),
+          new UnlockTokenAttributes(data.token.counter),
           data.stateLock,
           data.metadata,
         ),

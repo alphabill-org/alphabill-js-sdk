@@ -14,6 +14,7 @@ import { TransferFungibleTokenTransactionOrder } from '../transaction/order/type
 import { TransferNonFungibleTokenTransactionOrder } from '../transaction/order/types/TransferNonFungibleTokenTransactionOrder.js';
 import { UnlockFeeCreditTransactionOrder } from '../transaction/order/types/UnlockFeeCreditTransactionOrder.js';
 import { UnlockTokenTransactionOrder } from '../transaction/order/types/UnlockTokenTransactionOrder.js';
+import { UpdateNonFungibleTokenTransactionOrder } from '../transaction/order/types/UpdateNonFungibleTokenTransactionOrder.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../transaction/record/AddFeeCreditTransactionRecordWithProof.js';
 import { BurnFungibleTokenTransactionRecordWithProof } from '../transaction/record/BurnFungibleTokenTransactionRecordWithProof.js';
 import { CloseFeeCreditTransactionRecordWithProof } from '../transaction/record/CloseFeeCreditTransactionRecordWithProof.js';
@@ -29,6 +30,7 @@ import { TransferFungibleTokenTransactionRecordWithProof } from '../transaction/
 import { TransferNonFungibleTokenTransactionRecordWithProof } from '../transaction/record/TransferNonFungibleTokenTransactionRecordWithProof.js';
 import { UnlockFeeCreditTransactionRecordWithProof } from '../transaction/record/UnlockFeeCreditTransactionRecordWithProof.js';
 import { UnlockTokenTransactionRecordWithProof } from '../transaction/record/UnlockTokenTransactionRecordWithProof.js';
+import { UpdateNonFungibleTokenTransactionRecordWithProof } from '../transaction/record/UpdateNonFungibleTokenTransactionRecordWithProof.js';
 import { FeeCreditRecord } from '../unit/FeeCreditRecord.js';
 import { FungibleToken } from '../unit/FungibleToken.js';
 import { FungibleTokenType } from '../unit/FungibleTokenType.js';
@@ -58,7 +60,8 @@ export type TokenPartitionTransactionRecordWithProofTypes =
   | TransferFungibleTokenTransactionRecordWithProof
   | TransferNonFungibleTokenTransactionRecordWithProof
   | UnlockFeeCreditTransactionRecordWithProof
-  | UnlockTokenTransactionRecordWithProof;
+  | UnlockTokenTransactionRecordWithProof
+  | UpdateNonFungibleTokenTransactionRecordWithProof;
 
 type TokenPartitionTransactionOrderTypes =
   | AddFeeCreditTransactionOrder
@@ -75,7 +78,8 @@ type TokenPartitionTransactionOrderTypes =
   | TransferFungibleTokenTransactionOrder
   | TransferNonFungibleTokenTransactionOrder
   | UnlockFeeCreditTransactionOrder
-  | UnlockTokenTransactionOrder;
+  | UnlockTokenTransactionOrder
+  | UpdateNonFungibleTokenTransactionOrder;
 
 /**
  * JSON-RPC token partition client.
