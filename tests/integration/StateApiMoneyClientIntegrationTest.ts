@@ -106,7 +106,7 @@ describe('Money Client Integration Tests', () => {
             unitType: MoneyPartitionUnitType.FEE_CREDIT_RECORD,
           },
           bill: bill!,
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
@@ -134,7 +134,7 @@ describe('Money Client Integration Tests', () => {
           ownerPredicate: ownerPredicate,
           proof: proof,
           feeCreditRecord: { unitId: feeCreditRecordId },
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
@@ -160,7 +160,7 @@ describe('Money Client Integration Tests', () => {
         {
           status: 5n,
           feeCredit: feeCreditRecord,
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
@@ -181,7 +181,7 @@ describe('Money Client Integration Tests', () => {
       await UnsignedUnlockFeeCreditTransactionOrder.create(
         {
           feeCredit: feeCreditAfterLock,
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
@@ -214,7 +214,7 @@ describe('Money Client Integration Tests', () => {
         {
           status: 5n,
           bill: bill,
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
@@ -235,7 +235,7 @@ describe('Money Client Integration Tests', () => {
       await UnsignedUnlockBillTransactionOrder.create(
         {
           bill: bill,
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
@@ -269,7 +269,7 @@ describe('Money Client Integration Tests', () => {
             },
           ],
           bill: bill!,
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
@@ -299,7 +299,7 @@ describe('Money Client Integration Tests', () => {
         {
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           bill: targetBill!,
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
@@ -337,7 +337,7 @@ describe('Money Client Integration Tests', () => {
         {
           bill: bill!,
           targetBill: targetBill!,
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
@@ -359,7 +359,7 @@ describe('Money Client Integration Tests', () => {
           bill: targetBill!,
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           proofs: [transactionProof],
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
@@ -389,7 +389,7 @@ describe('Money Client Integration Tests', () => {
         {
           bill: bill!,
           feeCreditRecord: feeCreditRecord!,
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
@@ -408,7 +408,7 @@ describe('Money Client Integration Tests', () => {
         {
           proof: proof,
           bill: bill!,
-          networkIdentifier: NetworkIdentifier.MAINNET,
+          networkIdentifier: NetworkIdentifier.LOCAL,
           stateLock: null,
           metadata: createMetadata(round),
           stateUnlock: new AlwaysTruePredicate(),
