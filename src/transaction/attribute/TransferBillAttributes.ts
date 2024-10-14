@@ -32,6 +32,15 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * Create TransferBillAttributes from array.
+   * @param {TransferBillAttributesArray} data - Transfer bill attributes array.
+   * @returns {TransferBillAttributes} Transfer bill attributes instance.
+   */
+  public static fromArray([targetValue, ownerPredicate, counter]: TransferBillAttributesArray): TransferBillAttributes {
+    return new TransferBillAttributes(new PredicateBytes(ownerPredicate), targetValue, counter);
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -48,14 +57,5 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
    */
   public encode(): Promise<TransferBillAttributesArray> {
     return Promise.resolve([this.targetValue, this.ownerPredicate.bytes, this.counter]);
-  }
-
-  /**
-   * Create TransferBillAttributes from array.
-   * @param {TransferBillAttributesArray} data - Transfer bill attributes array.
-   * @returns {TransferBillAttributes} Transfer bill attributes instance.
-   */
-  public static fromArray([targetValue, ownerPredicate, counter]: TransferBillAttributesArray): TransferBillAttributes {
-    return new TransferBillAttributes(new PredicateBytes(ownerPredicate), targetValue, counter);
   }
 }

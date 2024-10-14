@@ -37,6 +37,25 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   }
 
   /**
+   * Create CreateFungibleTokenAttributes from array.
+   * @param {CreateFungibleTokenAttributesArray} data Create fungible token attributes array.
+   * @returns {CreateFungibleTokenAttributes} Create fungible token attributes instance.
+   */
+  public static fromArray([
+    typeId,
+    value,
+    ownerPredicate,
+    nonce,
+  ]: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
+    return new CreateFungibleTokenAttributes(
+      new PredicateBytes(ownerPredicate),
+      UnitId.fromBytes(typeId),
+      value,
+      nonce,
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -54,24 +73,5 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
    */
   public encode(): Promise<CreateFungibleTokenAttributesArray> {
     return Promise.resolve([this.typeId.bytes, this.value, this.ownerPredicate.bytes, this.nonce]);
-  }
-
-  /**
-   * Create CreateFungibleTokenAttributes from array.
-   * @param {CreateFungibleTokenAttributesArray} data Create fungible token attributes array.
-   * @returns {CreateFungibleTokenAttributes} Create fungible token attributes instance.
-   */
-  public static fromArray([
-    typeId,
-    value,
-    ownerPredicate,
-    nonce,
-  ]: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
-    return new CreateFungibleTokenAttributes(
-      new PredicateBytes(ownerPredicate),
-      UnitId.fromBytes(typeId),
-      value,
-      nonce,
-    );
   }
 }

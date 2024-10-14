@@ -35,6 +35,19 @@ export class TransactionProof {
   }
 
   /**
+   * Create transaction proof from array.
+   * @param {TransactionProofArray} data - Transaction proof array.
+   * @returns {TransactionProof} Transaction proof.
+   */
+  public static fromArray(data: TransactionProofArray): TransactionProof {
+    return new TransactionProof(
+      data[0],
+      data[1].map((item) => TransactionProofChainItem.fromArray(item)),
+      data[2],
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -47,18 +60,5 @@ export class TransactionProof {
 
   public encode(): TransactionProofArray {
     return [this.blockHeaderHash, this.chain.map((item) => item.encode()), this.unicityCertificate];
-  }
-
-  /**
-   * Create transaction proof from array.
-   * @param {TransactionProofArray} data - Transaction proof array.
-   * @returns {TransactionProof} Transaction proof.
-   */
-  public static fromArray(data: TransactionProofArray): TransactionProof {
-    return new TransactionProof(
-      data[0],
-      data[1].map((item) => TransactionProofChainItem.fromArray(item)),
-      data[2],
-    );
   }
 }

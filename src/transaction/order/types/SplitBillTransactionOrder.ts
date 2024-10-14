@@ -17,8 +17,8 @@ export class SplitBillTransactionOrder extends TransactionOrder<
 > {
   public constructor(
     payload: TransactionPayload<SplitBillAttributes>,
-    authProof: OwnerProofAuthProof | null,
-    feeProof: OwnerProofAuthProof | null,
+    authProof: OwnerProofAuthProof,
+    feeProof: OwnerProofAuthProof,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
@@ -43,8 +43,8 @@ export class SplitBillTransactionOrder extends TransactionOrder<
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),
       ),
-      authProof ? await OwnerProofAuthProof.decode(authProof, cborCodec) : null,
-      feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
+      await OwnerProofAuthProof.decode(authProof, cborCodec),
+      await OwnerProofAuthProof.decode(feeProof, cborCodec),
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

@@ -37,6 +37,25 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
   }
 
   /**
+   * Create TransferFungibleTokenAttributesArray from array.
+   * @param {TransferFungibleTokenAttributesArray} data - Transfer fungible token attributes array.
+   * @returns {TransferFungibleTokenAttributes} Transfer fungible token attributes instance.
+   */
+  public static fromArray([
+    typeId,
+    value,
+    ownerPredicate,
+    counter,
+  ]: TransferFungibleTokenAttributesArray): TransferFungibleTokenAttributes {
+    return new TransferFungibleTokenAttributes(
+      new PredicateBytes(ownerPredicate),
+      value,
+      counter,
+      UnitId.fromBytes(typeId),
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -54,24 +73,5 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
    */
   public encode(): Promise<TransferFungibleTokenAttributesArray> {
     return Promise.resolve([this.typeId.bytes, this.value, this.ownerPredicate.bytes, this.counter]);
-  }
-
-  /**
-   * Create TransferFungibleTokenAttributesArray from array.
-   * @param {TransferFungibleTokenAttributesArray} data - Transfer fungible token attributes array.
-   * @returns {TransferFungibleTokenAttributes} Transfer fungible token attributes instance.
-   */
-  public static fromArray([
-    typeId,
-    value,
-    ownerPredicate,
-    counter,
-  ]: TransferFungibleTokenAttributesArray): TransferFungibleTokenAttributes {
-    return new TransferFungibleTokenAttributes(
-      new PredicateBytes(ownerPredicate),
-      value,
-      counter,
-      UnitId.fromBytes(typeId),
-    );
   }
 }

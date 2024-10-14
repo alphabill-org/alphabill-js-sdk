@@ -36,6 +36,20 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
   }
 
   /**
+   * Create TransferBillToDustCollectorAttributes from array.
+   * @param {TransferBillToDustCollectorAttributesArray} data - Transfer bill to dust collector attributes data array.
+   * @returns {TransferBillToDustCollectorAttributes} Transfer bill to dust collector attributes instance.
+   */
+  public static fromArray([
+    value,
+    targetUnitId,
+    targetUnitCounter,
+    counter,
+  ]: TransferBillToDustCollectorAttributesArray): TransferBillToDustCollectorAttributes {
+    return new TransferBillToDustCollectorAttributes(value, UnitId.fromBytes(targetUnitId), targetUnitCounter, counter);
+  }
+
+  /**
    * @see {ITransactionPayloadAttributes.encode}
    */
   public encode(): Promise<TransferBillToDustCollectorAttributesArray> {
@@ -53,19 +67,5 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
         Target Unit ID: ${this.targetUnitId.toString()}
         Target Unit Counter: ${this.targetUnitCounter}
         Counter: ${this.counter}`;
-  }
-
-  /**
-   * Create TransferBillToDustCollectorAttributes from array.
-   * @param {TransferBillToDustCollectorAttributesArray} data - Transfer bill to dust collector attributes data array.
-   * @returns {TransferBillToDustCollectorAttributes} Transfer bill to dust collector attributes instance.
-   */
-  public static fromArray([
-    value,
-    targetUnitId,
-    targetUnitCounter,
-    counter,
-  ]: TransferBillToDustCollectorAttributesArray): TransferBillToDustCollectorAttributes {
-    return new TransferBillToDustCollectorAttributes(value, UnitId.fromBytes(targetUnitId), targetUnitCounter, counter);
   }
 }

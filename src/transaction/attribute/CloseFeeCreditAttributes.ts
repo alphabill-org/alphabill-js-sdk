@@ -36,6 +36,20 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * Create CloseFeeCreditAttributes from array.
+   * @param {CloseFeeCreditAttributesArray} data Close fee credit attributes array.
+   * @returns {CloseFeeCreditAttributes} Close fee credit attributes instance.
+   */
+  public static fromArray([
+    amount,
+    targetUnitId,
+    targetUnitCounter,
+    counter,
+  ]: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {
+    return new CloseFeeCreditAttributes(amount, UnitId.fromBytes(targetUnitId), targetUnitCounter, counter);
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -53,19 +67,5 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
    */
   public encode(): Promise<CloseFeeCreditAttributesArray> {
     return Promise.resolve([this.amount, this.targetUnitId.bytes, this.targetUnitCounter, this.counter]);
-  }
-
-  /**
-   * Create CloseFeeCreditAttributes from array.
-   * @param {CloseFeeCreditAttributesArray} data Close fee credit attributes array.
-   * @returns {CloseFeeCreditAttributes} Close fee credit attributes instance.
-   */
-  public static fromArray([
-    amount,
-    targetUnitId,
-    targetUnitCounter,
-    counter,
-  ]: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {
-    return new CloseFeeCreditAttributes(amount, UnitId.fromBytes(targetUnitId), targetUnitCounter, counter);
   }
 }

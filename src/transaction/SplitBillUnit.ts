@@ -24,6 +24,15 @@ export class SplitBillUnit {
   }
 
   /**
+   * Create SplitBillUnit from array.
+   * @param {SplitBillUnitArray} data - Split bill unit array.
+   * @returns {SplitBillUnit} Split bill unit instance.
+   */
+  public static fromArray([value, ownerPredicate]: SplitBillUnitArray): SplitBillUnit {
+    return new SplitBillUnit(value, new PredicateBytes(ownerPredicate));
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -40,14 +49,5 @@ export class SplitBillUnit {
    */
   public encode(): SplitBillUnitArray {
     return [this.value, this.ownerPredicate.bytes];
-  }
-
-  /**
-   * Create SplitBillUnit from array.
-   * @param {SplitBillUnitArray} data - Split bill unit array.
-   * @returns {SplitBillUnit} Split bill unit instance.
-   */
-  public static fromArray([value, ownerPredicate]: SplitBillUnitArray): SplitBillUnit {
-    return new SplitBillUnit(value, new PredicateBytes(ownerPredicate));
   }
 }

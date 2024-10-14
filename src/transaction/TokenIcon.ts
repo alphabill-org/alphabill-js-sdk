@@ -30,6 +30,15 @@ export class TokenIcon {
   }
 
   /**
+   * Create TokenIcon from array.
+   * @param {TokenIconArray} data - Token icon array.
+   * @returns {TokenIcon} Token icon.
+   */
+  public static fromArray(data: TokenIconArray): TokenIcon {
+    return new TokenIcon(data[0], data[1]);
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -43,14 +52,5 @@ export class TokenIcon {
    */
   public encode(): TokenIconArray {
     return [this.type, this.data];
-  }
-
-  /**
-   * Create TokenIcon from array.
-   * @param {TokenIconArray} data - Token icon array.
-   * @returns {TokenIcon} Token icon.
-   */
-  public static fromArray(data: TokenIconArray): TokenIcon {
-    return new TokenIcon(data[0], data[1]);
   }
 }

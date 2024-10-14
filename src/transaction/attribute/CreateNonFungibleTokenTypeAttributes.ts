@@ -47,6 +47,33 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
   ) {}
 
   /**
+   * Create CreateNonFungibleTokenTypeAttributes from array.
+   * @param {CreateNonFungibleTokenTypeAttributesArray} data Create non-fungible token type attributes array.
+   * @returns {CreateNonFungibleTokenTypeAttributes} Create non-fungible token type attributes instance.
+   */
+  public static fromArray([
+    symbol,
+    name,
+    icon,
+    parentTypeId,
+    subTypeCreationPredicate,
+    tokenCreationPredicate,
+    tokenTypeOwnerPredicate,
+    dataUpdatePredicate,
+  ]: CreateNonFungibleTokenTypeAttributesArray): CreateNonFungibleTokenTypeAttributes {
+    return new CreateNonFungibleTokenTypeAttributes(
+      symbol,
+      name,
+      TokenIcon.fromArray(icon),
+      parentTypeId ? UnitId.fromBytes(parentTypeId) : null,
+      new PredicateBytes(subTypeCreationPredicate),
+      new PredicateBytes(tokenCreationPredicate),
+      new PredicateBytes(tokenTypeOwnerPredicate),
+      new PredicateBytes(dataUpdatePredicate),
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -77,32 +104,5 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
       this.tokenTypeOwnerPredicate.bytes,
       this.dataUpdatePredicate.bytes,
     ]);
-  }
-
-  /**
-   * Create CreateNonFungibleTokenTypeAttributes from array.
-   * @param {CreateNonFungibleTokenTypeAttributesArray} data Create non-fungible token type attributes array.
-   * @returns {CreateNonFungibleTokenTypeAttributes} Create non-fungible token type attributes instance.
-   */
-  public static fromArray([
-    symbol,
-    name,
-    icon,
-    parentTypeId,
-    subTypeCreationPredicate,
-    tokenCreationPredicate,
-    tokenTypeOwnerPredicate,
-    dataUpdatePredicate,
-  ]: CreateNonFungibleTokenTypeAttributesArray): CreateNonFungibleTokenTypeAttributes {
-    return new CreateNonFungibleTokenTypeAttributes(
-      symbol,
-      name,
-      TokenIcon.fromArray(icon),
-      parentTypeId ? UnitId.fromBytes(parentTypeId) : null,
-      new PredicateBytes(subTypeCreationPredicate),
-      new PredicateBytes(tokenCreationPredicate),
-      new PredicateBytes(tokenTypeOwnerPredicate),
-      new PredicateBytes(dataUpdatePredicate),
-    );
   }
 }

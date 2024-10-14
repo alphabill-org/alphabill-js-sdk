@@ -21,6 +21,15 @@ export class UnlockTokenAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * Create UnlockTokenAttributes from array.
+   * @param {UnlockTokenAttributesArray} data Unlock token attributes array.
+   * @returns {UnlockTokenAttributes} Unlock token attributes instance.
+   */
+  public static fromArray([counter]: UnlockTokenAttributesArray): UnlockTokenAttributes {
+    return new UnlockTokenAttributes(counter);
+  }
+
+  /**
    * @see {ITransactionPayloadAttributes.encode}
    */
   public encode(): Promise<UnlockTokenAttributesArray> {
@@ -35,14 +44,5 @@ export class UnlockTokenAttributes implements ITransactionPayloadAttributes {
     return dedent`
       UnlockTokenAttributes
         Counter: ${this.counter}`;
-  }
-
-  /**
-   * Create UnlockTokenAttributes from array.
-   * @param {UnlockTokenAttributesArray} data Unlock token attributes array.
-   * @returns {UnlockTokenAttributes} Unlock token attributes instance.
-   */
-  public static fromArray([counter]: UnlockTokenAttributesArray): UnlockTokenAttributes {
-    return new UnlockTokenAttributes(counter);
   }
 }

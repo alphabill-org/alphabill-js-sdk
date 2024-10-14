@@ -62,7 +62,7 @@ describe('Money Client Integration Tests', () => {
       (
         await moneyClient.getUnit(
           UnitId.fromBytes(
-            Base16Converter.decode('0x000000000000000000000000000000000000000000000000000000000000001101'),
+            Base16Converter.decode('0x000000000000000000000000000000000000000000000000000000000000000001'),
           ),
           false,
           Bill,
@@ -420,4 +420,86 @@ describe('Money Client Integration Tests', () => {
     await moneyClient.waitTransactionProof(reclaimFeeCreditHash, ReclaimFeeCreditTransactionRecordWithProof);
     console.log('Reclaiming fee credit successful');
   }, 20000);
+});
+
+describe('spend initial bill', () => {
+  it('', async () => {
+    const cborCodec = new CborCodecNode();
+    const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
+    const emptySigningService = {
+      // TODO: Fix this in future to allow null
+      // @ts-expect-error Must return null
+      sign: (): Promise<Uint8Array> => Promise.resolve(null),
+      publicKey: signingService.publicKey,
+    };
+
+    const moneyClient = createMoneyClient({
+      transport: http(config.moneyPartitionUrl, cborCodec),
+    });
+
+    const initialBillId = UnitIdWithType.fromBytes(
+      Base16Converter.decode('0x000000000000000000000000000000000000000000000000000000000000000001'),
+    );
+    let bill = await moneyClient.getUnit(initialBillId, false, Bill);
+    const round = await moneyClient.getRoundNumber();
+
+    const transferFeeCreditTransactionHash = await moneyClient.sendTransaction(
+      await UnsignedTransferFeeCreditTransactionOrder.create(
+        {
+          amount: 100n,
+          targetSystemIdentifier: SystemIdentifier.MONEY_PARTITION,
+          latestAdditionTime: round + 60n,
+          feeCreditRecord: {
+            ownerPredicate: new AlwaysTruePredicate(),
+            unitType: MoneyPartitionUnitType.FEE_CREDIT_RECORD,
+          },
+          bill: bill!,
+          networkIdentifier: NetworkIdentifier.LOCAL,
+          stateLock: null,
+          metadata: createMetadata(round),
+          stateUnlock: new AlwaysTruePredicate(),
+        },
+        cborCodec,
+      ).then((transactionOrder) => transactionOrder.sign(emptySigningService, emptySigningService)),
+    );
+
+    const transactionProof = await moneyClient.waitTransactionProof(
+      transferFeeCreditTransactionHash,
+      TransferFeeCreditTransactionRecordWithProof,
+    );
+    const feeCreditRecordId = transactionProof.transactionRecord.transactionOrder.payload.attributes.targetUnitId;
+
+    const addFeeCreditTransactionHash = await moneyClient.sendTransaction(
+      await UnsignedAddFeeCreditTransactionOrder.create(
+        {
+          ownerPredicate: new AlwaysTruePredicate(),
+          proof: transactionProof,
+          feeCreditRecord: { unitId: feeCreditRecordId },
+          networkIdentifier: NetworkIdentifier.LOCAL,
+          stateLock: null,
+          metadata: createMetadata(round),
+          stateUnlock: new AlwaysTruePredicate(),
+        },
+        cborCodec,
+      ).then((transactionOrder) => transactionOrder.sign(emptySigningService, emptySigningService)),
+    );
+
+    await moneyClient.waitTransactionProof(addFeeCreditTransactionHash, AddFeeCreditTransactionRecordWithProof);
+
+    bill = await moneyClient.getUnit(initialBillId, false, Bill);
+
+    await moneyClient.sendTransaction(
+      await UnsignedTransferBillTransactionOrder.create(
+        {
+          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+          bill: bill!,
+          networkIdentifier: NetworkIdentifier.LOCAL,
+          stateLock: null,
+          metadata: createMetadata(round),
+          stateUnlock: new AlwaysTruePredicate(),
+        },
+        cborCodec,
+      ).then((transactionOrder) => transactionOrder.sign(emptySigningService, emptySigningService)),
+    );
+  });
 });

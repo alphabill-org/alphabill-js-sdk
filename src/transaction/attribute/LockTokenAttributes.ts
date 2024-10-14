@@ -27,6 +27,15 @@ export class LockTokenAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * Create LockTokenAttributes from array.
+   * @param {LockTokenAttributesArray} data - Lock token attributes data array.
+   * @returns {LockTokenAttributes} Lock token attributes instance.
+   */
+  public static fromArray([lockStatus, counter]: LockTokenAttributesArray): LockTokenAttributes {
+    return new LockTokenAttributes(lockStatus, counter);
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -42,14 +51,5 @@ export class LockTokenAttributes implements ITransactionPayloadAttributes {
    */
   public encode(): Promise<LockTokenAttributesArray> {
     return Promise.resolve([this.lockStatus, this.counter]);
-  }
-
-  /**
-   * Create LockTokenAttributes from array.
-   * @param {LockTokenAttributesArray} data - Lock token attributes data array.
-   * @returns {LockTokenAttributes} Lock token attributes instance.
-   */
-  public static fromArray([lockStatus, counter]: LockTokenAttributesArray): LockTokenAttributes {
-    return new LockTokenAttributes(lockStatus, counter);
   }
 }

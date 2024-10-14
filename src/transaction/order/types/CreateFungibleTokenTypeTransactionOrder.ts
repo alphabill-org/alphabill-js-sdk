@@ -9,10 +9,10 @@ import { ClientMetadata } from '../../ClientMetadata.js';
 import { IPredicate } from '../../predicate/IPredicate.js';
 import { PredicateBytes } from '../../predicate/PredicateBytes.js';
 import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
+import { SubTypeOwnerProofsAuthProof } from '../../proof/SubTypeOwnerProofsAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
-import { SubTypeOwnerProofsAuthProof } from '../../proof/SubTypeOwnerProofsAuthProof';
 
 export class CreateFungibleTokenTypeTransactionOrder extends TransactionOrder<
   CreateFungibleTokenTypeAttributes,
@@ -21,8 +21,8 @@ export class CreateFungibleTokenTypeTransactionOrder extends TransactionOrder<
 > {
   public constructor(
     payload: TransactionPayload<CreateFungibleTokenTypeAttributes>,
-    authProof: SubTypeOwnerProofsAuthProof | null,
-    feeProof: OwnerProofAuthProof | null,
+    authProof: SubTypeOwnerProofsAuthProof,
+    feeProof: OwnerProofAuthProof,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
@@ -47,8 +47,8 @@ export class CreateFungibleTokenTypeTransactionOrder extends TransactionOrder<
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),
       ),
-      authProof ? await SubTypeOwnerProofsAuthProof.decode(authProof, cborCodec) : null,
-      feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
+      await SubTypeOwnerProofsAuthProof.decode(authProof, cborCodec),
+      await OwnerProofAuthProof.decode(feeProof, cborCodec),
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

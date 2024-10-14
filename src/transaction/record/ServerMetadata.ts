@@ -46,6 +46,15 @@ export class ServerMetadata {
   }
 
   /**
+   * Create server metadata from array.
+   * @param {ServerMetadataArray} data Server metadata array.
+   * @returns {ServerMetadata} Server metadata.
+   */
+  public static fromArray(data: ServerMetadataArray): ServerMetadata {
+    return new ServerMetadata(data[0], data[1], data[2], data[3]);
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -64,14 +73,5 @@ export class ServerMetadata {
    */
   public encode(): ServerMetadataArray {
     return [this.actualFee, this.targetUnits, this.successIndicator, this.processingDetails];
-  }
-
-  /**
-   * Create server metadata from array.
-   * @param {ServerMetadataArray} data Server metadata array.
-   * @returns {ServerMetadata} Server metadata.
-   */
-  public static fromArray(data: ServerMetadataArray): ServerMetadata {
-    return new ServerMetadata(data[0], data[1], data[2], data[3]);
   }
 }

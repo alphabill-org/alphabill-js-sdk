@@ -29,6 +29,22 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
   ) {}
 
   /**
+   * Create AddFeeCreditAttributes from array.
+   * @param {AddFeeCreditAttributesArray} data Add fee credit attributes array.
+   * @param {ICborCodec} cborCodec Cbor codec.
+   * @returns {Promise<AddFeeCreditAttributes>} Add fee credit attributes.
+   */
+  public static async fromArray(
+    [ownerPredicate, [transactionRecord, transactionProof]]: AddFeeCreditAttributesArray,
+    cborCodec: ICborCodec,
+  ): Promise<AddFeeCreditAttributes> {
+    return new AddFeeCreditAttributes(
+      new PredicateBytes(ownerPredicate),
+      await TransferFeeCreditTransactionRecordWithProof.fromArray([transactionRecord, transactionProof], cborCodec),
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -45,21 +61,5 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
    */
   public async encode(cborCodec: ICborCodec): Promise<AddFeeCreditAttributesArray> {
     return [this.ownerPredicate.bytes, await this.transactionRecordWithProof.encode(cborCodec)];
-  }
-
-  /**
-   * Create AddFeeCreditAttributes from array.
-   * @param {AddFeeCreditAttributesArray} data Add fee credit attributes array.
-   * @param {ICborCodec} cborCodec Cbor codec.
-   * @returns {Promise<AddFeeCreditAttributes>} Add fee credit attributes.
-   */
-  public static async fromArray(
-    [ownerPredicate, [transactionRecord, transactionProof]]: AddFeeCreditAttributesArray,
-    cborCodec: ICborCodec,
-  ): Promise<AddFeeCreditAttributes> {
-    return new AddFeeCreditAttributes(
-      new PredicateBytes(ownerPredicate),
-      await TransferFeeCreditTransactionRecordWithProof.fromArray([transactionRecord, transactionProof], cborCodec),
-    );
   }
 }

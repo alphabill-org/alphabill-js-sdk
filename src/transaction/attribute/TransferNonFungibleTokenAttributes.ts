@@ -33,6 +33,23 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
   }
 
   /**
+   * Create a TransferNonFungibleTokenAttributes from array.
+   * @param {TransferNonFungibleTokenAttributesArray} data - transfer non-fungible token attributes array.
+   * @returns {TransferNonFungibleTokenAttributes} Transfer non-fungible token attributes instance.
+   */
+  public static fromArray([
+    typeId,
+    ownerPredicate,
+    counter,
+  ]: TransferNonFungibleTokenAttributesArray): TransferNonFungibleTokenAttributes {
+    return new TransferNonFungibleTokenAttributes(
+      new PredicateBytes(ownerPredicate),
+      counter,
+      UnitId.fromBytes(typeId),
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -49,22 +66,5 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
    */
   public encode(): Promise<TransferNonFungibleTokenAttributesArray> {
     return Promise.resolve([this.typeId.bytes, this.ownerPredicate.bytes, this.counter]);
-  }
-
-  /**
-   * Create a TransferNonFungibleTokenAttributes from array.
-   * @param {TransferNonFungibleTokenAttributesArray} data - transfer non-fungible token attributes array.
-   * @returns {TransferNonFungibleTokenAttributes} Transfer non-fungible token attributes instance.
-   */
-  public static fromArray([
-    typeId,
-    ownerPredicate,
-    counter,
-  ]: TransferNonFungibleTokenAttributesArray): TransferNonFungibleTokenAttributes {
-    return new TransferNonFungibleTokenAttributes(
-      new PredicateBytes(ownerPredicate),
-      counter,
-      UnitId.fromBytes(typeId),
-    );
   }
 }

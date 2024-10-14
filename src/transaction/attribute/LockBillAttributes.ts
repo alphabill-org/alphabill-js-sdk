@@ -27,6 +27,15 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * Create LockBillAttributes from array.
+   * @param {LockBillAttributesArray} data - Lock bill attributes data array.
+   * @returns {LockBillAttributes} Lock bill attributes instance.
+   */
+  public static fromArray([lockStatus, counter]: LockBillAttributesArray): LockBillAttributes {
+    return new LockBillAttributes(lockStatus, counter);
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -42,14 +51,5 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
    */
   public encode(): Promise<LockBillAttributesArray> {
     return Promise.resolve([this.lockStatus, this.counter]);
-  }
-
-  /**
-   * Create LockBillAttributes from array.
-   * @param {LockBillAttributesArray} data - Lock bill attributes data array.
-   * @returns {LockBillAttributes} Lock bill attributes instance.
-   */
-  public static fromArray([lockStatus, counter]: LockBillAttributesArray): LockBillAttributes {
-    return new LockBillAttributes(lockStatus, counter);
   }
 }

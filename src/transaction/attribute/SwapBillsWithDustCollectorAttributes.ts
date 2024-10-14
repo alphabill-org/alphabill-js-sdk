@@ -32,6 +32,23 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
   }
 
   /**
+   * Create a SwapBillsWithDustCollectorAttributes object from an array.
+   * @param {SwapBillsWithDustCollectorAttributesArray} data swap bills with dust collector attributes array.
+   * @param {ICborCodec} cborCodec Cbor codec.
+   * @returns {SwapBillsWithDustCollectorAttributes} Swap bills with dust collector attributes instance.
+   */
+  public static async fromArray(
+    [proofs]: SwapBillsWithDustCollectorAttributesArray,
+    cborCodec: ICborCodec,
+  ): Promise<SwapBillsWithDustCollectorAttributes> {
+    return new SwapBillsWithDustCollectorAttributes(
+      await Promise.all(
+        proofs.map((proof) => TransferBillToDustCollectorTransactionRecordWithProof.fromArray(proof, cborCodec)),
+      ),
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -48,22 +65,5 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
    */
   public async encode(cborCodec: ICborCodec): Promise<SwapBillsWithDustCollectorAttributesArray> {
     return [await Promise.all(this.proofs.map((proof) => proof.encode(cborCodec)))];
-  }
-
-  /**
-   * Create a SwapBillsWithDustCollectorAttributes object from an array.
-   * @param {SwapBillsWithDustCollectorAttributesArray} data swap bills with dust collector attributes array.
-   * @param {ICborCodec} cborCodec Cbor codec.
-   * @returns {SwapBillsWithDustCollectorAttributes} Swap bills with dust collector attributes instance.
-   */
-  public static async fromArray(
-    [proofs]: SwapBillsWithDustCollectorAttributesArray,
-    cborCodec: ICborCodec,
-  ): Promise<SwapBillsWithDustCollectorAttributes> {
-    return new SwapBillsWithDustCollectorAttributes(
-      await Promise.all(
-        proofs.map((proof) => TransferBillToDustCollectorTransactionRecordWithProof.fromArray(proof, cborCodec)),
-      ),
-    );
   }
 }

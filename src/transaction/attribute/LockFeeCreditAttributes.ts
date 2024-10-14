@@ -27,6 +27,15 @@ export class LockFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * Create LockFeeCreditAttributes from array.
+   * @param {LockFeeCreditAttributesArray} data - Lock fee credit attributes array.
+   * @returns {LockFeeCreditAttributes} Lock fee credit attributes instance.
+   */
+  public static fromArray([lockStatus, counter]: LockFeeCreditAttributesArray): LockFeeCreditAttributes {
+    return new LockFeeCreditAttributes(lockStatus, counter);
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -42,14 +51,5 @@ export class LockFeeCreditAttributes implements ITransactionPayloadAttributes {
    */
   public encode(): Promise<LockFeeCreditAttributesArray> {
     return Promise.resolve([this.lockStatus, this.counter]);
-  }
-
-  /**
-   * Create LockFeeCreditAttributes from array.
-   * @param {LockFeeCreditAttributesArray} data - Lock fee credit attributes array.
-   * @returns {LockFeeCreditAttributes} Lock fee credit attributes instance.
-   */
-  public static fromArray([lockStatus, counter]: LockFeeCreditAttributesArray): LockFeeCreditAttributes {
-    return new LockFeeCreditAttributes(lockStatus, counter);
   }
 }

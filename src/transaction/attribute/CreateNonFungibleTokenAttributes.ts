@@ -47,6 +47,31 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   }
 
   /**
+   * Create CreateNonFungibleTokenAttributes from array.
+   * @param {CreateNonFungibleTokenAttributesArray} attributes Create non-fungible token attributes array.
+   * @returns {CreateNonFungibleTokenAttributes} Create non-fungible token attributes instance.
+   */
+  public static fromArray([
+    typeId,
+    name,
+    uri,
+    data,
+    ownerPredicate,
+    dataUpdatePredicate,
+    nonce,
+  ]: CreateNonFungibleTokenAttributesArray): CreateNonFungibleTokenAttributes {
+    return new CreateNonFungibleTokenAttributes(
+      new PredicateBytes(ownerPredicate),
+      UnitId.fromBytes(typeId),
+      name,
+      uri,
+      NonFungibleTokenData.createFromBytes(data),
+      new PredicateBytes(dataUpdatePredicate),
+      nonce,
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String.
    */
@@ -75,30 +100,5 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
       this.dataUpdatePredicate.bytes,
       this.nonce,
     ]);
-  }
-
-  /**
-   * Create CreateNonFungibleTokenAttributes from array.
-   * @param {CreateNonFungibleTokenAttributesArray} attributes Create non-fungible token attributes array.
-   * @returns {CreateNonFungibleTokenAttributes} Create non-fungible token attributes instance.
-   */
-  public static fromArray([
-    typeId,
-    name,
-    uri,
-    data,
-    ownerPredicate,
-    dataUpdatePredicate,
-    nonce,
-  ]: CreateNonFungibleTokenAttributesArray): CreateNonFungibleTokenAttributes {
-    return new CreateNonFungibleTokenAttributes(
-      new PredicateBytes(ownerPredicate),
-      UnitId.fromBytes(typeId),
-      name,
-      uri,
-      NonFungibleTokenData.createFromBytes(data),
-      new PredicateBytes(dataUpdatePredicate),
-      nonce,
-    );
   }
 }

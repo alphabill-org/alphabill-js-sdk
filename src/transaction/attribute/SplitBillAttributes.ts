@@ -36,6 +36,18 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * Create a SplitBillAttributes from an array.
+   * @param {SplitBillAttributesArray} data - Split bill attributes array.
+   * @returns {SplitBillAttributes} Split bill attributes instance.
+   */
+  public static fromArray([targetUnits, counter]: SplitBillAttributesArray): SplitBillAttributes {
+    return new SplitBillAttributes(
+      targetUnits.map((unit) => SplitBillUnit.fromArray(unit)),
+      counter,
+    );
+  }
+
+  /**
    * @see {ITransactionPayloadAttributes.encode}
    */
   public encode(): Promise<SplitBillAttributesArray> {
@@ -53,17 +65,5 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
           ${this._targetUnits.map((unit) => unit.toString()).join('\n')}
         ]
         Counter: ${this.counter}`;
-  }
-
-  /**
-   * Create a SplitBillAttributes from an array.
-   * @param {SplitBillAttributesArray} data - Split bill attributes array.
-   * @returns {SplitBillAttributes} Split bill attributes instance.
-   */
-  public static fromArray([targetUnits, counter]: SplitBillAttributesArray): SplitBillAttributes {
-    return new SplitBillAttributes(
-      targetUnits.map((unit) => SplitBillUnit.fromArray(unit)),
-      counter,
-    );
   }
 }

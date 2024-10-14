@@ -22,6 +22,21 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
   public constructor(public readonly proof: CloseFeeCreditTransactionRecordWithProof) {}
 
   /**
+   * Create ReclaimFeeCreditAttributes from array.
+   * @param {ReclaimFeeCreditAttributesArray} data - Reclaim fee credit attributes data array.
+   * @param {ICborCodec} cborCodec Cbor codec.
+   * @returns {ReclaimFeeCreditAttributes} Reclaim fee credit attributes instance.
+   */
+  public static async fromArray(
+    [transactionRecordWithProof]: ReclaimFeeCreditAttributesArray,
+    cborCodec: ICborCodec,
+  ): Promise<ReclaimFeeCreditAttributes> {
+    return new ReclaimFeeCreditAttributes(
+      await CloseFeeCreditTransactionRecordWithProof.fromArray(transactionRecordWithProof, cborCodec),
+    );
+  }
+
+  /**
    * @see {ITransactionPayloadAttributes.encode}
    */
   public async encode(cborCodec: ICborCodec): Promise<ReclaimFeeCreditAttributesArray> {
@@ -38,20 +53,5 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
         Transaction Record With Proof: 
           ${this.proof.toString()}
       `;
-  }
-
-  /**
-   * Create ReclaimFeeCreditAttributes from array.
-   * @param {ReclaimFeeCreditAttributesArray} data - Reclaim fee credit attributes data array.
-   * @param {ICborCodec} cborCodec Cbor codec.
-   * @returns {ReclaimFeeCreditAttributes} Reclaim fee credit attributes instance.
-   */
-  public static async fromArray(
-    [transactionRecordWithProof]: ReclaimFeeCreditAttributesArray,
-    cborCodec: ICborCodec,
-  ): Promise<ReclaimFeeCreditAttributes> {
-    return new ReclaimFeeCreditAttributes(
-      await CloseFeeCreditTransactionRecordWithProof.fromArray(transactionRecordWithProof, cborCodec),
-    );
   }
 }

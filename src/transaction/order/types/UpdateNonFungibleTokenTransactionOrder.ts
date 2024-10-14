@@ -9,20 +9,20 @@ import { ClientMetadata } from '../../ClientMetadata.js';
 import { IPredicate } from '../../predicate/IPredicate.js';
 import { PredicateBytes } from '../../predicate/PredicateBytes.js';
 import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
+import { TypeDataUpdateProofsAuthProof } from '../../proof/TypeDataUpdateProofsAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
-import { TokenTypeDataUpdateProofsAuthProof } from '../../proof/TokenTypeDataUpdateProofsAuthProof';
 
 export class UpdateNonFungibleTokenTransactionOrder extends TransactionOrder<
   UpdateNonFungibleTokenAttributes,
-  TokenTypeDataUpdateProofsAuthProof,
+  TypeDataUpdateProofsAuthProof,
   OwnerProofAuthProof
 > {
   public constructor(
     payload: TransactionPayload<UpdateNonFungibleTokenAttributes>,
-    authProof: TokenTypeDataUpdateProofsAuthProof | null,
-    feeProof: OwnerProofAuthProof | null,
+    authProof: TypeDataUpdateProofsAuthProof,
+    feeProof: OwnerProofAuthProof,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
@@ -47,8 +47,8 @@ export class UpdateNonFungibleTokenTransactionOrder extends TransactionOrder<
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),
       ),
-      authProof ? await TokenTypeDataUpdateProofsAuthProof.decode(authProof, cborCodec) : null,
-      feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
+      await TypeDataUpdateProofsAuthProof.decode(authProof, cborCodec),
+      await OwnerProofAuthProof.decode(feeProof, cborCodec),
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

@@ -39,6 +39,27 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
+   * Create BurnFungibleTokenAttributes from array.
+   * @param {BurnFungibleTokenAttributesArray} data Burn fungible token attributes array.
+   * @returns {BurnFungibleTokenAttributes} Burn fungible token attributes.
+   */
+  public static fromArray([
+    typeId,
+    value,
+    targetTokenId,
+    targetTokenCounter,
+    counter,
+  ]: BurnFungibleTokenAttributesArray): BurnFungibleTokenAttributes {
+    return new BurnFungibleTokenAttributes(
+      UnitId.fromBytes(typeId),
+      value,
+      UnitId.fromBytes(targetTokenId),
+      targetTokenCounter,
+      counter,
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -64,26 +85,5 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
       this.targetTokenCounter,
       this.counter,
     ]);
-  }
-
-  /**
-   * Create BurnFungibleTokenAttributes from array.
-   * @param {BurnFungibleTokenAttributesArray} data Burn fungible token attributes array.
-   * @returns {BurnFungibleTokenAttributes} Burn fungible token attributes.
-   */
-  public static fromArray([
-    typeId,
-    value,
-    targetTokenId,
-    targetTokenCounter,
-    counter,
-  ]: BurnFungibleTokenAttributesArray): BurnFungibleTokenAttributes {
-    return new BurnFungibleTokenAttributes(
-      UnitId.fromBytes(typeId),
-      value,
-      UnitId.fromBytes(targetTokenId),
-      targetTokenCounter,
-      counter,
-    );
   }
 }

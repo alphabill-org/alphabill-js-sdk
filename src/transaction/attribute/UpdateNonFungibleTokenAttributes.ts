@@ -28,6 +28,15 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   }
 
   /**
+   * Create UpdateNonFungibleTokenAttributes from array.
+   * @param {UpdateNonFungibleTokenAttributesArray} input - Update non-fungible token attributes array.
+   * @returns {UpdateNonFungibleTokenAttributes} Update non-fungible token attributes instance.
+   */
+  public static fromArray([data, counter]: UpdateNonFungibleTokenAttributesArray): UpdateNonFungibleTokenAttributes {
+    return new UpdateNonFungibleTokenAttributes(NonFungibleTokenData.createFromBytes(data), counter);
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -43,14 +52,5 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
    */
   public encode(): Promise<UpdateNonFungibleTokenAttributesArray> {
     return Promise.resolve([this.data.bytes, this.counter]);
-  }
-
-  /**
-   * Create UpdateNonFungibleTokenAttributes from array.
-   * @param {UpdateNonFungibleTokenAttributesArray} input - Update non-fungible token attributes array.
-   * @returns {UpdateNonFungibleTokenAttributes} Update non-fungible token attributes instance.
-   */
-  public static fromArray([data, counter]: UpdateNonFungibleTokenAttributesArray): UpdateNonFungibleTokenAttributes {
-    return new UpdateNonFungibleTokenAttributes(NonFungibleTokenData.createFromBytes(data), counter);
   }
 }

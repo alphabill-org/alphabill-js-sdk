@@ -37,6 +37,25 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
   }
 
   /**
+   * Create a SplitFungibleTokenAttributes from an array.
+   * @param {SplitFungibleTokenAttributesArray} data - Split fungible token attributes array.
+   * @returns {SplitFungibleTokenAttributes} Split fungible token attributes instance.
+   */
+  public static fromArray([
+    typeId,
+    targetValue,
+    ownerPredicate,
+    counter,
+  ]: SplitFungibleTokenAttributesArray): SplitFungibleTokenAttributes {
+    return new SplitFungibleTokenAttributes(
+      new PredicateBytes(ownerPredicate),
+      targetValue,
+      counter,
+      UnitId.fromBytes(typeId),
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -54,24 +73,5 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
    */
   public encode(): Promise<SplitFungibleTokenAttributesArray> {
     return Promise.resolve([this.typeId.bytes, this.targetValue, this.ownerPredicate.bytes, this.counter]);
-  }
-
-  /**
-   * Create a SplitFungibleTokenAttributes from an array.
-   * @param {SplitFungibleTokenAttributesArray} data - Split fungible token attributes array.
-   * @returns {SplitFungibleTokenAttributes} Split fungible token attributes instance.
-   */
-  public static fromArray([
-    typeId,
-    targetValue,
-    ownerPredicate,
-    counter,
-  ]: SplitFungibleTokenAttributesArray): SplitFungibleTokenAttributes {
-    return new SplitFungibleTokenAttributes(
-      new PredicateBytes(ownerPredicate),
-      targetValue,
-      counter,
-      UnitId.fromBytes(typeId),
-    );
   }
 }

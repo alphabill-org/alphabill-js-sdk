@@ -9,6 +9,7 @@ import { createMoneyClient, createTokenClient, http } from '../../src/StateApiCl
 import { SystemIdentifier } from '../../src/SystemIdentifier.js';
 import { CreateFungibleTokenAttributes } from '../../src/transaction/attribute/CreateFungibleTokenAttributes.js';
 import { CreateNonFungibleTokenAttributes } from '../../src/transaction/attribute/CreateNonFungibleTokenAttributes.js';
+import { MoneyPartitionUnitType } from '../../src/transaction/MoneyPartitionUnitType.js';
 import { NonFungibleTokenData } from '../../src/transaction/NonFungibleTokenData.js';
 import { UnsignedBurnFungibleTokenTransactionOrder } from '../../src/transaction/order/UnsignedBurnFungibleTokenTransactionOrder.js';
 import { UnsignedTransferFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedTransferFeeCreditTransactionOrder.js';
@@ -30,7 +31,6 @@ import { UnitId } from '../../src/UnitId.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
 import config from './config/config.js';
 import { createMetadata } from './utils/TestUtils.js';
-import { MoneyPartitionUnitType } from '../../src/transaction/MoneyPartitionUnitType';
 
 describe('Token Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();

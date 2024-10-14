@@ -12,6 +12,14 @@ export class NonFungibleTokenData implements INonFungibleTokenData {
   }
 
   /**
+   * Get bytes.
+   * @returns {Uint8Array} Bytes.
+   */
+  public get bytes(): Uint8Array {
+    return new Uint8Array(this.data);
+  }
+
+  /**
    * Create non-fungible token data.
    * @param {ICborCodec} cborCodec - CBOR codec.
    * @param {unknown} data - Data.
@@ -28,14 +36,6 @@ export class NonFungibleTokenData implements INonFungibleTokenData {
    */
   public static createFromBytes(data: Uint8Array): NonFungibleTokenData {
     return new NonFungibleTokenData(data);
-  }
-
-  /**
-   * Get bytes.
-   * @returns {Uint8Array} Bytes.
-   */
-  public get bytes(): Uint8Array {
-    return new Uint8Array(this.data);
   }
 
   /**

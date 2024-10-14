@@ -44,6 +44,29 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   }
 
   /**
+   * Create TransferFeeCreditAttributes from array.
+   * @param {TransferFeeCreditAttributesArray} data - Transfer fee credit attributes array.
+   * @returns {TransferFeeCreditAttributes} Transfer fee credit attributes instance.
+   */
+  public static fromArray([
+    amount,
+    targetSystemIdentifier,
+    targetUnitId,
+    latestAdditionTime,
+    targetUnitCounter,
+    counter,
+  ]: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
+    return new TransferFeeCreditAttributes(
+      amount,
+      targetSystemIdentifier,
+      UnitId.fromBytes(targetUnitId),
+      latestAdditionTime,
+      targetUnitCounter,
+      counter,
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -70,28 +93,5 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
       this.targetUnitCounter,
       this.counter,
     ]);
-  }
-
-  /**
-   * Create TransferFeeCreditAttributes from array.
-   * @param {TransferFeeCreditAttributesArray} data - Transfer fee credit attributes array.
-   * @returns {TransferFeeCreditAttributes} Transfer fee credit attributes instance.
-   */
-  public static fromArray([
-    amount,
-    targetSystemIdentifier,
-    targetUnitId,
-    latestAdditionTime,
-    targetUnitCounter,
-    counter,
-  ]: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
-    return new TransferFeeCreditAttributes(
-      amount,
-      targetSystemIdentifier,
-      UnitId.fromBytes(targetUnitId),
-      latestAdditionTime,
-      targetUnitCounter,
-      counter,
-    );
   }
 }

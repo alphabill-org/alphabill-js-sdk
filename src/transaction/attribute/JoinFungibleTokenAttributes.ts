@@ -32,6 +32,21 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
+   * Create a JoinFungibleTokenAttributes from an array.
+   * @param {JoinFungibleTokenAttributesArray} data Join fungible token attributes array.
+   * @param {ICborCodec} cborCodec Cbor codec for decoding.
+   * @returns {JoinFungibleTokenAttributes} Join fungible token attributes instance.
+   */
+  public static async fromArray(
+    [proofs]: JoinFungibleTokenAttributesArray,
+    cborCodec: ICborCodec,
+  ): Promise<JoinFungibleTokenAttributes> {
+    return new JoinFungibleTokenAttributes(
+      await Promise.all(proofs.map((proof) => BurnFungibleTokenTransactionRecordWithProof.fromArray(proof, cborCodec))),
+    );
+  }
+
+  /**
    * @see {ITransactionPayloadAttributes.toArray}
    */
   public async encode(cborCodec: ICborCodec): Promise<JoinFungibleTokenAttributesArray> {
@@ -46,20 +61,5 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
     return dedent`
       JoinFungibleTokenAttributes
         Proofs: ${this._proofs.map((proof) => proof.toString()).join(',\n')}`;
-  }
-
-  /**
-   * Create a JoinFungibleTokenAttributes from an array.
-   * @param {JoinFungibleTokenAttributesArray} data Join fungible token attributes array.
-   * @param {ICborCodec} cborCodec Cbor codec for decoding.
-   * @returns {JoinFungibleTokenAttributes} Join fungible token attributes instance.
-   */
-  public static async fromArray(
-    [proofs]: JoinFungibleTokenAttributesArray,
-    cborCodec: ICborCodec,
-  ): Promise<JoinFungibleTokenAttributes> {
-    return new JoinFungibleTokenAttributes(
-      await Promise.all(proofs.map((proof) => BurnFungibleTokenTransactionRecordWithProof.fromArray(proof, cborCodec))),
-    );
   }
 }

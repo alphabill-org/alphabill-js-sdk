@@ -47,6 +47,33 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
   ) {}
 
   /**
+   * Create CreateFungibleTokenTypeAttributes from array.
+   * @param {CreateFungibleTokenTypeAttributesArray} data Create fungible token type attributes array.
+   * @returns {CreateFungibleTokenTypeAttributes} Create fungible token type attributes instance.
+   */
+  public static fromArray([
+    symbol,
+    name,
+    icon,
+    parentTypeId,
+    decimalPlaces,
+    subTypeCreationPredicate,
+    tokenCreationPredicate,
+    tokenTypeOwnerPredicate,
+  ]: CreateFungibleTokenTypeAttributesArray): CreateFungibleTokenTypeAttributes {
+    return new CreateFungibleTokenTypeAttributes(
+      symbol,
+      name,
+      TokenIcon.fromArray(icon),
+      parentTypeId ? UnitId.fromBytes(parentTypeId) : null,
+      decimalPlaces,
+      new PredicateBytes(subTypeCreationPredicate),
+      new PredicateBytes(tokenCreationPredicate),
+      new PredicateBytes(tokenTypeOwnerPredicate),
+    );
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String.
    */
@@ -77,32 +104,5 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
       this.tokenCreationPredicate.bytes,
       this.tokenTypeOwnerPredicate.bytes,
     ]);
-  }
-
-  /**
-   * Create CreateFungibleTokenTypeAttributes from array.
-   * @param {CreateFungibleTokenTypeAttributesArray} data Create fungible token type attributes array.
-   * @returns {CreateFungibleTokenTypeAttributes} Create fungible token type attributes instance.
-   */
-  public static fromArray([
-    symbol,
-    name,
-    icon,
-    parentTypeId,
-    decimalPlaces,
-    subTypeCreationPredicate,
-    tokenCreationPredicate,
-    tokenTypeOwnerPredicate,
-  ]: CreateFungibleTokenTypeAttributesArray): CreateFungibleTokenTypeAttributes {
-    return new CreateFungibleTokenTypeAttributes(
-      symbol,
-      name,
-      TokenIcon.fromArray(icon),
-      parentTypeId ? UnitId.fromBytes(parentTypeId) : null,
-      decimalPlaces,
-      new PredicateBytes(subTypeCreationPredicate),
-      new PredicateBytes(tokenCreationPredicate),
-      new PredicateBytes(tokenTypeOwnerPredicate),
-    );
   }
 }

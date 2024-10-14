@@ -1,12 +1,12 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 import { TokenPartitionTransactionType } from '../../json-rpc/TokenPartitionTransactionType.js';
-import { ISigningService } from '../../signing/ISigningService.js';
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { TransferNonFungibleTokenAttributes } from '../attribute/TransferNonFungibleTokenAttributes.js';
 import { IPredicate } from '../predicate/IPredicate.js';
+import { IProofSigningService } from '../proof/IProofSigningService.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
-import { TokenTypeOwnerProofsAuthProof } from '../proof/TokenTypeOwnerProofsAuthProof.js';
+import { TypeOwnerProofsAuthProof } from '../proof/TypeOwnerProofsAuthProof.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { ITransactionData } from './ITransactionData.js';
 import { TransferNonFungibleTokenTransactionOrder } from './types/TransferNonFungibleTokenTransactionOrder.js';
@@ -48,23 +48,26 @@ export class UnsignedTransferNonFungibletokenTransactionOrder {
   }
 
   public async sign(
-    ownerProofSigner: ISigningService,
-    feeProofSigner: ISigningService,
-    tokenTypeOwnerProofs: (Uint8Array | null)[],
+    ownerProofSigner: IProofSigningService,
+    feeProofSigner: IProofSigningService,
+    tokenTypeOwnerProofs: IProofSigningService[],
   ): Promise<TransferNonFungibleTokenTransactionOrder> {
     const ownerProofBytes = await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock]);
-    const ownerProof = await ownerProofSigner.sign(ownerProofBytes);
-    const feeProofBytes = await this.codec.encode([
-      await this.payload.encode(this.codec),
-      this.stateUnlock,
-      ownerProof,
-    ]);
-    const feeProof = await feeProofSigner.sign(feeProofBytes);
-    return new TransferNonFungibleTokenTransactionOrder(
-      this.payload,
-      new TokenTypeOwnerProofsAuthProof(ownerProof, ownerProofSigner.publicKey, tokenTypeOwnerProofs),
-      new OwnerProofAuthProof(feeProof, ownerProofSigner.publicKey),
-      this.stateUnlock,
+    const ownerProof = new TypeOwnerProofsAuthProof(
+      await ownerProofSigner.sign(ownerProofBytes),
+      await Promise.all(tokenTypeOwnerProofs.map((signer) => signer.sign(ownerProofBytes))),
     );
+
+    const feeProof = new OwnerProofAuthProof(
+      await feeProofSigner.sign(
+        await this.codec.encode([
+          await this.payload.encode(this.codec),
+          this.stateUnlock,
+          ownerProof.encode(this.codec),
+        ]),
+      ),
+    );
+
+    return new TransferNonFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

@@ -21,6 +21,15 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
   }
 
   /**
+   * Create UnlockFeeCreditAttributes from array.
+   * @param {UnlockFeeCreditAttributesArray} data - Unlock fee credit attributes data array.
+   * @returns {UnlockFeeCreditAttributes} Unlock fee credit attributes instance.
+   */
+  public static fromArray([counter]: UnlockFeeCreditAttributesArray): UnlockFeeCreditAttributes {
+    return new UnlockFeeCreditAttributes(counter);
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -35,14 +44,5 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
    */
   public encode(): Promise<UnlockFeeCreditAttributesArray> {
     return Promise.resolve([this.counter]);
-  }
-
-  /**
-   * Create UnlockFeeCreditAttributes from array.
-   * @param {UnlockFeeCreditAttributesArray} data - Unlock fee credit attributes data array.
-   * @returns {UnlockFeeCreditAttributes} Unlock fee credit attributes instance.
-   */
-  public static fromArray([counter]: UnlockFeeCreditAttributesArray): UnlockFeeCreditAttributes {
-    return new UnlockFeeCreditAttributes(counter);
   }
 }

@@ -21,6 +21,15 @@ export class UnlockBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
+   * Create UnlockBillAttributes from array.
+   * @param {UnlockBillAttributesArray} data Unlock bill attributes array.
+   * @returns {UnlockBillAttributes} Unlock bill attributes instance.
+   */
+  public static fromArray([counter]: UnlockBillAttributesArray): UnlockBillAttributes {
+    return new UnlockBillAttributes(counter);
+  }
+
+  /**
    * Convert to string.
    * @returns {string} String representation.
    */
@@ -35,14 +44,5 @@ export class UnlockBillAttributes implements ITransactionPayloadAttributes {
    */
   public encode(): Promise<UnlockBillAttributesArray> {
     return Promise.resolve([this.counter]);
-  }
-
-  /**
-   * Create UnlockBillAttributes from array.
-   * @param {UnlockBillAttributesArray} data Unlock bill attributes array.
-   * @returns {UnlockBillAttributes} Unlock bill attributes instance.
-   */
-  public static fromArray([counter]: UnlockBillAttributesArray): UnlockBillAttributes {
-    return new UnlockBillAttributes(counter);
   }
 }

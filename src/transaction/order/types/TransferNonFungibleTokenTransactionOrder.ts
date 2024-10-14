@@ -3,26 +3,26 @@ import { TokenPartitionTransactionType } from '../../../json-rpc/TokenPartitionT
 import { UnitId } from '../../../UnitId.js';
 import {
   TransferNonFungibleTokenAttributes,
-  TransferNonFungibleTokenAttributesArray
+  TransferNonFungibleTokenAttributesArray,
 } from '../../attribute/TransferNonFungibleTokenAttributes.js';
 import { ClientMetadata } from '../../ClientMetadata.js';
 import { IPredicate } from '../../predicate/IPredicate.js';
 import { PredicateBytes } from '../../predicate/PredicateBytes.js';
 import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
+import { TypeOwnerProofsAuthProof } from '../../proof/TypeOwnerProofsAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
-import { TokenTypeOwnerProofsAuthProof } from '../../proof/TokenTypeOwnerProofsAuthProof.js';
 
 export class TransferNonFungibleTokenTransactionOrder extends TransactionOrder<
   TransferNonFungibleTokenAttributes,
-  TokenTypeOwnerProofsAuthProof,
+  TypeOwnerProofsAuthProof,
   OwnerProofAuthProof
 > {
   public constructor(
     payload: TransactionPayload<TransferNonFungibleTokenAttributes>,
-    authProof: TokenTypeOwnerProofsAuthProof | null,
-    feeProof: OwnerProofAuthProof | null,
+    authProof: TypeOwnerProofsAuthProof,
+    feeProof: OwnerProofAuthProof,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
@@ -47,8 +47,8 @@ export class TransferNonFungibleTokenTransactionOrder extends TransactionOrder<
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),
       ),
-      authProof ? await TokenTypeOwnerProofsAuthProof.decode(authProof, cborCodec) : null,
-      feeProof ? await OwnerProofAuthProof.decode(feeProof, cborCodec) : null,
+      await TypeOwnerProofsAuthProof.decode(authProof, cborCodec),
+      await OwnerProofAuthProof.decode(feeProof, cborCodec),
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }
