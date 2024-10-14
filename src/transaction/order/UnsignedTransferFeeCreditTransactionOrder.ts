@@ -3,22 +3,20 @@ import { sha256 } from '@noble/hashes/sha256';
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 import { FeeCreditTransactionType } from '../../json-rpc/FeeCreditTransactionType.js';
-import { NetworkIdentifier } from '../../NetworkIdentifier.js';
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { UnitId } from '../../UnitId.js';
 import { TransferFeeCreditAttributes } from '../attribute/TransferFeeCreditAttributes.js';
-import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
 import { MoneyPartitionUnitType } from '../MoneyPartitionUnitType.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { IProofSigningService } from '../proof/IProofSigningService.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
-import { StateLock } from '../StateLock.js';
 import { TokenPartitionUnitType } from '../TokenPartitionUnitType.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { UnitIdWithType } from '../UnitIdWithType.js';
+import { ITransactionData } from './ITransactionData.js';
 import { TransferFeeCreditTransactionOrder } from './types/TransferFeeCreditTransactionOrder.js';
 
-interface ITransferFeeCreditTransactionData {
+interface ITransferFeeCreditTransactionData extends ITransactionData {
   amount: bigint;
   targetSystemIdentifier: SystemIdentifier;
   latestAdditionTime: bigint;
@@ -32,10 +30,6 @@ interface ITransferFeeCreditTransactionData {
     unitId: IUnitId;
     counter: bigint;
   };
-  networkIdentifier: NetworkIdentifier;
-  stateLock: StateLock | null;
-  metadata: ITransactionClientMetadata;
-  stateUnlock: IPredicate | null;
 }
 
 export class UnsignedTransferFeeCreditTransactionOrder {

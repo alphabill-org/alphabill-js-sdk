@@ -1,24 +1,18 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 import { FeeCreditTransactionType } from '../../json-rpc/FeeCreditTransactionType.js';
-import { NetworkIdentifier } from '../../NetworkIdentifier.js';
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { CloseFeeCreditAttributes } from '../attribute/CloseFeeCreditAttributes.js';
-import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { IProofSigningService } from '../proof/IProofSigningService.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
-import { StateLock } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
+import { ITransactionData } from './ITransactionData.js';
 import { CloseFeeCreditTransactionOrder } from './types/CloseFeeCreditTransactionOrder.js';
 
-interface ICloseFeeCreditTransactionData {
+interface ICloseFeeCreditTransactionData extends ITransactionData {
   bill: { unitId: IUnitId; counter: bigint };
   feeCreditRecord: { unitId: IUnitId; balance: bigint; counter: bigint };
-  networkIdentifier: NetworkIdentifier;
-  stateLock: StateLock | null;
-  metadata: ITransactionClientMetadata;
-  stateUnlock: IPredicate | null;
 }
 
 export class UnsignedCloseFeeCreditTransactionOrder {

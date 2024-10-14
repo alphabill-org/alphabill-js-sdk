@@ -37,8 +37,8 @@ import { FeeCreditRecord } from '../../src/unit/FeeCreditRecord.js';
 import { UnitId } from '../../src/UnitId.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
 import config from './config/config.js';
-import { createMetadata } from './utils/TestUtils.js';
 import { AlwaysTrueProofSigningService } from '../../src/transaction/proof/AlwaysTrueProofSigningService';
+import { createTransactionData } from './utils/TestUtils';
 
 describe('Money Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
@@ -107,10 +107,7 @@ describe('Money Client Integration Tests', () => {
             unitType: MoneyPartitionUnitType.FEE_CREDIT_RECORD,
           },
           bill: bill!,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -135,10 +132,7 @@ describe('Money Client Integration Tests', () => {
           ownerPredicate: ownerPredicate,
           proof: proof,
           feeCreditRecord: { unitId: feeCreditRecordId },
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -161,10 +155,7 @@ describe('Money Client Integration Tests', () => {
         {
           status: 5n,
           feeCredit: feeCreditRecord,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -182,10 +173,7 @@ describe('Money Client Integration Tests', () => {
       await UnsignedUnlockFeeCreditTransactionOrder.create(
         {
           feeCredit: feeCreditAfterLock,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -215,10 +203,7 @@ describe('Money Client Integration Tests', () => {
         {
           status: 5n,
           bill: bill,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -236,10 +221,7 @@ describe('Money Client Integration Tests', () => {
       await UnsignedUnlockBillTransactionOrder.create(
         {
           bill: bill,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -270,10 +252,7 @@ describe('Money Client Integration Tests', () => {
             },
           ],
           bill: bill!,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -300,10 +279,7 @@ describe('Money Client Integration Tests', () => {
         {
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           bill: targetBill!,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -338,10 +314,7 @@ describe('Money Client Integration Tests', () => {
         {
           bill: bill!,
           targetBill: targetBill!,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -360,10 +333,7 @@ describe('Money Client Integration Tests', () => {
           bill: targetBill!,
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           proofs: [transactionProof],
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -390,10 +360,7 @@ describe('Money Client Integration Tests', () => {
         {
           bill: bill!,
           feeCreditRecord: feeCreditRecord!,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -409,10 +376,7 @@ describe('Money Client Integration Tests', () => {
         {
           proof: proof,
           bill: bill!,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
       )
@@ -423,12 +387,16 @@ describe('Money Client Integration Tests', () => {
   }, 20000);
 });
 
-// TODO: Remove test
 describe('spend initial bill', () => {
   it('', async () => {
     const cborCodec = new CborCodecNode();
     const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
-    const proofSigningService = new AlwaysTrueProofSigningService(cborCodec);
+    const emptySigningService = {
+      // TODO: Fix this in future to allow null
+      // @ts-expect-error Must return null
+      sign: (): Promise<Uint8Array> => Promise.resolve(null),
+      publicKey: signingService.publicKey,
+    };
 
     const moneyClient = createMoneyClient({
       transport: http(config.moneyPartitionUrl, cborCodec),
@@ -451,13 +419,10 @@ describe('spend initial bill', () => {
             unitType: MoneyPartitionUnitType.FEE_CREDIT_RECORD,
           },
           bill: bill!,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofSigningService, proofSigningService)),
+      ).then((transactionOrder) => transactionOrder.sign(emptySigningService, emptySigningService)),
     );
 
     const transactionProof = await moneyClient.waitTransactionProof(
@@ -472,13 +437,10 @@ describe('spend initial bill', () => {
           ownerPredicate: new AlwaysTruePredicate(),
           proof: transactionProof,
           feeCreditRecord: { unitId: feeCreditRecordId },
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofSigningService, proofSigningService)),
+      ).then((transactionOrder) => transactionOrder.sign(emptySigningService, emptySigningService)),
     );
 
     await moneyClient.waitTransactionProof(addFeeCreditTransactionHash, AddFeeCreditTransactionRecordWithProof);
@@ -490,13 +452,10 @@ describe('spend initial bill', () => {
         {
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           bill: bill!,
-          networkIdentifier: NetworkIdentifier.LOCAL,
-          stateLock: null,
-          metadata: createMetadata(round),
-          stateUnlock: new AlwaysTruePredicate(),
+          ...createTransactionData(round),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofSigningService, proofSigningService)),
+      ).then((transactionOrder) => transactionOrder.sign(emptySigningService, emptySigningService)),
     );
-  }, 20000);
+  });
 });
