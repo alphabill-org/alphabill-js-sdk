@@ -1,20 +1,57 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { IUnitId } from '../../IUnitId.js';
+import { FeeCreditTransactionType } from '../../json-rpc/FeeCreditTransactionType.js';
+import { NetworkIdentifier } from '../../NetworkIdentifier.js';
 import { ISigningService } from '../../signing/ISigningService.js';
+import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { ReclaimFeeCreditAttributes } from '../attribute/ReclaimFeeCreditAttributes.js';
+import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
+import { CloseFeeCreditTransactionRecordWithProof } from '../record/CloseFeeCreditTransactionRecordWithProof.js';
+import { StateLock } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
-import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
 import { ReclaimFeeCreditTransactionOrder } from './types/ReclaimFeeCreditTransactionOrder.js';
 
-export class UnsignedReclaimFeeCreditTransactionOrder
-  implements IUnsignedTransactionOrder<ReclaimFeeCreditTransactionOrder>
-{
+interface IReclaimFeeCreditTransactionData {
+  proof: CloseFeeCreditTransactionRecordWithProof;
+  bill: {
+    unitId: IUnitId;
+    counter: bigint;
+  };
+  networkIdentifier: NetworkIdentifier;
+  stateLock: StateLock | null;
+  metadata: ITransactionClientMetadata;
+  stateUnlock: IPredicate | null;
+}
+
+export class UnsignedReclaimFeeCreditTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<ReclaimFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
     public readonly codec: ICborCodec,
   ) {}
+
+  public static create(
+    data: IReclaimFeeCreditTransactionData,
+    codec: ICborCodec,
+  ): Promise<UnsignedReclaimFeeCreditTransactionOrder> {
+    return Promise.resolve(
+      new UnsignedReclaimFeeCreditTransactionOrder(
+        new TransactionPayload<ReclaimFeeCreditAttributes>(
+          data.networkIdentifier,
+          SystemIdentifier.MONEY_PARTITION,
+          data.bill.unitId,
+          FeeCreditTransactionType.LockFeeCredit,
+          new ReclaimFeeCreditAttributes(data.proof),
+          data.stateLock,
+          data.metadata,
+        ),
+        data.stateUnlock,
+        codec,
+      ),
+    );
+  }
 
   public async sign(
     ownerProofSigner: ISigningService,

@@ -1,20 +1,66 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { IUnitId } from '../../IUnitId.js';
+import { MoneyPartitionTransactionType } from '../../json-rpc/MoneyPartitionTransactionType.js';
+import { NetworkIdentifier } from '../../NetworkIdentifier.js';
 import { ISigningService } from '../../signing/ISigningService.js';
+import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { TransferBillToDustCollectorAttributes } from '../attribute/TransferBillToDustCollectorAttributes.js';
+import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
+import { StateLock } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
-import { IUnsignedTransactionOrder } from './IUnsignedTransactionOrder.js';
 import { TransferBillToDustCollectorTransactionOrder } from './types/TransferBillToDustCollectorTransactionOrder.js';
 
-export class UnsignedTransferBillToDustCollectorTransactionOrder
-  implements IUnsignedTransactionOrder<TransferBillToDustCollectorTransactionOrder>
-{
+export interface ISwapBillsWithDustCollectorTransactionData {
+  bill: {
+    unitId: IUnitId;
+    counter: bigint;
+    value: bigint;
+  };
+  targetBill: {
+    unitId: IUnitId;
+    counter: bigint;
+    value: bigint;
+  };
+  networkIdentifier: NetworkIdentifier;
+  stateLock: StateLock | null;
+  metadata: ITransactionClientMetadata;
+  stateUnlock: IPredicate | null;
+}
+
+export class UnsignedTransferBillToDustCollectorTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<TransferBillToDustCollectorAttributes>,
     public readonly stateUnlock: IPredicate | null,
     public readonly codec: ICborCodec,
   ) {}
+
+  public static create(
+    data: ISwapBillsWithDustCollectorTransactionData,
+    codec: ICborCodec,
+  ): Promise<UnsignedTransferBillToDustCollectorTransactionOrder> {
+    return Promise.resolve(
+      new UnsignedTransferBillToDustCollectorTransactionOrder(
+        new TransactionPayload<TransferBillToDustCollectorAttributes>(
+          data.networkIdentifier,
+          SystemIdentifier.MONEY_PARTITION,
+          data.bill.unitId,
+          MoneyPartitionTransactionType.LockBill,
+          new TransferBillToDustCollectorAttributes(
+            data.bill.value,
+            data.targetBill.unitId,
+            data.targetBill.counter,
+            data.bill.counter,
+          ),
+          data.stateLock,
+          data.metadata,
+        ),
+        data.stateUnlock,
+        codec,
+      ),
+    );
+  }
 
   public async sign(
     ownerProofSigner: ISigningService,
