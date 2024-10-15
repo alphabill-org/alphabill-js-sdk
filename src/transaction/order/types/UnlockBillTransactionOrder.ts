@@ -1,4 +1,3 @@
-import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
 import { MoneyPartitionTransactionType } from '../../../json-rpc/MoneyPartitionTransactionType.js';
 import { UnitId } from '../../../UnitId.js';
 import { UnlockBillAttributes, UnlockBillAttributesArray } from '../../attribute/UnlockBillAttributes.js';
@@ -10,35 +9,28 @@ import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
 
-export class UnlockBillTransactionOrder extends TransactionOrder<
-  UnlockBillAttributes,
-  OwnerProofAuthProof,
-  OwnerProofAuthProof
-> {
+export class UnlockBillTransactionOrder extends TransactionOrder<UnlockBillAttributes, OwnerProofAuthProof> {
   public constructor(
     payload: TransactionPayload<UnlockBillAttributes>,
     authProof: OwnerProofAuthProof,
-    feeProof: OwnerProofAuthProof,
+    feeProof: Uint8Array,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray(
-    [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
-      stateUnlock,
-      authProof,
-      feeProof,
-    ]: TransactionOrderArray,
-    cborCodec: ICborCodec,
-  ): Promise<UnlockBillTransactionOrder> {
+  public static async fromArray([
+    networkIdentifier,
+    systemIdentifier,
+    unitId,
+    ,
+    attributes,
+    stateLock,
+    clientMetadata,
+    stateUnlock,
+    authProof,
+    feeProof,
+  ]: TransactionOrderArray): Promise<UnlockBillTransactionOrder> {
     return new UnlockBillTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
@@ -50,7 +42,7 @@ export class UnlockBillTransactionOrder extends TransactionOrder<
         ClientMetadata.fromArray(clientMetadata),
       ),
       await OwnerProofAuthProof.decode(authProof as OwnerProofAuthProofArray),
-      await OwnerProofAuthProof.decode(feeProof as OwnerProofAuthProofArray),
+      feeProof,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

@@ -27,12 +27,11 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
    * @param {ICborCodec} cborCodec Cbor codec.
    * @returns {ReclaimFeeCreditAttributes} Reclaim fee credit attributes instance.
    */
-  public static async fromArray(
-    [transactionRecordWithProof]: ReclaimFeeCreditAttributesArray,
-    cborCodec: ICborCodec,
-  ): Promise<ReclaimFeeCreditAttributes> {
+  public static async fromArray([
+    transactionRecordWithProof,
+  ]: ReclaimFeeCreditAttributesArray): Promise<ReclaimFeeCreditAttributes> {
     return new ReclaimFeeCreditAttributes(
-      await CloseFeeCreditTransactionRecordWithProof.fromArray(transactionRecordWithProof, cborCodec),
+      await CloseFeeCreditTransactionRecordWithProof.fromArray(transactionRecordWithProof),
     );
   }
 

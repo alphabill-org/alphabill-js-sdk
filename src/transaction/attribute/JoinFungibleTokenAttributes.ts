@@ -37,12 +37,9 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
    * @param {ICborCodec} cborCodec Cbor codec for decoding.
    * @returns {JoinFungibleTokenAttributes} Join fungible token attributes instance.
    */
-  public static async fromArray(
-    [proofs]: JoinFungibleTokenAttributesArray,
-    cborCodec: ICborCodec,
-  ): Promise<JoinFungibleTokenAttributes> {
+  public static async fromArray([proofs]: JoinFungibleTokenAttributesArray): Promise<JoinFungibleTokenAttributes> {
     return new JoinFungibleTokenAttributes(
-      await Promise.all(proofs.map((proof) => BurnFungibleTokenTransactionRecordWithProof.fromArray(proof, cborCodec))),
+      await Promise.all(proofs.map((proof) => BurnFungibleTokenTransactionRecordWithProof.fromArray(proof))),
     );
   }
 

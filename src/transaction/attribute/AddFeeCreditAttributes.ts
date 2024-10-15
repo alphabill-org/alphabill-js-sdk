@@ -34,13 +34,13 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
    * @param {ICborCodec} cborCodec Cbor codec.
    * @returns {Promise<AddFeeCreditAttributes>} Add fee credit attributes.
    */
-  public static async fromArray(
-    [ownerPredicate, [transactionRecord, transactionProof]]: AddFeeCreditAttributesArray,
-    cborCodec: ICborCodec,
-  ): Promise<AddFeeCreditAttributes> {
+  public static async fromArray([
+    ownerPredicate,
+    [transactionRecord, transactionProof],
+  ]: AddFeeCreditAttributesArray): Promise<AddFeeCreditAttributes> {
     return new AddFeeCreditAttributes(
       new PredicateBytes(ownerPredicate),
-      await TransferFeeCreditTransactionRecordWithProof.fromArray([transactionRecord, transactionProof], cborCodec),
+      await TransferFeeCreditTransactionRecordWithProof.fromArray([transactionRecord, transactionProof]),
     );
   }
 

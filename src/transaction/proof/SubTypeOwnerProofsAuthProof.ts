@@ -1,4 +1,3 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ITransactionOrderProof } from './ITransactionOrderProof.js';
 
 export type SubTypeOwnerProofsAuthProofArray = [Uint8Array[]];
@@ -12,9 +11,8 @@ export class SubTypeOwnerProofsAuthProof implements ITransactionOrderProof {
     return this._subTypeCreationProofs.map((proof) => new Uint8Array(proof));
   }
 
-  public static async decode(data: Uint8Array, cborCodec: ICborCodec): Promise<SubTypeOwnerProofsAuthProof> {
-    const [tokenTypeOwnerProofs] = (await cborCodec.decode(data)) as SubTypeOwnerProofsAuthProofArray;
-    return new SubTypeOwnerProofsAuthProof(tokenTypeOwnerProofs);
+  public static decode([tokenTypeOwnerProofs]: SubTypeOwnerProofsAuthProofArray): Promise<SubTypeOwnerProofsAuthProof> {
+    return Promise.resolve(new SubTypeOwnerProofsAuthProof(tokenTypeOwnerProofs));
   }
 
   public encode(): SubTypeOwnerProofsAuthProofArray {

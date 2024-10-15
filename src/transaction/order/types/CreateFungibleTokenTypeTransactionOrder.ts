@@ -1,4 +1,3 @@
-import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
 import { TokenPartitionTransactionType } from '../../../json-rpc/TokenPartitionTransactionType.js';
 import { UnitId } from '../../../UnitId.js';
 import {
@@ -8,41 +7,39 @@ import {
 import { ClientMetadata } from '../../ClientMetadata.js';
 import { IPredicate } from '../../predicate/IPredicate.js';
 import { PredicateBytes } from '../../predicate/PredicateBytes.js';
-import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
-import { SubTypeOwnerProofsAuthProof } from '../../proof/SubTypeOwnerProofsAuthProof.js';
+import {
+  SubTypeOwnerProofsAuthProof,
+  SubTypeOwnerProofsAuthProofArray,
+} from '../../proof/SubTypeOwnerProofsAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
 
 export class CreateFungibleTokenTypeTransactionOrder extends TransactionOrder<
   CreateFungibleTokenTypeAttributes,
-  SubTypeOwnerProofsAuthProof,
-  OwnerProofAuthProof
+  SubTypeOwnerProofsAuthProof
 > {
   public constructor(
     payload: TransactionPayload<CreateFungibleTokenTypeAttributes>,
     authProof: SubTypeOwnerProofsAuthProof,
-    feeProof: OwnerProofAuthProof,
+    feeProof: Uint8Array,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray(
-    [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
-      stateUnlock,
-      authProof,
-      feeProof,
-    ]: TransactionOrderArray,
-    cborCodec: ICborCodec,
-  ): Promise<CreateFungibleTokenTypeTransactionOrder> {
+  public static async fromArray([
+    networkIdentifier,
+    systemIdentifier,
+    unitId,
+    ,
+    attributes,
+    stateLock,
+    clientMetadata,
+    stateUnlock,
+    authProof,
+    feeProof,
+  ]: TransactionOrderArray): Promise<CreateFungibleTokenTypeTransactionOrder> {
     return new CreateFungibleTokenTypeTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
@@ -53,8 +50,8 @@ export class CreateFungibleTokenTypeTransactionOrder extends TransactionOrder<
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),
       ),
-      await SubTypeOwnerProofsAuthProof.decode(authProof, cborCodec),
-      await OwnerProofAuthProof.decode(feeProof, cborCodec),
+      await SubTypeOwnerProofsAuthProof.decode(authProof as SubTypeOwnerProofsAuthProofArray),
+      feeProof,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

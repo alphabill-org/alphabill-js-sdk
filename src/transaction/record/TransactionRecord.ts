@@ -13,9 +13,7 @@ export type TransactionRecordArray = readonly [TransactionOrderArray, ServerMeta
  * Transaction record.
  * @template T - Transaction payload type.
  */
-export class TransactionRecord<
-  T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof, ITransactionOrderProof>,
-> {
+export class TransactionRecord<T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>> {
   /**
    * Transaction record constructor.
    * @param {TransactionOrder<T>} transactionOrder - transaction order.

@@ -1,6 +1,5 @@
 import { CborCodecNode } from '../../src/codec/cbor/CborCodecNode.js';
 import { IUnitId } from '../../src/IUnitId.js';
-import { NetworkIdentifier } from '../../src/NetworkIdentifier.js';
 import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, http } from '../../src/StateApiClientFactory.js';
 import { SystemIdentifier } from '../../src/SystemIdentifier.js';
@@ -19,6 +18,7 @@ import { UnsignedUnlockBillTransactionOrder } from '../../src/transaction/order/
 import { UnsignedUnlockFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedUnlockFeeCreditTransactionOrder.js';
 import { AlwaysTruePredicate } from '../../src/transaction/predicate/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicate/PayToPublicKeyHashPredicate.js';
+import { AlwaysTrueProofSigningService } from '../../src/transaction/proof/AlwaysTrueProofSigningService.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/AddFeeCreditTransactionRecordWithProof.js';
 import { CloseFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/CloseFeeCreditTransactionRecordWithProof.js';
 import { LockBillTransactionRecordWithProof } from '../../src/transaction/record/LockBillTransactionRecordWithProof.js';
@@ -37,8 +37,7 @@ import { FeeCreditRecord } from '../../src/unit/FeeCreditRecord.js';
 import { UnitId } from '../../src/UnitId.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
 import config from './config/config.js';
-import { createTransactionData } from './utils/TestUtils';
-import { AlwaysTrueProofSigningService } from '../../src/transaction/proof/AlwaysTrueProofSigningService';
+import { createTransactionData } from './utils/TestUtils.js';
 
 describe('Money Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
@@ -387,6 +386,7 @@ describe('Money Client Integration Tests', () => {
   }, 20000);
 });
 
+// TODO remove
 describe('spend initial bill', () => {
   it('', async () => {
     const cborCodec = new CborCodecNode();
@@ -420,12 +420,14 @@ describe('spend initial bill', () => {
       ).then((transactionOrder) => transactionOrder.sign(proofSigningService, proofSigningService)),
     );
 
+    console.log('bb');
     const transactionProof = await moneyClient.waitTransactionProof(
       transferFeeCreditTransactionHash,
       TransferFeeCreditTransactionRecordWithProof,
     );
     const feeCreditRecordId = transactionProof.transactionRecord.transactionOrder.payload.attributes.targetUnitId;
 
+    console.log('cc');
     const addFeeCreditTransactionHash = await moneyClient.sendTransaction(
       await UnsignedAddFeeCreditTransactionOrder.create(
         {

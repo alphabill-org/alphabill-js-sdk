@@ -50,19 +50,9 @@ export class UnsignedLockFeeCreditTransactionOrder {
     ownerProofSigner: IProofSigningService,
     feeProofSigner: IProofSigningService,
   ): Promise<LockFeeCreditTransactionOrder> {
-    const ownerProof = new OwnerProofAuthProof(
-      await ownerProofSigner.sign(await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock])),
-    );
-    const feeProof = new OwnerProofAuthProof(
-      await feeProofSigner.sign(
-        await this.codec.encode([
-          await this.payload.encode(this.codec),
-          this.stateUnlock,
-          ownerProof.encode(),
-        ]),
-      ),
-    );
-
+    const authProof = [await this.payload.encode(this.codec), this.stateUnlock];
+    const ownerProof = new OwnerProofAuthProof(await ownerProofSigner.sign(await this.codec.encode(authProof)));
+    const feeProof = await feeProofSigner.sign(await this.codec.encode([...authProof, ownerProof.encode()]));
     return new LockFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

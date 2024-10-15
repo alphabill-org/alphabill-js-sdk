@@ -1,4 +1,3 @@
-import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
 import { FeeCreditTransactionType } from '../../../json-rpc/FeeCreditTransactionType.js';
 import { UnitId } from '../../../UnitId.js';
 import {
@@ -15,33 +14,29 @@ import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js'
 
 export class TransferFeeCreditTransactionOrder extends TransactionOrder<
   TransferFeeCreditAttributes,
-  OwnerProofAuthProof,
   OwnerProofAuthProof
 > {
   public constructor(
     payload: TransactionPayload<TransferFeeCreditAttributes>,
     authProof: OwnerProofAuthProof,
-    feeProof: OwnerProofAuthProof,
+    feeProof: Uint8Array,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray(
-    [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
-      stateUnlock,
-      authProof,
-      feeProof,
-    ]: TransactionOrderArray,
-    cborCodec: ICborCodec,
-  ): Promise<TransferFeeCreditTransactionOrder> {
+  public static async fromArray([
+    networkIdentifier,
+    systemIdentifier,
+    unitId,
+    ,
+    attributes,
+    stateLock,
+    clientMetadata,
+    stateUnlock,
+    authProof,
+    feeProof,
+  ]: TransactionOrderArray): Promise<TransferFeeCreditTransactionOrder> {
     return new TransferFeeCreditTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
@@ -53,7 +48,7 @@ export class TransferFeeCreditTransactionOrder extends TransactionOrder<
         ClientMetadata.fromArray(clientMetadata),
       ),
       await OwnerProofAuthProof.decode(authProof as OwnerProofAuthProofArray),
-      await OwnerProofAuthProof.decode(feeProof as OwnerProofAuthProofArray),
+      feeProof,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

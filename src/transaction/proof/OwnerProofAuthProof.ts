@@ -1,4 +1,3 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ITransactionOrderProof } from './ITransactionOrderProof.js';
 
 export type OwnerProofAuthProofArray = [Uint8Array];

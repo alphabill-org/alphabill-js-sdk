@@ -1,4 +1,3 @@
-import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
 import { MoneyPartitionTransactionType } from '../../../json-rpc/MoneyPartitionTransactionType.js';
 import { UnitId } from '../../../UnitId.js';
 import {
@@ -15,48 +14,41 @@ import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js'
 
 export class SwapBillsWithDustCollectorTransactionOrder extends TransactionOrder<
   SwapBillsWithDustCollectorAttributes,
-  OwnerProofAuthProof,
   OwnerProofAuthProof
 > {
   public constructor(
     payload: TransactionPayload<SwapBillsWithDustCollectorAttributes>,
     authProof: OwnerProofAuthProof,
-    feeProof: OwnerProofAuthProof,
+    feeProof: Uint8Array,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray(
-    [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
-      stateUnlock,
-      authProof,
-      feeProof,
-    ]: TransactionOrderArray,
-    cborCodec: ICborCodec,
-  ): Promise<SwapBillsWithDustCollectorTransactionOrder> {
+  public static async fromArray([
+    networkIdentifier,
+    systemIdentifier,
+    unitId,
+    ,
+    attributes,
+    stateLock,
+    clientMetadata,
+    stateUnlock,
+    authProof,
+    feeProof,
+  ]: TransactionOrderArray): Promise<SwapBillsWithDustCollectorTransactionOrder> {
     return new SwapBillsWithDustCollectorTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
         systemIdentifier,
         UnitId.fromBytes(unitId),
         MoneyPartitionTransactionType.SwapBillsWithDustCollector,
-        await SwapBillsWithDustCollectorAttributes.fromArray(
-          attributes as SwapBillsWithDustCollectorAttributesArray,
-          cborCodec,
-        ),
+        await SwapBillsWithDustCollectorAttributes.fromArray(attributes as SwapBillsWithDustCollectorAttributesArray),
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),
       ),
       await OwnerProofAuthProof.decode(authProof as OwnerProofAuthProofArray),
-      await OwnerProofAuthProof.decode(feeProof as OwnerProofAuthProofArray),
+      feeProof,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

@@ -112,9 +112,8 @@ export class JsonRpcClient {
    * @see {IStateApiService.sendTransaction}
    */
   public async sendTransaction(
-    transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof, ITransactionOrderProof>,
+    transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>,
   ): Promise<Uint8Array> {
-    console.log(Base16Converter.encode(await this.cborCodec.encode(await transaction.encode(this.cborCodec))))
     const response = (await this.request(
       'state_sendTransaction',
       Base16Converter.encode(await this.cborCodec.encode(await transaction.encode(this.cborCodec))),

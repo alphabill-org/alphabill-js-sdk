@@ -18,7 +18,7 @@ export interface IStateProofDto {
   readonly unitLedgerHash: string;
   readonly unitTreeCert: IUnitTreeCertDto;
   readonly stateTreeCert: IStateTreeCertDto;
-  // TODO: uncityCert has data inconsistent with other data formats, keeping it as is for now
+  // TODO: Unicity certificate has data inconsistent with other data formats, keeping it as is for now
   readonly unicityCert: unknown;
 }
 

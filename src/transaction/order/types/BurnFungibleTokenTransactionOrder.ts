@@ -1,4 +1,3 @@
-import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
 import { TokenPartitionTransactionType } from '../../../json-rpc/TokenPartitionTransactionType.js';
 import { UnitId } from '../../../UnitId.js';
 import {
@@ -8,41 +7,36 @@ import {
 import { ClientMetadata } from '../../ClientMetadata.js';
 import { IPredicate } from '../../predicate/IPredicate.js';
 import { PredicateBytes } from '../../predicate/PredicateBytes.js';
-import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
-import { TypeOwnerProofsAuthProof } from '../../proof/TypeOwnerProofsAuthProof.js';
+import { TypeOwnerProofsAuthProof, TypeOwnerProofsAuthProofArray } from '../../proof/TypeOwnerProofsAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
 
 export class BurnFungibleTokenTransactionOrder extends TransactionOrder<
   BurnFungibleTokenAttributes,
-  TypeOwnerProofsAuthProof,
-  OwnerProofAuthProof
+  TypeOwnerProofsAuthProof
 > {
   public constructor(
     payload: TransactionPayload<BurnFungibleTokenAttributes>,
     authProof: TypeOwnerProofsAuthProof,
-    feeProof: OwnerProofAuthProof,
+    feeProof: Uint8Array,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray(
-    [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
-      stateUnlock,
-      authProof,
-      feeProof,
-    ]: TransactionOrderArray,
-    cborCodec: ICborCodec,
-  ): Promise<BurnFungibleTokenTransactionOrder> {
+  public static async fromArray([
+    networkIdentifier,
+    systemIdentifier,
+    unitId,
+    ,
+    attributes,
+    stateLock,
+    clientMetadata,
+    stateUnlock,
+    authProof,
+    feeProof,
+  ]: TransactionOrderArray): Promise<BurnFungibleTokenTransactionOrder> {
     return new BurnFungibleTokenTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
@@ -53,8 +47,8 @@ export class BurnFungibleTokenTransactionOrder extends TransactionOrder<
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),
       ),
-      await TypeOwnerProofsAuthProof.decode(authProof, cborCodec),
-      await OwnerProofAuthProof.decode(feeProof, cborCodec),
+      await TypeOwnerProofsAuthProof.decode(authProof as TypeOwnerProofsAuthProofArray),
+      feeProof,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

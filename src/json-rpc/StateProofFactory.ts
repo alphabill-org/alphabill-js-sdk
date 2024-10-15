@@ -5,7 +5,7 @@ import { Base16Converter } from '../util/Base16Converter.js';
 import { Base64Converter } from '../util/Base64Converter.js';
 import { IStateProofDto, IStateTreeCertDto, IUnitTreeCertDto } from './IUnitDto.js';
 
-// TODO: Parse unicity cert
+// TODO: Parse unicity certificate
 export function createStateProof(data: IStateProofDto): IStateProof {
   return new StateProof(
     UnitId.fromBytes(Base16Converter.decode(data.unitId)),

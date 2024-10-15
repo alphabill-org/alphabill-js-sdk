@@ -5,7 +5,6 @@ import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { JoinFungibleTokenAttributes } from '../attribute/JoinFungibleTokenAttributes.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { IProofSigningService } from '../proof/IProofSigningService.js';
-import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { TypeOwnerProofsAuthProof } from '../proof/TypeOwnerProofsAuthProof.js';
 import { BurnFungibleTokenTransactionRecordWithProof } from '../record/BurnFungibleTokenTransactionRecordWithProof.js';
 import { TransactionPayload } from '../TransactionPayload.js';
@@ -50,22 +49,13 @@ export class UnsignedJoinFungibleTokenTransactionOrder {
     feeProofSigner: IProofSigningService,
     tokenTypeOwnerProofs: IProofSigningService[],
   ): Promise<JoinFungibleTokenTransactionOrder> {
-    const ownerProofBytes = await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock]);
+    const authProof = [await this.payload.encode(this.codec), this.stateUnlock];
+    const authProofBytes = await this.codec.encode(authProof);
     const ownerProof = new TypeOwnerProofsAuthProof(
-      await ownerProofSigner.sign(ownerProofBytes),
-      await Promise.all(tokenTypeOwnerProofs.map((signer) => signer.sign(ownerProofBytes))),
+      await ownerProofSigner.sign(authProofBytes),
+      await Promise.all(tokenTypeOwnerProofs.map((signer) => signer.sign(authProofBytes))),
     );
-
-    const feeProof = new OwnerProofAuthProof(
-      await feeProofSigner.sign(
-        await this.codec.encode([
-          await this.payload.encode(this.codec),
-          this.stateUnlock,
-          ownerProof.encode(this.codec),
-        ]),
-      ),
-    );
-
+    const feeProof = await feeProofSigner.sign(await this.codec.encode([...authProof, ownerProof.encode()]));
     return new JoinFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

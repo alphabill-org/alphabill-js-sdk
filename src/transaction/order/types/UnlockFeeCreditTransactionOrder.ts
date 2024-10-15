@@ -1,4 +1,3 @@
-import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
 import { FeeCreditTransactionType } from '../../../json-rpc/FeeCreditTransactionType.js';
 import { UnitId } from '../../../UnitId.js';
 import {
@@ -13,35 +12,28 @@ import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
 
-export class UnlockFeeCreditTransactionOrder extends TransactionOrder<
-  UnlockFeeCreditAttributes,
-  OwnerProofAuthProof,
-  OwnerProofAuthProof
-> {
+export class UnlockFeeCreditTransactionOrder extends TransactionOrder<UnlockFeeCreditAttributes, OwnerProofAuthProof> {
   public constructor(
     payload: TransactionPayload<UnlockFeeCreditAttributes>,
     authProof: OwnerProofAuthProof,
-    feeProof: OwnerProofAuthProof,
+    feeProof: Uint8Array,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray(
-    [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
-      stateUnlock,
-      authProof,
-      feeProof,
-    ]: TransactionOrderArray,
-    cborCodec: ICborCodec,
-  ): Promise<UnlockFeeCreditTransactionOrder> {
+  public static async fromArray([
+    networkIdentifier,
+    systemIdentifier,
+    unitId,
+    ,
+    attributes,
+    stateLock,
+    clientMetadata,
+    stateUnlock,
+    authProof,
+    feeProof,
+  ]: TransactionOrderArray): Promise<UnlockFeeCreditTransactionOrder> {
     return new UnlockFeeCreditTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
@@ -53,7 +45,7 @@ export class UnlockFeeCreditTransactionOrder extends TransactionOrder<
         ClientMetadata.fromArray(clientMetadata),
       ),
       await OwnerProofAuthProof.decode(authProof as OwnerProofAuthProofArray),
-      await OwnerProofAuthProof.decode(feeProof as OwnerProofAuthProofArray),
+      feeProof,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

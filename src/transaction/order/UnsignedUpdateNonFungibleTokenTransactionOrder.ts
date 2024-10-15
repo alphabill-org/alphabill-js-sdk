@@ -6,7 +6,6 @@ import { UpdateNonFungibleTokenAttributes } from '../attribute/UpdateNonFungible
 import { INonFungibleTokenData } from '../INonFungibleTokenData.js';
 import { IPredicate } from '../predicate/IPredicate.js';
 import { IProofSigningService } from '../proof/IProofSigningService.js';
-import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { TypeDataUpdateProofsAuthProof } from '../proof/TypeDataUpdateProofsAuthProof.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { ITransactionData } from './ITransactionData.js';
@@ -50,22 +49,13 @@ export class UnsignedUpdateNonFungibleTokenTransactionOrder {
     feeProofSigner: IProofSigningService,
     tokenTypeDataUpdateProofs: IProofSigningService[],
   ): Promise<UpdateNonFungibleTokenTransactionOrder> {
-    const ownerProofBytes = await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock]);
+    const authProof = [await this.payload.encode(this.codec), this.stateUnlock];
+    const authProofBytes = await this.codec.encode(authProof);
     const ownerProof = new TypeDataUpdateProofsAuthProof(
-      await ownerProofSigner.sign(ownerProofBytes),
-      await Promise.all(tokenTypeDataUpdateProofs.map((signer) => signer.sign(ownerProofBytes))),
+      await ownerProofSigner.sign(authProofBytes),
+      await Promise.all(tokenTypeDataUpdateProofs.map((signer) => signer.sign(authProofBytes))),
     );
-
-    const feeProof = new OwnerProofAuthProof(
-      await feeProofSigner.sign(
-        await this.codec.encode([
-          await this.payload.encode(this.codec),
-          this.stateUnlock,
-          ownerProof.encode(this.codec),
-        ]),
-      ),
-    );
-
+    const feeProof = await feeProofSigner.sign(await this.codec.encode([...authProof, ownerProof.encode()]));
     return new UpdateNonFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

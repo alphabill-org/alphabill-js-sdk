@@ -66,16 +66,9 @@ export class UnsignedCreateNonFungibleTokenTransactionOrder {
     const ownerProof = new OwnerProofAuthProof(
       await ownerProofSigner.sign(await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock])),
     );
-    const feeProof = new OwnerProofAuthProof(
-      await feeProofSigner.sign(
-        await this.codec.encode([
-          await this.payload.encode(this.codec),
-          this.stateUnlock,
-          ownerProof.encode(this.codec),
-        ]),
-      ),
+    const feeProof = await feeProofSigner.sign(
+      await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock, ownerProof.encode()]),
     );
-
     return new CreateNonFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

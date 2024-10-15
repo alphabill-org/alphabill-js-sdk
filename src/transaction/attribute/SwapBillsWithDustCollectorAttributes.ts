@@ -37,14 +37,11 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
    * @param {ICborCodec} cborCodec Cbor codec.
    * @returns {SwapBillsWithDustCollectorAttributes} Swap bills with dust collector attributes instance.
    */
-  public static async fromArray(
-    [proofs]: SwapBillsWithDustCollectorAttributesArray,
-    cborCodec: ICborCodec,
-  ): Promise<SwapBillsWithDustCollectorAttributes> {
+  public static async fromArray([
+    proofs,
+  ]: SwapBillsWithDustCollectorAttributesArray): Promise<SwapBillsWithDustCollectorAttributes> {
     return new SwapBillsWithDustCollectorAttributes(
-      await Promise.all(
-        proofs.map((proof) => TransferBillToDustCollectorTransactionRecordWithProof.fromArray(proof, cborCodec)),
-      ),
+      await Promise.all(proofs.map((proof) => TransferBillToDustCollectorTransactionRecordWithProof.fromArray(proof))),
     );
   }
 

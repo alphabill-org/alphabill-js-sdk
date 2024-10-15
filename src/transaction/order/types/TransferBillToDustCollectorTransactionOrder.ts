@@ -1,4 +1,3 @@
-import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
 import { MoneyPartitionTransactionType } from '../../../json-rpc/MoneyPartitionTransactionType.js';
 import { UnitId } from '../../../UnitId.js';
 import {
@@ -15,33 +14,29 @@ import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js'
 
 export class TransferBillToDustCollectorTransactionOrder extends TransactionOrder<
   TransferBillToDustCollectorAttributes,
-  OwnerProofAuthProof,
   OwnerProofAuthProof
 > {
   public constructor(
     payload: TransactionPayload<TransferBillToDustCollectorAttributes>,
     authProof: OwnerProofAuthProof,
-    feeProof: OwnerProofAuthProof,
+    feeProof: Uint8Array,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray(
-    [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
-      stateUnlock,
-      authProof,
-      feeProof,
-    ]: TransactionOrderArray,
-    cborCodec: ICborCodec,
-  ): Promise<TransferBillToDustCollectorTransactionOrder> {
+  public static async fromArray([
+    networkIdentifier,
+    systemIdentifier,
+    unitId,
+    ,
+    attributes,
+    stateLock,
+    clientMetadata,
+    stateUnlock,
+    authProof,
+    feeProof,
+  ]: TransactionOrderArray): Promise<TransferBillToDustCollectorTransactionOrder> {
     return new TransferBillToDustCollectorTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
@@ -53,7 +48,7 @@ export class TransferBillToDustCollectorTransactionOrder extends TransactionOrde
         ClientMetadata.fromArray(clientMetadata),
       ),
       await OwnerProofAuthProof.decode(authProof as OwnerProofAuthProofArray),
-      await OwnerProofAuthProof.decode(feeProof as OwnerProofAuthProofArray),
+      feeProof,
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

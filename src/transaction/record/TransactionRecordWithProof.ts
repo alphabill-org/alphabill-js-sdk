@@ -16,7 +16,7 @@ export type TransactionRecordWithProofArray = readonly [TransactionRecordArray, 
  * @template T - Transaction payload type.
  */
 export class TransactionRecordWithProof<
-  T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof, ITransactionOrderProof>,
+  T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>,
 > {
   /**
    * Transaction record with proof constructor.

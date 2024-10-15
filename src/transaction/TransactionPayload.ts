@@ -23,7 +23,6 @@ export type PayloadArray = readonly [
   TransactionClientMetadataArray,
 ];
 
-
 /**
  * Transaction payload.
  */

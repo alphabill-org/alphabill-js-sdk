@@ -1,4 +1,3 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ITransactionOrderProof } from './ITransactionOrderProof.js';
 
 export type TypeDataUpdateProofsAuthProofArray = [Uint8Array, Uint8Array[]];
@@ -20,11 +19,11 @@ export class TypeDataUpdateProofsAuthProof implements ITransactionOrderProof {
     return this._typeDataUpdateProofs.map((proof) => new Uint8Array(proof));
   }
 
-  public static async decode(data: Uint8Array, cborCodec: ICborCodec): Promise<TypeDataUpdateProofsAuthProof> {
-    const [dataUpdateProof, tokenTypeOwnerProofs] = (await cborCodec.decode(
-      data,
-    )) as TypeDataUpdateProofsAuthProofArray;
-    return new TypeDataUpdateProofsAuthProof(dataUpdateProof, tokenTypeOwnerProofs);
+  public static decode([
+    dataUpdateProof,
+    tokenTypeOwnerProofs,
+  ]: TypeDataUpdateProofsAuthProofArray): Promise<TypeDataUpdateProofsAuthProof> {
+    return Promise.resolve(new TypeDataUpdateProofsAuthProof(dataUpdateProof, tokenTypeOwnerProofs));
   }
 
   public encode(): TypeDataUpdateProofsAuthProofArray {
