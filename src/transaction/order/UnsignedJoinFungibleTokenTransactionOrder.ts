@@ -52,10 +52,8 @@ export class UnsignedJoinFungibleTokenTransactionOrder {
     const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
     const authProofBytes = await this.codec.encode(authProof);
     const ownerProof = new TypeOwnerProofsAuthProof(
-      await this.codec.encode(await ownerProofFactory.create(await this.codec.encode(authProofBytes))),
-      await Promise.all(
-        tokenTypeOwnerProofs.map((factory) => factory.create(authProofBytes).then((proof) => this.codec.encode(proof))),
-      ),
+      await ownerProofFactory.create(authProofBytes),
+      await Promise.all(tokenTypeOwnerProofs.map((factory) => factory.create(authProofBytes))),
     );
     const feeProof =
       (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) || null;

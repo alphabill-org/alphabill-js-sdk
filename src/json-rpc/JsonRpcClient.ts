@@ -77,7 +77,6 @@ export class JsonRpcClient {
     );
 
     if (response) {
-      console.log(response);
       const unitId = UnitId.fromBytes(Base16Converter.decode(response.unitId));
 
       return factory.create(

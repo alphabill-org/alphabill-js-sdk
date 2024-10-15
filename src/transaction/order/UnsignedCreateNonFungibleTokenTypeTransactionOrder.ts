@@ -67,11 +67,7 @@ export class UnsignedCreateNonFungibleTokenTypeTransactionOrder {
     const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
     const authProofBytes = await this.codec.encode(authProof);
     const ownerProof = new SubTypeOwnerProofsAuthProof(
-      await Promise.all(
-        subTypeCreationProofs.map((factory) =>
-          factory.create(authProofBytes).then((proof) => this.codec.encode(proof)),
-        ),
-      ),
+      await Promise.all(subTypeCreationProofs.map((factory) => factory.create(authProofBytes))),
     );
     const feeProof =
       (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;

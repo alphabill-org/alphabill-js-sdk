@@ -60,11 +60,13 @@ export class UnsignedCreateNonFungibleTokenTransactionOrder {
   }
 
   public async sign(
-    ownerProofFactory: IProofFactory,
+    tokenMintingProofFactory: IProofFactory,
     feeProofFactory: IProofFactory | null,
   ): Promise<CreateNonFungibleTokenTransactionOrder> {
     const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+    const ownerProof = new OwnerProofAuthProof(
+      await tokenMintingProofFactory.create(await this.codec.encode(authProof)),
+    );
     const feeProof =
       (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
     return new CreateNonFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);

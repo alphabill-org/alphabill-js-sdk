@@ -24,6 +24,7 @@ import { UnsignedUnlockTokenTransactionOrder } from '../../src/transaction/order
 import { UnsignedUpdateNonFungibleTokenTransactionOrder } from '../../src/transaction/order/UnsignedUpdateNonFungibleTokenTransactionOrder.js';
 import { AlwaysTruePredicate } from '../../src/transaction/predicate/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicate/PayToPublicKeyHashPredicate.js';
+import { AlwaysTrueProofFactory } from '../../src/transaction/proof/AlwaysTrueProofFactory';
 import { PayToPublicKeyHashProofFactory } from '../../src/transaction/proof/PayToPublicKeyHashProofFactory.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/AddFeeCreditTransactionRecordWithProof.js';
 import { BurnFungibleTokenTransactionRecordWithProof } from '../../src/transaction/record/BurnFungibleTokenTransactionRecordWithProof.js';
@@ -57,6 +58,7 @@ describe('Token Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const proofFactory = new PayToPublicKeyHashProofFactory(signingService, cborCodec);
+  const alwaysTrueProofFactory = new AlwaysTrueProofFactory(cborCodec);
 
   const tokenClient = createTokenClient({
     transport: http(config.tokenPartitionUrl, new CborCodecNode()),
@@ -175,15 +177,16 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory));
+      ).then((transactionOrder) => transactionOrder.sign(alwaysTrueProofFactory, proofFactory));
 
       const createFungibleTokenHash = await tokenClient.sendTransaction(createFungibleTokenTransactionOrder);
-
       const createFungibleTokenProof = await tokenClient.waitTransactionProof(
         createFungibleTokenHash,
         CreateFungibleTokenTransactionRecordWithProof,
       );
+
       tokenUnitId = createFungibleTokenProof.transactionRecord.transactionOrder.payload.unitId;
+
       console.log('Creating fungible token successful');
     }, 20000);
 
@@ -202,7 +205,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, []));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, [alwaysTrueProofFactory]));
 
       const splitFungibleTokenHash = await tokenClient.sendTransaction(splitFungibleTokenTransactionOrder);
 
@@ -218,8 +221,10 @@ describe('Token Client Integration Tests', () => {
           (id) =>
             id.type.toBase16() === Base16Converter.encode(new Uint8Array([TokenPartitionUnitType.FUNGIBLE_TOKEN])) &&
             Base16Converter.encode(id.bytes) !== Base16Converter.encode(token!.unitId.bytes),
-        ) as IUnitId;
-      const splitToken = await tokenClient.getUnit(splitTokenId, false, FungibleToken);
+        );
+      expect(splitTokenId).not.toBeFalsy();
+
+      const splitToken = await tokenClient.getUnit(splitTokenId!, false, FungibleToken);
       const originalTokenAfterSplit = await tokenClient.getUnit(tokenUnitId, false, FungibleToken);
 
       console.log('Burning fungible token...');
@@ -232,7 +237,7 @@ describe('Token Client Integration Tests', () => {
             ...createTransactionData(round, feeCreditRecordId),
           },
           cborCodec,
-        ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, [])),
+        ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, [alwaysTrueProofFactory])),
       );
 
       const burnProof = await tokenClient.waitTransactionProof(
@@ -249,7 +254,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, []));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, [alwaysTrueProofFactory]));
 
       const joinFungibleTokenHash = await tokenClient.sendTransaction(joinFungibleTokenTransactionOrder);
 
@@ -271,7 +276,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, []));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, [alwaysTrueProofFactory]));
 
       const transferFungibleTokenHash = await tokenClient.sendTransaction(transferFungibleTokenTransactionOrder);
 
@@ -374,7 +379,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory));
+      ).then((transactionOrder) => transactionOrder.sign(alwaysTrueProofFactory, proofFactory));
 
       const createNonFungibleTokenHash = await tokenClient.sendTransaction(createNonFungibleTokenTransactionOrder);
 
@@ -399,7 +404,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, []));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, [alwaysTrueProofFactory]));
 
       const updateNonFungibleTokenHash = await tokenClient.sendTransaction(updateNonFungibleTokenTransactionOrder);
 
@@ -426,7 +431,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, []));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, [alwaysTrueProofFactory]));
 
       const transferNonFungibleTokenHash = await tokenClient.sendTransaction(transferNonFungibleTokenTransactionOrder);
 
