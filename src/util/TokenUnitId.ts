@@ -15,17 +15,14 @@ export class TokenUnitId {
     type: TokenPartitionUnitType.FUNGIBLE_TOKEN | TokenPartitionUnitType.NON_FUNGIBLE_TOKEN,
   ): Promise<IUnitId> {
     const attributesBytes = await codec.encode(await attributes.encode(codec));
-    const unitPart = sha256
-      .create()
-      .update(attributesBytes)
-      .update(numberToBytesBE(metadata.timeout, 8))
-      .update(numberToBytesBE(metadata.maxTransactionFee, 8));
-    if (metadata.feeCreditRecordId != null) {
-      unitPart.update(metadata.feeCreditRecordId.bytes);
-    }
-    if (metadata.referenceNumber != null) {
-      unitPart.update(metadata.referenceNumber);
-    }
-    return new UnitIdWithType(unitPart.digest(), type);
+    const metadataBytes = [
+      numberToBytesBE(metadata.timeout, 8),
+      numberToBytesBE(metadata.maxTransactionFee, 8),
+      metadata.feeCreditRecordId != null ? metadata.feeCreditRecordId.bytes : null,
+      metadata.referenceNumber != null ? metadata.referenceNumber : null,
+    ];
+    const unitIdCbor = await codec.encode([attributesBytes, metadataBytes]);
+    const identifier = sha256.create().update(unitIdCbor).digest();
+    return new UnitIdWithType(identifier, type);
   }
 }
