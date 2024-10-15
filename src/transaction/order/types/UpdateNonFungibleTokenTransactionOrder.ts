@@ -21,7 +21,7 @@ export class UpdateNonFungibleTokenTransactionOrder extends TransactionOrder<
 > {
   public constructor(
     payload: TransactionPayload<UpdateNonFungibleTokenAttributes>,
-    authProof: TypeDataUpdateProofsAuthProof | null,
+    authProof: TypeDataUpdateProofsAuthProof,
     feeProof: Uint8Array | null,
     stateUnlock: IPredicate | null,
   ) {

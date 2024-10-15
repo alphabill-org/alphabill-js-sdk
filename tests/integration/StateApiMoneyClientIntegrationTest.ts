@@ -110,6 +110,7 @@ describe('Money Client Integration Tests', () => {
     const addFeeCreditTransactionOrder = await (
       await UnsignedAddFeeCreditTransactionOrder.create(
         {
+          targetSystemIdentifier: SystemIdentifier.MONEY_PARTITION,
           ownerPredicate: ownerPredicate,
           proof: proof,
           feeCreditRecord: { unitId: feeCreditRecordId },

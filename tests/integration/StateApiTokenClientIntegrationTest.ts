@@ -24,6 +24,7 @@ import { UnsignedUnlockTokenTransactionOrder } from '../../src/transaction/order
 import { UnsignedUpdateNonFungibleTokenTransactionOrder } from '../../src/transaction/order/UnsignedUpdateNonFungibleTokenTransactionOrder.js';
 import { AlwaysTruePredicate } from '../../src/transaction/predicate/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicate/PayToPublicKeyHashPredicate.js';
+import { PayToPublicKeyHashProofFactory } from '../../src/transaction/proof/PayToPublicKeyHashProofFactory.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/AddFeeCreditTransactionRecordWithProof.js';
 import { BurnFungibleTokenTransactionRecordWithProof } from '../../src/transaction/record/BurnFungibleTokenTransactionRecordWithProof.js';
 import { CreateFungibleTokenTransactionRecordWithProof } from '../../src/transaction/record/CreateFungibleTokenTransactionRecordWithProof.js';
@@ -55,6 +56,7 @@ import { createTransactionData } from './utils/TestUtils.js';
 describe('Token Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
+  const proofFactory = new PayToPublicKeyHashProofFactory(signingService, cborCodec);
 
   const tokenClient = createTokenClient({
     transport: http(config.tokenPartitionUrl, new CborCodecNode()),
@@ -95,7 +97,7 @@ describe('Token Client Integration Tests', () => {
         ...createTransactionData(round),
       },
       cborCodec,
-    ).then((transactionOrder) => transactionOrder.sign(signingService));
+    ).then((transactionOrder) => transactionOrder.sign(proofFactory));
 
     const transferFeeCreditHash = await moneyClient.sendTransaction(transferFeeCreditTransactionOrder);
 
@@ -114,15 +116,16 @@ describe('Token Client Integration Tests', () => {
     console.log('Adding fee credit');
     const addFeeCreditTransactionOrder = await UnsignedAddFeeCreditTransactionOrder.create(
       {
+        targetSystemIdentifier: SystemIdentifier.TOKEN_PARTITION,
         ownerPredicate: ownerPredicate,
         proof,
         feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId },
         ...createTransactionData(round),
       },
       cborCodec,
-    ).then((transactionOrder) => transactionOrder.sign(signingService, signingService));
+    ).then((transactionOrder) => transactionOrder.sign(proofFactory));
 
-    const addFeeCreditHash = await moneyClient.sendTransaction(addFeeCreditTransactionOrder);
+    const addFeeCreditHash = await tokenClient.sendTransaction(addFeeCreditTransactionOrder);
 
     await tokenClient.waitTransactionProof(addFeeCreditHash, AddFeeCreditTransactionRecordWithProof);
     console.log('Adding fee credit successful');
@@ -147,10 +150,10 @@ describe('Token Client Integration Tests', () => {
           subTypeCreationPredicate: new AlwaysTruePredicate(),
           tokenCreationPredicate: new AlwaysTruePredicate(),
           tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
-          ...createTransactionData(round),
+          ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(signingService, [signingService]));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, []));
 
       const createFungibleTokenTypeHash = await tokenClient.sendTransaction(createFungibleTokenTypeTransactionOrder);
 
@@ -169,10 +172,10 @@ describe('Token Client Integration Tests', () => {
           type: { unitId: tokenTypeUnitId },
           value: 10n,
           nonce: 0n,
-          ...createTransactionData(round),
+          ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(signingService, signingService));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory));
 
       const createFungibleTokenHash = await tokenClient.sendTransaction(createFungibleTokenTransactionOrder);
 
@@ -197,7 +200,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(signingService, signingService, [signingService]));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, []));
 
       const splitFungibleTokenHash = await tokenClient.sendTransaction(splitFungibleTokenTransactionOrder);
 
@@ -227,7 +230,7 @@ describe('Token Client Integration Tests', () => {
             ...createTransactionData(round, feeCreditRecordId),
           },
           cborCodec,
-        ).then((transactionOrder) => transactionOrder.sign(signingService, signingService, [signingService])),
+        ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, [])),
       );
 
       const burnProof = await tokenClient.waitTransactionProof(
@@ -244,7 +247,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(signingService, signingService, [signingService]));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, []));
 
       const joinFungibleTokenHash = await tokenClient.sendTransaction(joinFungibleTokenTransactionOrder);
 
@@ -265,7 +268,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(signingService, signingService, [signingService]));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, []));
 
       const transferFungibleTokenHash = await tokenClient.sendTransaction(transferFungibleTokenTransactionOrder);
 
@@ -288,7 +291,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(signingService, signingService));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory));
 
       const lockFungibleTokenHash = await tokenClient.sendTransaction(lockFungibleTokenTransactionOrder);
 
@@ -305,7 +308,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(signingService, signingService));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory));
 
       const unlockFungibleTokenHash = await tokenClient.sendTransaction(unlockFungibleTokenTransactionOrder);
 
@@ -336,7 +339,7 @@ describe('Token Client Integration Tests', () => {
             ...createTransactionData(round, feeCreditRecordId),
           },
           cborCodec,
-        ).then((transactionOrder) => transactionOrder.sign(signingService, [signingService]));
+        ).then((transactionOrder) => transactionOrder.sign(proofFactory, []));
 
       const createNonFungibleTokenTypeHash = await tokenClient.sendTransaction(
         createNonFungibleTokenTypeTransactionOrder,
@@ -367,7 +370,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(signingService, signingService));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory));
 
       const createNonFungibleTokenHash = await tokenClient.sendTransaction(createNonFungibleTokenTransactionOrder);
 
@@ -392,7 +395,7 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(signingService, signingService, [signingService]));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, []));
 
       const updateNonFungibleTokenHash = await tokenClient.sendTransaction(updateNonFungibleTokenTransactionOrder);
 
@@ -416,10 +419,10 @@ describe('Token Client Integration Tests', () => {
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           nonce: null,
           type: { unitId: tokenTypeUnitId },
-          ...createTransactionData(round),
+          ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(signingService, signingService, [signingService]));
+      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, []));
 
       const transferNonFungibleTokenHash = await tokenClient.sendTransaction(transferNonFungibleTokenTransactionOrder);
 

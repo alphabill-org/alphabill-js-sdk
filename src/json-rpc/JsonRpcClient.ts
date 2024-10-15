@@ -77,6 +77,7 @@ export class JsonRpcClient {
     );
 
     if (response) {
+      console.log(response);
       const unitId = UnitId.fromBytes(Base16Converter.decode(response.unitId));
 
       return factory.create(
@@ -119,7 +120,6 @@ export class JsonRpcClient {
   public async sendTransaction(
     transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>,
   ): Promise<Uint8Array> {
-    console.log(Base16Converter.encode(await this.cborCodec.encode(await transaction.encode(this.cborCodec))));
     const response = (await this.request(
       'state_sendTransaction',
       Base16Converter.encode(await this.cborCodec.encode(await transaction.encode(this.cborCodec))),

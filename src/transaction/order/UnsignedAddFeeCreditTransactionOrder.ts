@@ -12,6 +12,7 @@ import { ITransactionData } from './ITransactionData.js';
 import { AddFeeCreditTransactionOrder } from './types/AddFeeCreditTransactionOrder.js';
 
 interface IAddFeeCreditTransactionData extends ITransactionData {
+  targetSystemIdentifier: SystemIdentifier;
   ownerPredicate: IPredicate;
   proof: TransferFeeCreditTransactionRecordWithProof;
   feeCreditRecord: { unitId: IUnitId };
@@ -32,7 +33,7 @@ export class UnsignedAddFeeCreditTransactionOrder {
       new UnsignedAddFeeCreditTransactionOrder(
         new TransactionPayload<AddFeeCreditAttributes>(
           data.networkIdentifier,
-          SystemIdentifier.MONEY_PARTITION,
+          data.targetSystemIdentifier,
           data.feeCreditRecord.unitId,
           FeeCreditTransactionType.AddFeeCredit,
           new AddFeeCreditAttributes(data.ownerPredicate, data.proof),

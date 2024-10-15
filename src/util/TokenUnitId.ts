@@ -1,4 +1,4 @@
-import { numberToBytesBE } from '@noble/curves/abstract/utils.js';
+import { numberToBytesBE } from '@noble/curves/abstract/utils';
 import { sha256 } from '@noble/hashes/sha256';
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../IUnitId.js';

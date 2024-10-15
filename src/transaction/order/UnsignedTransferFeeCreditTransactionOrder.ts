@@ -55,7 +55,7 @@ export class UnsignedTransferFeeCreditTransactionOrder {
       new UnsignedTransferFeeCreditTransactionOrder(
         new TransactionPayload<TransferFeeCreditAttributes>(
           data.networkIdentifier,
-          data.targetSystemIdentifier,
+          SystemIdentifier.MONEY_PARTITION,
           data.bill.unitId,
           FeeCreditTransactionType.TransferFeeCredit,
           new TransferFeeCreditAttributes(
