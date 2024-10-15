@@ -4,7 +4,7 @@ import { TokenPartitionTransactionType } from '../../json-rpc/TokenPartitionTran
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { TransferFungibleTokenAttributes } from '../attribute/TransferFungibleTokenAttributes.js';
 import { IPredicate } from '../predicate/IPredicate.js';
-import { IProofSigningService } from '../proof/IProofSigningService.js';
+import { IProofFactory } from '../proof/IProofFactory.js';
 import { TypeOwnerProofsAuthProof } from '../proof/TypeOwnerProofsAuthProof.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { ITransactionData } from './ITransactionData.js';
@@ -50,17 +50,20 @@ export class UnsignedTransferFungibleTokenTransactionOrder {
   }
 
   public async sign(
-    ownerProofSigner: IProofSigningService,
-    feeProofSigner: IProofSigningService,
-    tokenTypeOwnerProofs: IProofSigningService[],
+    ownerProofFactory: IProofFactory,
+    feeProofFactory: IProofFactory | null,
+    tokenTypeOwnerProofs: IProofFactory[],
   ): Promise<TransferFungibleTokenTransactionOrder> {
-    const authProof = [await this.payload.encode(this.codec), this.stateUnlock];
+    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
     const authProofBytes = await this.codec.encode(authProof);
     const ownerProof = new TypeOwnerProofsAuthProof(
-      await ownerProofSigner.sign(authProofBytes),
-      await Promise.all(tokenTypeOwnerProofs.map((signer) => signer.sign(authProofBytes))),
+      await this.codec.encode(await ownerProofFactory.create(await this.codec.encode(authProofBytes))),
+      await Promise.all(
+        tokenTypeOwnerProofs.map((factory) => factory.create(authProofBytes).then((proof) => this.codec.encode(proof))),
+      ),
     );
-    const feeProof = await feeProofSigner.sign(await this.codec.encode([...authProof, ownerProof.encode()]));
+    const feeProof =
+      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
     return new TransferFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

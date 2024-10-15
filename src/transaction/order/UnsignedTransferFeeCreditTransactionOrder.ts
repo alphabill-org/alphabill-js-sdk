@@ -8,7 +8,7 @@ import { UnitId } from '../../UnitId.js';
 import { TransferFeeCreditAttributes } from '../attribute/TransferFeeCreditAttributes.js';
 import { MoneyPartitionUnitType } from '../MoneyPartitionUnitType.js';
 import { IPredicate } from '../predicate/IPredicate.js';
-import { IProofSigningService } from '../proof/IProofSigningService.js';
+import { IProofFactory } from '../proof/IProofFactory.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { TokenPartitionUnitType } from '../TokenPartitionUnitType.js';
 import { TransactionPayload } from '../TransactionPayload.js';
@@ -80,13 +80,10 @@ export class UnsignedTransferFeeCreditTransactionOrder {
     return new UnitIdWithType(unitBytes, unitType);
   }
 
-  public async sign(
-    ownerProofSigner: IProofSigningService,
-    feeProofSigner: IProofSigningService,
-  ): Promise<TransferFeeCreditTransactionOrder> {
-    const authProof = [await this.payload.encode(this.codec), this.stateUnlock];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofSigner.sign(await this.codec.encode(authProof)));
-    const feeProof = await feeProofSigner.sign(await this.codec.encode([...authProof, ownerProof.encode()]));
+  public async sign(ownerProofFactory: IProofFactory): Promise<TransferFeeCreditTransactionOrder> {
+    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
+    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+    const feeProof = null;
     return new TransferFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

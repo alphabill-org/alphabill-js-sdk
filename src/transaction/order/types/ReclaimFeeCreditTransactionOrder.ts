@@ -20,7 +20,7 @@ export class ReclaimFeeCreditTransactionOrder extends TransactionOrder<
   public constructor(
     payload: TransactionPayload<ReclaimFeeCreditAttributes>,
     authProof: OwnerProofAuthProof,
-    feeProof: Uint8Array,
+    feeProof: Uint8Array | null,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);

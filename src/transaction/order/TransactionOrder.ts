@@ -8,7 +8,7 @@ import { PayloadArray, TransactionPayload } from '../TransactionPayload.js';
 
 type StateUnlockType = Uint8Array | null;
 type AuthProofType = unknown;
-type FeeProofType = Uint8Array;
+type FeeProofType = Uint8Array | null;
 
 export type TransactionOrderArray = readonly [...PayloadArray, StateUnlockType, AuthProofType, FeeProofType];
 
@@ -30,14 +30,14 @@ export abstract class TransactionOrder<
   protected constructor(
     public readonly payload: TransactionPayload<Attributes>,
     public readonly authProof: AuthProof,
-    private readonly _feeProof: Uint8Array,
+    private readonly _feeProof: Uint8Array | null,
     public readonly stateUnlock: IPredicate | null,
   ) {
-    this._feeProof = new Uint8Array(_feeProof);
+    this._feeProof = _feeProof ? new Uint8Array(_feeProof) : null;
   }
 
-  public get feeProof(): Uint8Array {
-    return new Uint8Array(this._feeProof);
+  public get feeProof(): Uint8Array | null {
+    return this._feeProof ? new Uint8Array(this._feeProof) : null;
   }
 
   /**
@@ -48,8 +48,8 @@ export abstract class TransactionOrder<
     return dedent`
       TransactionOrder
         ${this.payload.toString()}
-        Auth Proof: ${this.authProof.toString()}
-        Fee Proof: ${Base16Converter.encode(this._feeProof)}
+        Auth Proof: ${this.authProof?.toString() ?? null}
+        Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}
         State Unlock: ${this.stateUnlock?.toString() ?? null}`;
   }
 

@@ -1,3 +1,4 @@
+import { sha256 } from '@noble/hashes/sha256';
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { IStateProof } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
@@ -44,7 +45,10 @@ export class JsonRpcClient {
    * @see {IStateApiService.getUnitsByOwnerId}
    */
   public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
-    const response = await this.request<string[] | null>('state_getUnitsByOwnerID', Base16Converter.encode(ownerId));
+    const response = await this.request<string[] | null>(
+      'state_getUnitsByOwnerID',
+      Base16Converter.encode(sha256(ownerId)),
+    );
 
     const identifiers: IUnitId[] = [];
     for (const id of response ?? []) {
@@ -105,6 +109,7 @@ export class JsonRpcClient {
     const transactionRecordWithProof = (await this.cborCodec.decode(
       Base16Converter.decode(response.txRecordProof),
     )) as TransactionRecordWithProofArray;
+
     return transactionRecordWithProofFactory.fromArray(transactionRecordWithProof, this.cborCodec);
   }
 
@@ -114,6 +119,7 @@ export class JsonRpcClient {
   public async sendTransaction(
     transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>,
   ): Promise<Uint8Array> {
+    console.log(Base16Converter.encode(await this.cborCodec.encode(await transaction.encode(this.cborCodec))));
     const response = (await this.request(
       'state_sendTransaction',
       Base16Converter.encode(await this.cborCodec.encode(await transaction.encode(this.cborCodec))),

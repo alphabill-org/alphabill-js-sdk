@@ -4,7 +4,7 @@ import { MoneyPartitionTransactionType } from '../../json-rpc/MoneyPartitionTran
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { SwapBillsWithDustCollectorAttributes } from '../attribute/SwapBillsWithDustCollectorAttributes.js';
 import { IPredicate } from '../predicate/IPredicate.js';
-import { IProofSigningService } from '../proof/IProofSigningService.js';
+import { IProofFactory } from '../proof/IProofFactory.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { TransferBillToDustCollectorTransactionRecordWithProof } from '../record/TransferBillToDustCollectorTransactionRecordWithProof.js';
 import { TransactionPayload } from '../TransactionPayload.js';
@@ -48,12 +48,13 @@ export class UnsignedSwapBillsWithDustCollectorTransactionOrder {
   }
 
   public async sign(
-    ownerProofSigner: IProofSigningService,
-    feeProofSigner: IProofSigningService,
+    ownerProofFactory: IProofFactory,
+    feeProofFactory: IProofFactory | null,
   ): Promise<SwapBillsWithDustCollectorTransactionOrder> {
-    const authProof = [await this.payload.encode(this.codec), this.stateUnlock];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofSigner.sign(await this.codec.encode(authProof)));
-    const feeProof = await feeProofSigner.sign(await this.codec.encode([...authProof, ownerProof.encode()]));
+    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
+    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+    const feeProof =
+      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
     return new SwapBillsWithDustCollectorTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

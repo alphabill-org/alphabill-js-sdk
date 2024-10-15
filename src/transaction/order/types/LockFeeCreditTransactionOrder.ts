@@ -13,7 +13,7 @@ export class LockFeeCreditTransactionOrder extends TransactionOrder<LockFeeCredi
   public constructor(
     payload: TransactionPayload<LockFeeCreditAttributes>,
     authProof: OwnerProofAuthProof,
-    feeProof: Uint8Array,
+    feeProof: Uint8Array | null,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);

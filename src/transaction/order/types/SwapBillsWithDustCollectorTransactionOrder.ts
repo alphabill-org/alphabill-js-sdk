@@ -19,7 +19,7 @@ export class SwapBillsWithDustCollectorTransactionOrder extends TransactionOrder
   public constructor(
     payload: TransactionPayload<SwapBillsWithDustCollectorAttributes>,
     authProof: OwnerProofAuthProof,
-    feeProof: Uint8Array,
+    feeProof: Uint8Array | null,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);

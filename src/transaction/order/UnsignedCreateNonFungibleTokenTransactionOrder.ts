@@ -6,7 +6,7 @@ import { TokenUnitId } from '../../util/TokenUnitId.js';
 import { CreateNonFungibleTokenAttributes } from '../attribute/CreateNonFungibleTokenAttributes.js';
 import { INonFungibleTokenData } from '../INonFungibleTokenData.js';
 import { IPredicate } from '../predicate/IPredicate.js';
-import { IProofSigningService } from '../proof/IProofSigningService.js';
+import { IProofFactory } from '../proof/IProofFactory.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { TokenPartitionUnitType } from '../TokenPartitionUnitType.js';
 import { TransactionPayload } from '../TransactionPayload.js';
@@ -60,15 +60,13 @@ export class UnsignedCreateNonFungibleTokenTransactionOrder {
   }
 
   public async sign(
-    ownerProofSigner: IProofSigningService,
-    feeProofSigner: IProofSigningService,
+    ownerProofFactory: IProofFactory,
+    feeProofFactory: IProofFactory | null,
   ): Promise<CreateNonFungibleTokenTransactionOrder> {
-    const ownerProof = new OwnerProofAuthProof(
-      await ownerProofSigner.sign(await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock])),
-    );
-    const feeProof = await feeProofSigner.sign(
-      await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock, ownerProof.encode()]),
-    );
+    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
+    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+    const feeProof =
+      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
     return new CreateNonFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

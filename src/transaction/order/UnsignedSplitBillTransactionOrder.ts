@@ -4,7 +4,7 @@ import { MoneyPartitionTransactionType } from '../../json-rpc/MoneyPartitionTran
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { SplitBillAttributes } from '../attribute/SplitBillAttributes.js';
 import { IPredicate } from '../predicate/IPredicate.js';
-import { IProofSigningService } from '../proof/IProofSigningService.js';
+import { IProofFactory } from '../proof/IProofFactory.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { SplitBillUnit } from '../SplitBillUnit.js';
 import { TransactionPayload } from '../TransactionPayload.js';
@@ -51,12 +51,13 @@ export class UnsignedSplitBillTransactionOrder {
   }
 
   public async sign(
-    ownerProofSigner: IProofSigningService,
-    feeProofSigner: IProofSigningService,
+    ownerProofFactory: IProofFactory,
+    feeProofFactory: IProofFactory | null,
   ): Promise<SplitBillTransactionOrder> {
-    const authProof = [await this.payload.encode(this.codec), this.stateUnlock];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofSigner.sign(await this.codec.encode(authProof)));
-    const feeProof = await feeProofSigner.sign(await this.codec.encode([...authProof, ownerProof.encode()]));
+    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
+    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+    const feeProof =
+      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
     return new SplitBillTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

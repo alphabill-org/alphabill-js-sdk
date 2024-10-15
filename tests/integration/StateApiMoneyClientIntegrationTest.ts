@@ -16,9 +16,8 @@ import { UnsignedTransferBillTransactionOrder } from '../../src/transaction/orde
 import { UnsignedTransferFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedTransferFeeCreditTransactionOrder.js';
 import { UnsignedUnlockBillTransactionOrder } from '../../src/transaction/order/UnsignedUnlockBillTransactionOrder.js';
 import { UnsignedUnlockFeeCreditTransactionOrder } from '../../src/transaction/order/UnsignedUnlockFeeCreditTransactionOrder.js';
-import { AlwaysTruePredicate } from '../../src/transaction/predicate/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicate/PayToPublicKeyHashPredicate.js';
-import { AlwaysTrueProofSigningService } from '../../src/transaction/proof/AlwaysTrueProofSigningService.js';
+import { PayToPublicKeyHashProofFactory } from '../../src/transaction/proof/PayToPublicKeyHashProofFactory.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/AddFeeCreditTransactionRecordWithProof.js';
 import { CloseFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/CloseFeeCreditTransactionRecordWithProof.js';
 import { LockBillTransactionRecordWithProof } from '../../src/transaction/record/LockBillTransactionRecordWithProof.js';
@@ -31,10 +30,8 @@ import { TransferBillTransactionRecordWithProof } from '../../src/transaction/re
 import { TransferFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/TransferFeeCreditTransactionRecordWithProof.js';
 import { UnlockBillTransactionRecordWithProof } from '../../src/transaction/record/UnlockBillTransactionRecordWithProof.js';
 import { UnlockFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/UnlockFeeCreditTransactionRecordWithProof.js';
-import { UnitIdWithType } from '../../src/transaction/UnitIdWithType.js';
 import { Bill } from '../../src/unit/Bill.js';
 import { FeeCreditRecord } from '../../src/unit/FeeCreditRecord.js';
-import { UnitId } from '../../src/UnitId.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
 import config from './config/config.js';
 import { createTransactionData } from './utils/TestUtils.js';
@@ -42,12 +39,13 @@ import { createTransactionData } from './utils/TestUtils.js';
 describe('Money Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
+  const proofFactory = new PayToPublicKeyHashProofFactory(signingService, cborCodec);
 
   const moneyClient = createMoneyClient({
     transport: http(config.moneyPartitionUrl, new CborCodecNode()),
   });
 
-  let feeCreditRecordId: UnitIdWithType; // can no longer be static as hash contains timeout
+  let feeCreditRecordId: IUnitId; // can no longer be static as hash contains timeout
 
   it('Get round number and get block', async () => {
     const round = await moneyClient.getRoundNumber();
@@ -58,23 +56,9 @@ describe('Money Client Integration Tests', () => {
   });
 
   it('Get units by owner ID and get unit', async () => {
-    console.log(
-      (
-        await moneyClient.getUnit(
-          UnitId.fromBytes(
-            Base16Converter.decode('0x000000000000000000000000000000000000000000000000000000000000000001'),
-          ),
-          false,
-          Bill,
-        )
-      )?.toString(),
+    const moneyUnitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
+      (id) => id.type.toBase16() === Base16Converter.encode(new Uint8Array([MoneyPartitionUnitType.BILL])),
     );
-    console.log(
-      await moneyClient.getUnitsByOwnerId(
-        Base16Converter.decode('0x830041025820f52022bb450407d92f13bf1c53128a676bcf304818e9f41a5ef4ebeae9c0d6b0'),
-      ),
-    );
-    const moneyUnitIds: IUnitId[] = await moneyClient.getUnitsByOwnerId(signingService.publicKey);
     expect(moneyUnitIds.length).toBeGreaterThan(0);
     const moneyUnit = await moneyClient.getUnit(moneyUnitIds[0], true, Bill);
     expect(moneyUnit!.unitId).not.toBeNull();
@@ -88,6 +72,7 @@ describe('Money Client Integration Tests', () => {
 
     const bill = await moneyClient.getUnit(unitIds[0], false, Bill);
     expect(bill).not.toBeNull();
+
     const round = await moneyClient.getRoundNumber();
     const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey);
 
@@ -110,7 +95,7 @@ describe('Money Client Integration Tests', () => {
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory);
 
     const transferToFeeCreditHash = await moneyClient.sendTransaction(transferFeeCreditTransactionOrder);
 
@@ -119,10 +104,7 @@ describe('Money Client Integration Tests', () => {
       TransferFeeCreditTransactionRecordWithProof,
     );
     console.log('Transfer to fee credit successful');
-    feeCreditRecordId = new UnitIdWithType(
-      proof.transactionRecord.transactionOrder.payload.attributes.targetUnitId.bytes,
-      MoneyPartitionUnitType.FEE_CREDIT_RECORD,
-    );
+    feeCreditRecordId = transferFeeCreditTransactionOrder.payload.attributes.targetUnitId;
 
     console.log('Adding fee credit');
     const addFeeCreditTransactionOrder = await (
@@ -135,7 +117,7 @@ describe('Money Client Integration Tests', () => {
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory);
 
     const addFeeCreditHash = await moneyClient.sendTransaction(addFeeCreditTransactionOrder);
 
@@ -158,7 +140,7 @@ describe('Money Client Integration Tests', () => {
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory);
 
     const lockFeeCreditHash = await moneyClient.sendTransaction(lockFeeCreditTransactionOrder);
 
@@ -176,7 +158,7 @@ describe('Money Client Integration Tests', () => {
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory);
 
     const unlockFeeCreditHash = await moneyClient.sendTransaction(unlockFeeCreditTransactionOrder);
 
@@ -202,11 +184,11 @@ describe('Money Client Integration Tests', () => {
         {
           status: 5n,
           bill: bill,
-          ...createTransactionData(round),
+          ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory, proofFactory);
 
     const lockBillHash = await moneyClient.sendTransaction(lockBillTransactionOrder);
     await moneyClient.waitTransactionProof(lockBillHash, LockBillTransactionRecordWithProof);
@@ -220,11 +202,11 @@ describe('Money Client Integration Tests', () => {
       await UnsignedUnlockBillTransactionOrder.create(
         {
           bill: bill,
-          ...createTransactionData(round),
+          ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory, proofFactory);
     const unlockBillHash = await moneyClient.sendTransaction(unlockBillTransactionOrder);
     await moneyClient.waitTransactionProof(unlockBillHash, UnlockBillTransactionRecordWithProof);
     console.log('Unlocking bill successful');
@@ -251,11 +233,11 @@ describe('Money Client Integration Tests', () => {
             },
           ],
           bill: bill!,
-          ...createTransactionData(round),
+          ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory, proofFactory);
     const splitBillHash = await moneyClient.sendTransaction(splitBillTransactionOrder);
     await moneyClient.waitTransactionProof(splitBillHash, SplitBillTransactionRecordWithProof);
     console.log('Splitting bill successful');
@@ -278,11 +260,11 @@ describe('Money Client Integration Tests', () => {
         {
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           bill: targetBill!,
-          ...createTransactionData(round),
+          ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory, proofFactory);
     const transferBillHash = await moneyClient.sendTransaction(transferBillTransactionOrder);
     await moneyClient.waitTransactionProof(transferBillHash, TransferBillTransactionRecordWithProof);
     console.log('Transferring bill successful');
@@ -313,11 +295,11 @@ describe('Money Client Integration Tests', () => {
         {
           bill: bill!,
           targetBill: targetBill!,
-          ...createTransactionData(round),
+          ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory, proofFactory);
     const transferBillToDcHash = await moneyClient.sendTransaction(transferBillToDcTransactionOrder);
     const transactionProof = await moneyClient.waitTransactionProof(
       transferBillToDcHash,
@@ -332,11 +314,11 @@ describe('Money Client Integration Tests', () => {
           bill: targetBill!,
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           proofs: [transactionProof],
-          ...createTransactionData(round),
+          ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory, proofFactory);
     const swapBillWithDcHash = await moneyClient.sendTransaction(swapBillWithDcTransactionOrder);
     await moneyClient.waitTransactionProof(swapBillWithDcHash, SwapBillsWithDustCollectorTransactionRecordWithProof);
     console.log('Swapping bill successful');
@@ -363,7 +345,7 @@ describe('Money Client Integration Tests', () => {
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory);
     const closeFeeCreditHash = await moneyClient.sendTransaction(closeFeeCreditTransactionOrder);
     const proof = await moneyClient.waitTransactionProof(closeFeeCreditHash, CloseFeeCreditTransactionRecordWithProof);
     console.log('Closing fee credit successful');
@@ -379,80 +361,9 @@ describe('Money Client Integration Tests', () => {
         },
         cborCodec,
       )
-    ).sign(signingService, signingService);
+    ).sign(proofFactory);
     const reclaimFeeCreditHash = await moneyClient.sendTransaction(reclaimFeeCreditTransactionOrder);
     await moneyClient.waitTransactionProof(reclaimFeeCreditHash, ReclaimFeeCreditTransactionRecordWithProof);
     console.log('Reclaiming fee credit successful');
   }, 20000);
-});
-
-// TODO remove
-describe('spend initial bill', () => {
-  it('', async () => {
-    const cborCodec = new CborCodecNode();
-    const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
-    const proofSigningService = new AlwaysTrueProofSigningService(cborCodec);
-
-    const moneyClient = createMoneyClient({
-      transport: http(config.moneyPartitionUrl, cborCodec),
-    });
-
-    const initialBillId = UnitIdWithType.fromBytes(
-      Base16Converter.decode('0x000000000000000000000000000000000000000000000000000000000000000001'),
-    );
-    let bill = await moneyClient.getUnit(initialBillId, false, Bill);
-    const round = await moneyClient.getRoundNumber();
-
-    const transferFeeCreditTransactionHash = await moneyClient.sendTransaction(
-      await UnsignedTransferFeeCreditTransactionOrder.create(
-        {
-          amount: 100n,
-          targetSystemIdentifier: SystemIdentifier.MONEY_PARTITION,
-          latestAdditionTime: round + 60n,
-          feeCreditRecord: {
-            ownerPredicate: new AlwaysTruePredicate(),
-            unitType: MoneyPartitionUnitType.FEE_CREDIT_RECORD,
-          },
-          bill: bill!,
-          ...createTransactionData(round),
-        },
-        cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofSigningService, proofSigningService)),
-    );
-
-    console.log('bb');
-    const transactionProof = await moneyClient.waitTransactionProof(
-      transferFeeCreditTransactionHash,
-      TransferFeeCreditTransactionRecordWithProof,
-    );
-    const feeCreditRecordId = transactionProof.transactionRecord.transactionOrder.payload.attributes.targetUnitId;
-
-    console.log('cc');
-    const addFeeCreditTransactionHash = await moneyClient.sendTransaction(
-      await UnsignedAddFeeCreditTransactionOrder.create(
-        {
-          ownerPredicate: new AlwaysTruePredicate(),
-          proof: transactionProof,
-          feeCreditRecord: { unitId: feeCreditRecordId },
-          ...createTransactionData(round),
-        },
-        cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofSigningService, proofSigningService)),
-    );
-
-    await moneyClient.waitTransactionProof(addFeeCreditTransactionHash, AddFeeCreditTransactionRecordWithProof);
-
-    bill = await moneyClient.getUnit(initialBillId, false, Bill);
-
-    await moneyClient.sendTransaction(
-      await UnsignedTransferBillTransactionOrder.create(
-        {
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-          bill: bill!,
-          ...createTransactionData(round),
-        },
-        cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofSigningService, proofSigningService)),
-    );
-  });
 });

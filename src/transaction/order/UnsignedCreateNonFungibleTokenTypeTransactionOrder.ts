@@ -4,7 +4,7 @@ import { TokenPartitionTransactionType } from '../../json-rpc/TokenPartitionTran
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { CreateNonFungibleTokenTypeAttributes } from '../attribute/CreateNonFungibleTokenTypeAttributes.js';
 import { IPredicate } from '../predicate/IPredicate.js';
-import { IProofSigningService } from '../proof/IProofSigningService.js';
+import { IProofFactory } from '../proof/IProofFactory.js';
 import { SubTypeOwnerProofsAuthProof } from '../proof/SubTypeOwnerProofsAuthProof.js';
 import { TokenIcon } from '../TokenIcon.js';
 import { TransactionPayload } from '../TransactionPayload.js';
@@ -61,15 +61,20 @@ export class UnsignedCreateNonFungibleTokenTypeTransactionOrder {
   }
 
   public async sign(
-    feeProofSigner: IProofSigningService,
-    subTypeCreationProofs: IProofSigningService[],
+    feeProofFactory: IProofFactory | null,
+    subTypeCreationProofs: IProofFactory[],
   ): Promise<CreateNonFungibleTokenTypeTransactionOrder> {
-    const authProof = [await this.payload.encode(this.codec), this.stateUnlock];
+    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
     const authProofBytes = await this.codec.encode(authProof);
     const ownerProof = new SubTypeOwnerProofsAuthProof(
-      await Promise.all(subTypeCreationProofs.map((signer) => signer.sign(authProofBytes))),
+      await Promise.all(
+        subTypeCreationProofs.map((factory) =>
+          factory.create(authProofBytes).then((proof) => this.codec.encode(proof)),
+        ),
+      ),
     );
-    const feeProof = await feeProofSigner.sign(await this.codec.encode([...authProof, ownerProof.encode()]));
+    const feeProof =
+      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
     return new CreateNonFungibleTokenTypeTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

@@ -4,7 +4,7 @@ import { TokenPartitionTransactionType } from '../../json-rpc/TokenPartitionTran
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { UnlockTokenAttributes } from '../attribute/UnlockTokenAttributes.js';
 import { IPredicate } from '../predicate/IPredicate.js';
-import { IProofSigningService } from '../proof/IProofSigningService.js';
+import { IProofFactory } from '../proof/IProofFactory.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { ITransactionData } from './ITransactionData.js';
@@ -43,16 +43,13 @@ export class UnsignedUnlockTokenTransactionOrder {
   }
 
   public async sign(
-    ownerProofSigner: IProofSigningService,
-    feeProofSigner: IProofSigningService,
+    ownerProofFactory: IProofFactory,
+    feeProofFactory: IProofFactory | null,
   ): Promise<UnlockTokenTransactionOrder> {
-    const ownerProof = new OwnerProofAuthProof(
-      await ownerProofSigner.sign(await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock])),
-    );
-    const feeProof = await feeProofSigner.sign(
-      await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock, ownerProof.encode()]),
-    );
-
+    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
+    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+    const feeProof =
+      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
     return new UnlockTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

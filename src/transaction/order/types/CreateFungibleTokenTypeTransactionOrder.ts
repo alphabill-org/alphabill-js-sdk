@@ -22,7 +22,7 @@ export class CreateFungibleTokenTypeTransactionOrder extends TransactionOrder<
   public constructor(
     payload: TransactionPayload<CreateFungibleTokenTypeAttributes>,
     authProof: SubTypeOwnerProofsAuthProof,
-    feeProof: Uint8Array,
+    feeProof: Uint8Array | null,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);

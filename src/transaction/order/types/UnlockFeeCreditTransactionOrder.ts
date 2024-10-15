@@ -16,7 +16,7 @@ export class UnlockFeeCreditTransactionOrder extends TransactionOrder<UnlockFeeC
   public constructor(
     payload: TransactionPayload<UnlockFeeCreditAttributes>,
     authProof: OwnerProofAuthProof,
-    feeProof: Uint8Array,
+    feeProof: Uint8Array | null,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);

@@ -20,7 +20,7 @@ export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
   public constructor(
     payload: TransactionPayload<JoinFungibleTokenAttributes>,
     authProof: TypeOwnerProofsAuthProof,
-    feeProof: Uint8Array,
+    feeProof: Uint8Array | null,
     stateUnlock: IPredicate | null,
   ) {
     super(payload, authProof, feeProof, stateUnlock);
@@ -47,7 +47,7 @@ export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
         systemIdentifier,
         UnitId.fromBytes(unitId),
         TokenPartitionTransactionType.JoinFungibleToken,
-        await JoinFungibleTokenAttributes.fromArray(attributes as JoinFungibleTokenAttributesArray, cborCodec),
+        await JoinFungibleTokenAttributes.fromArray(attributes as JoinFungibleTokenAttributesArray),
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),
       ),

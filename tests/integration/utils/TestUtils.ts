@@ -3,8 +3,9 @@ import { ITransactionClientMetadata } from '../../../src/transaction/ITransactio
 import { ITransactionData } from '../../../src/transaction/order/ITransactionData.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicate/AlwaysTruePredicate.js';
 import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
+import { IUnitId } from '../../../src/IUnitId';
 
-export function createTransactionData(round: bigint, feeCreditRecordId?: UnitIdWithType): ITransactionData {
+export function createTransactionData(round: bigint, feeCreditRecordId?: IUnitId): ITransactionData {
   return {
     networkIdentifier: NetworkIdentifier.LOCAL,
     stateLock: null,
@@ -13,7 +14,7 @@ export function createTransactionData(round: bigint, feeCreditRecordId?: UnitIdW
   };
 }
 
-export function createMetadata(round: bigint, feeCreditRecordId?: UnitIdWithType): ITransactionClientMetadata {
+export function createMetadata(round: bigint, feeCreditRecordId?: IUnitId): ITransactionClientMetadata {
   return {
     maxTransactionFee: 5n,
     timeout: round + 60n,

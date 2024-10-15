@@ -4,7 +4,7 @@ import { FeeCreditTransactionType } from '../../json-rpc/FeeCreditTransactionTyp
 import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { ReclaimFeeCreditAttributes } from '../attribute/ReclaimFeeCreditAttributes.js';
 import { IPredicate } from '../predicate/IPredicate.js';
-import { IProofSigningService } from '../proof/IProofSigningService.js';
+import { IProofFactory } from '../proof/IProofFactory.js';
 import { OwnerProofAuthProof } from '../proof/OwnerProofAuthProof.js';
 import { CloseFeeCreditTransactionRecordWithProof } from '../record/CloseFeeCreditTransactionRecordWithProof.js';
 import { TransactionPayload } from '../TransactionPayload.js';
@@ -36,7 +36,7 @@ export class UnsignedReclaimFeeCreditTransactionOrder {
           data.networkIdentifier,
           SystemIdentifier.MONEY_PARTITION,
           data.bill.unitId,
-          FeeCreditTransactionType.LockFeeCredit,
+          FeeCreditTransactionType.ReclaimFeeCredit,
           new ReclaimFeeCreditAttributes(data.proof),
           data.stateLock,
           data.metadata,
@@ -47,13 +47,10 @@ export class UnsignedReclaimFeeCreditTransactionOrder {
     );
   }
 
-  public async sign(
-    ownerProofSigner: IProofSigningService,
-    feeProofSigner: IProofSigningService,
-  ): Promise<ReclaimFeeCreditTransactionOrder> {
-    const authProof = [await this.payload.encode(this.codec), this.stateUnlock];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofSigner.sign(await this.codec.encode(authProof)));
-    const feeProof = await feeProofSigner.sign(await this.codec.encode([...authProof, ownerProof.encode()]));
+  public async sign(ownerProofFactory: IProofFactory): Promise<ReclaimFeeCreditTransactionOrder> {
+    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
+    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+    const feeProof = null;
     return new ReclaimFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

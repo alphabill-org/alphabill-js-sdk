@@ -5,7 +5,7 @@ import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { UpdateNonFungibleTokenAttributes } from '../attribute/UpdateNonFungibleTokenAttributes.js';
 import { INonFungibleTokenData } from '../INonFungibleTokenData.js';
 import { IPredicate } from '../predicate/IPredicate.js';
-import { IProofSigningService } from '../proof/IProofSigningService.js';
+import { IProofFactory } from '../proof/IProofFactory.js';
 import { TypeDataUpdateProofsAuthProof } from '../proof/TypeDataUpdateProofsAuthProof.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 import { ITransactionData } from './ITransactionData.js';
@@ -45,17 +45,22 @@ export class UnsignedUpdateNonFungibleTokenTransactionOrder {
   }
 
   public async sign(
-    ownerProofSigner: IProofSigningService,
-    feeProofSigner: IProofSigningService,
-    tokenTypeDataUpdateProofs: IProofSigningService[],
+    ownerProofFactory: IProofFactory,
+    feeProofFactory: IProofFactory | null,
+    tokenTypeDataUpdateProofs: IProofFactory[],
   ): Promise<UpdateNonFungibleTokenTransactionOrder> {
-    const authProof = [await this.payload.encode(this.codec), this.stateUnlock];
+    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
     const authProofBytes = await this.codec.encode(authProof);
     const ownerProof = new TypeDataUpdateProofsAuthProof(
-      await ownerProofSigner.sign(authProofBytes),
-      await Promise.all(tokenTypeDataUpdateProofs.map((signer) => signer.sign(authProofBytes))),
+      await this.codec.encode(await ownerProofFactory.create(await this.codec.encode(authProofBytes))),
+      await Promise.all(
+        tokenTypeDataUpdateProofs.map((factory) =>
+          factory.create(authProofBytes).then((proof) => this.codec.encode(proof)),
+        ),
+      ),
     );
-    const feeProof = await feeProofSigner.sign(await this.codec.encode([...authProof, ownerProof.encode()]));
+    const feeProof =
+      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
     return new UpdateNonFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

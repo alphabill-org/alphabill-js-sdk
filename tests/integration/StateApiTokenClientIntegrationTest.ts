@@ -95,7 +95,7 @@ describe('Token Client Integration Tests', () => {
         ...createTransactionData(round),
       },
       cborCodec,
-    ).then((transactionOrder) => transactionOrder.sign(signingService, signingService));
+    ).then((transactionOrder) => transactionOrder.sign(signingService));
 
     const transferFeeCreditHash = await moneyClient.sendTransaction(transferFeeCreditTransactionOrder);
 
