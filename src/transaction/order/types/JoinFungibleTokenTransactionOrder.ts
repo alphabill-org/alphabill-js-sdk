@@ -1,4 +1,3 @@
-import { ICborCodec } from '../../../codec/cbor/ICborCodec.js';
 import { TokenPartitionTransactionType } from '../../../json-rpc/TokenPartitionTransactionType.js';
 import { UnitId } from '../../../UnitId.js';
 import {
@@ -26,21 +25,18 @@ export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray(
-    [
-      networkIdentifier,
-      systemIdentifier,
-      unitId,
-      ,
-      attributes,
-      stateLock,
-      clientMetadata,
-      stateUnlock,
-      authProof,
-      feeProof,
-    ]: TransactionOrderArray,
-    cborCodec: ICborCodec,
-  ): Promise<JoinFungibleTokenTransactionOrder> {
+  public static async fromArray([
+    networkIdentifier,
+    systemIdentifier,
+    unitId,
+    ,
+    attributes,
+    stateLock,
+    clientMetadata,
+    stateUnlock,
+    authProof,
+    feeProof,
+  ]: TransactionOrderArray): Promise<JoinFungibleTokenTransactionOrder> {
     return new JoinFungibleTokenTransactionOrder(
       new TransactionPayload(
         networkIdentifier,

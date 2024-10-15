@@ -16,7 +16,7 @@ export type CreateFungibleTokenTypeAttributesArray = readonly [
   Uint8Array | null, // Parent Type ID
   number, // Decimal places
   Uint8Array, // SubType Creation Predicate
-  Uint8Array, // Token creation predicate
+  Uint8Array, // Token minting predicate
   Uint8Array, // Token type owner predicate
 ];
 
@@ -32,7 +32,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
    * @param {IUnitId | null} parentTypeId Parent type ID.
    * @param {number} decimalPlaces Decimal places.
    * @param {IPredicate} subTypeCreationPredicate Predicate clause that controls defining new subtypes of this type.
-   * @param {IPredicate} tokenCreationPredicate Predicate clause that controls minting new tokens of this type.
+   * @param {IPredicate} tokenMintingPredicate Predicate clause that controls minting new tokens of this type.
    * @param {IPredicate} tokenTypeOwnerPredicate Predicate clause that all tokens of this type (and of subtypes of this type) inherit into their owner predicates.
    */
   public constructor(
@@ -42,7 +42,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
     public readonly parentTypeId: IUnitId | null,
     public readonly decimalPlaces: number,
     public readonly subTypeCreationPredicate: IPredicate,
-    public readonly tokenCreationPredicate: IPredicate,
+    public readonly tokenMintingPredicate: IPredicate,
     public readonly tokenTypeOwnerPredicate: IPredicate,
   ) {}
 
@@ -58,7 +58,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
     parentTypeId,
     decimalPlaces,
     subTypeCreationPredicate,
-    tokenCreationPredicate,
+    tokenMintingPredicate,
     tokenTypeOwnerPredicate,
   ]: CreateFungibleTokenTypeAttributesArray): CreateFungibleTokenTypeAttributes {
     return new CreateFungibleTokenTypeAttributes(
@@ -68,7 +68,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
       parentTypeId ? UnitId.fromBytes(parentTypeId) : null,
       decimalPlaces,
       new PredicateBytes(subTypeCreationPredicate),
-      new PredicateBytes(tokenCreationPredicate),
+      new PredicateBytes(tokenMintingPredicate),
       new PredicateBytes(tokenTypeOwnerPredicate),
     );
   }
@@ -86,7 +86,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
         Parent Type ID: ${this.parentTypeId?.toString() ?? 'null'}
         Decimal Places: ${this.decimalPlaces}
         Sub Type Creation Predicate: ${this.subTypeCreationPredicate.toString()}
-        Token Creation Predicate: ${this.tokenCreationPredicate.toString()}
+        Token Minting Predicate: ${this.tokenMintingPredicate.toString()}
         Token Type Owner Predicate: ${this.tokenTypeOwnerPredicate.toString()}`;
   }
 
@@ -101,7 +101,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
       this.parentTypeId?.bytes || null,
       this.decimalPlaces,
       this.subTypeCreationPredicate.bytes,
-      this.tokenCreationPredicate.bytes,
+      this.tokenMintingPredicate.bytes,
       this.tokenTypeOwnerPredicate.bytes,
     ]);
   }

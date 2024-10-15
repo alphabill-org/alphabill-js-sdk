@@ -18,7 +18,7 @@ interface ICreateNonFungibleTokenTypeTransactionData extends ITransactionData {
   icon: { type: string; data: Uint8Array };
   parentTypeId: IUnitId | null;
   subTypeCreationPredicate: IPredicate;
-  tokenCreationPredicate: IPredicate;
+  tokenMintingPredicate: IPredicate;
   tokenTypeOwnerPredicate: IPredicate;
   dataUpdatePredicate: IPredicate;
 }
@@ -47,7 +47,7 @@ export class UnsignedCreateNonFungibleTokenTypeTransactionOrder {
             new TokenIcon(data.icon.type, data.icon.data),
             data.parentTypeId,
             data.subTypeCreationPredicate,
-            data.tokenCreationPredicate,
+            data.tokenMintingPredicate,
             data.tokenTypeOwnerPredicate,
             data.dataUpdatePredicate,
           ),

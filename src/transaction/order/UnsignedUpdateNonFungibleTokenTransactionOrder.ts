@@ -33,7 +33,7 @@ export class UnsignedUpdateNonFungibleTokenTransactionOrder {
           data.networkIdentifier,
           SystemIdentifier.TOKEN_PARTITION,
           data.token.unitId,
-          TokenPartitionTransactionType.LockToken,
+          TokenPartitionTransactionType.UpdateNonFungibleToken,
           new UpdateNonFungibleTokenAttributes(data.data, data.token.counter),
           data.stateLock,
           data.metadata,

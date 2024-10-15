@@ -15,7 +15,7 @@ export type CreateNonFungibleTokenTypeAttributesArray = readonly [
   TokenIconArray, // Icon
   Uint8Array | null, // Parent Type ID
   Uint8Array, // SubType Creation Predicate
-  Uint8Array, // Token Creation Predicate
+  Uint8Array, // Token Minting Predicate
   Uint8Array, // Token Type Owner Predicate
   Uint8Array, // Data Update Predicate
 ];
@@ -31,7 +31,7 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
    * @param {TokenIcon} icon Icon.
    * @param {IUnitId | null} parentTypeId Parent type ID.
    * @param {IPredicate} subTypeCreationPredicate Predicate clause that controls defining new subtypes of this type.
-   * @param {IPredicate} tokenCreationPredicate Predicate clause that controls minting new tokens of this type.
+   * @param {IPredicate} tokenMintingPredicate Predicate clause that controls minting new tokens of this type.
    * @param {IPredicate} tokenTypeOwnerPredicate Predicate clause that all tokens of this type (and of subtypes of this type) inherit into their owner predicates.
    * @param {IPredicate} dataUpdatePredicate Predicate clause that all tokens of this type (and of subtypes of this type) inherit into their data update predicates.
    */
@@ -41,7 +41,7 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
     public readonly icon: TokenIcon,
     public readonly parentTypeId: IUnitId | null,
     public readonly subTypeCreationPredicate: IPredicate,
-    public readonly tokenCreationPredicate: IPredicate,
+    public readonly tokenMintingPredicate: IPredicate,
     public readonly tokenTypeOwnerPredicate: IPredicate,
     public readonly dataUpdatePredicate: IPredicate,
   ) {}
@@ -57,7 +57,7 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
     icon,
     parentTypeId,
     subTypeCreationPredicate,
-    tokenCreationPredicate,
+    tokenMintingPredicate,
     tokenTypeOwnerPredicate,
     dataUpdatePredicate,
   ]: CreateNonFungibleTokenTypeAttributesArray): CreateNonFungibleTokenTypeAttributes {
@@ -67,7 +67,7 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
       TokenIcon.fromArray(icon),
       parentTypeId ? UnitId.fromBytes(parentTypeId) : null,
       new PredicateBytes(subTypeCreationPredicate),
-      new PredicateBytes(tokenCreationPredicate),
+      new PredicateBytes(tokenMintingPredicate),
       new PredicateBytes(tokenTypeOwnerPredicate),
       new PredicateBytes(dataUpdatePredicate),
     );
@@ -85,7 +85,7 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
         Icon: ${this.icon.toString()}
         Parent Type ID: ${this.parentTypeId?.toString() ?? 'null'}
         Sub Type Creation Predicate: ${this.subTypeCreationPredicate.toString()}
-        Token Creation Predicate: ${this.tokenCreationPredicate.toString()}
+        Token Minting Predicate: ${this.tokenMintingPredicate.toString()}
         Token Type Owner Predicate: ${this.tokenTypeOwnerPredicate.toString()}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}`;
   }
@@ -100,7 +100,7 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
       this.icon.encode(),
       this.parentTypeId?.bytes || null,
       this.subTypeCreationPredicate.bytes,
-      this.tokenCreationPredicate.bytes,
+      this.tokenMintingPredicate.bytes,
       this.tokenTypeOwnerPredicate.bytes,
       this.dataUpdatePredicate.bytes,
     ]);

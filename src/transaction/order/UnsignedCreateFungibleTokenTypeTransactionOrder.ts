@@ -19,7 +19,7 @@ interface ICreateFungibleTokenTypeTransactionData extends ITransactionData {
   parentTypeId: IUnitId | null;
   decimalPlaces: number;
   subTypeCreationPredicate: IPredicate;
-  tokenCreationPredicate: IPredicate;
+  tokenMintingPredicate: IPredicate;
   tokenTypeOwnerPredicate: IPredicate;
 }
 
@@ -48,7 +48,7 @@ export class UnsignedCreateFungibleTokenTypeTransactionOrder {
             data.parentTypeId,
             data.decimalPlaces,
             data.subTypeCreationPredicate,
-            data.tokenCreationPredicate,
+            data.tokenMintingPredicate,
             data.tokenTypeOwnerPredicate,
           ),
           data.stateLock,

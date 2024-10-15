@@ -31,7 +31,7 @@ export class UnsignedUnlockTokenTransactionOrder {
           data.networkIdentifier,
           SystemIdentifier.TOKEN_PARTITION,
           data.token.unitId,
-          TokenPartitionTransactionType.LockToken,
+          TokenPartitionTransactionType.UnlockToken,
           new UnlockTokenAttributes(data.token.counter),
           data.stateLock,
           data.metadata,

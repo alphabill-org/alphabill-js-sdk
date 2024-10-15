@@ -12,6 +12,6 @@ export interface IFungibleTokenTypeDto {
   parentTypeId: string;
   decimalPlaces: number;
   subTypeCreationPredicate: string;
-  tokenCreationPredicate: string;
-  invariantPredicate: string;
+  tokenMintingPredicate: string;
+  tokenTypeOwnerPredicate: string;
 }

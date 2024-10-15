@@ -148,7 +148,7 @@ describe('Token Client Integration Tests', () => {
           parentTypeId: null,
           decimalPlaces: 8,
           subTypeCreationPredicate: new AlwaysTruePredicate(),
-          tokenCreationPredicate: new AlwaysTruePredicate(),
+          tokenMintingPredicate: new AlwaysTruePredicate(),
           tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
           ...createTransactionData(round, feeCreditRecordId),
         },
@@ -190,6 +190,8 @@ describe('Token Client Integration Tests', () => {
     it('Split, burn and join', async () => {
       const round = await tokenClient.getRoundNumber();
       const token = await tokenClient.getUnit(tokenUnitId, false, FungibleToken);
+      expect(token).not.toBeNull();
+
       console.log('Splitting fungible token...');
       const splitFungibleTokenTransactionOrder = await UnsignedSplitFungibleTokenTransactionOrder.create(
         {
@@ -258,6 +260,7 @@ describe('Token Client Integration Tests', () => {
     it('Transfer', async () => {
       const round = await tokenClient.getRoundNumber();
       const token = await tokenClient.getUnit(tokenUnitId, false, FungibleToken);
+      expect(token).not.toBeNull();
 
       console.log('Transferring fungible token...');
       const transferFungibleTokenTransactionOrder = await UnsignedTransferFungibleTokenTransactionOrder.create(
@@ -282,6 +285,7 @@ describe('Token Client Integration Tests', () => {
     it('Lock and unlock', async () => {
       const round = await tokenClient.getRoundNumber();
       const token = await tokenClient.getUnit(tokenUnitId, false, FungibleToken);
+      expect(token).not.toBeNull();
 
       console.log('Locking fungible token...');
       const lockFungibleTokenTransactionOrder = await UnsignedLockTokenTransactionOrder.create(
@@ -333,7 +337,7 @@ describe('Token Client Integration Tests', () => {
             icon: { type: 'image/png', data: new Uint8Array() },
             parentTypeId: null,
             subTypeCreationPredicate: new AlwaysTruePredicate(),
-            tokenCreationPredicate: new AlwaysTruePredicate(),
+            tokenMintingPredicate: new AlwaysTruePredicate(),
             tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
             dataUpdatePredicate: new AlwaysTruePredicate(),
             ...createTransactionData(round, feeCreditRecordId),

@@ -23,8 +23,8 @@ export class FungibleTokenType {
    * @param {IUnitId} parentTypeId Parent type ID.
    * @param {number} decimalPlaces Decimal places.
    * @param {IPredicate} subTypeCreationPredicate Sub type creation predicate.
-   * @param {IPredicate} tokenCreationPredicate Token creation predicate.
-   * @param {IPredicate} invariantPredicate Invariant predicate.
+   * @param {IPredicate} tokenMintingPredicate Token minting predicate.
+   * @param {IPredicate} tokenTypeOwnerPredicate Token type owner predicate.
    * @param {IStateProof | null} stateProof State proof.
    */
   public constructor(
@@ -36,8 +36,8 @@ export class FungibleTokenType {
     public readonly parentTypeId: IUnitId | null,
     public readonly decimalPlaces: number,
     public readonly subTypeCreationPredicate: IPredicate,
-    public readonly tokenCreationPredicate: IPredicate,
-    public readonly invariantPredicate: IPredicate,
+    public readonly tokenMintingPredicate: IPredicate,
+    public readonly tokenTypeOwnerPredicate: IPredicate,
     public readonly stateProof: IStateProof | null,
   ) {}
 
@@ -64,8 +64,8 @@ export class FungibleTokenType {
       UnitId.fromBytes(Base16Converter.decode(data.parentTypeId)),
       data.decimalPlaces,
       new PredicateBytes(Base64Converter.decode(data.subTypeCreationPredicate)),
-      new PredicateBytes(Base64Converter.decode(data.tokenCreationPredicate)),
-      new PredicateBytes(Base64Converter.decode(data.invariantPredicate)),
+      new PredicateBytes(Base64Converter.decode(data.tokenMintingPredicate)),
+      new PredicateBytes(Base64Converter.decode(data.tokenTypeOwnerPredicate)),
       stateProof,
     );
   }
@@ -85,7 +85,7 @@ export class FungibleTokenType {
         Decimal Places: ${this.decimalPlaces}
         Parent Type ID: ${this.parentTypeId?.toString() ?? 'null'}
         Sub Type Creation Predicate: ${this.subTypeCreationPredicate.toString()}
-        Token Creation Predicate: ${this.tokenCreationPredicate.toString()}
-        Invariant Predicate: ${this.invariantPredicate.toString()}`;
+        Token Minting Predicate: ${this.tokenMintingPredicate.toString()}
+        Token Type Owner Predicate: ${this.tokenTypeOwnerPredicate.toString()}`;
   }
 }

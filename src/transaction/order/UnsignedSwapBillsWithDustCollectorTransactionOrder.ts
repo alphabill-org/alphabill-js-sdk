@@ -36,7 +36,7 @@ export class UnsignedSwapBillsWithDustCollectorTransactionOrder {
           data.networkIdentifier,
           SystemIdentifier.MONEY_PARTITION,
           data.bill.unitId,
-          MoneyPartitionTransactionType.LockBill,
+          MoneyPartitionTransactionType.SwapBillsWithDustCollector,
           new SwapBillsWithDustCollectorAttributes(data.proofs),
           data.stateLock,
           data.metadata,

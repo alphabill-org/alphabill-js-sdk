@@ -11,7 +11,7 @@ export interface INonFungibleTokenTypeDto {
   };
   parentTypeId: string;
   subTypeCreationPredicate: string;
-  tokenCreationPredicate: string;
-  invariantPredicate: string;
+  tokenMintingPredicate: string;
+  tokenTypeOwnerPredicate: string;
   dataUpdatePredicate: string;
 }

@@ -40,7 +40,7 @@ export class UnsignedTransferBillToDustCollectorTransactionOrder {
           data.networkIdentifier,
           SystemIdentifier.MONEY_PARTITION,
           data.bill.unitId,
-          MoneyPartitionTransactionType.LockBill,
+          MoneyPartitionTransactionType.TransferBillToDustCollector,
           new TransferBillToDustCollectorAttributes(
             data.bill.value,
             data.targetBill.unitId,
