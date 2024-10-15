@@ -92,7 +92,7 @@ export class UnsignedTransferFeeCreditTransactionOrder {
         await this.codec.encode([
           await this.payload.encode(this.codec),
           this.stateUnlock,
-          ownerProof.encode(this.codec),
+          ownerProof.encode(),
         ]),
       ),
     );

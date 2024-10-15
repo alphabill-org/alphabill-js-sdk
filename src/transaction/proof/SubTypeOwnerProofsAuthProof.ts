@@ -8,7 +8,7 @@ export class SubTypeOwnerProofsAuthProof implements ITransactionOrderProof {
     this._subTypeCreationProofs = this._subTypeCreationProofs.map((proof) => new Uint8Array(proof));
   }
 
-  public get subTypeCreationProofs(): (Uint8Array | null)[] {
+  public get subTypeCreationProofs(): Uint8Array[] {
     return this._subTypeCreationProofs.map((proof) => new Uint8Array(proof));
   }
 
@@ -17,7 +17,7 @@ export class SubTypeOwnerProofsAuthProof implements ITransactionOrderProof {
     return new SubTypeOwnerProofsAuthProof(tokenTypeOwnerProofs);
   }
 
-  public encode(cborCodec: ICborCodec): Promise<Uint8Array> {
-    return cborCodec.encode([this.subTypeCreationProofs]);
+  public encode(): SubTypeOwnerProofsAuthProofArray {
+    return [this.subTypeCreationProofs];
   }
 }

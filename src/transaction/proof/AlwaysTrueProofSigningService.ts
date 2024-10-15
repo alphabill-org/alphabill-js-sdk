@@ -4,6 +4,6 @@ export class AlwaysTrueProofSigningService {
   public constructor(private readonly cborCodec: ICborCodec) {}
 
   public sign(): Promise<Uint8Array> {
-    return this.cborCodec.encode([null]);
+    return this.cborCodec.encode(null);
   }
 }

@@ -57,11 +57,7 @@ export class UnsignedCloseFeeCreditTransactionOrder {
     );
     const feeProof = new OwnerProofAuthProof(
       await feeProofSigner.sign(
-        await this.codec.encode([
-          await this.payload.encode(this.codec),
-          this.stateUnlock,
-          ownerProof.encode(this.codec),
-        ]),
+        await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock, ownerProof.encode()]),
       ),
     );
     return new CloseFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);

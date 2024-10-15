@@ -4,7 +4,7 @@ import { LockBillAttributes, LockBillAttributesArray } from '../../attribute/Loc
 import { ClientMetadata } from '../../ClientMetadata.js';
 import { IPredicate } from '../../predicate/IPredicate.js';
 import { PredicateBytes } from '../../predicate/PredicateBytes.js';
-import { OwnerProofAuthProof } from '../../proof/OwnerProofAuthProof.js';
+import { OwnerProofAuthProof, OwnerProofAuthProofArray } from '../../proof/OwnerProofAuthProof.js';
 import { StateLock } from '../../StateLock.js';
 import { TransactionPayload } from '../../TransactionPayload.js';
 import { TransactionOrder, TransactionOrderArray } from '../TransactionOrder.js';
@@ -50,8 +50,8 @@ export class LockBillTransactionOrder extends TransactionOrder<
         stateLock ? StateLock.fromArray(stateLock) : null,
         ClientMetadata.fromArray(clientMetadata),
       ),
-      await OwnerProofAuthProof.decode(authProof, cborCodec),
-      await OwnerProofAuthProof.decode(feeProof, cborCodec),
+      await OwnerProofAuthProof.decode(authProof as OwnerProofAuthProofArray),
+      await OwnerProofAuthProof.decode(feeProof as OwnerProofAuthProofArray),
       stateUnlock ? new PredicateBytes(stateUnlock) : null,
     );
   }

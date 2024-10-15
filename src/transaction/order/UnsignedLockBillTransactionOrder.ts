@@ -52,11 +52,7 @@ export class UnsignedLockBillTransactionOrder {
     );
     const feeProof = new OwnerProofAuthProof(
       await feeProofSigner.sign(
-        await this.codec.encode([
-          await this.payload.encode(this.codec),
-          this.stateUnlock,
-          ownerProof.encode(this.codec),
-        ]),
+        await this.codec.encode([await this.payload.encode(this.codec), this.stateUnlock, ownerProof.encode()]),
       ),
     );
 

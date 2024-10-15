@@ -12,12 +12,11 @@ export class OwnerProofAuthProof implements ITransactionOrderProof {
     return new Uint8Array(this._ownerProof);
   }
 
-  public static async decode(data: Uint8Array, cborCodec: ICborCodec): Promise<OwnerProofAuthProof> {
-    const [ownerProof] = (await cborCodec.decode(data)) as OwnerProofAuthProofArray;
-    return new OwnerProofAuthProof(ownerProof);
+  public static decode([ownerProof]: OwnerProofAuthProofArray): Promise<OwnerProofAuthProof> {
+    return Promise.resolve(new OwnerProofAuthProof(ownerProof));
   }
 
-  public encode(cborCodec: ICborCodec): Promise<Uint8Array> {
-    return cborCodec.encode([this.ownerProof]);
+  public encode(): OwnerProofAuthProofArray {
+    return [this.ownerProof];
   }
 }

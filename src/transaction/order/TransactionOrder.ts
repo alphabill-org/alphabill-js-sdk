@@ -6,8 +6,8 @@ import { ITransactionOrderProof } from '../proof/ITransactionOrderProof.js';
 import { PayloadArray, TransactionPayload } from '../TransactionPayload.js';
 
 type StateUnlockType = Uint8Array | null;
-type AuthProofType = Uint8Array;
-type FeeProofType = Uint8Array;
+type AuthProofType = unknown;
+type FeeProofType = unknown;
 
 export type TransactionOrderArray = readonly [...PayloadArray, StateUnlockType, AuthProofType, FeeProofType];
 
@@ -48,11 +48,12 @@ export abstract class TransactionOrder<
   }
 
   public async encode(cborCodec: ICborCodec): Promise<TransactionOrderArray> {
+    console.log(this.authProof.encode());
     return [
       ...(await this.payload.encode(cborCodec)),
       this.stateUnlock?.bytes ?? null,
-      await this.authProof.encode(cborCodec),
-      await this.feeProof.encode(cborCodec),
+      await this.authProof.encode(),
+      await this.feeProof.encode(),
     ];
   }
 }

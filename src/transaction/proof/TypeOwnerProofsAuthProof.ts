@@ -16,7 +16,7 @@ export class TypeOwnerProofsAuthProof implements ITransactionOrderProof {
     return new Uint8Array(this._ownerProof);
   }
 
-  public get typeOwnerProofs(): (Uint8Array | null)[] {
+  public get typeOwnerProofs(): Uint8Array[] {
     return this._typeOwnerProofs.map((proof) => new Uint8Array(proof));
   }
 
@@ -25,7 +25,7 @@ export class TypeOwnerProofsAuthProof implements ITransactionOrderProof {
     return new TypeOwnerProofsAuthProof(ownerProof, tokenTypeOwnerProofs);
   }
 
-  public encode(cborCodec: ICborCodec): Promise<Uint8Array> {
-    return cborCodec.encode([this.ownerProof, this.typeOwnerProofs]);
+  public encode(): TypeOwnerProofsAuthProofArray {
+    return [this.ownerProof, this.typeOwnerProofs];
   }
 }
