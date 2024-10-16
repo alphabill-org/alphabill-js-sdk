@@ -40,7 +40,6 @@ export abstract class TransactionOrder<
     return this._feeProof ? new Uint8Array(this._feeProof) : null;
   }
 
-
   // TODO: Fix authproof logging
   /**
    * Convert to string.

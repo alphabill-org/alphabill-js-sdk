@@ -1,4 +1,3 @@
-import { numberToBytesBE } from '@noble/curves/abstract/utils';
 import { sha256 } from '@noble/hashes/sha256';
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../IUnitId.js';
@@ -6,7 +5,6 @@ import { ITransactionClientMetadata } from '../transaction/ITransactionClientMet
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { TokenPartitionUnitType } from '../transaction/TokenPartitionUnitType.js';
 import { UnitIdWithType } from '../transaction/UnitIdWithType.js';
-import { Base16Converter } from './Base16Converter';
 
 export class TokenUnitId {
   public static async create(

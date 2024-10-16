@@ -24,7 +24,7 @@ import { UnsignedUnlockTokenTransactionOrder } from '../../src/transaction/order
 import { UnsignedUpdateNonFungibleTokenTransactionOrder } from '../../src/transaction/order/UnsignedUpdateNonFungibleTokenTransactionOrder.js';
 import { AlwaysTruePredicate } from '../../src/transaction/predicate/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicate/PayToPublicKeyHashPredicate.js';
-import { AlwaysTrueProofFactory } from '../../src/transaction/proof/AlwaysTrueProofFactory';
+import { AlwaysTrueProofFactory } from '../../src/transaction/proof/AlwaysTrueProofFactory.js';
 import { PayToPublicKeyHashProofFactory } from '../../src/transaction/proof/PayToPublicKeyHashProofFactory.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/AddFeeCreditTransactionRecordWithProof.js';
 import { BurnFungibleTokenTransactionRecordWithProof } from '../../src/transaction/record/BurnFungibleTokenTransactionRecordWithProof.js';
@@ -35,6 +35,7 @@ import { CreateNonFungibleTokenTypeTransactionRecordWithProof } from '../../src/
 import { JoinFungibleTokenTransactionRecordWithProof } from '../../src/transaction/record/JoinFungibleTokenTransactionRecordWithProof.js';
 import { LockTokenTransactionRecordWithProof } from '../../src/transaction/record/LockTokenTransactionRecordWithProof.js';
 import { SplitFungibleTokenTransactionRecordWithProof } from '../../src/transaction/record/SplitFungibleTokenTransactionRecordWithProof.js';
+import { TransactionStatus } from '../../src/transaction/record/TransactionStatus.js';
 import { TransferFeeCreditTransactionRecordWithProof } from '../../src/transaction/record/TransferFeeCreditTransactionRecordWithProof.js';
 import { TransferFungibleTokenTransactionRecordWithProof } from '../../src/transaction/record/TransferFungibleTokenTransactionRecordWithProof.js';
 import { TransferNonFungibleTokenTransactionRecordWithProof } from '../../src/transaction/record/TransferNonFungibleTokenTransactionRecordWithProof.js';
@@ -53,7 +54,6 @@ import { UnitId } from '../../src/UnitId.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
 import config from './config/config.js';
 import { createTransactionData } from './utils/TestUtils.js';
-import { TransactionStatus } from '../../src/transaction/record/TransactionStatus';
 
 describe('Token Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
@@ -223,9 +223,7 @@ describe('Token Client Integration Tests', () => {
         splitFungibleTokenHash,
         SplitFungibleTokenTransactionRecordWithProof,
       );
-      expect(splitBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(
-        TransactionStatus.Successful,
-      );
+      expect(splitBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token split successful');
 
       const splitTokenId = splitBillProof.transactionRecord.serverMetadata.targetUnits
@@ -257,9 +255,7 @@ describe('Token Client Integration Tests', () => {
         burnFungibleTokenHash,
         BurnFungibleTokenTransactionRecordWithProof,
       );
-      expect(burnProof.transactionRecord.serverMetadata.successIndicator).toEqual(
-        TransactionStatus.Successful,
-      );
+      expect(burnProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token burn successful');
 
       console.log('Joining fungible token...');
@@ -274,7 +270,10 @@ describe('Token Client Integration Tests', () => {
 
       const joinFungibleTokenHash = await tokenClient.sendTransaction(joinFungibleTokenTransactionOrder);
 
-      const joinProof = await tokenClient.waitTransactionProof(joinFungibleTokenHash, JoinFungibleTokenTransactionRecordWithProof);
+      const joinProof = await tokenClient.waitTransactionProof(
+        joinFungibleTokenHash,
+        JoinFungibleTokenTransactionRecordWithProof,
+      );
       expect(joinProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token join successful');
     }, 20000);
@@ -436,7 +435,9 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(alwaysTrueProofFactory, proofFactory, [alwaysTrueProofFactory]));
+      ).then((transactionOrder) =>
+        transactionOrder.sign(alwaysTrueProofFactory, proofFactory, [alwaysTrueProofFactory]),
+      );
 
       const updateNonFungibleTokenHash = await tokenClient.sendTransaction(updateNonFungibleTokenTransactionOrder);
 

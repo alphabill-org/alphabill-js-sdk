@@ -10,7 +10,6 @@ import { TypeDataUpdateProofsAuthProof } from '../proof/TypeDataUpdateProofsAuth
 import { TransactionPayload } from '../TransactionPayload.js';
 import { ITransactionData } from './ITransactionData.js';
 import { UpdateNonFungibleTokenTransactionOrder } from './types/UpdateNonFungibleTokenTransactionOrder.js';
-import { TypeOwnerProofsAuthProof } from '../proof/TypeOwnerProofsAuthProof';
 
 interface IUpdateNonFungibleTokenTransactionData extends ITransactionData {
   token: { unitId: IUnitId; counter: bigint };
