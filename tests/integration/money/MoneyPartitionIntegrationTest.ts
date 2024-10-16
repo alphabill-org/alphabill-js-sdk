@@ -32,6 +32,7 @@ import { createMoneyClient, http } from '../../../src/StateApiClientFactory.js';
 import { SystemIdentifier } from '../../../src/SystemIdentifier.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
+import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
 import config from '../config/config.js';
 import { createTransactionData } from '../utils/TestUtils.js';
@@ -97,13 +98,17 @@ describe('Money Client Integration Tests', () => {
       )
     ).sign(proofFactory);
 
-    const transferToFeeCreditHash = await moneyClient.sendTransaction(transferFeeCreditTransactionOrder);
+    const transferFeeCreditHash = await moneyClient.sendTransaction(transferFeeCreditTransactionOrder);
 
-    const proof = await moneyClient.waitTransactionProof(
-      transferToFeeCreditHash,
+    const transferFeeCreditProof = await moneyClient.waitTransactionProof(
+      transferFeeCreditHash,
       TransferFeeCreditTransactionRecordWithProof,
     );
+    expect(transferFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+      TransactionStatus.Successful,
+    );
     console.log('Transfer to fee credit successful');
+
     feeCreditRecordId = transferFeeCreditTransactionOrder.payload.attributes.targetUnitId;
 
     console.log('Adding fee credit');
@@ -112,7 +117,7 @@ describe('Money Client Integration Tests', () => {
         {
           targetSystemIdentifier: SystemIdentifier.MONEY_PARTITION,
           ownerPredicate: ownerPredicate,
-          proof: proof,
+          proof: transferFeeCreditProof,
           feeCreditRecord: { unitId: feeCreditRecordId },
           ...createTransactionData(round),
         },
@@ -122,7 +127,11 @@ describe('Money Client Integration Tests', () => {
 
     const addFeeCreditHash = await moneyClient.sendTransaction(addFeeCreditTransactionOrder);
 
-    await moneyClient.waitTransactionProof(addFeeCreditHash, AddFeeCreditTransactionRecordWithProof);
+    const addFeeCreditProof = await moneyClient.waitTransactionProof(
+      addFeeCreditHash,
+      AddFeeCreditTransactionRecordWithProof,
+    );
+    expect(addFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Adding fee credit successful');
   }, 20000);
 
@@ -145,7 +154,11 @@ describe('Money Client Integration Tests', () => {
 
     const lockFeeCreditHash = await moneyClient.sendTransaction(lockFeeCreditTransactionOrder);
 
-    await moneyClient.waitTransactionProof(lockFeeCreditHash, LockFeeCreditTransactionRecordWithProof);
+    const lockFeeCreditProof = await moneyClient.waitTransactionProof(
+      lockFeeCreditHash,
+      LockFeeCreditTransactionRecordWithProof,
+    );
+    expect(lockFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Locking fee credit successful');
     const feeCreditAfterLock = (await moneyClient.getUnit(feeCreditRecordId, false, FeeCreditRecord))!;
     expect(feeCreditAfterLock.locked).toBe(true);
@@ -163,7 +176,13 @@ describe('Money Client Integration Tests', () => {
 
     const unlockFeeCreditHash = await moneyClient.sendTransaction(unlockFeeCreditTransactionOrder);
 
-    await moneyClient.waitTransactionProof(unlockFeeCreditHash, UnlockFeeCreditTransactionRecordWithProof);
+    const unlockFeeCreditProof = await moneyClient.waitTransactionProof(
+      unlockFeeCreditHash,
+      UnlockFeeCreditTransactionRecordWithProof,
+    );
+    expect(unlockFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+      TransactionStatus.Successful,
+    );
     console.log('Unlocking fee credit successful');
     const feeCreditAfterUnlock = (await moneyClient.getUnit(feeCreditRecordId, false, FeeCreditRecord))!;
     expect(feeCreditAfterUnlock.locked).toBe(false);
@@ -192,7 +211,8 @@ describe('Money Client Integration Tests', () => {
     ).sign(proofFactory, proofFactory);
 
     const lockBillHash = await moneyClient.sendTransaction(lockBillTransactionOrder);
-    await moneyClient.waitTransactionProof(lockBillHash, LockBillTransactionRecordWithProof);
+    const lockBillProof = await moneyClient.waitTransactionProof(lockBillHash, LockBillTransactionRecordWithProof);
+    expect(lockBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Locking bill successful');
 
     console.log('Unlocking bill...');
@@ -202,14 +222,18 @@ describe('Money Client Integration Tests', () => {
     const unlockBillTransactionOrder = await (
       await UnsignedUnlockBillTransactionOrder.create(
         {
-          bill: bill,
+          bill: lockedBill,
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
       )
     ).sign(proofFactory, proofFactory);
     const unlockBillHash = await moneyClient.sendTransaction(unlockBillTransactionOrder);
-    await moneyClient.waitTransactionProof(unlockBillHash, UnlockBillTransactionRecordWithProof);
+    const unlockBillProof = await moneyClient.waitTransactionProof(
+      unlockBillHash,
+      UnlockBillTransactionRecordWithProof,
+    );
+    expect(unlockBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Unlocking bill successful');
   }, 20000);
 
@@ -240,7 +264,8 @@ describe('Money Client Integration Tests', () => {
       )
     ).sign(proofFactory, proofFactory);
     const splitBillHash = await moneyClient.sendTransaction(splitBillTransactionOrder);
-    await moneyClient.waitTransactionProof(splitBillHash, SplitBillTransactionRecordWithProof);
+    const splitBillProof = await moneyClient.waitTransactionProof(splitBillHash, SplitBillTransactionRecordWithProof);
+    expect(splitBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Splitting bill successful');
 
     bill = await moneyClient.getUnit(billUnitId, false, Bill);
@@ -267,7 +292,11 @@ describe('Money Client Integration Tests', () => {
       )
     ).sign(proofFactory, proofFactory);
     const transferBillHash = await moneyClient.sendTransaction(transferBillTransactionOrder);
-    await moneyClient.waitTransactionProof(transferBillHash, TransferBillTransactionRecordWithProof);
+    const transferBillProof = await moneyClient.waitTransactionProof(
+      transferBillHash,
+      TransferBillTransactionRecordWithProof,
+    );
+    expect(transferBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Transferring bill successful');
   }, 20000);
 
@@ -302,9 +331,12 @@ describe('Money Client Integration Tests', () => {
       )
     ).sign(proofFactory, proofFactory);
     const transferBillToDcHash = await moneyClient.sendTransaction(transferBillToDcTransactionOrder);
-    const transactionProof = await moneyClient.waitTransactionProof(
+    const transferBillToDcProof = await moneyClient.waitTransactionProof(
       transferBillToDcHash,
       TransferBillToDustCollectorTransactionRecordWithProof,
+    );
+    expect(transferBillToDcProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+      TransactionStatus.Successful,
     );
     console.log('Transferring bill to dust collector successful');
 
@@ -314,14 +346,20 @@ describe('Money Client Integration Tests', () => {
         {
           bill: targetBill!,
           ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-          proofs: [transactionProof],
+          proofs: [transferBillToDcProof],
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
       )
     ).sign(proofFactory, proofFactory);
-    const swapBillWithDcHash = await moneyClient.sendTransaction(swapBillWithDcTransactionOrder);
-    await moneyClient.waitTransactionProof(swapBillWithDcHash, SwapBillsWithDustCollectorTransactionRecordWithProof);
+    const swapBillsWithDcHash = await moneyClient.sendTransaction(swapBillWithDcTransactionOrder);
+    const swapBillsWithDcProof = await moneyClient.waitTransactionProof(
+      swapBillsWithDcHash,
+      SwapBillsWithDustCollectorTransactionRecordWithProof,
+    );
+    expect(swapBillsWithDcProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+      TransactionStatus.Successful,
+    );
     console.log('Swapping bill successful');
   }, 20000);
 
@@ -348,7 +386,11 @@ describe('Money Client Integration Tests', () => {
       )
     ).sign(proofFactory);
     const closeFeeCreditHash = await moneyClient.sendTransaction(closeFeeCreditTransactionOrder);
-    const proof = await moneyClient.waitTransactionProof(closeFeeCreditHash, CloseFeeCreditTransactionRecordWithProof);
+    const closeFeeCreditProof = await moneyClient.waitTransactionProof(
+      closeFeeCreditHash,
+      CloseFeeCreditTransactionRecordWithProof,
+    );
+    expect(closeFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Closing fee credit successful');
 
     bill = await moneyClient.getUnit(billUnitId, false, Bill);
@@ -356,7 +398,7 @@ describe('Money Client Integration Tests', () => {
     const reclaimFeeCreditTransactionOrder = await (
       await UnsignedReclaimFeeCreditTransactionOrder.create(
         {
-          proof: proof,
+          proof: closeFeeCreditProof,
           bill: bill!,
           ...createTransactionData(round),
         },
@@ -364,7 +406,13 @@ describe('Money Client Integration Tests', () => {
       )
     ).sign(proofFactory);
     const reclaimFeeCreditHash = await moneyClient.sendTransaction(reclaimFeeCreditTransactionOrder);
-    await moneyClient.waitTransactionProof(reclaimFeeCreditHash, ReclaimFeeCreditTransactionRecordWithProof);
+    const reclaimFeeCreditProof = await moneyClient.waitTransactionProof(
+      reclaimFeeCreditHash,
+      ReclaimFeeCreditTransactionRecordWithProof,
+    );
+    expect(reclaimFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+      TransactionStatus.Successful,
+    );
     console.log('Reclaiming fee credit successful');
   }, 20000);
 });
