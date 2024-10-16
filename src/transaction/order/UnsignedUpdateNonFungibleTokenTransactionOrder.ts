@@ -10,6 +10,7 @@ import { TypeDataUpdateProofsAuthProof } from '../proof/TypeDataUpdateProofsAuth
 import { TransactionPayload } from '../TransactionPayload.js';
 import { ITransactionData } from './ITransactionData.js';
 import { UpdateNonFungibleTokenTransactionOrder } from './types/UpdateNonFungibleTokenTransactionOrder.js';
+import { TypeOwnerProofsAuthProof } from '../proof/TypeOwnerProofsAuthProof';
 
 interface IUpdateNonFungibleTokenTransactionData extends ITransactionData {
   token: { unitId: IUnitId; counter: bigint };
@@ -52,7 +53,7 @@ export class UnsignedUpdateNonFungibleTokenTransactionOrder {
     const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
     const authProofBytes = await this.codec.encode(authProof);
     const ownerProof = new TypeDataUpdateProofsAuthProof(
-      await ownerProofFactory.create(await this.codec.encode(authProofBytes)),
+      await ownerProofFactory.create(authProofBytes),
       await Promise.all(tokenTypeDataUpdateProofs.map((factory) => factory.create(authProofBytes))),
     );
     const feeProof =

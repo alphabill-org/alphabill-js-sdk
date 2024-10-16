@@ -53,6 +53,7 @@ import { UnitId } from '../../src/UnitId.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
 import config from './config/config.js';
 import { createTransactionData } from './utils/TestUtils.js';
+import { TransactionStatus } from '../../src/transaction/record/TransactionStatus';
 
 describe('Token Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
@@ -76,6 +77,7 @@ describe('Token Client Integration Tests', () => {
     );
     expect(unitIds.length).toBeGreaterThan(0);
 
+    // TODO: Find bills which has the money instead of first
     const bill = await moneyClient.getUnit(unitIds[0], false, Bill);
     assert(bill, 'No bill found.');
 
@@ -159,10 +161,14 @@ describe('Token Client Integration Tests', () => {
 
       const createFungibleTokenTypeHash = await tokenClient.sendTransaction(createFungibleTokenTypeTransactionOrder);
 
-      await tokenClient.waitTransactionProof(
+      const createFungibleTokenTypeProof = await tokenClient.waitTransactionProof(
         createFungibleTokenTypeHash,
         CreateFungibleTokenTypeTransactionRecordWithProof,
       );
+      expect(createFungibleTokenTypeProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+        TransactionStatus.Successful,
+      );
+
       const tokenType = await tokenClient.getUnit(tokenTypeUnitId, false, FungibleTokenType);
       expect(tokenType).not.toBeNull();
       console.log('Creating fungible token type successful');
@@ -183,6 +189,10 @@ describe('Token Client Integration Tests', () => {
       const createFungibleTokenProof = await tokenClient.waitTransactionProof(
         createFungibleTokenHash,
         CreateFungibleTokenTransactionRecordWithProof,
+      );
+
+      expect(createFungibleTokenProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+        TransactionStatus.Successful,
       );
 
       tokenUnitId = createFungibleTokenProof.transactionRecord.transactionOrder.payload.unitId;
@@ -212,6 +222,9 @@ describe('Token Client Integration Tests', () => {
       const splitBillProof = await tokenClient.waitTransactionProof(
         splitFungibleTokenHash,
         SplitFungibleTokenTransactionRecordWithProof,
+      );
+      expect(splitBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+        TransactionStatus.Successful,
       );
       console.log('Fungible token split successful');
 
@@ -244,6 +257,9 @@ describe('Token Client Integration Tests', () => {
         burnFungibleTokenHash,
         BurnFungibleTokenTransactionRecordWithProof,
       );
+      expect(burnProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+        TransactionStatus.Successful,
+      );
       console.log('Fungible token burn successful');
 
       console.log('Joining fungible token...');
@@ -258,7 +274,8 @@ describe('Token Client Integration Tests', () => {
 
       const joinFungibleTokenHash = await tokenClient.sendTransaction(joinFungibleTokenTransactionOrder);
 
-      await tokenClient.waitTransactionProof(joinFungibleTokenHash, JoinFungibleTokenTransactionRecordWithProof);
+      const joinProof = await tokenClient.waitTransactionProof(joinFungibleTokenHash, JoinFungibleTokenTransactionRecordWithProof);
+      expect(joinProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token join successful');
     }, 20000);
 
@@ -280,10 +297,11 @@ describe('Token Client Integration Tests', () => {
 
       const transferFungibleTokenHash = await tokenClient.sendTransaction(transferFungibleTokenTransactionOrder);
 
-      await tokenClient.waitTransactionProof(
+      const transferProof = await tokenClient.waitTransactionProof(
         transferFungibleTokenHash,
         TransferFungibleTokenTransactionRecordWithProof,
       );
+      expect(transferProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token transfer successful');
     }, 20000);
 
@@ -304,7 +322,11 @@ describe('Token Client Integration Tests', () => {
 
       const lockFungibleTokenHash = await tokenClient.sendTransaction(lockFungibleTokenTransactionOrder);
 
-      await tokenClient.waitTransactionProof(lockFungibleTokenHash, LockTokenTransactionRecordWithProof);
+      const lockProof = await tokenClient.waitTransactionProof(
+        lockFungibleTokenHash,
+        LockTokenTransactionRecordWithProof,
+      );
+      expect(lockProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token lock successful');
 
       console.log('Unlocking fungible token...');
@@ -321,7 +343,11 @@ describe('Token Client Integration Tests', () => {
 
       const unlockFungibleTokenHash = await tokenClient.sendTransaction(unlockFungibleTokenTransactionOrder);
 
-      await tokenClient.waitTransactionProof(unlockFungibleTokenHash, UnlockTokenTransactionRecordWithProof);
+      const unlockProof = await tokenClient.waitTransactionProof(
+        unlockFungibleTokenHash,
+        UnlockTokenTransactionRecordWithProof,
+      );
+      expect(unlockProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token unlock successful');
     }, 20000);
   });
@@ -354,9 +380,12 @@ describe('Token Client Integration Tests', () => {
         createNonFungibleTokenTypeTransactionOrder,
       );
 
-      await tokenClient.waitTransactionProof(
+      const createNonFungibleTokenTypeProof = await tokenClient.waitTransactionProof(
         createNonFungibleTokenTypeHash,
         CreateNonFungibleTokenTypeTransactionRecordWithProof,
+      );
+      expect(createNonFungibleTokenTypeProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+        TransactionStatus.Successful,
       );
       const tokenType = await tokenClient.getUnit(tokenTypeUnitId, false, NonFungibleTokenType);
       expect(tokenType).not.toBeNull();
@@ -387,6 +416,9 @@ describe('Token Client Integration Tests', () => {
         createNonFungibleTokenHash,
         CreateNonFungibleTokenTransactionRecordWithProof,
       );
+      expect(createNonFungibleTokenProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+        TransactionStatus.Successful,
+      );
       tokenUnitId = createNonFungibleTokenProof.transactionRecord.transactionOrder.payload.unitId;
       console.log('Creating non-fungible token successful');
     }, 20000);
@@ -404,13 +436,17 @@ describe('Token Client Integration Tests', () => {
           ...createTransactionData(round, feeCreditRecordId),
         },
         cborCodec,
-      ).then((transactionOrder) => transactionOrder.sign(proofFactory, proofFactory, [alwaysTrueProofFactory]));
+      ).then((transactionOrder) => transactionOrder.sign(alwaysTrueProofFactory, proofFactory, [alwaysTrueProofFactory]));
 
       const updateNonFungibleTokenHash = await tokenClient.sendTransaction(updateNonFungibleTokenTransactionOrder);
 
-      await tokenClient.waitTransactionProof(
+      const updateNonFungibleTokenProof = await tokenClient.waitTransactionProof(
         updateNonFungibleTokenHash,
         UpdateNonFungibleTokenTransactionRecordWithProof,
+      );
+
+      expect(updateNonFungibleTokenProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+        TransactionStatus.Successful,
       );
       console.log('Updating non token fungible token successful');
     }, 20000);
@@ -435,9 +471,12 @@ describe('Token Client Integration Tests', () => {
 
       const transferNonFungibleTokenHash = await tokenClient.sendTransaction(transferNonFungibleTokenTransactionOrder);
 
-      await tokenClient.waitTransactionProof(
+      const transferNonFungibleTokenProof = await tokenClient.waitTransactionProof(
         transferNonFungibleTokenHash,
         TransferNonFungibleTokenTransactionRecordWithProof,
+      );
+      expect(transferNonFungibleTokenProof.transactionRecord.serverMetadata.successIndicator).toEqual(
+        TransactionStatus.Successful,
       );
       console.log('Transferring non token fungible token successful');
     }, 20000);

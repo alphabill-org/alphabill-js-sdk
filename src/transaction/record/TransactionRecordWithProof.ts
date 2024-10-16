@@ -46,15 +46,7 @@ export class TransactionRecordWithProof<
    */
   public async encode(cborCodec: ICborCodec): Promise<TransactionRecordWithProofArray> {
     return [
-      [
-        await this.transactionRecord.transactionOrder.encode(cborCodec),
-        [
-          this.transactionRecord.serverMetadata.actualFee,
-          this.transactionRecord.serverMetadata.targetUnits,
-          this.transactionRecord.serverMetadata.successIndicator,
-          this.transactionRecord.serverMetadata.processingDetails,
-        ],
-      ],
+      [await this.transactionRecord.transactionOrder.encode(cborCodec), this.transactionRecord.serverMetadata.encode()],
       this.transactionProof.encode(),
     ];
   }

@@ -79,12 +79,16 @@ export class JsonRpcClient {
     if (response) {
       const unitId = UnitId.fromBytes(Base16Converter.decode(response.unitId));
 
-      return factory.create(
-        unitId,
-        new PredicateBytes(Base16Converter.decode(response.ownerPredicate)),
-        response.data,
-        response.stateProof ? createStateProof(response.stateProof) : null,
-      );
+      try {
+        return factory.create(
+          unitId,
+          new PredicateBytes(Base16Converter.decode(response.ownerPredicate)),
+          response.data,
+          response.stateProof ? createStateProof(response.stateProof) : null,
+        );
+      } catch (error) {
+        throw new Error(`Invalid unit for given factory: ${error}`);
+      }
     }
 
     return null;
@@ -110,7 +114,13 @@ export class JsonRpcClient {
       Base16Converter.decode(response.txRecordProof),
     )) as TransactionRecordWithProofArray;
 
-    return transactionRecordWithProofFactory.fromArray(transactionRecordWithProof, this.cborCodec);
+    try {
+      return transactionRecordWithProofFactory.fromArray(transactionRecordWithProof, this.cborCodec);
+    } catch (error) {
+      throw new Error(
+        `Invalid transaction proof for given factory: ${JSON.stringify(transactionRecordWithProof)} [error: ${error}]`,
+      );
+    }
   }
 
   /**
