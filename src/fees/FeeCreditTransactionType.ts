@@ -5,4 +5,6 @@ export enum FeeCreditTransactionType {
   CloseFeeCredit = 17,
   LockFeeCredit = 18,
   UnlockFeeCredit = 19,
+  SetFeeCredit = 20,
+  DeleteFeeCredit = 21,
 }

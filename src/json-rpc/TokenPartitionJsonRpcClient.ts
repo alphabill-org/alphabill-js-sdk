@@ -1,11 +1,15 @@
 import { FeeCreditRecord } from '../fees/FeeCreditRecord.js';
 import { AddFeeCreditTransactionOrder } from '../fees/transactions/AddFeeCreditTransactionOrder.js';
 import { CloseFeeCreditTransactionOrder } from '../fees/transactions/CloseFeeCreditTransactionOrder.js';
+import { DeleteFeeCreditTransactionOrder } from '../fees/transactions/DeleteFeeCreditTransactionOrder.js';
 import { LockFeeCreditTransactionOrder } from '../fees/transactions/LockFeeCreditTransactionOrder.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/AddFeeCreditTransactionRecordWithProof.js';
 import { CloseFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/CloseFeeCreditTransactionRecordWithProof.js';
+import { DeleteFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/DeleteFeeCreditTransactionRecordWithProof.js';
 import { LockFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/LockFeeCreditTransactionRecordWithProof.js';
+import { SetFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/SetFeeCreditTransactionRecordWithProof.js';
 import { UnlockFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/UnlockFeeCreditTransactionRecordWithProof.js';
+import { SetFeeCreditTransactionOrder } from '../fees/transactions/SetFeeCreditTransactionOrder.js';
 import { UnlockFeeCreditTransactionOrder } from '../fees/transactions/UnlockFeeCreditTransactionOrder.js';
 import { IUnitId } from '../IUnitId.js';
 import { FungibleToken } from '../tokens/FungibleToken.js';
@@ -53,9 +57,11 @@ export type TokenPartitionTransactionRecordWithProofTypes =
   | CreateFungibleTokenTypeTransactionRecordWithProof
   | CreateNonFungibleTokenTransactionRecordWithProof
   | CreateNonFungibleTokenTypeTransactionRecordWithProof
+  | DeleteFeeCreditTransactionRecordWithProof
   | JoinFungibleTokenTransactionRecordWithProof
   | LockFeeCreditTransactionRecordWithProof
   | LockTokenTransactionRecordWithProof
+  | SetFeeCreditTransactionRecordWithProof
   | SplitFungibleTokenTransactionRecordWithProof
   | TransferFungibleTokenTransactionRecordWithProof
   | TransferNonFungibleTokenTransactionRecordWithProof
@@ -71,9 +77,11 @@ type TokenPartitionTransactionOrderTypes =
   | CreateFungibleTokenTypeTransactionOrder
   | CreateNonFungibleTokenTransactionOrder
   | CreateNonFungibleTokenTypeTransactionOrder
+  | DeleteFeeCreditTransactionOrder
   | JoinFungibleTokenTransactionOrder
   | LockFeeCreditTransactionOrder
   | LockTokenTransactionOrder
+  | SetFeeCreditTransactionOrder
   | SplitFungibleTokenTransactionOrder
   | TransferFungibleTokenTransactionOrder
   | TransferNonFungibleTokenTransactionOrder

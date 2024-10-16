@@ -1,15 +1,8 @@
 import crypto from 'crypto';
-import assert from 'node:assert';
 import { randomBytes } from '@noble/hashes/utils';
 import { CborCodecNode } from '../../../src/codec/cbor/CborCodecNode.js';
-import { FeeCreditRecord } from '../../../src/fees/FeeCreditRecord.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/AddFeeCreditTransactionRecordWithProof.js';
-import { TransferFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/TransferFeeCreditTransactionRecordWithProof.js';
-import { UnsignedAddFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedAddFeeCreditTransactionOrder.js';
-import { UnsignedTransferFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedTransferFeeCreditTransactionOrder.js';
 import { IUnitId } from '../../../src/IUnitId.js';
-import { Bill } from '../../../src/money/Bill.js';
-import { MoneyPartitionUnitType } from '../../../src/money/MoneyPartitionUnitType.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, createTokenClient, http } from '../../../src/StateApiClientFactory.js';
 import { SystemIdentifier } from '../../../src/SystemIdentifier.js';
@@ -53,13 +46,14 @@ import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
 import { UnitId } from '../../../src/UnitId.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
 import config from '../config/config.js';
-import { createTransactionData } from '../utils/TestUtils.js';
+import { addFeeCredit, createTransactionData } from '../utils/TestUtils.js';
 
 describe('Token Client Integration Tests', () => {
   const cborCodec = new CborCodecNode();
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const proofFactory = new PayToPublicKeyHashProofFactory(signingService, cborCodec);
   const alwaysTrueProofFactory = new AlwaysTrueProofFactory(cborCodec);
+  const ownerPredicate = PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey);
 
   const tokenClient = createTokenClient({
     transport: http(config.tokenPartitionUrl, new CborCodecNode()),
@@ -72,67 +66,23 @@ describe('Token Client Integration Tests', () => {
       transport: http(config.moneyPartitionUrl, new CborCodecNode()),
     });
 
-    const unitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
-      (id) => id.type.toBase16() === Base16Converter.encode(new Uint8Array([MoneyPartitionUnitType.BILL])),
-    );
-    expect(unitIds.length).toBeGreaterThan(0);
-
-    // TODO: Find bills which has the money instead of first
-    const bill = await moneyClient.getUnit(unitIds[0], false, Bill);
-    assert(bill, 'No bill found.');
-
-    const amountToFeeCredit = 100n;
-    expect(bill.value).toBeGreaterThan(amountToFeeCredit);
-
-    const round = await tokenClient.getRoundNumber();
-    const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey);
-
-    console.log('Transferring to fee credit...');
-    const transferFeeCreditTransactionOrder = await UnsignedTransferFeeCreditTransactionOrder.create(
-      {
-        amount: amountToFeeCredit,
-        targetSystemIdentifier: SystemIdentifier.TOKEN_PARTITION,
-        latestAdditionTime: round + 60n,
-        feeCreditRecord: {
-          ownerPredicate: ownerPredicate,
-          unitType: TokenPartitionUnitType.FEE_CREDIT_RECORD,
-        },
-        bill,
-        ...createTransactionData(round),
-      },
+    const addFeeCreditHash = await addFeeCredit(
+      moneyClient,
+      tokenClient,
+      SystemIdentifier.TOKEN_PARTITION,
+      signingService.publicKey,
       cborCodec,
-    ).then((transactionOrder) => transactionOrder.sign(proofFactory));
-
-    const transferFeeCreditHash = await moneyClient.sendTransaction(transferFeeCreditTransactionOrder);
-
-    const proof = await moneyClient.waitTransactionProof(
-      transferFeeCreditHash,
-      TransferFeeCreditTransactionRecordWithProof,
-    );
-
-    console.log('Transfer to fee credit successful');
-    feeCreditRecordId = new UnitIdWithType(
-      transferFeeCreditTransactionOrder.payload.attributes.targetUnitId.bytes,
+      proofFactory,
       TokenPartitionUnitType.FEE_CREDIT_RECORD,
     );
-    const feeCreditRecord = await tokenClient.getUnit(feeCreditRecordId, false, FeeCreditRecord);
 
-    console.log('Adding fee credit');
-    const addFeeCreditTransactionOrder = await UnsignedAddFeeCreditTransactionOrder.create(
-      {
-        targetSystemIdentifier: SystemIdentifier.TOKEN_PARTITION,
-        ownerPredicate: ownerPredicate,
-        proof,
-        feeCreditRecord: feeCreditRecord || { unitId: feeCreditRecordId },
-        ...createTransactionData(round),
-      },
-      cborCodec,
-    ).then((transactionOrder) => transactionOrder.sign(proofFactory));
-
-    const addFeeCreditHash = await tokenClient.sendTransaction(addFeeCreditTransactionOrder);
-
-    await tokenClient.waitTransactionProof(addFeeCreditHash, AddFeeCreditTransactionRecordWithProof);
+    const proof = await tokenClient.waitTransactionProof(addFeeCreditHash, AddFeeCreditTransactionRecordWithProof);
+    expect(proof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Adding fee credit successful');
+    feeCreditRecordId = new UnitIdWithType(
+      proof.transactionRecord.transactionOrder.payload.unitId.bytes,
+      TokenPartitionUnitType.FEE_CREDIT_RECORD,
+    );
   }, 20000);
 
   describe('Fungible Token Integration Tests', () => {
@@ -176,7 +126,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Creating fungible token...');
       const createFungibleTokenTransactionOrder = await UnsignedCreateFungibleTokenTransactionOrder.create(
         {
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+          ownerPredicate: await ownerPredicate,
           type: { unitId: tokenTypeUnitId },
           value: 10n,
           nonce: 0n,
@@ -209,7 +159,7 @@ describe('Token Client Integration Tests', () => {
       const splitFungibleTokenTransactionOrder = await UnsignedSplitFungibleTokenTransactionOrder.create(
         {
           token: token!,
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+          ownerPredicate: await ownerPredicate,
           amount: 3n,
           type: { unitId: tokenTypeUnitId },
           ...createTransactionData(round, feeCreditRecordId),
@@ -287,7 +237,7 @@ describe('Token Client Integration Tests', () => {
       const transferFungibleTokenTransactionOrder = await UnsignedTransferFungibleTokenTransactionOrder.create(
         {
           token: token!,
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+          ownerPredicate: await ownerPredicate,
           type: { unitId: tokenTypeUnitId },
           ...createTransactionData(round, feeCreditRecordId),
         },
@@ -393,7 +343,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Creating non-fungible token...');
       const createNonFungibleTokenTransactionOrder = await UnsignedCreateNonFungibleTokenTransactionOrder.create(
         {
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+          ownerPredicate: await ownerPredicate,
           type: { unitId: tokenTypeUnitId },
           name: 'My token',
           uri: 'http://guardtime.com',
@@ -462,7 +412,7 @@ describe('Token Client Integration Tests', () => {
         {
           token: token!,
           counter: token!.counter,
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+          ownerPredicate: await ownerPredicate,
           nonce: null,
           type: { unitId: tokenTypeUnitId },
           ...createTransactionData(round, feeCreditRecordId),
