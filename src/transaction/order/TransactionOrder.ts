@@ -2,8 +2,8 @@ import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { IPredicate } from '../predicate/IPredicate.js';
-import { ITransactionOrderProof } from '../proof/ITransactionOrderProof.js';
+import { IPredicate } from '../predicates/IPredicate.js';
+import { ITransactionOrderProof } from '../proofs/ITransactionOrderProof.js';
 import { PayloadArray, TransactionPayload } from '../TransactionPayload.js';
 
 type StateUnlockType = Uint8Array | null;

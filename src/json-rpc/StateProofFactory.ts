@@ -1,9 +1,9 @@
 import { IStateProof, IStateTreeCert, IUnitTreeCert } from '../IUnit.js';
-import { PathItem, StateProof, StateTreeCert, StateTreePathItem, UnitTreeCert } from '../unit/StateProof.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { Base64Converter } from '../util/Base64Converter.js';
 import { IStateProofDto, IStateTreeCertDto, IUnitTreeCertDto } from './IUnitDto.js';
+import { PathItem, StateProof, StateTreeCert, StateTreePathItem, UnitTreeCert } from './StateProof.js';
 
 // TODO: Parse unicity certificate
 export function createStateProof(data: IStateProofDto): IStateProof {

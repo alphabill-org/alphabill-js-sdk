@@ -1,6 +1,6 @@
 import { NetworkIdentifier } from '../../NetworkIdentifier.js';
 import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
-import { IPredicate } from '../predicate/IPredicate.js';
+import { IPredicate } from '../predicates/IPredicate.js';
 import { StateLock } from '../StateLock.js';
 
 export interface ITransactionData {

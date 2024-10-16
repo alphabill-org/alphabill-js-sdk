@@ -2,7 +2,7 @@ import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../order/TransactionOrder.js';
-import { ITransactionOrderProof } from '../proof/ITransactionOrderProof.js';
+import { ITransactionOrderProof } from '../proofs/ITransactionOrderProof.js';
 import { TransactionProof } from './TransactionProof.js';
 import { TransactionRecord, TransactionRecordArray } from './TransactionRecord.js';
 

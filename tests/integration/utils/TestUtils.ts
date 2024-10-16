@@ -2,7 +2,7 @@ import { IUnitId } from '../../../src/IUnitId.js';
 import { NetworkIdentifier } from '../../../src/NetworkIdentifier.js';
 import { ITransactionClientMetadata } from '../../../src/transaction/ITransactionClientMetadata.js';
 import { ITransactionData } from '../../../src/transaction/order/ITransactionData.js';
-import { AlwaysTruePredicate } from '../../../src/transaction/predicate/AlwaysTruePredicate.js';
+import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
 
 export function createTransactionData(round: bigint, feeCreditRecordId?: IUnitId): ITransactionData {
   return {
