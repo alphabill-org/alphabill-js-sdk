@@ -309,14 +309,7 @@ describe('Money Client Integration Tests', () => {
     const bill = await moneyClient.getUnit(billUnitIds[0], false, Bill);
     expect(bill).not.toBeNull();
 
-    const targetBillUnitId = billUnitIds
-      .filter(
-        (id) =>
-          id.type.toBase16() === Base16Converter.encode(new Uint8Array([MoneyPartitionUnitType.BILL])) &&
-          id.bytes !== bill!.unitId.bytes,
-      )
-      .at(0) as IUnitId;
-    const targetBill = await moneyClient.getUnit(targetBillUnitId, false, Bill);
+    const targetBill = await moneyClient.getUnit(billUnitIds[1], false, Bill);
     expect(targetBill).not.toBeNull();
 
     console.log('Transferring bill to dust collector...');
@@ -345,7 +338,6 @@ describe('Money Client Integration Tests', () => {
       await UnsignedSwapBillsWithDustCollectorTransactionOrder.create(
         {
           bill: targetBill!,
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
           proofs: [transferBillToDcProof],
           ...createTransactionData(round, feeCreditRecordId),
         },

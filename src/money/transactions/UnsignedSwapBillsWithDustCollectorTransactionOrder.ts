@@ -12,7 +12,6 @@ import { SwapBillsWithDustCollectorTransactionOrder } from './SwapBillsWithDustC
 import { TransferBillToDustCollectorTransactionRecordWithProof } from './TransferBillToDustCollectorTransactionRecordWithProof.js';
 
 export interface ISwapBillsWithDustCollectorTransactionData extends ITransactionData {
-  ownerPredicate: IPredicate;
   proofs: TransferBillToDustCollectorTransactionRecordWithProof[];
   bill: {
     unitId: IUnitId;
