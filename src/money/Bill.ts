@@ -7,6 +7,7 @@ import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
+import { Base64Converter } from '../util/Base64Converter.js';
 
 /**
  * Bill.
@@ -36,14 +37,14 @@ export class Bill implements IUnit {
 
   /**
    * Create bill from DTO.
-   * @param {IFungibleTokenTypeDto} input Data.
+   * @param {IBillDataDto} input Data.
    * @returns {Bill} Bill.
    */
-  public static create({ unitId, ownerPredicate, data, stateProof }: IBillDataDto): Bill {
+  public static create({ unitId, data, stateProof }: IBillDataDto): Bill {
     return new Bill(
       UnitId.fromBytes(Base16Converter.decode(unitId)),
       BigInt(data.value),
-      new PredicateBytes(Base16Converter.decode(ownerPredicate)),
+      new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
       stateProof ? createStateProof(stateProof) : null,

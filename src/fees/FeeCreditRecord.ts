@@ -7,6 +7,7 @@ import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
+import { Base64Converter } from '../util/Base64Converter.js';
 
 /**
  * Fee credit record.
@@ -39,14 +40,14 @@ export class FeeCreditRecord {
 
   /**
    * Create fee credit record from DTO.
-   * @param {IFungibleTokenTypeDto} input Data.
+   * @param {IFeeCreditRecordDto} input Data.
    * @returns {FeeCreditRecord} Fee credit record.
    */
-  public static create({ unitId, ownerPredicate, data, stateProof }: IFeeCreditRecordDto): FeeCreditRecord {
+  public static create({ unitId, data, stateProof }: IFeeCreditRecordDto): FeeCreditRecord {
     return new FeeCreditRecord(
       UnitId.fromBytes(Base16Converter.decode(unitId)),
       BigInt(data.balance),
-      new PredicateBytes(Base16Converter.decode(ownerPredicate)),
+      new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
       BigInt(data.timeout),

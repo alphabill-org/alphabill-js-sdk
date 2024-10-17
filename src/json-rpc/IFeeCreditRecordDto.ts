@@ -7,10 +7,9 @@ import { IStateProofDto } from './IUnitDto.js';
  */
 export interface IFeeCreditRecordDto {
   readonly unitId: string;
-  readonly ownerPredicate: string;
   readonly data: {
     balance: string;
-    ownerPredicate: IPredicate;
+    ownerPredicate: string;
     locked: string;
     counter: string;
     timeout: string;

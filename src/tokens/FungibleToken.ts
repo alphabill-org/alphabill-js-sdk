@@ -7,6 +7,7 @@ import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
+import { Base64Converter } from '../util/Base64Converter.js';
 
 /**
  * Fungible token.
@@ -41,15 +42,15 @@ export class FungibleToken {
 
   /**
    * Create fungible token from DTO.
-   * @param {IFungibleTokenTypeDto} input Data.
-   * @returns {FungibleTokenType} Fungible token type.
+   * @param {IFungibleTokenDto} input Data.
+   * @returns {FungibleToken} Fungible token type.
    */
-  public static create({ unitId, ownerPredicate, data, stateProof }: IFungibleTokenDto): FungibleToken {
+  public static create({ unitId, data, stateProof }: IFungibleTokenDto): FungibleToken {
     return new FungibleToken(
       UnitId.fromBytes(Base16Converter.decode(unitId)),
       UnitId.fromBytes(Base16Converter.decode(data.tokenType)),
       BigInt(data.value),
-      new PredicateBytes(Base16Converter.decode(ownerPredicate)),
+      new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
       BigInt(data.timeout),

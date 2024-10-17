@@ -6,11 +6,11 @@ import { IStateProofDto, IUnitDto } from './IUnitDto.js';
  */
 export interface IFungibleTokenDto {
   readonly unitId: string;
-  readonly ownerPredicate: string;
   readonly data: {
     tokenType: string;
     value: string;
     locked: string;
+    ownerPredicate: string;
     counter: string;
     timeout: string;
   };

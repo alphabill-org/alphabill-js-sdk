@@ -7,10 +7,9 @@ import { IStateProofDto } from './IUnitDto.js';
  */
 export interface IBillDataDto {
   readonly unitId: string;
-  readonly ownerPredicate: string;
   readonly data: {
     value: string;
-    ownerPredicate: IPredicate;
+    ownerPredicate: string;
     locked: string;
     counter: string;
   };

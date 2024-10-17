@@ -53,17 +53,17 @@ export class NonFungibleToken {
 
   /**
    * Create non-fungible token from DTO.
-   * @param {IFungibleTokenTypeDto} input Data.
+   * @param {INonFungibleTokenDto} input Data.
    * @returns {NonFungibleToken} Non-fungible token.
    */
-  public static create({ unitId, ownerPredicate, data, stateProof }: INonFungibleTokenDto): NonFungibleToken {
+  public static create({ unitId, data, stateProof }: INonFungibleTokenDto): NonFungibleToken {
     return new NonFungibleToken(
       UnitId.fromBytes(Base16Converter.decode(unitId)),
       UnitId.fromBytes(Base16Converter.decode(data.typeID)),
       data.name,
       data.uri,
       Base64Converter.decode(data.data),
-      new PredicateBytes(Base16Converter.decode(ownerPredicate)),
+      new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
       new PredicateBytes(Base64Converter.decode(data.dataUpdatePredicate)),
       BigInt(data.locked),
       BigInt(data.counter),

@@ -7,13 +7,12 @@ import { IStateProofDto } from './IUnitDto.js';
  */
 export interface INonFungibleTokenDto {
   readonly unitId: string;
-  readonly ownerPredicate: string;
   readonly data: {
     typeID: string;
     name: string;
     uri: string;
     data: string;
-    ownerPredicate: IPredicate;
+    ownerPredicate: string;
     dataUpdatePredicate: string;
     locked: string;
     counter: string;

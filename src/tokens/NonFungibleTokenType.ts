@@ -42,7 +42,7 @@ export class NonFungibleTokenType {
 
   /**
    * Create non-fungible token type from DTO.
-   * @param {IFungibleTokenTypeDto} input Data.
+   * @param {INonFungibleTokenTypeDto} input Data.
    * @returns {NonFungibleTokenType} Non-fungible token type.
    */
   public static create({ unitId, data, stateProof }: INonFungibleTokenTypeDto): NonFungibleTokenType {
