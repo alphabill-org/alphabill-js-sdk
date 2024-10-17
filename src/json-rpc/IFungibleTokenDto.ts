@@ -1,14 +1,18 @@
-import { IPredicate } from '../transaction/predicates/IPredicate.js';
+import { IStateProofDto, IUnitDto } from './IUnitDto.js';
 
 /**
  * Fungible token data from getUnit.
  * @interface IFungibleTokenDto
  */
 export interface IFungibleTokenDto {
-  tokenType: string;
-  value: string;
-  ownerPredicate: IPredicate;
-  locked: string;
-  counter: string;
-  timeout: string;
+  readonly unitId: string;
+  readonly ownerPredicate: string;
+  readonly data: {
+    tokenType: string;
+    value: string;
+    locked: string;
+    counter: string;
+    timeout: string;
+  };
+  readonly stateProof?: IStateProofDto;
 }

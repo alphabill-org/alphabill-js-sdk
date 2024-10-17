@@ -1,17 +1,23 @@
+import { IStateProofDto } from './IUnitDto';
+
 /**
  * Non-fungible token type data from getUnit.
  * @interface INonFungibleTokenTypeDto
  */
 export interface INonFungibleTokenTypeDto {
-  symbol: string;
-  name: string;
-  icon: {
-    type: string;
-    data: string;
+  readonly unitId: string;
+  readonly data: {
+    symbol: string;
+    name: string;
+    icon: {
+      type: string;
+      data: string;
+    };
+    parentTypeId: string;
+    subTypeCreationPredicate: string;
+    tokenMintingPredicate: string;
+    tokenTypeOwnerPredicate: string;
+    dataUpdatePredicate: string;
   };
-  parentTypeId: string;
-  subTypeCreationPredicate: string;
-  tokenMintingPredicate: string;
-  tokenTypeOwnerPredicate: string;
-  dataUpdatePredicate: string;
+  readonly stateProof?: IStateProofDto;
 }

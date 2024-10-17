@@ -1,7 +1,9 @@
 import { IStateProof } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
 import { IFungibleTokenDto } from '../json-rpc/IFungibleTokenDto.js';
+import { createStateProof } from '../json-rpc/StateProofFactory.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
+import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
@@ -39,21 +41,19 @@ export class FungibleToken {
 
   /**
    * Create fungible token from DTO.
-   * @param {IUnitId} unitId Unit ID.
-   * @param {IFungibleTokenDto} data Fungible token data.
-   * @param {IStateProof} stateProof State proof.
-   * @returns {FungibleToken} Fungible token.
+   * @param {IFungibleTokenTypeDto} input Data.
+   * @returns {FungibleTokenType} Fungible token type.
    */
-  public static create(unitId: IUnitId, data: IFungibleTokenDto, stateProof: IStateProof | null): FungibleToken {
+  public static create({ unitId, ownerPredicate, data, stateProof }: IFungibleTokenDto): FungibleToken {
     return new FungibleToken(
-      unitId,
+      UnitId.fromBytes(Base16Converter.decode(unitId)),
       UnitId.fromBytes(Base16Converter.decode(data.tokenType)),
       BigInt(data.value),
-      data.ownerPredicate,
+      new PredicateBytes(Base16Converter.decode(ownerPredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
       BigInt(data.timeout),
-      stateProof,
+      stateProof ? createStateProof(stateProof) : null,
     );
   }
 

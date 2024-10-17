@@ -1,7 +1,11 @@
 import { IStateProof, IUnit } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
 import { IBillDataDto } from '../json-rpc/IBillDataDto.js';
+import { createStateProof } from '../json-rpc/StateProofFactory.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
+import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
+import { UnitId } from '../UnitId.js';
+import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 
 /**
@@ -32,19 +36,17 @@ export class Bill implements IUnit {
 
   /**
    * Create bill from DTO.
-   * @param {IUnitId} unitId Unit ID.
-   * @param {IBillDataDto} data Bill data.
-   * @param {IStateProof} stateProof State proof.
+   * @param {IFungibleTokenTypeDto} input Data.
    * @returns {Bill} Bill.
    */
-  public static create(unitId: IUnitId, data: IBillDataDto, stateProof: IStateProof | null): Bill {
+  public static create({ unitId, ownerPredicate, data, stateProof }: IBillDataDto): Bill {
     return new Bill(
-      unitId,
+      UnitId.fromBytes(Base16Converter.decode(unitId)),
       BigInt(data.value),
-      data.ownerPredicate,
+      new PredicateBytes(Base16Converter.decode(ownerPredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
-      stateProof,
+      stateProof ? createStateProof(stateProof) : null,
     );
   }
 

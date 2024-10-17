@@ -7,6 +7,7 @@ import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { Base64Converter } from '../util/Base64Converter.js';
 import { dedent } from '../util/StringUtils.js';
+import { createStateProof } from '../json-rpc/StateProofFactory.js';
 
 /**
  * Non-fungible token.
@@ -52,24 +53,21 @@ export class NonFungibleToken {
 
   /**
    * Create non-fungible token from DTO.
-   * @param {IUnitId} unitId Unit ID.
-   * @param {IPredicate} ownerPredicate Owner predicate.
-   * @param {INonFungibleTokenDto} data Non-fungible token data.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {IFungibleTokenTypeDto} input Data.
    * @returns {NonFungibleToken} Non-fungible token.
    */
-  public static create(unitId: IUnitId, data: INonFungibleTokenDto, stateProof: IStateProof | null): NonFungibleToken {
+  public static create({ unitId, ownerPredicate, data, stateProof }: INonFungibleTokenDto): NonFungibleToken {
     return new NonFungibleToken(
-      unitId,
+      UnitId.fromBytes(Base16Converter.decode(unitId)),
       UnitId.fromBytes(Base16Converter.decode(data.typeID)),
       data.name,
       data.uri,
       Base64Converter.decode(data.data),
-      data.ownerPredicate,
+      new PredicateBytes(Base16Converter.decode(ownerPredicate)),
       new PredicateBytes(Base64Converter.decode(data.dataUpdatePredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
-      stateProof,
+      stateProof ? createStateProof(stateProof) : null,
     );
   }
 

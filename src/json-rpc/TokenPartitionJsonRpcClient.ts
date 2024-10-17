@@ -40,6 +40,11 @@ import { UnlockTokenTransactionOrder } from '../tokens/transactions/UnlockTokenT
 import { UnlockTokenTransactionRecordWithProof } from '../tokens/transactions/UnlockTokenTransactionRecordWithProof.js';
 import { UpdateNonFungibleTokenTransactionOrder } from '../tokens/transactions/UpdateNonFungibleTokenTransactionOrder.js';
 import { UpdateNonFungibleTokenTransactionRecordWithProof } from '../tokens/transactions/UpdateNonFungibleTokenTransactionRecordWithProof.js';
+import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
+import { IFungibleTokenDto } from './IFungibleTokenDto.js';
+import { IFungibleTokenTypeDto } from './IFungibleTokenTypeDto.js';
+import { INonFungibleTokenDto } from './INonFungibleTokenDto.js';
+import { INonFungibleTokenTypeDto } from './INonFungibleTokenTypeDto.js';
 import { CreateTransactionRecordWithProof, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
 
 type TokenPartitionUnitTypes =
@@ -48,6 +53,18 @@ type TokenPartitionUnitTypes =
   | FeeCreditRecord
   | FungibleTokenType
   | NonFungibleTokenType;
+
+type UnitDto<T extends TokenPartitionUnitTypes> = T extends FungibleToken
+  ? IFungibleTokenDto
+  : T extends NonFungibleToken
+    ? INonFungibleTokenDto
+    : T extends FeeCreditRecord
+      ? IFeeCreditRecordDto
+      : T extends FungibleTokenType
+        ? IFungibleTokenTypeDto
+        : T extends NonFungibleTokenType
+          ? INonFungibleTokenTypeDto
+          : never;
 
 export type TokenPartitionTransactionRecordWithProofTypes =
   | AddFeeCreditTransactionRecordWithProof
@@ -122,7 +139,7 @@ export class TokenPartitionJsonRpcClient {
   public getUnit<T extends TokenPartitionUnitTypes>(
     unitId: IUnitId,
     includeStateProof: boolean,
-    factory: CreateUnit<T>,
+    factory: CreateUnit<T, UnitDto<T>>,
   ): Promise<T | null> {
     return this.client.getUnit(unitId, includeStateProof, factory);
   }

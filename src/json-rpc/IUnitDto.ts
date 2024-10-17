@@ -5,7 +5,6 @@
 export interface IUnitDto {
   readonly unitId: string;
   readonly data: unknown;
-  readonly ownerPredicate: string;
   readonly stateProof?: IStateProofDto;
 }
 

@@ -25,9 +25,17 @@ import { TransferBillTransactionOrder } from '../money/transactions/TransferBill
 import { TransferBillTransactionRecordWithProof } from '../money/transactions/TransferBillTransactionRecordWithProof.js';
 import { UnlockBillTransactionOrder } from '../money/transactions/UnlockBillTransactionOrder.js';
 import { UnlockBillTransactionRecordWithProof } from '../money/transactions/UnlockBillTransactionRecordWithProof.js';
+import { IBillDataDto } from './IBillDataDto.js';
+import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
 import { CreateTransactionRecordWithProof, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
 
 type MoneyPartitionUnitTypes = Bill | FeeCreditRecord;
+
+type UnitDto<T extends MoneyPartitionUnitTypes> = T extends Bill
+  ? IBillDataDto
+  : T extends FeeCreditRecord
+    ? IFeeCreditRecordDto
+    : never;
 
 export type MoneyPartitionTransactionRecordWithProofTypes =
   | AddFeeCreditTransactionRecordWithProof
@@ -90,7 +98,7 @@ export class MoneyPartitionJsonRpcClient {
   public getUnit<T extends MoneyPartitionUnitTypes>(
     unitId: IUnitId,
     includeStateProof: boolean,
-    factory: CreateUnit<T>,
+    factory: CreateUnit<T, UnitDto<T>>,
   ): Promise<T | null> {
     return this.client.getUnit(unitId, includeStateProof, factory);
   }

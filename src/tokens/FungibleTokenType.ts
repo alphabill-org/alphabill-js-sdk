@@ -1,6 +1,7 @@
 import { IStateProof } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
 import { IFungibleTokenTypeDto } from '../json-rpc/IFungibleTokenTypeDto.js';
+import { createStateProof } from '../json-rpc/StateProofFactory.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../UnitId.js';
@@ -16,7 +17,6 @@ export class FungibleTokenType {
   /**
    * Fungible token type constructor.
    * @param {IUnitId} unitId Unit ID.
-   * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {string} symbol Symbol.
    * @param {string} name Name.
    * @param {TokenIcon} icon Icon.
@@ -29,7 +29,6 @@ export class FungibleTokenType {
    */
   public constructor(
     public readonly unitId: IUnitId,
-    public readonly ownerPredicate: IPredicate,
     public readonly symbol: string,
     public readonly name: string,
     public readonly icon: TokenIcon,
@@ -43,21 +42,12 @@ export class FungibleTokenType {
 
   /**
    * Create fungible token type from DTO.
-   * @param {IUnitId} unitId Unit ID.
-   * @param {IPredicate} ownerPredicate Owner predicate.
-   * @param {IFungibleTokenTypeDto} data Fungible token type data.
-   * @param {IStateProof} stateProof State proof.
+   * @param {IFungibleTokenTypeDto} input Data.
    * @returns {FungibleTokenType} Fungible token type.
    */
-  public static create(
-    unitId: IUnitId,
-    ownerPredicate: IPredicate,
-    data: IFungibleTokenTypeDto,
-    stateProof: IStateProof | null,
-  ): FungibleTokenType {
+  public static create({ unitId, data, stateProof }: IFungibleTokenTypeDto): FungibleTokenType {
     return new FungibleTokenType(
-      unitId,
-      ownerPredicate,
+      UnitId.fromBytes(Base16Converter.decode(unitId)),
       data.symbol,
       data.name,
       new TokenIcon(data.icon.type, Base16Converter.decode(data.icon.data)),
@@ -66,7 +56,7 @@ export class FungibleTokenType {
       new PredicateBytes(Base64Converter.decode(data.subTypeCreationPredicate)),
       new PredicateBytes(Base64Converter.decode(data.tokenMintingPredicate)),
       new PredicateBytes(Base64Converter.decode(data.tokenTypeOwnerPredicate)),
-      stateProof,
+      stateProof ? createStateProof(stateProof) : null,
     );
   }
 
@@ -78,7 +68,6 @@ export class FungibleTokenType {
     return dedent`
       FungibleTokenType
         Unit ID: ${this.unitId.toString()}
-        Owner Predicate: ${this.ownerPredicate.toString()}
         Symbol: ${this.symbol}
         Name: ${this.name}
         Icon: ${this.icon.toString()}

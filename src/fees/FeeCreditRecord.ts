@@ -1,7 +1,11 @@
 import { IStateProof } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
 import { IFeeCreditRecordDto } from '../json-rpc/IFeeCreditRecordDto.js';
+import { createStateProof } from '../json-rpc/StateProofFactory.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
+import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
+import { UnitId } from '../UnitId.js';
+import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 
 /**
@@ -35,20 +39,18 @@ export class FeeCreditRecord {
 
   /**
    * Create fee credit record from DTO.
-   * @param {IUnitId} unitId Unit ID.
-   * @param {IFeeCreditRecordDto} data Fee credit record data.
-   * @param {IStateProof} stateProof State proof.
+   * @param {IFungibleTokenTypeDto} input Data.
    * @returns {FeeCreditRecord} Fee credit record.
    */
-  public static create(unitId: IUnitId, data: IFeeCreditRecordDto, stateProof: IStateProof | null): FeeCreditRecord {
+  public static create({ unitId, ownerPredicate, data, stateProof }: IFeeCreditRecordDto): FeeCreditRecord {
     return new FeeCreditRecord(
-      unitId,
+      UnitId.fromBytes(Base16Converter.decode(unitId)),
       BigInt(data.balance),
-      data.ownerPredicate,
+      new PredicateBytes(Base16Converter.decode(ownerPredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
       BigInt(data.timeout),
-      stateProof,
+      stateProof ? createStateProof(stateProof) : null,
     );
   }
 

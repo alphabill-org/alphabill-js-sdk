@@ -1,6 +1,5 @@
 import { sha256 } from '@noble/hashes/sha256';
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
-import { IStateProof } from '../IUnit.js';
 import { IUnitId } from '../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../transaction/order/TransactionOrder.js';
@@ -9,13 +8,11 @@ import { TransactionRecordWithProofArray } from '../transaction/record/Transacti
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { IJsonRpcService } from './IJsonRpcService.js';
-import { IUnitDto } from './IUnitDto.js';
 import { JsonRpcError } from './JsonRpcError.js';
-import { createStateProof } from './StateProofFactory.js';
 import { TransactionProofDto } from './TransactionProofDto.js';
 
-export type CreateUnit<T> = {
-  create: (unitId: IUnitId, input: unknown, stateProof: IStateProof | null) => T;
+export type CreateUnit<T, U> = {
+  create: (data: U) => T;
 };
 
 export type CreateTransactionRecordWithProof<T> = {
@@ -55,22 +52,16 @@ export class JsonRpcClient {
     return Base16Converter.decode(response);
   }
 
-  public async getUnit<T>(unitId: IUnitId, includeStateProof: boolean, factory: CreateUnit<T>): Promise<T | null> {
-    const response = await this.request<IUnitDto>(
-      'state_getUnit',
-      Base16Converter.encode(unitId.bytes),
-      includeStateProof,
-    );
+  public async getUnit<T, U>(
+    unitId: IUnitId,
+    includeStateProof: boolean,
+    factory: CreateUnit<T, U>,
+  ): Promise<T | null> {
+    const response = await this.request<U>('state_getUnit', Base16Converter.encode(unitId.bytes), includeStateProof);
 
     if (response) {
-      const unitId = UnitId.fromBytes(Base16Converter.decode(response.unitId));
-
       try {
-        return factory.create(
-          unitId,
-          response.data,
-          response.stateProof ? createStateProof(response.stateProof) : null,
-        );
+        return factory.create(response);
       } catch (error) {
         throw new Error(`Invalid unit for given factory: ${error}`);
       }
