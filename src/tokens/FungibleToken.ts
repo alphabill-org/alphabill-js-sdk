@@ -6,8 +6,8 @@ import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
-import { dedent } from '../util/StringUtils.js';
 import { Base64Converter } from '../util/Base64Converter.js';
+import { dedent } from '../util/StringUtils.js';
 
 /**
  * Fungible token.
@@ -43,7 +43,7 @@ export class FungibleToken {
   /**
    * Create fungible token from DTO.
    * @param {IFungibleTokenDto} input Data.
-   * @returns {FungibleToken} Fungible token type.
+   * @returns {FungibleToken} Fungible token.
    */
   public static create({ unitId, data, stateProof }: IFungibleTokenDto): FungibleToken {
     return new FungibleToken(

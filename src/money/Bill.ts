@@ -6,8 +6,8 @@ import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
-import { dedent } from '../util/StringUtils.js';
 import { Base64Converter } from '../util/Base64Converter.js';
+import { dedent } from '../util/StringUtils.js';
 
 /**
  * Bill.

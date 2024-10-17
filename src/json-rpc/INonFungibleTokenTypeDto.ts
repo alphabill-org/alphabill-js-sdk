@@ -1,4 +1,4 @@
-import { IStateProofDto } from './IUnitDto';
+import { IStateProofDto } from './IUnitDto.js';
 
 /**
  * Non-fungible token type data from getUnit.

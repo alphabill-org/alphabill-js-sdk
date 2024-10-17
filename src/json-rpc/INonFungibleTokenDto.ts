@@ -1,4 +1,3 @@
-import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { IStateProofDto } from './IUnitDto.js';
 
 /**

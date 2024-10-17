@@ -1,4 +1,4 @@
-import { IStateProofDto, IUnitDto } from './IUnitDto.js';
+import { IStateProofDto } from './IUnitDto.js';
 
 /**
  * Fungible token data from getUnit.
