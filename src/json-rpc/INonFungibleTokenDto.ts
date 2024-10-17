@@ -1,14 +1,20 @@
+import { IStateProofDto } from './IUnitDto.js';
+
 /**
  * Non-fungible token data from getUnit.
  * @interface INonFungibleTokenDto
  */
 export interface INonFungibleTokenDto {
-  typeID: string;
-  name: string;
-  uri: string;
-  data: string;
-  dataUpdatePredicate: string;
-  lastUpdate: string;
-  counter: string;
-  locked: string;
+  readonly unitId: string;
+  readonly data: {
+    typeID: string;
+    name: string;
+    uri: string;
+    data: string;
+    ownerPredicate: string;
+    dataUpdatePredicate: string;
+    locked: string;
+    counter: string;
+  };
+  readonly stateProof?: IStateProofDto;
 }

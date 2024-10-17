@@ -1,4 +1,4 @@
-import { IPredicate } from './IPredicate.js';
+import { IPredicate } from './predicates/IPredicate.js';
 import { StateLockArray } from './StateLock.js';
 
 /**
@@ -22,5 +22,5 @@ export interface IStateLock {
    * Convert to array.
    * @returns {readonly Uint8Array[]} Array of payload state lock predicates.
    */
-  toArray(): StateLockArray;
+  encode(): StateLockArray;
 }
