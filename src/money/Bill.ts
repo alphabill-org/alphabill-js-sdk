@@ -11,48 +11,39 @@ export class Bill implements IUnit {
   /**
    * Bill constructor.
    * @param {IUnitId} unitId Unit ID.
-   * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {bigint} value Bill value.
-   * @param {bigint} lastUpdate Last update.
-   * @param {bigint} counter Counter.
+   * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {boolean} locked Is locked.
+   * @param {bigint} counter Counter.
    * @param {IStateProof | null} stateProof State proof.
    */
   public constructor(
     public readonly unitId: IUnitId,
-    public readonly ownerPredicate: IPredicate,
     public readonly value: bigint,
-    public readonly lastUpdate: bigint,
+    public readonly ownerPredicate: IPredicate,
+    public readonly locked: bigint,
     public readonly counter: bigint,
-    public readonly locked: boolean,
     public readonly stateProof: IStateProof | null,
   ) {
     this.value = BigInt(this.value);
-    this.lastUpdate = BigInt(this.lastUpdate);
+    this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
   }
 
   /**
    * Create bill from DTO.
    * @param {IUnitId} unitId Unit ID.
-   * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {IBillDataDto} data Bill data.
    * @param {IStateProof} stateProof State proof.
    * @returns {Bill} Bill.
    */
-  public static create(
-    unitId: IUnitId,
-    ownerPredicate: IPredicate,
-    data: IBillDataDto,
-    stateProof: IStateProof | null,
-  ): Bill {
+  public static create(unitId: IUnitId, data: IBillDataDto, stateProof: IStateProof | null): Bill {
     return new Bill(
       unitId,
-      ownerPredicate,
       BigInt(data.value),
-      BigInt(data.lastUpdate),
+      data.ownerPredicate,
+      BigInt(data.locked),
       BigInt(data.counter),
-      Boolean(Number(data.locked)),
       stateProof,
     );
   }
@@ -67,8 +58,7 @@ export class Bill implements IUnit {
         UnitId: ${this.unitId.toString()}
         Owner Predicate: ${this.ownerPredicate.toString()}
         Value: ${this.value}
-        Last Update: ${this.lastUpdate}
-        Counter: ${this.counter}
-        Locked: ${this.locked}`;
+        Locked: ${this.locked}
+        Counter: ${this.counter}`;
   }
 }

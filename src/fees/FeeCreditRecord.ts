@@ -11,48 +11,43 @@ export class FeeCreditRecord {
   /**
    * Fee credit record constructor.
    * @param {IUnitId} unitId Unit ID.
-   * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {bigint} balance Fee credit balance.
+   * @param {IPredicate} ownerPredicate Owner predicate.
+   * @param {bigint} locked Is fee credit locked.
    * @param {bigint} counter Fee credit counter.
    * @param {bigint} timeout Fee credit timeout.
-   * @param {boolean} locked Is fee credit locked.
    * @param {IStateProof} stateProof State proof.
    */
   public constructor(
     public readonly unitId: IUnitId,
-    public readonly ownerPredicate: IPredicate,
     public readonly balance: bigint,
+    public readonly ownerPredicate: IPredicate,
+    public readonly locked: bigint,
     public readonly counter: bigint,
     public readonly timeout: bigint,
-    public readonly locked: boolean,
     public readonly stateProof: IStateProof | null,
   ) {
     this.balance = BigInt(this.balance);
-    this.timeout = BigInt(this.timeout);
+    this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
+    this.timeout = BigInt(this.timeout);
   }
 
   /**
    * Create fee credit record from DTO.
    * @param {IUnitId} unitId Unit ID.
-   * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {IFeeCreditRecordDto} data Fee credit record data.
    * @param {IStateProof} stateProof State proof.
    * @returns {FeeCreditRecord} Fee credit record.
    */
-  public static create(
-    unitId: IUnitId,
-    ownerPredicate: IPredicate,
-    data: IFeeCreditRecordDto,
-    stateProof: IStateProof | null,
-  ): FeeCreditRecord {
+  public static create(unitId: IUnitId, data: IFeeCreditRecordDto, stateProof: IStateProof | null): FeeCreditRecord {
     return new FeeCreditRecord(
       unitId,
-      ownerPredicate,
       BigInt(data.balance),
+      data.ownerPredicate,
+      BigInt(data.locked),
       BigInt(data.counter),
       BigInt(data.timeout),
-      Boolean(Number(data.locked)),
       stateProof,
     );
   }
@@ -65,8 +60,9 @@ export class FeeCreditRecord {
     return dedent`
       FeeCreditRecord
         Balance: ${this.balance}
+        Owner Predicate: ${this.ownerPredicate.toString()}
+        Locked: ${this.locked}
         Counter: ${this.counter}
-        Timeout: ${this.timeout}
-        Locked: ${this.locked}`;
+        Timeout: ${this.timeout}`;
   }
 }

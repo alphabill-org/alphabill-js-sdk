@@ -15,32 +15,30 @@ export class NonFungibleToken {
   /**
    * Non-fungible token constructor.
    * @param {IUnitId} unitId Unit ID.
-   * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {IUnitId} tokenType Token type.
    * @param {string} name Token name.
    * @param {string} uri Token URI.
    * @param {Uint8Array} _data Token data.
+   * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {IPredicate} dataUpdatePredicate Data update predicate.
-   * @param {bigint} lastUpdate Round number of the last transaction with this token.
+   * @param {bigint} locked Is token locked.
    * @param {bigint} counter Counter.
-   * @param {boolean} locked Is token locked.
    * @param {IStateProof | null} stateProof State proof.
    */
   public constructor(
     public readonly unitId: IUnitId,
-    public readonly ownerPredicate: IPredicate,
     public readonly tokenType: IUnitId,
     public readonly name: string,
     public readonly uri: string,
     private readonly _data: Uint8Array,
+    public readonly ownerPredicate: IPredicate,
     public readonly dataUpdatePredicate: IPredicate,
-    public readonly lastUpdate: bigint,
+    public readonly locked: bigint,
     public readonly counter: bigint,
-    public readonly locked: boolean,
     public readonly stateProof: IStateProof | null,
   ) {
     this._data = new Uint8Array(this._data);
-    this.lastUpdate = BigInt(this.lastUpdate);
+    this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
   }
 
@@ -60,23 +58,17 @@ export class NonFungibleToken {
    * @param {IStateProof | null} stateProof State proof.
    * @returns {NonFungibleToken} Non-fungible token.
    */
-  public static create(
-    unitId: IUnitId,
-    ownerPredicate: IPredicate,
-    data: INonFungibleTokenDto,
-    stateProof: IStateProof | null,
-  ): NonFungibleToken {
+  public static create(unitId: IUnitId, data: INonFungibleTokenDto, stateProof: IStateProof | null): NonFungibleToken {
     return new NonFungibleToken(
       unitId,
-      ownerPredicate,
       UnitId.fromBytes(Base16Converter.decode(data.typeID)),
       data.name,
       data.uri,
       Base64Converter.decode(data.data),
+      data.ownerPredicate,
       new PredicateBytes(Base64Converter.decode(data.dataUpdatePredicate)),
-      BigInt(data.lastUpdate),
+      BigInt(data.locked),
       BigInt(data.counter),
-      Boolean(Number(data.locked)),
       stateProof,
     );
   }
@@ -89,14 +81,13 @@ export class NonFungibleToken {
     return dedent`
       NonFungibleToken
         Unit ID: ${this.unitId.toString()}
-        Owner Predicate: ${this.ownerPredicate.toString()}
         Token Type: ${this.tokenType.toString()}
         Name: ${this.name}
         URI: ${this.uri}
         Data: ${Base16Converter.encode(this._data)}
+        Owner Predicate: ${this.ownerPredicate.toString()}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
-        Last Update: ${this.lastUpdate}
-        Counter: ${this.counter}
-        Locked: ${this.locked}`;
+        Locked: ${this.locked}
+        Counter: ${this.counter}`;
   }
 }

@@ -1,3 +1,5 @@
+import { IPredicate } from '../transaction/predicates/IPredicate.js';
+
 /**
  * Non-fungible token data from getUnit.
  * @interface INonFungibleTokenDto
@@ -7,8 +9,8 @@ export interface INonFungibleTokenDto {
   name: string;
   uri: string;
   data: string;
+  ownerPredicate: IPredicate;
   dataUpdatePredicate: string;
-  lastUpdate: string;
-  counter: string;
   locked: string;
+  counter: string;
 }

@@ -77,14 +77,15 @@ describe('Fee Credit Integration Tests', () => {
 
   it('Lock and unlock fee credit', async () => {
     const feeCreditRecord = (await moneyClient.getUnit(feeCreditRecordId, false, FeeCreditRecord))!;
-    expect(feeCreditRecord.locked).toBe(false);
+    expect(feeCreditRecord.locked).toBe(0n);
     const round = await moneyClient.getRoundNumber();
 
     console.log('Locking fee credit...');
+    const lockStatus = 5n;
     const lockFeeCreditTransactionOrder = await (
       await UnsignedLockFeeCreditTransactionOrder.create(
         {
-          status: 5n,
+          status: lockStatus,
           feeCredit: feeCreditRecord,
           ...createTransactionData(round),
         },
@@ -101,7 +102,7 @@ describe('Fee Credit Integration Tests', () => {
     expect(lockFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Locking fee credit successful');
     const feeCreditAfterLock = (await moneyClient.getUnit(feeCreditRecordId, false, FeeCreditRecord))!;
-    expect(feeCreditAfterLock.locked).toBe(true);
+    expect(feeCreditAfterLock.locked).toBe(5n);
 
     console.log('Unlocking fee credit...');
     const unlockFeeCreditTransactionOrder = await (
@@ -125,7 +126,7 @@ describe('Fee Credit Integration Tests', () => {
     );
     console.log('Unlocking fee credit successful');
     const feeCreditAfterUnlock = (await moneyClient.getUnit(feeCreditRecordId, false, FeeCreditRecord))!;
-    expect(feeCreditAfterUnlock.locked).toBe(false);
+    expect(feeCreditAfterUnlock.locked).toBe(0n);
   }, 20000);
 
   it('Close and reclaim fee credit', async () => {
