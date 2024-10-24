@@ -1,7 +1,17 @@
-export enum TokenPartitionUnitType {
-  FUNGIBLE_TOKEN_TYPE = 0x01,
-  NON_FUNGIBLE_TOKEN_TYPE = 0x02,
-  FUNGIBLE_TOKEN = 0x03,
-  NON_FUNGIBLE_TOKEN = 0x04,
-  FEE_CREDIT_RECORD = 0x10,
+export class TokenPartitionUnitType {
+  public static get FUNGIBLE_TOKEN_TYPE(): Uint8Array {
+    return new Uint8Array([0x01]);
+  }
+
+  public static get NON_FUNGIBLE_TOKEN_TYPE(): Uint8Array {
+    return new Uint8Array([0x02]);
+  }
+
+  public static get FUNGIBLE_TOKEN(): Uint8Array {
+    return new Uint8Array([0x03]);
+  }
+
+  public static get NON_FUNGIBLE_TOKEN(): Uint8Array {
+    return new Uint8Array([0x04]);
+  }
 }

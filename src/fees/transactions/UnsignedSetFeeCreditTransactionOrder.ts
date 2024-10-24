@@ -1,3 +1,5 @@
+import { numberToBytesBE } from '@noble/curves/abstract/utils';
+import { sha256 } from '@noble/hashes/sha256';
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 import { SystemIdentifier } from '../../SystemIdentifier.js';
@@ -6,7 +8,9 @@ import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { UnitIdWithType } from '../../transaction/UnitIdWithType.js';
 import { SetFeeCreditAttributes } from '../attributes/SetFeeCreditAttributes.js';
+import { FeeCreditUnitType } from '../FeeCreditRecordUnitType.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 import { SetFeeCreditTransactionOrder } from './SetFeeCreditTransactionOrder.js';
 
@@ -14,7 +18,7 @@ interface ISetFeeCreditTransactionData extends ITransactionData {
   targetSystemIdentifier: SystemIdentifier;
   ownerPredicate: IPredicate;
   amount: bigint;
-  feeCreditRecord: { unitId: IUnitId; counter: bigint | null };
+  feeCreditRecord: { unitId: IUnitId | null; counter: bigint | null };
 }
 
 export class UnsignedSetFeeCreditTransactionOrder {
@@ -28,12 +32,23 @@ export class UnsignedSetFeeCreditTransactionOrder {
     data: ISetFeeCreditTransactionData,
     codec: ICborCodec,
   ): Promise<UnsignedSetFeeCreditTransactionOrder> {
+    let feeCreditRecordId: IUnitId;
+    if (data.feeCreditRecord.unitId == null) {
+      const unitBytes = sha256
+        .create()
+        .update(data.ownerPredicate.bytes)
+        .update(numberToBytesBE(data.metadata.timeout, 8))
+        .digest();
+      feeCreditRecordId = new UnitIdWithType(unitBytes, FeeCreditUnitType.FEE_CREDIT_RECORD);
+    } else {
+      feeCreditRecordId = data.feeCreditRecord.unitId;
+    }
     return Promise.resolve(
       new UnsignedSetFeeCreditTransactionOrder(
         new TransactionPayload<SetFeeCreditAttributes>(
           data.networkIdentifier,
           data.targetSystemIdentifier,
-          data.feeCreditRecord.unitId,
+          feeCreditRecordId,
           FeeCreditTransactionType.SetFeeCredit,
           new SetFeeCreditAttributes(data.ownerPredicate, data.amount, data.feeCreditRecord.counter),
           data.stateLock,

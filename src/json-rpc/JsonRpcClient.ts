@@ -29,11 +29,20 @@ export class JsonRpcClient {
     public readonly cborCodec: ICborCodec,
   ) {}
 
+  /**
+   * Get round number.
+   * @returns {Promise<bigint>} The round number.
+   */
   public async getRoundNumber(): Promise<bigint> {
     return BigInt(await this.request('state_getRoundNumber'));
   }
 
-  public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
+  /**
+   * Get Unit identifiers by owner ID.
+   * @param {Uint8Array} ownerId Owner ID.
+   * @returns {Promise<IUnitId[]>} Units identifiers.
+   */
+  public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<readonly IUnitId[]> {
     const response = await this.request<string[] | null>(
       'state_getUnitsByOwnerID',
       Base16Converter.encode(sha256(ownerId)),
@@ -47,11 +56,24 @@ export class JsonRpcClient {
     return identifiers;
   }
 
+  /**
+   * Get block.
+   * @param {bigint} blockNumber Block number.
+   * @returns {Promise<Uint8Array>} Block.
+   */
   public async getBlock(blockNumber: bigint): Promise<Uint8Array> {
     const response = (await this.request('state_getBlock', String(blockNumber))) as string;
     return Base16Converter.decode(response);
   }
 
+  /**
+   * Get unit by ID.
+   * @template T Unit type.
+   * @param {IUnitId} unitId Unit ID.
+   * @param {boolean} includeStateProof Include state proof.
+   * @param {CreateUnit<T>} factory.
+   * @returns {Promise<T | null>} Unit.
+   */
   public async getUnit<T, U>(
     unitId: IUnitId,
     includeStateProof: boolean,
@@ -70,6 +92,13 @@ export class JsonRpcClient {
     return null;
   }
 
+  /**
+   * Get transaction proof.
+   * @template TRP Transaction proof type.
+   * @param {Uint8Array} transactionHash Transaction hash.
+   * @param {CreateTransactionRecordWithProof<TRP>} transactionRecordWithProofFactory Transaction record with proof factory.
+   * @returns {Promise<TRP | null} Transaction proof.
+   */
   public async getTransactionProof<TRP>(
     transactionHash: Uint8Array,
     transactionRecordWithProofFactory: CreateTransactionRecordWithProof<TRP>,
@@ -97,7 +126,9 @@ export class JsonRpcClient {
   }
 
   /**
-   * @see {IStateApiService.sendTransaction}
+   * Send transaction.
+   * @param {TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>} transaction Transaction.
+   * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async sendTransaction(
     transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>,
@@ -112,11 +143,12 @@ export class JsonRpcClient {
 
   /**
    * Wait for a transaction proof to be available.
+   * @template TRP
    * @param {Uint8Array} transactionHash Transaction hash.
    * @param {CreateTransactionRecordWithProof<TRP>} transactionRecordWithProofFactory
    * @param {AbortSignal} signal Abort signal to abort action early.
    * @param {number} [interval=1000] Interval in milliseconds for polling.
-   * @returns {Promise<TransactionRecordWithProof>} Transaction proof.
+   * @returns {Promise<TRP>} Transaction proof.
    * @throws {string} Timeout.
    */
   public waitTransactionProof<TRP>(

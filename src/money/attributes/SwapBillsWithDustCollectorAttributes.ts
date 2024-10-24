@@ -34,7 +34,6 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
   /**
    * Create a SwapBillsWithDustCollectorAttributes object from an array.
    * @param {SwapBillsWithDustCollectorAttributesArray} data swap bills with dust collector attributes array.
-   * @param {ICborCodec} cborCodec Cbor codec.
    * @returns {SwapBillsWithDustCollectorAttributes} Swap bills with dust collector attributes instance.
    */
   public static async fromArray([

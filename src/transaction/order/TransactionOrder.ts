@@ -22,6 +22,7 @@ export abstract class TransactionOrder<
 > {
   /**
    * Transaction order constructor.
+   * @template Attributes Attributes type.
    * @param {TransactionPayload<Attributes>} payload Payload.
    * @param {ITransactionOrderProof} authProof Transaction proof.
    * @param {Uint8Array} _feeProof Fee proof.

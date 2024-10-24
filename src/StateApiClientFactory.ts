@@ -10,8 +10,8 @@ type StateApiClientOptions = {
 
 /**
  * Create money partition client.
- * @param {StateApiMoneyClientOptions} options Options.
- * @returns {StateApiMoneyClient} State API client.
+ * @param {StateApiClientOptions} options Options.
+ * @returns {MoneyPartitionJsonRpcClient} Money partition RPC client.
  */
 export function createMoneyClient(options: StateApiClientOptions): MoneyPartitionJsonRpcClient {
   return new MoneyPartitionJsonRpcClient(options.transport);
@@ -20,7 +20,7 @@ export function createMoneyClient(options: StateApiClientOptions): MoneyPartitio
 /**
  * Create token partition client.
  * @param {StateApiClientOptions} options Options.
- * @returns {TokenPartitionJsonRpcClient} State API client.
+ * @returns {TokenPartitionJsonRpcClient} Token partition RPC client.
  */
 export function createTokenClient(options: StateApiClientOptions): TokenPartitionJsonRpcClient {
   return new TokenPartitionJsonRpcClient(options.transport);
