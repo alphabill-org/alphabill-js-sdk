@@ -5,7 +5,7 @@
 export interface IUnitId {
   /**
    * Get type.
-   * @returns {IUnitIdType} Type.
+   * @returns {bigint} Type.
    */
   get type(): bigint;
   /**
