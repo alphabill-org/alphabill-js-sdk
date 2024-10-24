@@ -12,4 +12,10 @@ export interface IUnitIdType {
    * @returns {string} Base16 string.
    */
   toBase16(): string;
+
+  /**
+   * Check if type is equal to current unit id type.
+   * @param other
+   */
+  equals(type: bigint): boolean;
 }

@@ -43,7 +43,6 @@ import { AlwaysTrueProofFactory } from '../../../src/transaction/proofs/AlwaysTr
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
 import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
-import { UnitId } from '../../../src/UnitId.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
 import config from '../config/config.js';
 import { addFeeCredit, createTransactionData } from '../utils/TestUtils.js';
@@ -176,13 +175,11 @@ describe('Token Client Integration Tests', () => {
       expect(splitBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token split successful');
 
-      const splitTokenId = splitBillProof.transactionRecord.serverMetadata.targetUnits
-        .map((bytes) => UnitId.fromBytes(bytes))
-        .find(
-          (id) =>
-            id.type.toBase16() === Base16Converter.encode(new Uint8Array([TokenPartitionUnitType.FUNGIBLE_TOKEN])) &&
-            Base16Converter.encode(id.bytes) !== Base16Converter.encode(token!.unitId.bytes),
-        );
+      const splitTokenId = splitBillProof.transactionRecord.serverMetadata.targetUnits.find(
+        (id) =>
+          id.type === BigInt(TokenPartitionUnitType.FUNGIBLE_TOKEN) &&
+          Base16Converter.encode(id.bytes) !== Base16Converter.encode(token!.unitId.bytes),
+      );
       expect(splitTokenId).not.toBeFalsy();
 
       const splitToken = await tokenClient.getUnit(splitTokenId!, false, FungibleToken);

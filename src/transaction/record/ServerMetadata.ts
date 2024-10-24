@@ -1,3 +1,5 @@
+import { IUnitId } from '../../IUnitId.js';
+import { UnitId } from '../../UnitId.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { TransactionStatus } from './TransactionStatus.js';
@@ -14,27 +16,18 @@ export class ServerMetadata {
   /**
    * Server metadata constructor.
    * @param {bigint} actualFee Actual fee.
-   * @param {Uint8Array[]} _targetUnits Target units.
+   * @param {IUnitId[]} targetUnits Target units.
    * @param {TransactionStatus} successIndicator Success indicator.
    * @param {Uint8Array | null} _processingDetails Processing details.
    */
   public constructor(
     public readonly actualFee: bigint,
-    private readonly _targetUnits: Uint8Array[],
+    public readonly targetUnits: readonly IUnitId[],
     public readonly successIndicator: TransactionStatus,
     private readonly _processingDetails: Uint8Array | null,
   ) {
     this.actualFee = BigInt(this.actualFee);
-    this._targetUnits = this._targetUnits.map((unit) => new Uint8Array(unit));
     this._processingDetails = this._processingDetails ? new Uint8Array(this._processingDetails) : null;
-  }
-
-  /**
-   * Get target units.
-   * @returns {Uint8Array[]} Target units.
-   */
-  public get targetUnits(): Uint8Array[] {
-    return this._targetUnits.map((unit) => new Uint8Array(unit));
   }
 
   /**
@@ -56,7 +49,12 @@ export class ServerMetadata {
     successIndicator,
     processingDetails,
   ]: ServerMetadataArray): ServerMetadata {
-    return new ServerMetadata(actualFee, targetUnits, successIndicator, processingDetails);
+    return new ServerMetadata(
+      actualFee,
+      targetUnits.map((unitId) => UnitId.fromBytes(unitId)),
+      successIndicator,
+      processingDetails,
+    );
   }
 
   /**
@@ -67,7 +65,7 @@ export class ServerMetadata {
     return dedent`
       ServerMetadata
         Actual Fee: ${this.actualFee}
-        Target Units: [${this._targetUnits.length ? `\n${this._targetUnits.map((unit) => Base16Converter.encode(unit)).join('\n')}\n` : ''}]
+        Target Units: [${this.targetUnits.length ? `${this.targetUnits.map((unit) => Base16Converter.encode(unit.bytes)).join('\n')}\n` : ''}]
         Success indicator: ${TransactionStatus[this.successIndicator]}
         Processing details: ${this._processingDetails ? Base16Converter.encode(this._processingDetails) : null}`;
   }
@@ -77,6 +75,6 @@ export class ServerMetadata {
    * @returns {ServerMetadataArray} Server metadata array.
    */
   public encode(): ServerMetadataArray {
-    return [this.actualFee, this.targetUnits, this.successIndicator, this.processingDetails];
+    return [this.actualFee, this.targetUnits.map((unit) => unit.bytes), this.successIndicator, this.processingDetails];
   }
 }

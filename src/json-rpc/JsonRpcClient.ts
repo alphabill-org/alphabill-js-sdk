@@ -33,7 +33,7 @@ export class JsonRpcClient {
     return BigInt(await this.request('state_getRoundNumber'));
   }
 
-  public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
+  public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<readonly IUnitId[]> {
     const response = await this.request<string[] | null>(
       'state_getUnitsByOwnerID',
       Base16Converter.encode(sha256(ownerId)),

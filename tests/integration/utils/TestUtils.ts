@@ -18,7 +18,6 @@ import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates
 import { IProofFactory } from '../../../src/transaction/proofs/IProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
 import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
-import { Base16Converter } from '../../../src/util/Base16Converter.js';
 
 export function createTransactionData(round: bigint, feeCreditRecordId?: IUnitId): ITransactionData {
   return {
@@ -48,9 +47,7 @@ export async function addFeeCredit(
   unitType: TokenPartitionUnitType.FEE_CREDIT_RECORD | MoneyPartitionUnitType.FEE_CREDIT_RECORD,
 ): Promise<Uint8Array> {
   const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, publicKey);
-  const unitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(publicKey)).filter(
-    (id) => id.type.toBase16() === Base16Converter.encode(new Uint8Array([MoneyPartitionUnitType.BILL])),
-  );
+  const unitIds = (await moneyClient.getUnitsByOwnerId(publicKey)).getBills();
   expect(unitIds.length).toBeGreaterThan(0);
 
   // TODO: Find bill which has the money instead of first
