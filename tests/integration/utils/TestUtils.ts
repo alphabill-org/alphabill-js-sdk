@@ -45,7 +45,7 @@ export async function addFeeCredit(
   publicKey: Uint8Array,
   cborCodec: ICborCodec,
   proofFactory: IProofFactory,
-  tokenType: TokenPartitionUnitType.FEE_CREDIT_RECORD | MoneyPartitionUnitType.FEE_CREDIT_RECORD,
+  unitType: TokenPartitionUnitType.FEE_CREDIT_RECORD | MoneyPartitionUnitType.FEE_CREDIT_RECORD,
 ): Promise<Uint8Array> {
   const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, publicKey);
   const unitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(publicKey)).filter(
@@ -70,7 +70,7 @@ export async function addFeeCredit(
       latestAdditionTime: round + 60n,
       feeCreditRecord: {
         ownerPredicate: ownerPredicate,
-        unitType: tokenType,
+        unitType: unitType,
       },
       bill,
       ...createTransactionData(round),
@@ -90,7 +90,7 @@ export async function addFeeCredit(
   console.log('Transfer to fee credit successful');
   const feeCreditRecordId = new UnitIdWithType(
     transferFeeCreditTransactionOrder.payload.attributes.targetUnitId.bytes,
-    tokenType,
+    unitType,
   );
 
   console.log('Adding fee credit');
