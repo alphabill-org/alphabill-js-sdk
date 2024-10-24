@@ -1,16 +1,32 @@
+import { FeeCreditUnitType } from '../fees/FeeCreditRecordUnitType.js';
 import { IUnitId } from '../IUnitId.js';
 import { TokenPartitionUnitType } from '../tokens/TokenPartitionUnitType.js';
+import { Base16Converter } from '../util/Base16Converter.js';
 
 export class TokenPartitionUnits {
-  private readonly units = new Map<TokenPartitionUnitType, readonly IUnitId[]>();
+  private static readonly FUNGIBLE_TOKEN_TYPE = Base16Converter.encode(TokenPartitionUnitType.FUNGIBLE_TOKEN_TYPE);
+  private static readonly FUNGIBLE_TOKEN = Base16Converter.encode(TokenPartitionUnitType.FUNGIBLE_TOKEN);
+  private static readonly NON_FUNGIBLE_TOKEN_TYPE = Base16Converter.encode(
+    TokenPartitionUnitType.NON_FUNGIBLE_TOKEN_TYPE,
+  );
+  private static readonly NON_FUNGIBLE_TOKEN = Base16Converter.encode(TokenPartitionUnitType.NON_FUNGIBLE_TOKEN);
+  private static readonly FEE_CREDIT_RECORD = Base16Converter.encode(FeeCreditUnitType.FEE_CREDIT_RECORD);
+
+  private readonly units = new Map<string, readonly IUnitId[]>();
 
   public constructor(unitsList: readonly IUnitId[]) {
-    const units = new Map<TokenPartitionUnitType, IUnitId[]>();
+    const units = new Map<string, IUnitId[]>();
 
     for (const unit of unitsList) {
-      const type = Number(unit.type) as TokenPartitionUnitType;
-      if (!TokenPartitionUnitType[type]) {
-        console.warn(`Unknown type in token partition: ${unit.type}`);
+      const type = Base16Converter.encode(unit.type);
+      if (
+        type !== TokenPartitionUnits.FUNGIBLE_TOKEN_TYPE &&
+        type !== TokenPartitionUnits.FUNGIBLE_TOKEN &&
+        type !== TokenPartitionUnits.NON_FUNGIBLE_TOKEN_TYPE &&
+        type !== TokenPartitionUnits.NON_FUNGIBLE_TOKEN &&
+        type !== TokenPartitionUnits.FEE_CREDIT_RECORD
+      ) {
+        console.warn(`Unknown type in money partition: ${unit.type}`);
         continue;
       }
 
@@ -27,22 +43,22 @@ export class TokenPartitionUnits {
   }
 
   public getFungibleTokenTypes(): readonly IUnitId[] {
-    return this.units.get(TokenPartitionUnitType.FUNGIBLE_TOKEN_TYPE) ?? [];
+    return this.units.get(TokenPartitionUnits.FUNGIBLE_TOKEN_TYPE) ?? [];
   }
 
   public getFungibleTokens(): readonly IUnitId[] {
-    return this.units.get(TokenPartitionUnitType.FUNGIBLE_TOKEN) ?? [];
+    return this.units.get(TokenPartitionUnits.FUNGIBLE_TOKEN) ?? [];
   }
 
   public getNonFungibleTokenTypes(): readonly IUnitId[] {
-    return this.units.get(TokenPartitionUnitType.NON_FUNGIBLE_TOKEN_TYPE) ?? [];
+    return this.units.get(TokenPartitionUnits.NON_FUNGIBLE_TOKEN_TYPE) ?? [];
   }
 
   public getNonFungibleTokens(): readonly IUnitId[] {
-    return this.units.get(TokenPartitionUnitType.NON_FUNGIBLE_TOKEN) ?? [];
+    return this.units.get(TokenPartitionUnits.NON_FUNGIBLE_TOKEN) ?? [];
   }
 
   public getFeeCreditRecords(): readonly IUnitId[] {
-    return this.units.get(TokenPartitionUnitType.FEE_CREDIT_RECORD) ?? [];
+    return this.units.get(TokenPartitionUnits.FEE_CREDIT_RECORD) ?? [];
   }
 }

@@ -1,4 +1,3 @@
-import { bytesToNumberBE } from '@noble/curves/abstract/utils';
 import { IUnitId } from './IUnitId.js';
 import { areUint8ArraysEqual } from './util/ArrayUtils.js';
 import { Base16Converter } from './util/Base16Converter.js';
@@ -8,19 +7,24 @@ import { Base16Converter } from './util/Base16Converter.js';
  * @implements {IUnitId}
  */
 export class UnitId implements IUnitId {
-  public readonly type: bigint;
-
   /**
    * Unit identifier constructor.
-   * @param {Uint8Array} type - Unit identifier type.
+   * @param {Uint8Array} _type - Unit identifier type.
    * @param {Uint8Array} _bytes - Unit identifier bytes.
    */
   public constructor(
-    type: Uint8Array,
+    private readonly _type: Uint8Array,
     private readonly _bytes: Uint8Array,
   ) {
-    this.type = bytesToNumberBE(type);
+    this._type = new Uint8Array(this._type);
     this._bytes = new Uint8Array(this._bytes);
+  }
+
+  /**
+   * @see {IUnitId.type}
+   */
+  public get type(): Uint8Array {
+    return new Uint8Array(this._type);
   }
 
   /**
@@ -44,7 +48,7 @@ export class UnitId implements IUnitId {
     const obj1 = a as IUnitId;
     const obj2 = b as IUnitId;
 
-    return areUint8ArraysEqual(obj1.bytes, obj2.bytes) && obj1.type === obj2.type;
+    return areUint8ArraysEqual(obj1.bytes, obj2.bytes) && areUint8ArraysEqual(obj1.type, obj2.type);
   }
 
   /**
@@ -58,7 +62,7 @@ export class UnitId implements IUnitId {
     }
 
     const unitId = obj as IUnitId;
-    return ArrayBuffer.isView(unitId.bytes) && typeof unitId.type === 'bigint';
+    return ArrayBuffer.isView(unitId.bytes) && ArrayBuffer.isView(unitId.type);
   }
 
   /**

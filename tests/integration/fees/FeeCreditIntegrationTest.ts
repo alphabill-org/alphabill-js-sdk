@@ -11,11 +11,9 @@ import { UnsignedReclaimFeeCreditTransactionOrder } from '../../../src/fees/tran
 import { UnsignedUnlockFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedUnlockFeeCreditTransactionOrder.js';
 import { IUnitId } from '../../../src/IUnitId.js';
 import { Bill } from '../../../src/money/Bill.js';
-import { MoneyPartitionUnitType } from '../../../src/money/MoneyPartitionUnitType.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, createTokenClient, http } from '../../../src/StateApiClientFactory.js';
 import { SystemIdentifier } from '../../../src/SystemIdentifier.js';
-import { TokenPartitionUnitType } from '../../../src/tokens/TokenPartitionUnitType.js';
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
@@ -44,7 +42,6 @@ describe('Fee Credit Integration Tests', () => {
       signingService.publicKey,
       cborCodec,
       proofFactory,
-      MoneyPartitionUnitType.FEE_CREDIT_RECORD,
     );
 
     const addFeeCreditProof = await moneyClient.waitTransactionProof(
@@ -64,7 +61,6 @@ describe('Fee Credit Integration Tests', () => {
       signingService.publicKey,
       cborCodec,
       proofFactory,
-      TokenPartitionUnitType.FEE_CREDIT_RECORD,
     );
 
     const addFeeCreditProof = await tokenClient.waitTransactionProof(

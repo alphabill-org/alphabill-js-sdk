@@ -21,7 +21,7 @@ import { SystemIdentifier } from '../../../src/SystemIdentifier.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
-import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
+import { areUint8ArraysEqual } from '../../../src/util/ArrayUtils.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
 import config from '../config/config.js';
 import { addFeeCredit, createTransactionData } from '../utils/TestUtils.js';
@@ -60,7 +60,6 @@ describe('Money Client Integration Tests', () => {
       signingService.publicKey,
       cborCodec,
       proofFactory,
-      MoneyPartitionUnitType.FEE_CREDIT_RECORD,
     );
 
     const addFeeCreditProof = await moneyClient.waitTransactionProof(
@@ -69,10 +68,7 @@ describe('Money Client Integration Tests', () => {
     );
     expect(addFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Adding fee credit successful');
-    feeCreditRecordId = new UnitIdWithType(
-      addFeeCreditProof.transactionRecord.transactionOrder.payload.unitId.bytes,
-      MoneyPartitionUnitType.FEE_CREDIT_RECORD,
-    );
+    feeCreditRecordId = addFeeCreditProof.transactionRecord.transactionOrder.payload.unitId;
   }, 20000);
 
   it('Lock and unlock bill', async () => {
@@ -155,7 +151,7 @@ describe('Money Client Integration Tests', () => {
     expect(bill!.value).toBeGreaterThan(0);
 
     const targetBillUnitId = billUnitIds
-      .filter((id) => id.type === BigInt(MoneyPartitionUnitType.BILL) && id.bytes !== bill!.unitId.bytes)
+      .filter((id) => areUint8ArraysEqual(id.type, MoneyPartitionUnitType.BILL) && id.bytes !== bill!.unitId.bytes)
       .at(0) as IUnitId;
     const targetBill = await moneyClient.getUnit(targetBillUnitId, false, Bill);
 

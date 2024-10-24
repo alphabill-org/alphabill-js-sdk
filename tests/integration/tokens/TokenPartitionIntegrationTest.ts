@@ -43,6 +43,7 @@ import { AlwaysTrueProofFactory } from '../../../src/transaction/proofs/AlwaysTr
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
 import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
+import { areUint8ArraysEqual } from '../../../src/util/ArrayUtils.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
 import config from '../config/config.js';
 import { addFeeCredit, createTransactionData } from '../utils/TestUtils.js';
@@ -58,7 +59,7 @@ describe('Token Client Integration Tests', () => {
     transport: http(config.tokenPartitionUrl, new CborCodecNode()),
   });
 
-  let feeCreditRecordId: UnitIdWithType; // can no longer be static as hash contains timeout
+  let feeCreditRecordId: IUnitId; // can no longer be static as hash contains timeout
 
   it('Add fee credit', async () => {
     const moneyClient = createMoneyClient({
@@ -72,16 +73,12 @@ describe('Token Client Integration Tests', () => {
       signingService.publicKey,
       cborCodec,
       proofFactory,
-      TokenPartitionUnitType.FEE_CREDIT_RECORD,
     );
 
     const proof = await tokenClient.waitTransactionProof(addFeeCreditHash, AddFeeCreditTransactionRecordWithProof);
     expect(proof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Adding fee credit successful');
-    feeCreditRecordId = new UnitIdWithType(
-      proof.transactionRecord.transactionOrder.payload.unitId.bytes,
-      TokenPartitionUnitType.FEE_CREDIT_RECORD,
-    );
+    feeCreditRecordId = proof.transactionRecord.transactionOrder.payload.unitId;
   }, 20000);
 
   describe('Fungible Token Integration Tests', () => {
@@ -177,7 +174,7 @@ describe('Token Client Integration Tests', () => {
 
       const splitTokenId = splitBillProof.transactionRecord.serverMetadata.targetUnits.find(
         (id) =>
-          id.type === BigInt(TokenPartitionUnitType.FUNGIBLE_TOKEN) &&
+          areUint8ArraysEqual(id.type, TokenPartitionUnitType.FUNGIBLE_TOKEN) &&
           Base16Converter.encode(id.bytes) !== Base16Converter.encode(token!.unitId.bytes),
       );
       expect(splitTokenId).not.toBeFalsy();

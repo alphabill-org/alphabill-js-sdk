@@ -5,9 +5,9 @@
 export interface IUnitId {
   /**
    * Get type.
-   * @returns {bigint} Type.
+   * @returns {Uint8Array} Type.
    */
-  get type(): bigint;
+  get type(): Uint8Array;
   /**
    * Get bytes.
    * @returns {Uint8Array} Bytes.

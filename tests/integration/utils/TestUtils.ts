@@ -7,17 +7,14 @@ import { IUnitId } from '../../../src/IUnitId.js';
 import { MoneyPartitionJsonRpcClient } from '../../../src/json-rpc/MoneyPartitionJsonRpcClient.js';
 import { TokenPartitionJsonRpcClient } from '../../../src/json-rpc/TokenPartitionJsonRpcClient.js';
 import { Bill } from '../../../src/money/Bill.js';
-import { MoneyPartitionUnitType } from '../../../src/money/MoneyPartitionUnitType.js';
 import { NetworkIdentifier } from '../../../src/NetworkIdentifier.js';
 import { SystemIdentifier } from '../../../src/SystemIdentifier.js';
-import { TokenPartitionUnitType } from '../../../src/tokens/TokenPartitionUnitType.js';
 import { ITransactionClientMetadata } from '../../../src/transaction/ITransactionClientMetadata.js';
 import { ITransactionData } from '../../../src/transaction/order/ITransactionData.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { IProofFactory } from '../../../src/transaction/proofs/IProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
-import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
 
 export function createTransactionData(round: bigint, feeCreditRecordId?: IUnitId): ITransactionData {
   return {
@@ -44,7 +41,6 @@ export async function addFeeCredit(
   publicKey: Uint8Array,
   cborCodec: ICborCodec,
   proofFactory: IProofFactory,
-  unitType: TokenPartitionUnitType.FEE_CREDIT_RECORD | MoneyPartitionUnitType.FEE_CREDIT_RECORD,
 ): Promise<Uint8Array> {
   const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, publicKey);
   const unitIds = (await moneyClient.getUnitsByOwnerId(publicKey)).getBills();
@@ -67,7 +63,6 @@ export async function addFeeCredit(
       latestAdditionTime: round + 60n,
       feeCreditRecord: {
         ownerPredicate: ownerPredicate,
-        unitType: unitType,
       },
       bill,
       ...createTransactionData(round),
@@ -85,10 +80,7 @@ export async function addFeeCredit(
     TransactionStatus.Successful,
   );
   console.log('Transfer to fee credit successful');
-  const feeCreditRecordId = new UnitIdWithType(
-    transferFeeCreditTransactionOrder.payload.attributes.targetUnitId.bytes,
-    unitType,
-  );
+  const feeCreditRecordId = transferFeeCreditTransactionOrder.payload.attributes.targetUnitId;
 
   console.log('Adding fee credit');
   const addFeeCreditTransactionOrder = await UnsignedAddFeeCreditTransactionOrder.create(

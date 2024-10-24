@@ -18,7 +18,7 @@ export type SetFeeCreditAttributesArray = readonly [
 export class SetFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * Set fee credit payload attributes constructor.
-   * @param {Uint8Array} amount Owner predicate to be set to the fee credit record
+   * @param {IPredicate} ownerPredicate Owner predicate to be set to the fee credit record
    * @param {Uint8Array} amount Fee credit amount to be added
    * @param {bigint} counter Transaction counter of the target fee credit record, or nil if the record does not exist yet
    */
