@@ -46,7 +46,7 @@ import { IFungibleTokenTypeDto } from './IFungibleTokenTypeDto.js';
 import { INonFungibleTokenDto } from './INonFungibleTokenDto.js';
 import { INonFungibleTokenTypeDto } from './INonFungibleTokenTypeDto.js';
 import { CreateTransactionRecordWithProof, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
-import { TokenPartitionUnitIdList } from './TokenPartitionUnitIdList.js';
+import { TokenPartitionUnitIdResponse } from './TokenPartitionUnitIdResponse.js';
 
 type TokenPartitionUnitTypes =
   | FungibleToken
@@ -123,8 +123,8 @@ export class TokenPartitionJsonRpcClient {
   /**
    * @see {JsonRpcClient.getUnitsByOwnerId}
    */
-  public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<TokenPartitionUnitIdList> {
-    return new TokenPartitionUnitIdList(await this.client.getUnitsByOwnerId(ownerId));
+  public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<TokenPartitionUnitIdResponse> {
+    return new TokenPartitionUnitIdResponse(await this.client.getUnitsByOwnerId(ownerId));
   }
 
   /**

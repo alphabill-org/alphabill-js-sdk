@@ -172,7 +172,7 @@ describe('Token Client Integration Tests', () => {
       expect(splitBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token split successful');
 
-      const splitTokenId = splitBillProof.transactionRecord.serverMetadata.targetUnits.find(
+      const splitTokenId = splitBillProof.transactionRecord.serverMetadata.targetUnitIds.find(
         (id) =>
           areUint8ArraysEqual(id.type, TokenPartitionUnitType.FUNGIBLE_TOKEN) &&
           Base16Converter.encode(id.bytes) !== Base16Converter.encode(token!.unitId.bytes),
