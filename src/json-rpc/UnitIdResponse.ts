@@ -5,21 +5,21 @@ export abstract class UnitIdResponse {
   protected readonly unitIds = new Map<string, readonly IUnitId[]>();
 
   protected constructor(unitIds: readonly IUnitId[]) {
-    const unitIdMap = new Map<string, IUnitId[]>();
+    const groupedUnitIds = new Map<string, IUnitId[]>();
 
-    for (const unit of unitIds) {
-      const type = Base16Converter.encode(unit.type);
+    for (const id of unitIds) {
+      const type = Base16Converter.encode(id.type);
 
-      if (!unitIdMap.has(type)) {
-        unitIdMap.set(type, []);
+      if (!groupedUnitIds.has(type)) {
+        groupedUnitIds.set(type, []);
       }
 
-      const sortedUnits = unitIdMap.get(type)!;
-      sortedUnits.push(unit);
+      const typeUnitIds = groupedUnitIds.get(type)!;
+      typeUnitIds.push(id);
     }
 
-    for (const [type, sortedUnits] of unitIdMap) {
-      this.unitIds.set(type, Object.freeze(sortedUnits));
+    for (const [type, typeUnitIds] of groupedUnitIds) {
+      this.unitIds.set(type, Object.freeze(typeUnitIds));
     }
   }
 }
