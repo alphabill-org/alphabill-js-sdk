@@ -46,7 +46,7 @@ describe('Money Client Integration Tests', () => {
   });
 
   it('Get units by owner ID and get unit', async () => {
-    const moneyUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).getBills();
+    const moneyUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(moneyUnitIds.length).toBeGreaterThan(0);
     const moneyUnit = await moneyClient.getUnit(moneyUnitIds[0], true, Bill);
     expect(moneyUnit!.unitId).not.toBeNull();
@@ -72,7 +72,7 @@ describe('Money Client Integration Tests', () => {
   }, 20000);
 
   it('Lock and unlock bill', async () => {
-    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).getBills();
+    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
 
     const round = await moneyClient.getRoundNumber();
@@ -120,7 +120,7 @@ describe('Money Client Integration Tests', () => {
 
   it('Split and transfer bill', async () => {
     const round = await moneyClient.getRoundNumber();
-    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).getBills();
+    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
     const billUnitId = billUnitIds[0];
     let bill = await moneyClient.getUnit(billUnitId, false, Bill);
@@ -151,7 +151,9 @@ describe('Money Client Integration Tests', () => {
     expect(bill!.value).toBeGreaterThan(0);
 
     const targetBillUnitId = billUnitIds
-      .filter((id) => areUint8ArraysEqual(id.type, MoneyPartitionUnitType.BILL) && id.bytes !== bill!.unitId.bytes)
+      .filter((id) => {
+        return areUint8ArraysEqual(id.type, MoneyPartitionUnitType.BILL) && id.bytes !== bill!.unitId.bytes;
+      })
       .at(0) as IUnitId;
     const targetBill = await moneyClient.getUnit(targetBillUnitId, false, Bill);
 
@@ -177,7 +179,7 @@ describe('Money Client Integration Tests', () => {
 
   it('Transfer and swap bill with dust collector', async () => {
     const round = await moneyClient.getRoundNumber();
-    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).getBills();
+    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
     const bill = await moneyClient.getUnit(billUnitIds[0], false, Bill);
     expect(bill).not.toBeNull();

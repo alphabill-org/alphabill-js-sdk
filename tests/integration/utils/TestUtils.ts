@@ -43,7 +43,7 @@ export async function addFeeCredit(
   proofFactory: IProofFactory,
 ): Promise<Uint8Array> {
   const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, publicKey);
-  const unitIds = (await moneyClient.getUnitsByOwnerId(publicKey)).getBills();
+  const unitIds = (await moneyClient.getUnitsByOwnerId(publicKey)).bills;
   expect(unitIds.length).toBeGreaterThan(0);
 
   // TODO: Find bill which has the money instead of first

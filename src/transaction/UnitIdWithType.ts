@@ -12,7 +12,7 @@ export class UnitIdWithType extends UnitId {
   public constructor(identifier: Uint8Array, type: Uint8Array) {
     const bytes = new Uint8Array(33);
     bytes.set(identifier, Math.max(32 - identifier.length, 0));
-    bytes.set(type, 33 - type.length);
+    bytes.set(type, 32);
     super(type, bytes);
   }
 }

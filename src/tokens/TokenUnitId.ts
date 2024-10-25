@@ -5,9 +5,6 @@ import { ITransactionClientMetadata } from '../transaction/ITransactionClientMet
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { UnitIdWithType } from '../transaction/UnitIdWithType.js';
 
-export type FungibleTokenUnitId = 'FUNGIBLE';
-export type NonFungibleTokenUnitId = 'NON_FUNGIBLE';
-
 export class TokenUnitId {
   public static async create(
     attributes: ITransactionPayloadAttributes,

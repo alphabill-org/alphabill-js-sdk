@@ -1,14 +1,4 @@
 /**
- * Unit from getUnit.
- * @interface IUnitDto
- */
-export interface IUnitDto {
-  readonly unitId: string;
-  readonly data: unknown;
-  readonly stateProof?: IStateProofDto;
-}
-
-/**
  * Unit state proof from getUnit.
  */
 export interface IStateProofDto {

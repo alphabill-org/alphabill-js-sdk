@@ -127,7 +127,7 @@ describe('Fee Credit Integration Tests', () => {
 
   it('Close and reclaim fee credit', async () => {
     const round = await moneyClient.getRoundNumber();
-    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).getBills();
+    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
     const billUnitId = billUnitIds[0];
     let bill = await moneyClient.getUnit(billUnitId, false, Bill);
