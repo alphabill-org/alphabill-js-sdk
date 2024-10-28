@@ -61,9 +61,7 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   public toString(): string {
     return dedent`
       SplitBillAttributes
-        Target Units: [
-          ${this._targetUnits.map((unit) => unit.toString()).join('\n')}
-        ]
+        Target Units: [${this._targetUnits.length ? this._targetUnits.map((unit) => unit.toString()).join('\n') : ''}\n]
         Counter: ${this.counter}`;
   }
 }

@@ -13,4 +13,10 @@ export interface IUnitId {
    * @returns {Uint8Array} Bytes.
    */
   get bytes(): Uint8Array;
+
+  /**
+   * Convert to string.
+   * @returns {string} String representation.
+   */
+  toString(): string;
 }
