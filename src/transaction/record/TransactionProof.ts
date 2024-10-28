@@ -1,10 +1,5 @@
 import { dedent } from '../../util/StringUtils.js';
 
-/**
- * Transaction proof array.
- */
-export type TransactionProofArray = readonly [unknown, unknown, unknown];
-
 // TODO: Fix transaction proof
 /**
  * Transaction proof.

@@ -21,7 +21,7 @@ import { SystemIdentifier } from '../../../src/SystemIdentifier.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
-import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
+import { areUint8ArraysEqual } from '../../../src/util/ArrayUtils.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
 import config from '../config/config.js';
 import { addFeeCredit, createTransactionData } from '../utils/TestUtils.js';
@@ -46,9 +46,7 @@ describe('Money Client Integration Tests', () => {
   });
 
   it('Get units by owner ID and get unit', async () => {
-    const moneyUnitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
-      (id) => id.type.toBase16() === Base16Converter.encode(new Uint8Array([MoneyPartitionUnitType.BILL])),
-    );
+    const moneyUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(moneyUnitIds.length).toBeGreaterThan(0);
     const moneyUnit = await moneyClient.getUnit(moneyUnitIds[0], true, Bill);
     expect(moneyUnit!.unitId).not.toBeNull();
@@ -62,7 +60,6 @@ describe('Money Client Integration Tests', () => {
       signingService.publicKey,
       cborCodec,
       proofFactory,
-      MoneyPartitionUnitType.FEE_CREDIT_RECORD,
     );
 
     const addFeeCreditProof = await moneyClient.waitTransactionProof(
@@ -71,16 +68,11 @@ describe('Money Client Integration Tests', () => {
     );
     expect(addFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Adding fee credit successful');
-    feeCreditRecordId = new UnitIdWithType(
-      addFeeCreditProof.transactionRecord.transactionOrder.payload.unitId.bytes,
-      MoneyPartitionUnitType.FEE_CREDIT_RECORD,
-    );
+    feeCreditRecordId = addFeeCreditProof.transactionRecord.transactionOrder.payload.unitId;
   }, 20000);
 
   it('Lock and unlock bill', async () => {
-    const billUnitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
-      (id) => id.type.toBase16() === Base16Converter.encode(new Uint8Array([MoneyPartitionUnitType.BILL])),
-    );
+    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
 
     const round = await moneyClient.getRoundNumber();
@@ -128,9 +120,7 @@ describe('Money Client Integration Tests', () => {
 
   it('Split and transfer bill', async () => {
     const round = await moneyClient.getRoundNumber();
-    const billUnitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
-      (id) => id.type.toBase16() === Base16Converter.encode(new Uint8Array([MoneyPartitionUnitType.BILL])),
-    );
+    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
     const billUnitId = billUnitIds[0];
     let bill = await moneyClient.getUnit(billUnitId, false, Bill);
@@ -161,11 +151,9 @@ describe('Money Client Integration Tests', () => {
     expect(bill!.value).toBeGreaterThan(0);
 
     const targetBillUnitId = billUnitIds
-      .filter(
-        (id) =>
-          id.type.toBase16() === Base16Converter.encode(new Uint8Array([MoneyPartitionUnitType.BILL])) &&
-          id.bytes !== bill!.unitId.bytes,
-      )
+      .filter((id) => {
+        return areUint8ArraysEqual(id.type, MoneyPartitionUnitType.BILL) && id.bytes !== bill!.unitId.bytes;
+      })
       .at(0) as IUnitId;
     const targetBill = await moneyClient.getUnit(targetBillUnitId, false, Bill);
 
@@ -191,9 +179,7 @@ describe('Money Client Integration Tests', () => {
 
   it('Transfer and swap bill with dust collector', async () => {
     const round = await moneyClient.getRoundNumber();
-    const billUnitIds: IUnitId[] = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).filter(
-      (id) => id.type.toBase16() === Base16Converter.encode(new Uint8Array([MoneyPartitionUnitType.BILL])),
-    );
+    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
     const bill = await moneyClient.getUnit(billUnitIds[0], false, Bill);
     expect(bill).not.toBeNull();

@@ -1,5 +1,3 @@
-import { IUnitIdType } from './IUnitIdType.js';
-
 /**
  * UnitId interface.
  * @interface IUnitId
@@ -7,9 +5,9 @@ import { IUnitIdType } from './IUnitIdType.js';
 export interface IUnitId {
   /**
    * Get type.
-   * @returns {IUnitIdType} Type.
+   * @returns {Uint8Array} Type.
    */
-  get type(): IUnitIdType;
+  get type(): Uint8Array;
   /**
    * Get bytes.
    * @returns {Uint8Array} Bytes.

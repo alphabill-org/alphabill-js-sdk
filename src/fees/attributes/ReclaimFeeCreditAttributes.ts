@@ -24,7 +24,6 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
   /**
    * Create ReclaimFeeCreditAttributes from array.
    * @param {ReclaimFeeCreditAttributesArray} data - Reclaim fee credit attributes data array.
-   * @param {ICborCodec} cborCodec Cbor codec.
    * @returns {ReclaimFeeCreditAttributes} Reclaim fee credit attributes instance.
    */
   public static async fromArray([

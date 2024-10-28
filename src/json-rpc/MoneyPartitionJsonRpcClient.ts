@@ -28,6 +28,7 @@ import { UnlockBillTransactionRecordWithProof } from '../money/transactions/Unlo
 import { IBillDataDto } from './IBillDataDto.js';
 import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
 import { CreateTransactionRecordWithProof, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
+import { MoneyPartitionUnitIdResponse } from './MoneyPartitionUnitIdResponse.js';
 
 type MoneyPartitionUnitTypes = Bill | FeeCreditRecord;
 
@@ -81,8 +82,8 @@ export class MoneyPartitionJsonRpcClient {
   /**
    * @see {JsonRpcClient.getUnitsByOwnerId}
    */
-  public getUnitsByOwnerId(ownerId: Uint8Array): Promise<IUnitId[]> {
-    return this.client.getUnitsByOwnerId(ownerId);
+  public async getUnitsByOwnerId(ownerId: Uint8Array): Promise<MoneyPartitionUnitIdResponse> {
+    return new MoneyPartitionUnitIdResponse(await this.client.getUnitsByOwnerId(ownerId));
   }
 
   /**

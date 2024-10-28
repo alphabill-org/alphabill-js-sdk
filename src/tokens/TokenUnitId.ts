@@ -4,14 +4,13 @@ import { IUnitId } from '../IUnitId.js';
 import { ITransactionClientMetadata } from '../transaction/ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { UnitIdWithType } from '../transaction/UnitIdWithType.js';
-import { TokenPartitionUnitType } from './TokenPartitionUnitType.js';
 
 export class TokenUnitId {
   public static async create(
     attributes: ITransactionPayloadAttributes,
     metadata: ITransactionClientMetadata,
     codec: ICborCodec,
-    type: TokenPartitionUnitType.FUNGIBLE_TOKEN | TokenPartitionUnitType.NON_FUNGIBLE_TOKEN,
+    type: Uint8Array,
   ): Promise<IUnitId> {
     const unitIdCbor = await codec.encode([
       await attributes.encode(codec),
