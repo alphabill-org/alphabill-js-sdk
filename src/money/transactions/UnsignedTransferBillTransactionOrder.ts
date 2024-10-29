@@ -26,10 +26,7 @@ export class UnsignedTransferBillTransactionOrder {
     public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: ITransferBillTransactionData,
-    codec: ICborCodec,
-  ): UnsignedTransferBillTransactionOrder {
+  public static create(data: ITransferBillTransactionData, codec: ICborCodec): UnsignedTransferBillTransactionOrder {
     return new UnsignedTransferBillTransactionOrder(
       new TransactionPayload<TransferBillAttributes>(
         data.networkIdentifier,
