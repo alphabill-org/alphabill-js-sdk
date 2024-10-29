@@ -25,26 +25,24 @@ export class UnsignedCloseFeeCreditTransactionOrder {
   public static create(
     data: ICloseFeeCreditTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedCloseFeeCreditTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedCloseFeeCreditTransactionOrder(
-        new TransactionPayload<CloseFeeCreditAttributes>(
-          data.networkIdentifier,
-          SystemIdentifier.MONEY_PARTITION,
-          data.feeCreditRecord.unitId,
-          FeeCreditTransactionType.CloseFeeCredit,
-          new CloseFeeCreditAttributes(
-            data.feeCreditRecord.balance,
-            data.bill.unitId,
-            data.bill.counter,
-            data.feeCreditRecord.counter,
-          ),
-          data.stateLock,
-          data.metadata,
+  ): UnsignedCloseFeeCreditTransactionOrder {
+    return new UnsignedCloseFeeCreditTransactionOrder(
+      new TransactionPayload<CloseFeeCreditAttributes>(
+        data.networkIdentifier,
+        SystemIdentifier.MONEY_PARTITION,
+        data.feeCreditRecord.unitId,
+        FeeCreditTransactionType.CloseFeeCredit,
+        new CloseFeeCreditAttributes(
+          data.feeCreditRecord.balance,
+          data.bill.unitId,
+          data.bill.counter,
+          data.feeCreditRecord.counter,
         ),
-        data.stateUnlock,
-        codec,
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

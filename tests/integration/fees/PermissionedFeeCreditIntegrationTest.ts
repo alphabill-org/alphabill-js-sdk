@@ -27,17 +27,15 @@ describe('Permissioned Fee Credit Integration Tests', () => {
     const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey);
 
     console.log('Setting fee credit...');
-    const setFeeCreditTransactionOrder = await (
-      await UnsignedSetFeeCreditTransactionOrder.create(
-        {
-          targetSystemIdentifier: SystemIdentifier.TOKEN_PARTITION,
-          ownerPredicate: ownerPredicate,
-          amount: 100n,
-          feeCreditRecord: { unitId: null, counter: null },
-          ...createTransactionData(round),
-        },
-        cborCodec,
-      )
+    const setFeeCreditTransactionOrder = await UnsignedSetFeeCreditTransactionOrder.create(
+      {
+        targetSystemIdentifier: SystemIdentifier.TOKEN_PARTITION,
+        ownerPredicate: ownerPredicate,
+        amount: 100n,
+        feeCreditRecord: { unitId: null, counter: null },
+        ...createTransactionData(round),
+      },
+      cborCodec,
     ).sign(proofFactory);
 
     const setFeeCreditHash = await tokenClient.sendTransaction(setFeeCreditTransactionOrder);
@@ -50,14 +48,12 @@ describe('Permissioned Fee Credit Integration Tests', () => {
     console.log('Setting fee credit successful');
 
     console.log('Deleting fee credit...');
-    const deleteFeeCreditTransactionOrder = await (
-      await UnsignedDeleteFeeCreditTransactionOrder.create(
-        {
-          feeCredit: { unitId: feeCreditRecordId, counter: 0n },
-          ...createTransactionData(round),
-        },
-        cborCodec,
-      )
+    const deleteFeeCreditTransactionOrder = await UnsignedDeleteFeeCreditTransactionOrder.create(
+      {
+        feeCredit: { unitId: feeCreditRecordId, counter: 0n },
+        ...createTransactionData(round),
+      },
+      cborCodec,
     ).sign(proofFactory);
 
     const deleteFeeCreditHash = await tokenClient.sendTransaction(deleteFeeCreditTransactionOrder);

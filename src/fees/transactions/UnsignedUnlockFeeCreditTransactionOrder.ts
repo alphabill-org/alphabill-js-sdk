@@ -27,21 +27,19 @@ export class UnsignedUnlockFeeCreditTransactionOrder {
   public static create(
     data: IUnlockFeeCreditTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedUnlockFeeCreditTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedUnlockFeeCreditTransactionOrder(
-        new TransactionPayload<UnlockFeeCreditAttributes>(
-          data.networkIdentifier,
-          SystemIdentifier.MONEY_PARTITION,
-          data.feeCredit.unitId,
-          FeeCreditTransactionType.UnlockFeeCredit,
-          new UnlockFeeCreditAttributes(data.feeCredit.counter),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  ): UnsignedUnlockFeeCreditTransactionOrder {
+    return new UnsignedUnlockFeeCreditTransactionOrder(
+      new TransactionPayload<UnlockFeeCreditAttributes>(
+        data.networkIdentifier,
+        SystemIdentifier.MONEY_PARTITION,
+        data.feeCredit.unitId,
+        FeeCreditTransactionType.UnlockFeeCredit,
+        new UnlockFeeCreditAttributes(data.feeCredit.counter),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

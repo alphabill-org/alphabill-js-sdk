@@ -78,15 +78,13 @@ describe('Fee Credit Integration Tests', () => {
 
     console.log('Locking fee credit...');
     const lockStatus = 5n;
-    const lockFeeCreditTransactionOrder = await (
-      await UnsignedLockFeeCreditTransactionOrder.create(
-        {
-          status: lockStatus,
-          feeCredit: feeCreditRecord,
-          ...createTransactionData(round),
-        },
-        cborCodec,
-      )
+    const lockFeeCreditTransactionOrder = await UnsignedLockFeeCreditTransactionOrder.create(
+      {
+        status: lockStatus,
+        feeCredit: feeCreditRecord,
+        ...createTransactionData(round),
+      },
+      cborCodec,
     ).sign(proofFactory);
 
     const lockFeeCreditHash = await moneyClient.sendTransaction(lockFeeCreditTransactionOrder);
@@ -101,14 +99,12 @@ describe('Fee Credit Integration Tests', () => {
     expect(feeCreditAfterLock.locked).toBe(5n);
 
     console.log('Unlocking fee credit...');
-    const unlockFeeCreditTransactionOrder = await (
-      await UnsignedUnlockFeeCreditTransactionOrder.create(
-        {
-          feeCredit: feeCreditAfterLock,
-          ...createTransactionData(round),
-        },
-        cborCodec,
-      )
+    const unlockFeeCreditTransactionOrder = await UnsignedUnlockFeeCreditTransactionOrder.create(
+      {
+        feeCredit: feeCreditAfterLock,
+        ...createTransactionData(round),
+      },
+      cborCodec,
     ).sign(proofFactory);
 
     const unlockFeeCreditHash = await moneyClient.sendTransaction(unlockFeeCreditTransactionOrder);
@@ -135,15 +131,13 @@ describe('Fee Credit Integration Tests', () => {
 
     const feeCreditRecord = await moneyClient.getUnit(feeCreditRecordId, false, FeeCreditRecord);
     console.log('Closing fee credit...');
-    const closeFeeCreditTransactionOrder = await (
-      await UnsignedCloseFeeCreditTransactionOrder.create(
-        {
-          bill: bill!,
-          feeCreditRecord: feeCreditRecord!,
-          ...createTransactionData(round),
-        },
-        cborCodec,
-      )
+    const closeFeeCreditTransactionOrder = await UnsignedCloseFeeCreditTransactionOrder.create(
+      {
+        bill: bill!,
+        feeCreditRecord: feeCreditRecord!,
+        ...createTransactionData(round),
+      },
+      cborCodec,
     ).sign(proofFactory);
     const closeFeeCreditHash = await moneyClient.sendTransaction(closeFeeCreditTransactionOrder);
     const closeFeeCreditProof = await moneyClient.waitTransactionProof(
@@ -155,15 +149,13 @@ describe('Fee Credit Integration Tests', () => {
 
     bill = await moneyClient.getUnit(billUnitId, false, Bill);
     console.log('Reclaiming fee credit...');
-    const reclaimFeeCreditTransactionOrder = await (
-      await UnsignedReclaimFeeCreditTransactionOrder.create(
-        {
-          proof: closeFeeCreditProof,
-          bill: bill!,
-          ...createTransactionData(round),
-        },
-        cborCodec,
-      )
+    const reclaimFeeCreditTransactionOrder = await UnsignedReclaimFeeCreditTransactionOrder.create(
+      {
+        proof: closeFeeCreditProof,
+        bill: bill!,
+        ...createTransactionData(round),
+      },
+      cborCodec,
     ).sign(proofFactory);
     const reclaimFeeCreditHash = await moneyClient.sendTransaction(reclaimFeeCreditTransactionOrder);
     const reclaimFeeCreditProof = await moneyClient.waitTransactionProof(

@@ -29,24 +29,22 @@ export class UnsignedSplitBillTransactionOrder {
     public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: ISplitBillTransactionData, codec: ICborCodec): Promise<UnsignedSplitBillTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedSplitBillTransactionOrder(
-        new TransactionPayload<SplitBillAttributes>(
-          data.networkIdentifier,
-          SystemIdentifier.MONEY_PARTITION,
-          data.bill.unitId,
-          MoneyPartitionTransactionType.SplitBill,
-          new SplitBillAttributes(
-            data.splits.map(({ value, ownerPredicate }) => new SplitBillUnit(value, ownerPredicate)),
-            data.bill.counter,
-          ),
-          data.stateLock,
-          data.metadata,
+  public static create(data: ISplitBillTransactionData, codec: ICborCodec): UnsignedSplitBillTransactionOrder {
+    return new UnsignedSplitBillTransactionOrder(
+      new TransactionPayload<SplitBillAttributes>(
+        data.networkIdentifier,
+        SystemIdentifier.MONEY_PARTITION,
+        data.bill.unitId,
+        MoneyPartitionTransactionType.SplitBill,
+        new SplitBillAttributes(
+          data.splits.map(({ value, ownerPredicate }) => new SplitBillUnit(value, ownerPredicate)),
+          data.bill.counter,
         ),
-        data.stateUnlock,
-        codec,
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

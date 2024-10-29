@@ -24,21 +24,19 @@ export class UnsignedUnlockBillTransactionOrder {
     public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: ILockBillTransactionData, codec: ICborCodec): Promise<UnsignedUnlockBillTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedUnlockBillTransactionOrder(
-        new TransactionPayload<UnlockBillAttributes>(
-          data.networkIdentifier,
-          SystemIdentifier.MONEY_PARTITION,
-          data.bill.unitId,
-          MoneyPartitionTransactionType.UnlockBill,
-          new UnlockBillAttributes(data.bill.counter),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  public static create(data: ILockBillTransactionData, codec: ICborCodec): UnsignedUnlockBillTransactionOrder {
+    return new UnsignedUnlockBillTransactionOrder(
+      new TransactionPayload<UnlockBillAttributes>(
+        data.networkIdentifier,
+        SystemIdentifier.MONEY_PARTITION,
+        data.bill.unitId,
+        MoneyPartitionTransactionType.UnlockBill,
+        new UnlockBillAttributes(data.bill.counter),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

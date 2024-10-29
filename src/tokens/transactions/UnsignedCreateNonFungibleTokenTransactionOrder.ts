@@ -25,15 +25,15 @@ interface ICreateNonFungibleTokenTransactionData extends ITransactionData {
 
 export class UnsignedCreateNonFungibleTokenTransactionOrder {
   public constructor(
-    public readonly payload: TransactionPayload<CreateNonFungibleTokenAttributes>,
+    public readonly payload: Promise<TransactionPayload<CreateNonFungibleTokenAttributes>>,
     public readonly stateUnlock: IPredicate | null,
     public readonly codec: ICborCodec,
   ) {}
 
-  public static async create(
+  public static create(
     data: ICreateNonFungibleTokenTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedCreateNonFungibleTokenTransactionOrder> {
+  ): UnsignedCreateNonFungibleTokenTransactionOrder {
     const attributes = new CreateNonFungibleTokenAttributes(
       data.ownerPredicate,
       data.type.unitId,
@@ -44,31 +44,38 @@ export class UnsignedCreateNonFungibleTokenTransactionOrder {
       data.nonce,
     );
 
-    return new UnsignedCreateNonFungibleTokenTransactionOrder(
-      new TransactionPayload(
-        data.networkIdentifier,
-        SystemIdentifier.TOKEN_PARTITION,
-        await TokenUnitId.create(attributes, data.metadata, codec, TokenPartitionUnitType.NON_FUNGIBLE_TOKEN),
-        TokenPartitionTransactionType.CreateNonFungibleToken,
-        attributes,
-        data.stateLock,
-        data.metadata,
-      ),
-      data.stateUnlock,
+    const payload = TokenUnitId.create(
+      attributes,
+      data.metadata,
       codec,
+      TokenPartitionUnitType.NON_FUNGIBLE_TOKEN,
+    ).then(
+      (unitId) =>
+        new TransactionPayload(
+          data.networkIdentifier,
+          SystemIdentifier.TOKEN_PARTITION,
+          unitId,
+          TokenPartitionTransactionType.CreateNonFungibleToken,
+          attributes,
+          data.stateLock,
+          data.metadata,
+        ),
     );
+
+    return new UnsignedCreateNonFungibleTokenTransactionOrder(payload, data.stateUnlock, codec);
   }
 
   public async sign(
     tokenMintingProofFactory: IProofFactory,
     feeProofFactory: IProofFactory | null,
   ): Promise<CreateNonFungibleTokenTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
+    const payload = await this.payload;
+    const authProof = [...(await payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
     const ownerProof = new OwnerProofAuthProof(
       await tokenMintingProofFactory.create(await this.codec.encode(authProof)),
     );
     const feeProof =
       (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
-    return new CreateNonFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new CreateNonFungibleTokenTransactionOrder(payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

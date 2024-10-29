@@ -24,21 +24,19 @@ export class UnsignedDeleteFeeCreditTransactionOrder {
   public static create(
     data: IDeleteFeeCreditTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedDeleteFeeCreditTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedDeleteFeeCreditTransactionOrder(
-        new TransactionPayload<DeleteFeeCreditAttributes>(
-          data.networkIdentifier,
-          SystemIdentifier.TOKEN_PARTITION,
-          data.feeCredit.unitId,
-          FeeCreditTransactionType.DeleteFeeCredit,
-          new DeleteFeeCreditAttributes(data.feeCredit.counter),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  ): UnsignedDeleteFeeCreditTransactionOrder {
+    return new UnsignedDeleteFeeCreditTransactionOrder(
+      new TransactionPayload<DeleteFeeCreditAttributes>(
+        data.networkIdentifier,
+        SystemIdentifier.TOKEN_PARTITION,
+        data.feeCredit.unitId,
+        FeeCreditTransactionType.DeleteFeeCredit,
+        new DeleteFeeCreditAttributes(data.feeCredit.counter),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

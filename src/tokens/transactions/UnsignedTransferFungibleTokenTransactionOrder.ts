@@ -26,26 +26,24 @@ export class UnsignedTransferFungibleTokenTransactionOrder {
   public static create(
     data: ITransferFungibleTokenTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedTransferFungibleTokenTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedTransferFungibleTokenTransactionOrder(
-        new TransactionPayload(
-          data.networkIdentifier,
-          SystemIdentifier.TOKEN_PARTITION,
-          data.token.unitId,
-          TokenPartitionTransactionType.TransferFungibleToken,
-          new TransferFungibleTokenAttributes(
-            data.ownerPredicate,
-            data.token.value,
-            data.token.counter,
-            data.type.unitId,
-          ),
-          data.stateLock,
-          data.metadata,
+  ): UnsignedTransferFungibleTokenTransactionOrder {
+    return new UnsignedTransferFungibleTokenTransactionOrder(
+      new TransactionPayload(
+        data.networkIdentifier,
+        SystemIdentifier.TOKEN_PARTITION,
+        data.token.unitId,
+        TokenPartitionTransactionType.TransferFungibleToken,
+        new TransferFungibleTokenAttributes(
+          data.ownerPredicate,
+          data.token.value,
+          data.token.counter,
+          data.type.unitId,
         ),
-        data.stateUnlock,
-        codec,
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

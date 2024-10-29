@@ -70,7 +70,7 @@ export class ServerMetadata {
     return dedent`
       ServerMetadata
         Actual Fee: ${this.actualFee}
-        Target Units: [${this._targetUnitIds.length ? `${this._targetUnitIds.map((unit) => Base16Converter.encode(unit.bytes)).join('\n')}\n` : ''}]
+        Target Unit IDs: [${this._targetUnitIds.length ? `\n${this._targetUnitIds.map((unitId) => unitId.toString()).join('\n')}\n` : ''}]
         Success indicator: ${TransactionStatus[this.successIndicator]}
         Processing details: ${this._processingDetails ? Base16Converter.encode(this._processingDetails) : null}`;
   }

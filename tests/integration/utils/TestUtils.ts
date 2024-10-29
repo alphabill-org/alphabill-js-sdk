@@ -68,7 +68,7 @@ export async function addFeeCredit(
       ...createTransactionData(round),
     },
     cborCodec,
-  ).then((transactionOrder) => transactionOrder.sign(proofFactory));
+  ).sign(proofFactory);
 
   const transferFeeCreditHash = await moneyClient.sendTransaction(transferFeeCreditTransactionOrder);
 
@@ -92,7 +92,7 @@ export async function addFeeCredit(
       ...createTransactionData(round),
     },
     cborCodec,
-  ).then((transactionOrder) => transactionOrder.sign(proofFactory));
+  ).sign(proofFactory);
 
   console.log('Adding fee credit probably successful');
   return await clientToAddFeesTo.sendTransaction(addFeeCreditTransactionOrder);

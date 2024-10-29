@@ -26,24 +26,19 @@ export class UnsignedTransferBillTransactionOrder {
     public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: ITransferBillTransactionData,
-    codec: ICborCodec,
-  ): Promise<UnsignedTransferBillTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedTransferBillTransactionOrder(
-        new TransactionPayload<TransferBillAttributes>(
-          data.networkIdentifier,
-          SystemIdentifier.MONEY_PARTITION,
-          data.bill.unitId,
-          MoneyPartitionTransactionType.TransferBill,
-          new TransferBillAttributes(data.ownerPredicate, data.bill.value, data.bill.counter),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  public static create(data: ITransferBillTransactionData, codec: ICborCodec): UnsignedTransferBillTransactionOrder {
+    return new UnsignedTransferBillTransactionOrder(
+      new TransactionPayload<TransferBillAttributes>(
+        data.networkIdentifier,
+        SystemIdentifier.MONEY_PARTITION,
+        data.bill.unitId,
+        MoneyPartitionTransactionType.TransferBill,
+        new TransferBillAttributes(data.ownerPredicate, data.bill.value, data.bill.counter),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

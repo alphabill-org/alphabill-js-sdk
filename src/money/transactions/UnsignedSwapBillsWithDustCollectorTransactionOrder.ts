@@ -28,21 +28,19 @@ export class UnsignedSwapBillsWithDustCollectorTransactionOrder {
   public static create(
     data: ISwapBillsWithDustCollectorTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedSwapBillsWithDustCollectorTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedSwapBillsWithDustCollectorTransactionOrder(
-        new TransactionPayload<SwapBillsWithDustCollectorAttributes>(
-          data.networkIdentifier,
-          SystemIdentifier.MONEY_PARTITION,
-          data.bill.unitId,
-          MoneyPartitionTransactionType.SwapBillsWithDustCollector,
-          new SwapBillsWithDustCollectorAttributes(data.proofs),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  ): UnsignedSwapBillsWithDustCollectorTransactionOrder {
+    return new UnsignedSwapBillsWithDustCollectorTransactionOrder(
+      new TransactionPayload<SwapBillsWithDustCollectorAttributes>(
+        data.networkIdentifier,
+        SystemIdentifier.MONEY_PARTITION,
+        data.bill.unitId,
+        MoneyPartitionTransactionType.SwapBillsWithDustCollector,
+        new SwapBillsWithDustCollectorAttributes(data.proofs),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

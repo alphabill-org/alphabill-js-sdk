@@ -28,10 +28,7 @@ export class UnsignedSetFeeCreditTransactionOrder {
     public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: ISetFeeCreditTransactionData,
-    codec: ICborCodec,
-  ): Promise<UnsignedSetFeeCreditTransactionOrder> {
+  public static create(data: ISetFeeCreditTransactionData, codec: ICborCodec): UnsignedSetFeeCreditTransactionOrder {
     let feeCreditRecordId: IUnitId;
     if (data.feeCreditRecord.unitId == null) {
       const unitBytes = sha256
@@ -43,20 +40,18 @@ export class UnsignedSetFeeCreditTransactionOrder {
     } else {
       feeCreditRecordId = data.feeCreditRecord.unitId;
     }
-    return Promise.resolve(
-      new UnsignedSetFeeCreditTransactionOrder(
-        new TransactionPayload<SetFeeCreditAttributes>(
-          data.networkIdentifier,
-          data.targetSystemIdentifier,
-          feeCreditRecordId,
-          FeeCreditTransactionType.SetFeeCredit,
-          new SetFeeCreditAttributes(data.ownerPredicate, data.amount, data.feeCreditRecord.counter),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+    return new UnsignedSetFeeCreditTransactionOrder(
+      new TransactionPayload<SetFeeCreditAttributes>(
+        data.networkIdentifier,
+        data.targetSystemIdentifier,
+        feeCreditRecordId,
+        FeeCreditTransactionType.SetFeeCredit,
+        new SetFeeCreditAttributes(data.ownerPredicate, data.amount, data.feeCreditRecord.counter),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

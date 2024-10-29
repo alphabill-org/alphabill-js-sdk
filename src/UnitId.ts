@@ -75,8 +75,7 @@ export class UnitId implements IUnitId {
   }
 
   /**
-   * Convert to string.
-   * @returns {string} String representation.
+   * @see {IUnitId.toString}
    */
   public toString(): string {
     return `${Base16Converter.encode(this._bytes)}`;

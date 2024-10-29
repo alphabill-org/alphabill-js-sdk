@@ -33,26 +33,24 @@ export class UnsignedTransferBillToDustCollectorTransactionOrder {
   public static create(
     data: ISwapBillsWithDustCollectorTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedTransferBillToDustCollectorTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedTransferBillToDustCollectorTransactionOrder(
-        new TransactionPayload<TransferBillToDustCollectorAttributes>(
-          data.networkIdentifier,
-          SystemIdentifier.MONEY_PARTITION,
-          data.bill.unitId,
-          MoneyPartitionTransactionType.TransferBillToDustCollector,
-          new TransferBillToDustCollectorAttributes(
-            data.bill.value,
-            data.targetBill.unitId,
-            data.targetBill.counter,
-            data.bill.counter,
-          ),
-          data.stateLock,
-          data.metadata,
+  ): UnsignedTransferBillToDustCollectorTransactionOrder {
+    return new UnsignedTransferBillToDustCollectorTransactionOrder(
+      new TransactionPayload<TransferBillToDustCollectorAttributes>(
+        data.networkIdentifier,
+        SystemIdentifier.MONEY_PARTITION,
+        data.bill.unitId,
+        MoneyPartitionTransactionType.TransferBillToDustCollector,
+        new TransferBillToDustCollectorAttributes(
+          data.bill.value,
+          data.targetBill.unitId,
+          data.targetBill.counter,
+          data.bill.counter,
         ),
-        data.stateUnlock,
-        codec,
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 
