@@ -25,24 +25,19 @@ export class UnsignedAddFeeCreditTransactionOrder {
     public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: IAddFeeCreditTransactionData,
-    codec: ICborCodec,
-  ): Promise<UnsignedAddFeeCreditTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedAddFeeCreditTransactionOrder(
-        new TransactionPayload<AddFeeCreditAttributes>(
-          data.networkIdentifier,
-          data.targetSystemIdentifier,
-          data.feeCreditRecord.unitId,
-          FeeCreditTransactionType.AddFeeCredit,
-          new AddFeeCreditAttributes(data.ownerPredicate, data.proof),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  public static create(data: IAddFeeCreditTransactionData, codec: ICborCodec): UnsignedAddFeeCreditTransactionOrder {
+    return new UnsignedAddFeeCreditTransactionOrder(
+      new TransactionPayload<AddFeeCreditAttributes>(
+        data.networkIdentifier,
+        data.targetSystemIdentifier,
+        data.feeCreditRecord.unitId,
+        FeeCreditTransactionType.AddFeeCredit,
+        new AddFeeCreditAttributes(data.ownerPredicate, data.proof),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

@@ -40,32 +40,30 @@ export class UnsignedTransferFeeCreditTransactionOrder {
   public static create(
     data: ITransferFeeCreditTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedTransferFeeCreditTransactionOrder> {
+  ): UnsignedTransferFeeCreditTransactionOrder {
     let feeCreditRecordId = data.feeCreditRecord.unitId;
     if (feeCreditRecordId == null) {
       feeCreditRecordId = this.createUnitId(data.metadata.timeout, data.feeCreditRecord.ownerPredicate);
     }
-    return Promise.resolve(
-      new UnsignedTransferFeeCreditTransactionOrder(
-        new TransactionPayload<TransferFeeCreditAttributes>(
-          data.networkIdentifier,
-          SystemIdentifier.MONEY_PARTITION,
-          data.bill.unitId,
-          FeeCreditTransactionType.TransferFeeCredit,
-          new TransferFeeCreditAttributes(
-            data.amount,
-            data.targetSystemIdentifier,
-            feeCreditRecordId,
-            data.latestAdditionTime,
-            data.feeCreditRecord?.counter ?? 0n,
-            data.bill.counter,
-          ),
-          data.stateLock,
-          data.metadata,
+    return new UnsignedTransferFeeCreditTransactionOrder(
+      new TransactionPayload<TransferFeeCreditAttributes>(
+        data.networkIdentifier,
+        SystemIdentifier.MONEY_PARTITION,
+        data.bill.unitId,
+        FeeCreditTransactionType.TransferFeeCredit,
+        new TransferFeeCreditAttributes(
+          data.amount,
+          data.targetSystemIdentifier,
+          feeCreditRecordId,
+          data.latestAdditionTime,
+          data.feeCreditRecord?.counter ?? 0n,
+          data.bill.counter,
         ),
-        data.stateUnlock,
-        codec,
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

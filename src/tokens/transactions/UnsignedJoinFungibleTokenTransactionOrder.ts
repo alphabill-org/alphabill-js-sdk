@@ -26,21 +26,19 @@ export class UnsignedJoinFungibleTokenTransactionOrder {
   public static create(
     data: IJoinFungibleTokensTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedJoinFungibleTokenTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedJoinFungibleTokenTransactionOrder(
-        new TransactionPayload(
-          data.networkIdentifier,
-          SystemIdentifier.TOKEN_PARTITION,
-          data.token.unitId,
-          TokenPartitionTransactionType.JoinFungibleToken,
-          new JoinFungibleTokenAttributes(data.proofs),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  ): UnsignedJoinFungibleTokenTransactionOrder {
+    return new UnsignedJoinFungibleTokenTransactionOrder(
+      new TransactionPayload(
+        data.networkIdentifier,
+        SystemIdentifier.TOKEN_PARTITION,
+        data.token.unitId,
+        TokenPartitionTransactionType.JoinFungibleToken,
+        new JoinFungibleTokenAttributes(data.proofs),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

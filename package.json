@@ -11,7 +11,7 @@
     "build": "tsc -d",
     "test": "jest tests/unit/",
     "test:ci": "jest tests/unit/ --ci --reporters=default --reporters=jest-junit",
-    "integration-test": "jest tests/integration/ --runInBand",
+    "integration-test": "jest tests/integration/ --runInBand --detectOpenHandles",
     "integration-test:ci": "jest tests/integration/ --runInBand --ci --reporters=default --reporters=jest-junit",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --fix",

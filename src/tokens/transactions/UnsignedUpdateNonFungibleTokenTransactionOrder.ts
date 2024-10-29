@@ -26,21 +26,19 @@ export class UnsignedUpdateNonFungibleTokenTransactionOrder {
   public static create(
     data: IUpdateNonFungibleTokenTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedUpdateNonFungibleTokenTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedUpdateNonFungibleTokenTransactionOrder(
-        new TransactionPayload(
-          data.networkIdentifier,
-          SystemIdentifier.TOKEN_PARTITION,
-          data.token.unitId,
-          TokenPartitionTransactionType.UpdateNonFungibleToken,
-          new UpdateNonFungibleTokenAttributes(data.data, data.token.counter),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  ): UnsignedUpdateNonFungibleTokenTransactionOrder {
+    return new UnsignedUpdateNonFungibleTokenTransactionOrder(
+      new TransactionPayload(
+        data.networkIdentifier,
+        SystemIdentifier.TOKEN_PARTITION,
+        data.token.unitId,
+        TokenPartitionTransactionType.UpdateNonFungibleToken,
+        new UpdateNonFungibleTokenAttributes(data.data, data.token.counter),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

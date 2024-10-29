@@ -33,30 +33,28 @@ export class UnsignedCreateFungibleTokenTypeTransactionOrder {
   public static create(
     data: ICreateFungibleTokenTypeTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedCreateFungibleTokenTypeTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedCreateFungibleTokenTypeTransactionOrder(
-        new TransactionPayload(
-          data.networkIdentifier,
-          SystemIdentifier.TOKEN_PARTITION,
-          data.type.unitId,
-          TokenPartitionTransactionType.CreateFungibleTokenType,
-          new CreateFungibleTokenTypeAttributes(
-            data.symbol,
-            data.name,
-            new TokenIcon(data.icon.type, data.icon.data),
-            data.parentTypeId,
-            data.decimalPlaces,
-            data.subTypeCreationPredicate,
-            data.tokenMintingPredicate,
-            data.tokenTypeOwnerPredicate,
-          ),
-          data.stateLock,
-          data.metadata,
+  ): UnsignedCreateFungibleTokenTypeTransactionOrder {
+    return new UnsignedCreateFungibleTokenTypeTransactionOrder(
+      new TransactionPayload(
+        data.networkIdentifier,
+        SystemIdentifier.TOKEN_PARTITION,
+        data.type.unitId,
+        TokenPartitionTransactionType.CreateFungibleTokenType,
+        new CreateFungibleTokenTypeAttributes(
+          data.symbol,
+          data.name,
+          new TokenIcon(data.icon.type, data.icon.data),
+          data.parentTypeId,
+          data.decimalPlaces,
+          data.subTypeCreationPredicate,
+          data.tokenMintingPredicate,
+          data.tokenTypeOwnerPredicate,
         ),
-        data.stateUnlock,
-        codec,
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

@@ -21,42 +21,43 @@ interface ICreateFungibleTokenTransactionData extends ITransactionData {
 
 export class UnsignedCreateFungibleTokenTransactionOrder {
   private constructor(
-    public readonly payload: TransactionPayload<CreateFungibleTokenAttributes>,
+    public readonly payload: Promise<TransactionPayload<CreateFungibleTokenAttributes>>,
     public readonly stateUnlock: IPredicate | null,
     public readonly codec: ICborCodec,
   ) {}
 
-  public static async create(
+  public static create(
     data: ICreateFungibleTokenTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedCreateFungibleTokenTransactionOrder> {
+  ): UnsignedCreateFungibleTokenTransactionOrder {
     const attributes = new CreateFungibleTokenAttributes(data.ownerPredicate, data.type.unitId, data.value, data.nonce);
-
-    return new UnsignedCreateFungibleTokenTransactionOrder(
-      new TransactionPayload(
-        data.networkIdentifier,
-        SystemIdentifier.TOKEN_PARTITION,
-        await TokenUnitId.create(attributes, data.metadata, codec, TokenPartitionUnitType.FUNGIBLE_TOKEN),
-        TokenPartitionTransactionType.CreateFungibleToken,
-        attributes,
-        data.stateLock,
-        data.metadata,
-      ),
-      data.stateUnlock,
-      codec,
+    const payload = TokenUnitId.create(attributes, data.metadata, codec, TokenPartitionUnitType.FUNGIBLE_TOKEN).then(
+      (unitId) =>
+        new TransactionPayload(
+          data.networkIdentifier,
+          SystemIdentifier.TOKEN_PARTITION,
+          unitId,
+          TokenPartitionTransactionType.CreateFungibleToken,
+          attributes,
+          data.stateLock,
+          data.metadata,
+        ),
     );
+
+    return new UnsignedCreateFungibleTokenTransactionOrder(payload, data.stateUnlock, codec);
   }
 
   public async sign(
     tokenMintingProofFactory: IProofFactory,
     feeProofFactory: IProofFactory | null,
   ): Promise<CreateFungibleTokenTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
+    const payload = await this.payload;
+    const authProof = [...(await payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
     const ownerProof = new OwnerProofAuthProof(
       await tokenMintingProofFactory.create(await this.codec.encode(authProof)),
     );
     const feeProof =
       (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
-    return new CreateFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new CreateFungibleTokenTransactionOrder(payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

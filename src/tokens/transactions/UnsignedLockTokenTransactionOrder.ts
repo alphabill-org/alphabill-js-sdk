@@ -22,21 +22,19 @@ export class UnsignedLockTokenTransactionOrder {
     public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: ILockTokenTransactionData, codec: ICborCodec): Promise<UnsignedLockTokenTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedLockTokenTransactionOrder(
-        new TransactionPayload(
-          data.networkIdentifier,
-          SystemIdentifier.TOKEN_PARTITION,
-          data.token.unitId,
-          TokenPartitionTransactionType.LockToken,
-          new LockTokenAttributes(data.status, data.token.counter),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  public static create(data: ILockTokenTransactionData, codec: ICborCodec): UnsignedLockTokenTransactionOrder {
+    return new UnsignedLockTokenTransactionOrder(
+      new TransactionPayload(
+        data.networkIdentifier,
+        SystemIdentifier.TOKEN_PARTITION,
+        data.token.unitId,
+        TokenPartitionTransactionType.LockToken,
+        new LockTokenAttributes(data.status, data.token.counter),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

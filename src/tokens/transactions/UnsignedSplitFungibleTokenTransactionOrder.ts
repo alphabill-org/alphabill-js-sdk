@@ -27,21 +27,19 @@ export class UnsignedSplitFungibleTokenTransactionOrder {
   public static create(
     data: ISplitFungibleTokenTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedSplitFungibleTokenTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedSplitFungibleTokenTransactionOrder(
-        new TransactionPayload(
-          data.networkIdentifier,
-          SystemIdentifier.TOKEN_PARTITION,
-          data.token.unitId,
-          TokenPartitionTransactionType.SplitFungibleToken,
-          new SplitFungibleTokenAttributes(data.ownerPredicate, data.amount, data.token.counter, data.type.unitId),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  ): UnsignedSplitFungibleTokenTransactionOrder {
+    return new UnsignedSplitFungibleTokenTransactionOrder(
+      new TransactionPayload(
+        data.networkIdentifier,
+        SystemIdentifier.TOKEN_PARTITION,
+        data.token.unitId,
+        TokenPartitionTransactionType.SplitFungibleToken,
+        new SplitFungibleTokenAttributes(data.ownerPredicate, data.amount, data.token.counter, data.type.unitId),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

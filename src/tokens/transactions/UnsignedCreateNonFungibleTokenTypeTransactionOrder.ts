@@ -33,30 +33,28 @@ export class UnsignedCreateNonFungibleTokenTypeTransactionOrder {
   public static create(
     data: ICreateNonFungibleTokenTypeTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedCreateNonFungibleTokenTypeTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedCreateNonFungibleTokenTypeTransactionOrder(
-        new TransactionPayload(
-          data.networkIdentifier,
-          SystemIdentifier.TOKEN_PARTITION,
-          data.type.unitId,
-          TokenPartitionTransactionType.CreateNonFungibleTokenType,
-          new CreateNonFungibleTokenTypeAttributes(
-            data.symbol,
-            data.name,
-            new TokenIcon(data.icon.type, data.icon.data),
-            data.parentTypeId,
-            data.subTypeCreationPredicate,
-            data.tokenMintingPredicate,
-            data.tokenTypeOwnerPredicate,
-            data.dataUpdatePredicate,
-          ),
-          data.stateLock,
-          data.metadata,
+  ): UnsignedCreateNonFungibleTokenTypeTransactionOrder {
+    return new UnsignedCreateNonFungibleTokenTypeTransactionOrder(
+      new TransactionPayload(
+        data.networkIdentifier,
+        SystemIdentifier.TOKEN_PARTITION,
+        data.type.unitId,
+        TokenPartitionTransactionType.CreateNonFungibleTokenType,
+        new CreateNonFungibleTokenTypeAttributes(
+          data.symbol,
+          data.name,
+          new TokenIcon(data.icon.type, data.icon.data),
+          data.parentTypeId,
+          data.subTypeCreationPredicate,
+          data.tokenMintingPredicate,
+          data.tokenTypeOwnerPredicate,
+          data.dataUpdatePredicate,
         ),
-        data.stateUnlock,
-        codec,
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

@@ -25,24 +25,19 @@ export class UnsignedLockFeeCreditTransactionOrder {
     public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: ILockFeeCreditTransactionData,
-    codec: ICborCodec,
-  ): Promise<UnsignedLockFeeCreditTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedLockFeeCreditTransactionOrder(
-        new TransactionPayload<LockFeeCreditAttributes>(
-          data.networkIdentifier,
-          SystemIdentifier.MONEY_PARTITION,
-          data.feeCredit.unitId,
-          FeeCreditTransactionType.LockFeeCredit,
-          new LockFeeCreditAttributes(data.status, data.feeCredit.counter),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  public static create(data: ILockFeeCreditTransactionData, codec: ICborCodec): UnsignedLockFeeCreditTransactionOrder {
+    return new UnsignedLockFeeCreditTransactionOrder(
+      new TransactionPayload<LockFeeCreditAttributes>(
+        data.networkIdentifier,
+        SystemIdentifier.MONEY_PARTITION,
+        data.feeCredit.unitId,
+        FeeCreditTransactionType.LockFeeCredit,
+        new LockFeeCreditAttributes(data.status, data.feeCredit.counter),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

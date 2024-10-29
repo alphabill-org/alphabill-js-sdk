@@ -80,15 +80,13 @@ describe('Money Client Integration Tests', () => {
     expect(bill).not.toBeNull();
 
     console.log('Locking bill...');
-    const lockBillTransactionOrder = await (
-      await UnsignedLockBillTransactionOrder.create(
-        {
-          status: 5n,
-          bill: bill,
-          ...createTransactionData(round, feeCreditRecordId),
-        },
-        cborCodec,
-      )
+    const lockBillTransactionOrder = await UnsignedLockBillTransactionOrder.create(
+      {
+        status: 5n,
+        bill: bill,
+        ...createTransactionData(round, feeCreditRecordId),
+      },
+      cborCodec,
     ).sign(proofFactory, proofFactory);
 
     const lockBillHash = await moneyClient.sendTransaction(lockBillTransactionOrder);
@@ -100,14 +98,12 @@ describe('Money Client Integration Tests', () => {
     const lockedBill = (await moneyClient.getUnit(bill.unitId, false, Bill))!;
     expect(lockedBill).not.toBeNull();
     expect(lockedBill.counter).not.toEqual(bill.counter);
-    const unlockBillTransactionOrder = await (
-      await UnsignedUnlockBillTransactionOrder.create(
-        {
-          bill: lockedBill,
-          ...createTransactionData(round, feeCreditRecordId),
-        },
-        cborCodec,
-      )
+    const unlockBillTransactionOrder = await UnsignedUnlockBillTransactionOrder.create(
+      {
+        bill: lockedBill,
+        ...createTransactionData(round, feeCreditRecordId),
+      },
+      cborCodec,
     ).sign(proofFactory, proofFactory);
     const unlockBillHash = await moneyClient.sendTransaction(unlockBillTransactionOrder);
     const unlockBillProof = await moneyClient.waitTransactionProof(
@@ -127,20 +123,18 @@ describe('Money Client Integration Tests', () => {
     expect(bill).not.toBeNull();
 
     console.log('Splitting bill...');
-    const splitBillTransactionOrder = await (
-      await UnsignedSplitBillTransactionOrder.create(
-        {
-          splits: [
-            {
-              value: 10n,
-              ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-            },
-          ],
-          bill: bill!,
-          ...createTransactionData(round, feeCreditRecordId),
-        },
-        cborCodec,
-      )
+    const splitBillTransactionOrder = await UnsignedSplitBillTransactionOrder.create(
+      {
+        splits: [
+          {
+            value: 10n,
+            ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+          },
+        ],
+        bill: bill!,
+        ...createTransactionData(round, feeCreditRecordId),
+      },
+      cborCodec,
     ).sign(proofFactory, proofFactory);
     const splitBillHash = await moneyClient.sendTransaction(splitBillTransactionOrder);
     const splitBillProof = await moneyClient.waitTransactionProof(splitBillHash, SplitBillTransactionRecordWithProof);
@@ -158,15 +152,13 @@ describe('Money Client Integration Tests', () => {
     const targetBill = await moneyClient.getUnit(targetBillUnitId, false, Bill);
 
     console.log('Transferring bill...');
-    const transferBillTransactionOrder = await (
-      await UnsignedTransferBillTransactionOrder.create(
-        {
-          ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
-          bill: targetBill!,
-          ...createTransactionData(round, feeCreditRecordId),
-        },
-        cborCodec,
-      )
+    const transferBillTransactionOrder = await UnsignedTransferBillTransactionOrder.create(
+      {
+        ownerPredicate: await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey),
+        bill: targetBill!,
+        ...createTransactionData(round, feeCreditRecordId),
+      },
+      cborCodec,
     ).sign(proofFactory, proofFactory);
     const transferBillHash = await moneyClient.sendTransaction(transferBillTransactionOrder);
     const transferBillProof = await moneyClient.waitTransactionProof(
@@ -188,15 +180,13 @@ describe('Money Client Integration Tests', () => {
     expect(targetBill).not.toBeNull();
 
     console.log('Transferring bill to dust collector...');
-    const transferBillToDcTransactionOrder = await (
-      await UnsignedTransferBillToDustCollectorTransactionOrder.create(
-        {
-          bill: bill!,
-          targetBill: targetBill!,
-          ...createTransactionData(round, feeCreditRecordId),
-        },
-        cborCodec,
-      )
+    const transferBillToDcTransactionOrder = await UnsignedTransferBillToDustCollectorTransactionOrder.create(
+      {
+        bill: bill!,
+        targetBill: targetBill!,
+        ...createTransactionData(round, feeCreditRecordId),
+      },
+      cborCodec,
     ).sign(proofFactory, proofFactory);
     const transferBillToDcHash = await moneyClient.sendTransaction(transferBillToDcTransactionOrder);
     const transferBillToDcProof = await moneyClient.waitTransactionProof(
@@ -209,15 +199,13 @@ describe('Money Client Integration Tests', () => {
     console.log('Transferring bill to dust collector successful');
 
     console.log('Swapping bill with dust collector...');
-    const swapBillWithDcTransactionOrder = await (
-      await UnsignedSwapBillsWithDustCollectorTransactionOrder.create(
-        {
-          bill: targetBill!,
-          proofs: [transferBillToDcProof],
-          ...createTransactionData(round, feeCreditRecordId),
-        },
-        cborCodec,
-      )
+    const swapBillWithDcTransactionOrder = await UnsignedSwapBillsWithDustCollectorTransactionOrder.create(
+      {
+        bill: targetBill!,
+        proofs: [transferBillToDcProof],
+        ...createTransactionData(round, feeCreditRecordId),
+      },
+      cborCodec,
     ).sign(proofFactory, proofFactory);
     const swapBillsWithDcHash = await moneyClient.sendTransaction(swapBillWithDcTransactionOrder);
     const swapBillsWithDcProof = await moneyClient.waitTransactionProof(

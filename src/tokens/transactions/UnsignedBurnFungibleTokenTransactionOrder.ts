@@ -26,27 +26,25 @@ export class UnsignedBurnFungibleTokenTransactionOrder {
   public static create(
     data: IBurnFungibleTokenTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedBurnFungibleTokenTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedBurnFungibleTokenTransactionOrder(
-        new TransactionPayload(
-          data.networkIdentifier,
-          SystemIdentifier.TOKEN_PARTITION,
-          data.token.unitId,
-          TokenPartitionTransactionType.BurnFungibleToken,
-          new BurnFungibleTokenAttributes(
-            data.type.unitId,
-            data.token.value,
-            data.targetToken.unitId,
-            data.targetToken.counter,
-            data.token.counter,
-          ),
-          data.stateLock,
-          data.metadata,
+  ): UnsignedBurnFungibleTokenTransactionOrder {
+    return new UnsignedBurnFungibleTokenTransactionOrder(
+      new TransactionPayload(
+        data.networkIdentifier,
+        SystemIdentifier.TOKEN_PARTITION,
+        data.token.unitId,
+        TokenPartitionTransactionType.BurnFungibleToken,
+        new BurnFungibleTokenAttributes(
+          data.type.unitId,
+          data.token.value,
+          data.targetToken.unitId,
+          data.targetToken.counter,
+          data.token.counter,
         ),
-        data.stateUnlock,
-        codec,
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 

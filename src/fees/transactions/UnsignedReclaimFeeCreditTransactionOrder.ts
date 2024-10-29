@@ -29,21 +29,19 @@ export class UnsignedReclaimFeeCreditTransactionOrder {
   public static create(
     data: IReclaimFeeCreditTransactionData,
     codec: ICborCodec,
-  ): Promise<UnsignedReclaimFeeCreditTransactionOrder> {
-    return Promise.resolve(
-      new UnsignedReclaimFeeCreditTransactionOrder(
-        new TransactionPayload<ReclaimFeeCreditAttributes>(
-          data.networkIdentifier,
-          SystemIdentifier.MONEY_PARTITION,
-          data.bill.unitId,
-          FeeCreditTransactionType.ReclaimFeeCredit,
-          new ReclaimFeeCreditAttributes(data.proof),
-          data.stateLock,
-          data.metadata,
-        ),
-        data.stateUnlock,
-        codec,
+  ): UnsignedReclaimFeeCreditTransactionOrder {
+    return new UnsignedReclaimFeeCreditTransactionOrder(
+      new TransactionPayload<ReclaimFeeCreditAttributes>(
+        data.networkIdentifier,
+        SystemIdentifier.MONEY_PARTITION,
+        data.bill.unitId,
+        FeeCreditTransactionType.ReclaimFeeCredit,
+        new ReclaimFeeCreditAttributes(data.proof),
+        data.stateLock,
+        data.metadata,
       ),
+      data.stateUnlock,
+      codec,
     );
   }
 
