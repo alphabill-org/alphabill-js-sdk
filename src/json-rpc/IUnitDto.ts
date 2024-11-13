@@ -2,36 +2,89 @@
  * Unit state proof from getUnit.
  */
 export interface IStateProofDto {
+  readonly version: bigint;
   readonly unitId: string;
   readonly unitValue: bigint;
   readonly unitLedgerHash: string;
-  readonly unitTreeCert: IUnitTreeCertDto;
-  readonly stateTreeCert: IStateTreeCertDto;
-  // TODO: Unicity certificate has data inconsistent with other data formats, keeping it as is for now
-  readonly unicityCert: unknown;
+  readonly unitTreeCertificate: IUnitTreeCertificateDto;
+  readonly stateTreeCertificate: IStateTreeCertificateDto;
+  readonly unicityCertificate: IUnicityCertificateDto;
 }
 
-export interface IUnitTreeCertDto {
+export interface IUnitTreeCertificateDto {
   readonly txrHash: string;
   readonly dataHash: string;
-  readonly path: IPathItem[] | null;
+  readonly path: IPathItemDto[] | null;
 }
 
-export interface IStateTreeCertDto {
+export interface IPathItemDto {
+  readonly hash: string;
+  readonly directionLeft: boolean;
+}
+
+export interface IStateTreeCertificateDto {
   readonly leftSummaryHash: string;
   readonly leftSummaryValue: bigint;
   readonly rightSummaryHash: string;
   readonly rightSummaryValue: bigint;
-  readonly path: {
-    readonly unitId: string;
-    readonly logsHash: string;
-    readonly value: bigint;
-    readonly siblingSummaryHash: string;
-    readonly siblingSummaryValue: bigint;
-  }[];
+  readonly path: IStateTreePathItemDto[];
 }
 
-interface IPathItem {
-  readonly Hash: string;
-  readonly DirectionLeft: boolean;
+export interface IStateTreePathItemDto {
+  readonly unitId: string;
+  readonly logsHash: string;
+  readonly value: bigint;
+  readonly siblingSummaryHash: string;
+  readonly siblingSummaryValue: bigint;
+}
+
+export interface IUnicityCertificateDto {
+  readonly version: bigint;
+  readonly inputRecord: IInputRecordDto | null;
+  readonly trHash: string;
+  readonly shardTreeCertificate: IShardTreeCertificateDto;
+  readonly unicityTreeCertificate: IUnicityTreeCertificateDto | null;
+  readonly unicitySeal: IUnicitySealDto | null;
+}
+
+export interface IInputRecordDto {
+  readonly version: bigint;
+  readonly previousHash: string;
+  readonly hash: string;
+  readonly blockHash: string;
+  readonly summaryValue: string;
+  readonly roundNumber: bigint;
+  readonly epoch: bigint;
+  readonly sumOfEarnedFees: bigint;
+}
+
+export interface IShardTreeCertificateDto {
+  readonly shard: IShardIdDto;
+  readonly siblingHashes: string[];
+}
+
+export interface IShardIdDto {
+  readonly bits: Uint8Array;
+  readonly length: bigint;
+}
+
+export interface IUnicityTreeCertificateDto {
+  readonly version: bigint;
+  readonly partitionIdentifier: bigint;
+  readonly hashSteps: IIndexedPathItemDto[] | null;
+  readonly partitionDescriptionHash: string;
+}
+
+export interface IIndexedPathItemDto {
+  readonly key: string;
+  readonly hash: string;
+}
+
+export interface IUnicitySealDto {
+  readonly version: bigint;
+  readonly rootChainRoundNumber: bigint;
+  readonly timestamp: bigint;
+  readonly previousHash: string;
+  readonly hash: string;
+  readonly signatures: Map<string, Uint8Array>;
 }

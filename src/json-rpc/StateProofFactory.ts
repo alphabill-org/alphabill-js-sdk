@@ -1,45 +1,152 @@
-import { IStateProof, IStateTreeCert, IUnitTreeCert } from '../IUnit.js';
+import {
+  IIndexedPathItem,
+  IInputRecord,
+  IPathItem,
+  IShardTreeCertificate,
+  IStateProof,
+  IStateTreeCertificate,
+  IStateTreePathItem,
+  IUnicityCertificate,
+  IUnicitySeal,
+  IUnicityTreeCertificate,
+  IUnitTreeCertificate,
+} from '../IUnit.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { Base64Converter } from '../util/Base64Converter.js';
-import { IStateProofDto, IStateTreeCertDto, IUnitTreeCertDto } from './IUnitDto.js';
-import { PathItem, StateProof, StateTreeCert, StateTreePathItem, UnitTreeCert } from './StateProof.js';
+import {
+  IIndexedPathItemDto,
+  IInputRecordDto,
+  IPathItemDto,
+  IShardIdDto,
+  IShardTreeCertificateDto,
+  IStateProofDto,
+  IStateTreeCertificateDto,
+  IStateTreePathItemDto,
+  IUnicityCertificateDto,
+  IUnicitySealDto,
+  IUnicityTreeCertificateDto,
+  IUnitTreeCertificateDto,
+} from './IUnitDto.js';
+import { PathItem, StateProof, StateTreeCertificate, StateTreePathItem, UnitTreeCertificate } from './StateProof.js';
+import {
+  IndexedPathItem,
+  InputRecord,
+  ShardId,
+  ShardTreeCertificate,
+  UnicityCertificate,
+  UnicitySeal,
+  UnicityTreeCertificate,
+} from './UnicityCertificate.js';
 
-// TODO: Parse unicity certificate
 export function createStateProof(data: IStateProofDto): IStateProof {
   return new StateProof(
+    BigInt(data.version),
     UnitId.fromBytes(Base16Converter.decode(data.unitId)),
     BigInt(data.unitValue),
     Base16Converter.decode(data.unitLedgerHash),
-    createUnitTreeCert(data.unitTreeCert),
-    createStateTreeCert(data.stateTreeCert),
-    data.unicityCert,
+    createUnitTreeCertificate(data.unitTreeCertificate),
+    createStateTreeCertificate(data.stateTreeCertificate),
+    createUnicityCertificate(data.unicityCertificate),
   );
 }
 
-function createStateTreeCert(data: IStateTreeCertDto): IStateTreeCert {
-  return new StateTreeCert(
+function createUnitTreeCertificate(data: IUnitTreeCertificateDto): IUnitTreeCertificate {
+  return new UnitTreeCertificate(
+    Base16Converter.decode(data.txrHash),
+    Base16Converter.decode(data.dataHash),
+    data.path?.map((data: IPathItemDto) => createPathItem(data)) || null,
+  );
+}
+
+function createPathItem(data: IPathItemDto): IPathItem {
+  return new PathItem(Base64Converter.decode(data.hash), data.directionLeft);
+}
+
+function createStateTreeCertificate(data: IStateTreeCertificateDto): IStateTreeCertificate {
+  return new StateTreeCertificate(
     Base16Converter.decode(data.leftSummaryHash),
     BigInt(data.leftSummaryValue),
     Base16Converter.decode(data.rightSummaryHash),
     BigInt(data.rightSummaryValue),
-    data.path?.map(
-      (path) =>
-        new StateTreePathItem(
-          UnitId.fromBytes(Base16Converter.decode(path.unitId)),
-          Base16Converter.decode(path.logsHash),
-          BigInt(path.value),
-          Base16Converter.decode(path.siblingSummaryHash),
-          BigInt(path.siblingSummaryValue),
-        ),
-    ) || null,
+    data.path?.map((data: IStateTreePathItemDto) => createStateTreePathItem(data)) || null,
   );
 }
 
-function createUnitTreeCert(data: IUnitTreeCertDto): IUnitTreeCert {
-  return new UnitTreeCert(
-    Base16Converter.decode(data.txrHash),
-    Base16Converter.decode(data.dataHash),
-    data.path?.map((path) => new PathItem(Base64Converter.decode(path.Hash), path.DirectionLeft)) || null,
+function createStateTreePathItem(data: IStateTreePathItemDto): IStateTreePathItem {
+  return new StateTreePathItem(
+    UnitId.fromBytes(Base16Converter.decode(data.unitId)),
+    Base16Converter.decode(data.logsHash),
+    BigInt(data.value),
+    Base16Converter.decode(data.siblingSummaryHash),
+    BigInt(data.siblingSummaryValue),
+  );
+}
+
+function createUnicityCertificate(data: IUnicityCertificateDto): IUnicityCertificate {
+  return new UnicityCertificate(
+    data.version,
+    createInputRecord(data.inputRecord),
+    Base16Converter.decode(data.trHash),
+    createShardTreeCertificate(data.shardTreeCertificate),
+    createUnicityTreeCertificate(data.unicityTreeCertificate),
+    createUnicitySeal(data.unicitySeal),
+  );
+}
+
+function createInputRecord(data: IInputRecordDto | null): IInputRecord | null {
+  if (data == null) {
+    return null;
+  }
+  return new InputRecord(
+    data.version,
+    Base16Converter.decode(data.previousHash),
+    Base16Converter.decode(data.hash),
+    Base16Converter.decode(data.blockHash),
+    Base16Converter.decode(data.summaryValue),
+    data.roundNumber,
+    data.epoch,
+    data.sumOfEarnedFees,
+  );
+}
+
+function createShardTreeCertificate(data: IShardTreeCertificateDto): IShardTreeCertificate {
+  return new ShardTreeCertificate(
+    createShardId(data.shard),
+    data.siblingHashes.map((data: string) => Base16Converter.decode(data)),
+  );
+}
+
+function createShardId(data: IShardIdDto) {
+  return new ShardId(data.bits, data.length);
+}
+
+function createUnicityTreeCertificate(data: IUnicityTreeCertificateDto | null): IUnicityTreeCertificate | null {
+  if (data == null) {
+    return null;
+  }
+  return new UnicityTreeCertificate(
+    data.version,
+    data.partitionIdentifier,
+    data.hashSteps?.map((data: IIndexedPathItemDto) => createIndexedPathItem(data)) ?? null,
+    Base16Converter.decode(data.partitionDescriptionHash),
+  );
+}
+
+function createIndexedPathItem(data: IIndexedPathItemDto): IIndexedPathItem {
+  return new IndexedPathItem(Base16Converter.decode(data.hash), Base16Converter.decode(data.key));
+}
+
+function createUnicitySeal(data: IUnicitySealDto | null): IUnicitySeal | null {
+  if (data == null) {
+    return null;
+  }
+  return new UnicitySeal(
+    data.version,
+    data.rootChainRoundNumber,
+    data.timestamp,
+    Base16Converter.decode(data.previousHash),
+    Base16Converter.decode(data.hash),
+    data.signatures,
   );
 }

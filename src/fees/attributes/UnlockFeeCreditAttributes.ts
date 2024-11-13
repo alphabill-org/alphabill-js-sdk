@@ -40,7 +40,7 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.toArray}
+   * @see {ITransactionPayloadAttributes.encode}
    */
   public encode(): Promise<UnlockFeeCreditAttributesArray> {
     return Promise.resolve([this.counter]);

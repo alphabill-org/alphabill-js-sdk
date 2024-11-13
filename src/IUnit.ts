@@ -24,6 +24,11 @@ export interface IUnit {
 
 export interface IStateProof {
   /**
+   * Get version.
+   * @returns {bigint} Version.
+   */
+  get version(): bigint;
+  /**
    * Get unit id.
    * @returns {IUnitId} unit id.
    */
@@ -40,22 +45,22 @@ export interface IStateProof {
   get unitLedgerHash(): Uint8Array;
   /**
    * Get unit tree certificate.
-   * @returns {IUnitTreeCert} unit tree certificate.
+   * @returns {IUnitTreeCertificate} unit tree certificate.
    */
-  get unitTreeCert(): IUnitTreeCert;
+  get unitTreeCertificate(): IUnitTreeCertificate;
   /**
    * Get state tree certificate.
-   * @returns {IStateTreeCert} state tree certificate.
+   * @returns {IStateTreeCertificate} state tree certificate.
    */
-  get stateTreeCert(): IStateTreeCert;
+  get stateTreeCertificate(): IStateTreeCertificate;
   /**
    * Get unicity certificate.
-   * @returns {unknown} unicity certificate.
+   * @returns {IUnicityCertificate} unicity certificate.
    */
-  get unicityCertificate(): unknown;
+  get unicityCertificate(): IUnicityCertificate;
 }
 
-export interface IUnitTreeCert {
+export interface IUnitTreeCertificate {
   /**
    * Get transaction record hash.
    * @returns {Uint8Array} transaction record hash.
@@ -73,7 +78,7 @@ export interface IUnitTreeCert {
   get path(): readonly IPathItem[] | null;
 }
 
-export interface IStateTreeCert {
+export interface IStateTreeCertificate {
   /**
    * Get left summary hash.
    * @returns {Uint8Array} left summary hash.
@@ -140,4 +145,92 @@ export interface IStateTreePathItem {
    * @returns {bigint} sibling summary value.
    */
   get siblingSummaryValue(): bigint;
+}
+
+export type UnicityCertificateArray = readonly [
+  bigint,
+  InputRecordArray | null,
+  Uint8Array,
+  ShardTreeCertificateArray,
+  UnicityTreeCertificateArray | null,
+  UnicitySealArray | null,
+];
+
+export interface IUnicityCertificate {
+  get version(): bigint;
+  get inputRecord(): IInputRecord | null;
+  get trHash(): Uint8Array;
+  get shardTreeCertificate(): IShardTreeCertificate;
+  get unicityTreeCertificate(): IUnicityTreeCertificate | null;
+  get unicitySeal(): IUnicitySeal | null;
+  encode(): UnicityCertificateArray;
+}
+
+export type InputRecordArray = readonly [
+  bigint,
+  Uint8Array,
+  Uint8Array,
+  Uint8Array,
+  Uint8Array,
+  bigint,
+  bigint,
+  bigint,
+];
+
+export interface IInputRecord {
+  get version(): bigint;
+  get previousHash(): Uint8Array;
+  get hash(): Uint8Array;
+  get blockHash(): Uint8Array;
+  get summaryValue(): Uint8Array;
+  get roundNumber(): bigint;
+  get epoch(): bigint;
+  get sumOfEarnedFees(): bigint;
+  encode(): InputRecordArray;
+}
+
+export type ShardTreeCertificateArray = readonly [ShardIdArray, Uint8Array[]];
+
+export interface IShardTreeCertificate {
+  get shard(): IShardId;
+  get siblingHashes(): Uint8Array[];
+  encode(): ShardTreeCertificateArray;
+}
+
+export type ShardIdArray = readonly [Uint8Array, bigint];
+
+export interface IShardId {
+  get bits(): Uint8Array;
+  get length(): bigint;
+  encode(): ShardIdArray;
+}
+
+export type UnicityTreeCertificateArray = readonly [bigint, bigint, IndexedPathItemArray[] | null, Uint8Array];
+
+export interface IUnicityTreeCertificate {
+  get version(): bigint;
+  get partitionIdentifier(): bigint;
+  get hashSteps(): IIndexedPathItem[] | null;
+  get partitionDescriptionHash(): Uint8Array;
+  encode(): UnicityTreeCertificateArray;
+}
+
+export type IndexedPathItemArray = readonly [Uint8Array, Uint8Array];
+
+export interface IIndexedPathItem {
+  get key(): Uint8Array;
+  get hash(): Uint8Array;
+  encode(): IndexedPathItemArray;
+}
+
+export type UnicitySealArray = readonly [bigint, bigint, bigint, Uint8Array, Uint8Array, Map<string, Uint8Array>];
+
+export interface IUnicitySeal {
+  get version(): bigint;
+  get rootChainRoundNumber(): bigint;
+  get timestamp(): bigint;
+  get previousHash(): Uint8Array;
+  get hash(): Uint8Array;
+  get signatures(): Map<string, Uint8Array>;
+  encode(): UnicitySealArray;
 }

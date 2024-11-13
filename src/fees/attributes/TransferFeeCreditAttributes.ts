@@ -82,7 +82,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.toArray}
+   * @see {ITransactionPayloadAttributes.encode}
    */
   public encode(): Promise<TransferFeeCreditAttributesArray> {
     return Promise.resolve([

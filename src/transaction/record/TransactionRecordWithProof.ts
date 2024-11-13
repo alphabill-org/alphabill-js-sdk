@@ -3,13 +3,13 @@ import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../order/TransactionOrder.js';
 import { ITransactionOrderProof } from '../proofs/ITransactionOrderProof.js';
-import { TransactionProof } from './TransactionProof.js';
+import { TransactionProof, TransactionProofArray } from './TransactionProof.js';
 import { TransactionRecord, TransactionRecordArray } from './TransactionRecord.js';
 
 /**
  * Transaction record with proof array.
  */
-export type TransactionRecordWithProofArray = readonly [TransactionRecordArray, unknown];
+export type TransactionRecordWithProofArray = readonly [TransactionRecordArray, TransactionProofArray];
 
 /**
  * Transaction record with proof.

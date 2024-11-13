@@ -69,7 +69,7 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.toArray}
+   * @see {ITransactionPayloadAttributes.encode}
    */
   public encode(): Promise<TransferFungibleTokenAttributesArray> {
     return Promise.resolve([this.typeId.bytes, this.value, this.ownerPredicate.bytes, this.counter]);

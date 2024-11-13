@@ -56,7 +56,7 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.toArray}
+   * @see {ITransactionPayloadAttributes.encode}
    */
   public async encode(cborCodec: ICborCodec): Promise<AddFeeCreditAttributesArray> {
     return [this.ownerPredicate.bytes, await this.transactionRecordWithProof.encode(cborCodec)];

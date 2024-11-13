@@ -43,7 +43,7 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.toArray}
+   * @see {ITransactionPayloadAttributes.encode}
    */
   public async encode(cborCodec: ICborCodec): Promise<JoinFungibleTokenAttributesArray> {
     return [await Promise.all(this.proofs.map((proof) => proof.encode(cborCodec)))];

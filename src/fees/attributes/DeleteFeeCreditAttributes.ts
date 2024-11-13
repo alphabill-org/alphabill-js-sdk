@@ -40,7 +40,7 @@ export class DeleteFeeCreditAttributes implements ITransactionPayloadAttributes 
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.toArray}
+   * @see {ITransactionPayloadAttributes.encode}
    */
   public encode(): Promise<DeleteFeeCreditAttributesArray> {
     return Promise.resolve([this.counter]);
