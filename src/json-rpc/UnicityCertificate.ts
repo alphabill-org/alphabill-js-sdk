@@ -109,6 +109,7 @@ export class InputRecord implements IInputRecord {
    * @param {Uint8Array} _hash - state hash to be certified.
    * @param {Uint8Array} _blockHash - hash of the block.
    * @param {Uint8Array} _summaryValue - summary value to certified.
+   * @param {bigint} timestamp - reference time for transaction validation.
    * @param {bigint} roundNumber - shard’s round number.
    * @param {bigint} epoch - shard’s epoch number.
    * @param {bigint} sumOfEarnedFees - sum of the actual fees over all transaction records in the block.
@@ -119,6 +120,7 @@ export class InputRecord implements IInputRecord {
     private readonly _hash: Uint8Array,
     private readonly _blockHash: Uint8Array,
     private readonly _summaryValue: Uint8Array,
+    public readonly timestamp: bigint,
     public readonly roundNumber: bigint,
     public readonly epoch: bigint,
     public readonly sumOfEarnedFees: bigint,
@@ -128,6 +130,7 @@ export class InputRecord implements IInputRecord {
     this._hash = new Uint8Array(this._hash);
     this._blockHash = new Uint8Array(this._blockHash);
     this._summaryValue = new Uint8Array(this._summaryValue);
+    this.timestamp = BigInt(this.timestamp);
     this.roundNumber = BigInt(this.roundNumber);
     this.epoch = BigInt(this.epoch);
     this.sumOfEarnedFees = BigInt(this.sumOfEarnedFees);
@@ -167,7 +170,7 @@ export class InputRecord implements IInputRecord {
    * @returns {InputRecord} Input record.
    */
   public static fromArray(data: InputRecordArray): InputRecord {
-    return new InputRecord(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
+    return new InputRecord(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
   }
 
   /**
@@ -181,6 +184,7 @@ export class InputRecord implements IInputRecord {
       this.hash,
       this.blockHash,
       this.summaryValue,
+      this.timestamp,
       this.roundNumber,
       this.epoch,
       this.sumOfEarnedFees,
@@ -199,6 +203,7 @@ export class InputRecord implements IInputRecord {
         Hash: ${Base16Converter.encode(this._hash)}
         Block Hash: ${Base16Converter.encode(this._blockHash)}
         Summary Value: ${Base16Converter.encode(this._summaryValue)}
+        Timestamp: ${this.timestamp}
         Round Number: ${this.roundNumber}
         Epoch: ${this.epoch}
         Sum Of Earned Fees: ${this.sumOfEarnedFees}`;

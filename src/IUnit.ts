@@ -175,6 +175,7 @@ export type InputRecordArray = readonly [
   bigint,
   bigint,
   bigint,
+  bigint,
 ];
 
 export interface IInputRecord {
