@@ -8,7 +8,6 @@ import { MoneyPartitionJsonRpcClient } from '../../../src/json-rpc/MoneyPartitio
 import { TokenPartitionJsonRpcClient } from '../../../src/json-rpc/TokenPartitionJsonRpcClient.js';
 import { Bill } from '../../../src/money/Bill.js';
 import { NetworkIdentifier } from '../../../src/NetworkIdentifier.js';
-import { SystemIdentifier } from '../../../src/SystemIdentifier.js';
 import { ITransactionClientMetadata } from '../../../src/transaction/ITransactionClientMetadata.js';
 import { ITransactionData } from '../../../src/transaction/order/ITransactionData.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
@@ -37,7 +36,7 @@ export function createMetadata(round: bigint, feeCreditRecordId?: IUnitId): ITra
 export async function addFeeCredit(
   moneyClient: MoneyPartitionJsonRpcClient,
   clientToAddFeesTo: MoneyPartitionJsonRpcClient | TokenPartitionJsonRpcClient,
-  targetSystemIdentifier: SystemIdentifier,
+  targetPartitionIdentifier: number,
   publicKey: Uint8Array,
   cborCodec: ICborCodec,
   proofFactory: IProofFactory,
@@ -59,7 +58,7 @@ export async function addFeeCredit(
   const transferFeeCreditTransactionOrder = await UnsignedTransferFeeCreditTransactionOrder.create(
     {
       amount: amountToFeeCredit,
-      targetSystemIdentifier: targetSystemIdentifier,
+      targetPartitionIdentifier: targetPartitionIdentifier,
       latestAdditionTime: round + 60n,
       feeCreditRecord: {
         ownerPredicate: ownerPredicate,
@@ -85,7 +84,7 @@ export async function addFeeCredit(
   console.log('Adding fee credit');
   const addFeeCreditTransactionOrder = await UnsignedAddFeeCreditTransactionOrder.create(
     {
-      targetSystemIdentifier: targetSystemIdentifier,
+      targetPartitionIdentifier: targetPartitionIdentifier,
       ownerPredicate: ownerPredicate,
       proof: transferFeeCreditProof,
       feeCreditRecord: { unitId: feeCreditRecordId },

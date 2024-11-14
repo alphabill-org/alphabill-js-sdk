@@ -30,7 +30,7 @@ export class SplitFungibleTokenTransactionOrder extends TransactionOrder<
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -43,7 +43,7 @@ export class SplitFungibleTokenTransactionOrder extends TransactionOrder<
     return new SplitFungibleTokenTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         TokenPartitionTransactionType.SplitFungibleToken,
         SplitFungibleTokenAttributes.fromArray(attributes as SplitFungibleTokenAttributesArray),

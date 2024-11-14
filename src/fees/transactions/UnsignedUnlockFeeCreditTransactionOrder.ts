@@ -1,6 +1,6 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
+
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -31,7 +31,7 @@ export class UnsignedUnlockFeeCreditTransactionOrder {
     return new UnsignedUnlockFeeCreditTransactionOrder(
       new TransactionPayload<UnlockFeeCreditAttributes>(
         data.networkIdentifier,
-        SystemIdentifier.MONEY_PARTITION,
+        PartitionIdentifiers.Money,
         data.feeCredit.unitId,
         FeeCreditTransactionType.UnlockFeeCredit,
         new UnlockFeeCreditAttributes(data.feeCredit.counter),

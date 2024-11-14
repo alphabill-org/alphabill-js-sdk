@@ -21,7 +21,7 @@ export class AddFeeCreditTransactionOrder extends TransactionOrder<AddFeeCreditA
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -34,7 +34,7 @@ export class AddFeeCreditTransactionOrder extends TransactionOrder<AddFeeCreditA
     return new AddFeeCreditTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         FeeCreditTransactionType.AddFeeCredit,
         await AddFeeCreditAttributes.fromArray(attributes as AddFeeCreditAttributesArray),

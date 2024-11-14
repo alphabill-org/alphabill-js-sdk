@@ -21,7 +21,7 @@ export class CloseFeeCreditTransactionOrder extends TransactionOrder<CloseFeeCre
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -34,7 +34,7 @@ export class CloseFeeCreditTransactionOrder extends TransactionOrder<CloseFeeCre
     return new CloseFeeCreditTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         FeeCreditTransactionType.CloseFeeCredit,
         CloseFeeCreditAttributes.fromArray(attributes as CloseFeeCreditAttributesArray),

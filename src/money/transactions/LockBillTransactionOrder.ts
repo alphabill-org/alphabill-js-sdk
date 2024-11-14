@@ -21,7 +21,7 @@ export class LockBillTransactionOrder extends TransactionOrder<LockBillAttribute
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -34,7 +34,7 @@ export class LockBillTransactionOrder extends TransactionOrder<LockBillAttribute
     return new LockBillTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         MoneyPartitionTransactionType.LockBill,
         LockBillAttributes.fromArray(attributes as LockBillAttributesArray),

@@ -27,7 +27,7 @@ export class SwapBillsWithDustCollectorTransactionOrder extends TransactionOrder
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -40,7 +40,7 @@ export class SwapBillsWithDustCollectorTransactionOrder extends TransactionOrder
     return new SwapBillsWithDustCollectorTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         MoneyPartitionTransactionType.SwapBillsWithDustCollector,
         await SwapBillsWithDustCollectorAttributes.fromArray(attributes as SwapBillsWithDustCollectorAttributesArray),

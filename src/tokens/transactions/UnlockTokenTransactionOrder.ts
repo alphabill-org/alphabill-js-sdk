@@ -21,7 +21,7 @@ export class UnlockTokenTransactionOrder extends TransactionOrder<UnlockTokenAtt
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -34,7 +34,7 @@ export class UnlockTokenTransactionOrder extends TransactionOrder<UnlockTokenAtt
     return new UnlockTokenTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         TokenPartitionTransactionType.UnlockToken,
         UnlockTokenAttributes.fromArray(attributes as UnlockTokenAttributesArray),

@@ -27,7 +27,7 @@ export class CreateFungibleTokenTransactionOrder extends TransactionOrder<
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -40,7 +40,7 @@ export class CreateFungibleTokenTransactionOrder extends TransactionOrder<
     return new CreateFungibleTokenTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         TokenPartitionTransactionType.CreateFungibleToken,
         CreateFungibleTokenAttributes.fromArray(attributes as CreateFungibleTokenAttributesArray),

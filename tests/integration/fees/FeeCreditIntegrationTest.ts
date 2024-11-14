@@ -11,9 +11,9 @@ import { UnsignedReclaimFeeCreditTransactionOrder } from '../../../src/fees/tran
 import { UnsignedUnlockFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedUnlockFeeCreditTransactionOrder.js';
 import { IUnitId } from '../../../src/IUnitId.js';
 import { Bill } from '../../../src/money/Bill.js';
+import { PartitionIdentifiers } from '../../../src/PartitionIdentifiers.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, createTokenClient, http } from '../../../src/StateApiClientFactory.js';
-import { SystemIdentifier } from '../../../src/SystemIdentifier.js';
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
@@ -38,7 +38,7 @@ describe('Fee Credit Integration Tests', () => {
     const addFeeCreditHash = await addFeeCredit(
       moneyClient,
       moneyClient,
-      SystemIdentifier.MONEY_PARTITION,
+      PartitionIdentifiers.Money,
       signingService.publicKey,
       cborCodec,
       proofFactory,
@@ -57,7 +57,7 @@ describe('Fee Credit Integration Tests', () => {
     const addFeeCreditHash = await addFeeCredit(
       moneyClient,
       tokenClient,
-      SystemIdentifier.TOKEN_PARTITION,
+      PartitionIdentifiers.Token,
       signingService.publicKey,
       cborCodec,
       proofFactory,

@@ -2,7 +2,7 @@ import { numberToBytesBE } from '@noble/curves/abstract/utils';
 import { sha256 } from '@noble/hashes/sha256';
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
+
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -15,7 +15,7 @@ import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 import { SetFeeCreditTransactionOrder } from './SetFeeCreditTransactionOrder.js';
 
 interface ISetFeeCreditTransactionData extends ITransactionData {
-  targetSystemIdentifier: SystemIdentifier;
+  targetPartitionIdentifier: PartitionIdentifier;
   ownerPredicate: IPredicate;
   amount: bigint;
   feeCreditRecord: { unitId: IUnitId | null; counter: bigint | null };
@@ -43,7 +43,7 @@ export class UnsignedSetFeeCreditTransactionOrder {
     return new UnsignedSetFeeCreditTransactionOrder(
       new TransactionPayload<SetFeeCreditAttributes>(
         data.networkIdentifier,
-        data.targetSystemIdentifier,
+        data.targetPartitionIdentifier,
         feeCreditRecordId,
         FeeCreditTransactionType.SetFeeCredit,
         new SetFeeCreditAttributes(data.ownerPredicate, data.amount, data.feeCreditRecord.counter),

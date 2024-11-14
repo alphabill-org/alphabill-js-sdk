@@ -507,7 +507,7 @@ export class UnicitySeal implements IUnicitySeal {
         Signatures: [${
           this._signatures.entries()
             ? `\n${Array.from(this._signatures)
-                .map(([id, signature]) => 'ID: ' + id + Base16Converter.encode(signature))
+                .map(([id, signature]) => 'ID: ' + id + ', Signature: ' + Base16Converter.encode(signature))
                 .join('\n')}\n`
             : ''
         }]`;

@@ -104,6 +104,7 @@ function createInputRecord(data: IInputRecordDto | null): IInputRecord | null {
     Base16Converter.decode(data.hash),
     Base16Converter.decode(data.blockHash),
     Base16Converter.decode(data.summaryValue),
+    data.timestamp,
     data.roundNumber,
     data.epoch,
     data.sumOfEarnedFees,

@@ -30,7 +30,7 @@ export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -43,7 +43,7 @@ export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
     return new JoinFungibleTokenTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         TokenPartitionTransactionType.JoinFungibleToken,
         await JoinFungibleTokenAttributes.fromArray(attributes as JoinFungibleTokenAttributesArray),

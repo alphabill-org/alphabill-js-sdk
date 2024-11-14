@@ -21,7 +21,7 @@ export class TransferBillTransactionOrder extends TransactionOrder<TransferBillA
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -34,7 +34,7 @@ export class TransferBillTransactionOrder extends TransactionOrder<TransferBillA
     return new TransferBillTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         MoneyPartitionTransactionType.TransferBill,
         TransferBillAttributes.fromArray(attributes as TransferBillAttributesArray),

@@ -1,7 +1,6 @@
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../IUnitId.js';
 import { NetworkIdentifier } from '../NetworkIdentifier.js';
-import { SystemIdentifier } from '../SystemIdentifier.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ClientMetadata, TransactionClientMetadataArray } from './ClientMetadata.js';
@@ -15,7 +14,7 @@ type TransactionAttributesType = unknown;
 
 export type PayloadArray = readonly [
   NetworkIdentifier,
-  SystemIdentifier,
+  number,
   UnitIdType,
   number,
   TransactionAttributesType,
@@ -29,7 +28,7 @@ export type PayloadArray = readonly [
 export class TransactionPayload<T extends ITransactionPayloadAttributes> {
   public constructor(
     public readonly networkIdentifier: NetworkIdentifier,
-    public readonly systemIdentifier: SystemIdentifier,
+    public readonly partitionIdentifier: number,
     public readonly unitId: IUnitId,
     public readonly type: number,
     public readonly attributes: T,
@@ -45,7 +44,7 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
     return dedent`
       TransactionPayload
         Network Identifier: ${NetworkIdentifier[this.networkIdentifier]}
-        System Identifier: ${SystemIdentifier[this.systemIdentifier]}
+        Partition Identifier: ${this.partitionIdentifier}
         Unit ID: ${Base16Converter.encode(this.unitId.bytes)}
         Type: ${this.type}
         Attributes:
@@ -59,7 +58,7 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
   public async encode(cborCodec: ICborCodec): Promise<PayloadArray> {
     return [
       this.networkIdentifier,
-      this.systemIdentifier,
+      this.partitionIdentifier,
       this.unitId.bytes,
       this.type,
       await this.attributes.encode(cborCodec),

@@ -1,6 +1,6 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
+
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -29,7 +29,7 @@ export class UnsignedCloseFeeCreditTransactionOrder {
     return new UnsignedCloseFeeCreditTransactionOrder(
       new TransactionPayload<CloseFeeCreditAttributes>(
         data.networkIdentifier,
-        SystemIdentifier.MONEY_PARTITION,
+        PartitionIdentifiers.Money,
         data.feeCreditRecord.unitId,
         FeeCreditTransactionType.CloseFeeCredit,
         new CloseFeeCreditAttributes(

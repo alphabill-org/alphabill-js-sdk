@@ -27,7 +27,7 @@ export class TransferFeeCreditTransactionOrder extends TransactionOrder<
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -40,7 +40,7 @@ export class TransferFeeCreditTransactionOrder extends TransactionOrder<
     return new TransferFeeCreditTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         FeeCreditTransactionType.TransferFeeCredit,
         TransferFeeCreditAttributes.fromArray(attributes as TransferFeeCreditAttributesArray),

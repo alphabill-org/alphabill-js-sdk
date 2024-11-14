@@ -2,7 +2,7 @@ import { numberToBytesBE } from '@noble/curves/abstract/utils';
 import { sha256 } from '@noble/hashes/sha256';
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
+import { PartitionIdentifiers } from '../../PartitionIdentifiers.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -17,7 +17,7 @@ import { TransferFeeCreditTransactionOrder } from './TransferFeeCreditTransactio
 
 interface ITransferFeeCreditTransactionData extends ITransactionData {
   amount: bigint;
-  targetSystemIdentifier: SystemIdentifier;
+  targetPartitionIdentifier: number;
   latestAdditionTime: bigint;
   feeCreditRecord: {
     ownerPredicate: IPredicate;
@@ -48,12 +48,12 @@ export class UnsignedTransferFeeCreditTransactionOrder {
     return new UnsignedTransferFeeCreditTransactionOrder(
       new TransactionPayload<TransferFeeCreditAttributes>(
         data.networkIdentifier,
-        SystemIdentifier.MONEY_PARTITION,
+        PartitionIdentifiers.Money,
         data.bill.unitId,
         FeeCreditTransactionType.TransferFeeCredit,
         new TransferFeeCreditAttributes(
           data.amount,
-          data.targetSystemIdentifier,
+          data.targetPartitionIdentifier,
           feeCreditRecordId,
           data.latestAdditionTime,
           data.feeCreditRecord?.counter ?? 0n,

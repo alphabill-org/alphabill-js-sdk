@@ -21,7 +21,7 @@ export class LockTokenTransactionOrder extends TransactionOrder<LockTokenAttribu
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -34,7 +34,7 @@ export class LockTokenTransactionOrder extends TransactionOrder<LockTokenAttribu
     return new LockTokenTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         TokenPartitionTransactionType.LockToken,
         LockTokenAttributes.fromArray(attributes as LockTokenAttributesArray),

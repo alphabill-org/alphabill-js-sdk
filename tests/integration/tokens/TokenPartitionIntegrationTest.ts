@@ -3,9 +3,9 @@ import { randomBytes } from '@noble/hashes/utils';
 import { CborCodecNode } from '../../../src/codec/cbor/CborCodecNode.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/AddFeeCreditTransactionRecordWithProof.js';
 import { IUnitId } from '../../../src/IUnitId.js';
+import { PartitionIdentifiers } from '../../../src/PartitionIdentifiers.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, createTokenClient, http } from '../../../src/StateApiClientFactory.js';
-import { SystemIdentifier } from '../../../src/SystemIdentifier.js';
 import { FungibleToken } from '../../../src/tokens/FungibleToken.js';
 import { FungibleTokenType } from '../../../src/tokens/FungibleTokenType.js';
 import { NonFungibleToken } from '../../../src/tokens/NonFungibleToken.js';
@@ -69,7 +69,7 @@ describe('Token Client Integration Tests', () => {
     const addFeeCreditHash = await addFeeCredit(
       moneyClient,
       tokenClient,
-      SystemIdentifier.TOKEN_PARTITION,
+      PartitionIdentifiers.Token,
       signingService.publicKey,
       cborCodec,
       proofFactory,

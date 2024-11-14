@@ -1,6 +1,6 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
+import { PartitionIdentifiers } from '../../PartitionIdentifiers.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -26,7 +26,7 @@ export class UnsignedLockTokenTransactionOrder {
     return new UnsignedLockTokenTransactionOrder(
       new TransactionPayload(
         data.networkIdentifier,
-        SystemIdentifier.TOKEN_PARTITION,
+        PartitionIdentifiers.Token,
         data.token.unitId,
         TokenPartitionTransactionType.LockToken,
         new LockTokenAttributes(data.status, data.token.counter),

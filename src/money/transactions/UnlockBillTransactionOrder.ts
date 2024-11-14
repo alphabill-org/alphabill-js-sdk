@@ -21,7 +21,7 @@ export class UnlockBillTransactionOrder extends TransactionOrder<UnlockBillAttri
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -34,7 +34,7 @@ export class UnlockBillTransactionOrder extends TransactionOrder<UnlockBillAttri
     return new UnlockBillTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         MoneyPartitionTransactionType.UnlockBill,
         UnlockBillAttributes.fromArray(attributes as UnlockBillAttributesArray),

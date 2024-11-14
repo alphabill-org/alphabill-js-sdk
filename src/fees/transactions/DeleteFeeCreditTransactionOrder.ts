@@ -21,7 +21,7 @@ export class DeleteFeeCreditTransactionOrder extends TransactionOrder<DeleteFeeC
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -34,7 +34,7 @@ export class DeleteFeeCreditTransactionOrder extends TransactionOrder<DeleteFeeC
     return new DeleteFeeCreditTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         FeeCreditTransactionType.DeleteFeeCredit,
         DeleteFeeCreditAttributes.fromArray(attributes as DeleteFeeCreditAttributesArray),

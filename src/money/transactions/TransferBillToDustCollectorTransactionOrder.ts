@@ -27,7 +27,7 @@ export class TransferBillToDustCollectorTransactionOrder extends TransactionOrde
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -40,7 +40,7 @@ export class TransferBillToDustCollectorTransactionOrder extends TransactionOrde
     return new TransferBillToDustCollectorTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         MoneyPartitionTransactionType.TransferBillToDustCollector,
         TransferBillToDustCollectorAttributes.fromArray(attributes as TransferBillToDustCollectorAttributesArray),

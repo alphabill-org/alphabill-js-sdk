@@ -21,7 +21,7 @@ export class LockFeeCreditTransactionOrder extends TransactionOrder<LockFeeCredi
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -34,7 +34,7 @@ export class LockFeeCreditTransactionOrder extends TransactionOrder<LockFeeCredi
     return new LockFeeCreditTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         FeeCreditTransactionType.LockFeeCredit,
         LockFeeCreditAttributes.fromArray(attributes as LockFeeCreditAttributesArray),

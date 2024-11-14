@@ -1,5 +1,4 @@
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
@@ -9,7 +8,7 @@ import { dedent } from '../../util/StringUtils.js';
  */
 export type TransferFeeCreditAttributesArray = readonly [
   bigint, // Amount
-  SystemIdentifier, // Target system identifier
+  number, // Target partition identifier
   Uint8Array, // Target Unit ID
   bigint, // Latest addition time
   bigint | null, // Target unit counter
@@ -23,7 +22,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   /**
    * Transfer fee credit attributes constructor.
    * @param {bigint} amount - Amount.
-   * @param {SystemIdentifier} targetSystemIdentifier - Target system identifier.
+   * @param {number} targetPartitionIdentifier - Target partition identifier.
    * @param {IUnitId} targetUnitId - Target unit ID.
    * @param {bigint} latestAdditionTime - Latest addition time.
    * @param {bigint | null} targetUnitCounter - Target unit counter.
@@ -31,7 +30,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
    */
   public constructor(
     public readonly amount: bigint,
-    public readonly targetSystemIdentifier: SystemIdentifier,
+    public readonly targetPartitionIdentifier: number,
     public readonly targetUnitId: IUnitId,
     public readonly latestAdditionTime: bigint,
     public readonly targetUnitCounter: bigint | null,
@@ -50,7 +49,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
    */
   public static fromArray([
     amount,
-    targetSystemIdentifier,
+    targetPartitionIdentifier,
     targetUnitId,
     latestAdditionTime,
     targetUnitCounter,
@@ -58,7 +57,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   ]: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
     return new TransferFeeCreditAttributes(
       amount,
-      targetSystemIdentifier,
+      targetPartitionIdentifier,
       UnitId.fromBytes(targetUnitId),
       latestAdditionTime,
       targetUnitCounter,
@@ -74,7 +73,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
     return dedent`
       TransferFeeCreditAttributes
         Amount: ${this.amount}
-        Target System Identifier: ${this.targetSystemIdentifier.toString()}
+        Target Partition Identifier: ${this.targetPartitionIdentifier.toString()}
         Target Unit ID: ${this.targetUnitId.toString()}
         Latest Addition Time: ${this.latestAdditionTime}
         Target Unit Counter: ${this.targetUnitCounter === null ? 'null' : this.targetUnitCounter}
@@ -87,7 +86,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   public encode(): Promise<TransferFeeCreditAttributesArray> {
     return Promise.resolve([
       this.amount,
-      this.targetSystemIdentifier,
+      this.targetPartitionIdentifier,
       this.targetUnitId.bytes,
       this.latestAdditionTime,
       this.targetUnitCounter,

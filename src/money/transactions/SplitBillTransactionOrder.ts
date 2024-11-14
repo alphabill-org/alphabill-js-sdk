@@ -21,7 +21,7 @@ export class SplitBillTransactionOrder extends TransactionOrder<SplitBillAttribu
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -34,7 +34,7 @@ export class SplitBillTransactionOrder extends TransactionOrder<SplitBillAttribu
     return new SplitBillTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         MoneyPartitionTransactionType.SplitBill,
         SplitBillAttributes.fromArray(attributes as SplitBillAttributesArray),

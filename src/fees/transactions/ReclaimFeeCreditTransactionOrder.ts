@@ -27,7 +27,7 @@ export class ReclaimFeeCreditTransactionOrder extends TransactionOrder<
 
   public static async fromArray([
     networkIdentifier,
-    systemIdentifier,
+    partitionIdentifier,
     unitId,
     ,
     attributes,
@@ -40,7 +40,7 @@ export class ReclaimFeeCreditTransactionOrder extends TransactionOrder<
     return new ReclaimFeeCreditTransactionOrder(
       new TransactionPayload(
         networkIdentifier,
-        systemIdentifier,
+        partitionIdentifier,
         UnitId.fromBytes(unitId),
         FeeCreditTransactionType.ReclaimFeeCredit,
         await ReclaimFeeCreditAttributes.fromArray(attributes as ReclaimFeeCreditAttributesArray),

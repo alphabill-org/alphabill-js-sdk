@@ -53,6 +53,7 @@ export interface IInputRecordDto {
   readonly hash: string;
   readonly blockHash: string;
   readonly summaryValue: string;
+  readonly timestamp: bigint;
   readonly roundNumber: bigint;
   readonly epoch: bigint;
   readonly sumOfEarnedFees: bigint;
