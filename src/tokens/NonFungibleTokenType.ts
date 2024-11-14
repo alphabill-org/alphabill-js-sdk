@@ -17,6 +17,8 @@ export class NonFungibleTokenType {
   /**
    * Non-fungible token type constructor.
    * @param {IUnitId} unitId Unit ID.
+   * @param {IUnitId} networkId Network ID.
+   * @param {IUnitId} partitionId Partition ID.
    * @param {string} symbol Symbol.
    * @param {string} name Name.
    * @param {TokenIcon} icon Icon.
@@ -29,6 +31,8 @@ export class NonFungibleTokenType {
    */
   public constructor(
     public readonly unitId: IUnitId,
+    public readonly networkId: IUnitId,
+    public readonly partitionId: IUnitId,
     public readonly symbol: string,
     public readonly name: string,
     public readonly icon: TokenIcon,
@@ -45,9 +49,17 @@ export class NonFungibleTokenType {
    * @param {INonFungibleTokenTypeDto} input Data.
    * @returns {NonFungibleTokenType} Non-fungible token type.
    */
-  public static create({ unitId, data, stateProof }: INonFungibleTokenTypeDto): NonFungibleTokenType {
+  public static create({
+    unitId,
+    networkId,
+    partitionId,
+    data,
+    stateProof,
+  }: INonFungibleTokenTypeDto): NonFungibleTokenType {
     return new NonFungibleTokenType(
       UnitId.fromBytes(Base16Converter.decode(unitId)),
+      UnitId.fromBytes(Base16Converter.decode(networkId)),
+      UnitId.fromBytes(Base16Converter.decode(partitionId)),
       data.symbol,
       data.name,
       new TokenIcon(data.icon.type, Base16Converter.decode(data.icon.data)),
@@ -68,6 +80,8 @@ export class NonFungibleTokenType {
     return dedent`
       NonFungibleTokenType
         Unit ID: ${this.unitId.toString()}
+        Network ID: ${this.networkId.toString()}
+        Partition ID: ${this.partitionId.toString()}
         Symbol: ${this.symbol}
         Name: ${this.name}
         Icon: ${this.icon.toString()}

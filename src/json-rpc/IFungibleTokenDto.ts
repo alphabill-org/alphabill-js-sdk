@@ -6,6 +6,8 @@ import { IStateProofDto } from './IUnitDto.js';
  */
 export interface IFungibleTokenDto {
   readonly unitId: string;
+  readonly networkId: string;
+  readonly partitionId: string;
   readonly data: {
     tokenType: string;
     value: string;

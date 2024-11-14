@@ -16,6 +16,8 @@ export class Bill implements IUnit {
   /**
    * Bill constructor.
    * @param {IUnitId} unitId Unit ID.
+   * @param {IUnitId} networkId Network ID.
+   * @param {IUnitId} partitionId Partition ID.
    * @param {bigint} value Bill value.
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {boolean} locked Is locked.
@@ -24,6 +26,8 @@ export class Bill implements IUnit {
    */
   public constructor(
     public readonly unitId: IUnitId,
+    public readonly networkId: IUnitId,
+    public readonly partitionId: IUnitId,
     public readonly value: bigint,
     public readonly ownerPredicate: IPredicate,
     public readonly locked: bigint,
@@ -40,9 +44,11 @@ export class Bill implements IUnit {
    * @param {IBillDataDto} input Data.
    * @returns {Bill} Bill.
    */
-  public static create({ unitId, data, stateProof }: IBillDataDto): Bill {
+  public static create({ unitId, networkId, partitionId, data, stateProof }: IBillDataDto): Bill {
     return new Bill(
       UnitId.fromBytes(Base16Converter.decode(unitId)),
+      UnitId.fromBytes(Base16Converter.decode(networkId)),
+      UnitId.fromBytes(Base16Converter.decode(partitionId)),
       BigInt(data.value),
       new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
@@ -58,7 +64,9 @@ export class Bill implements IUnit {
   public toString(): string {
     return dedent`
       Bill
-        UnitId: ${this.unitId.toString()}
+        Unit ID: ${this.unitId.toString()} 
+        Network ID: ${this.networkId.toString()} 
+        Partition ID: ${this.partitionId.toString()} 
         Owner Predicate: ${this.ownerPredicate.toString()}
         Value: ${this.value}
         Locked: ${this.locked}

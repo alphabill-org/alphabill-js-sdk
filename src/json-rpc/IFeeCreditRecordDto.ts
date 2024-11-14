@@ -6,6 +6,8 @@ import { IStateProofDto } from './IUnitDto.js';
  */
 export interface IFeeCreditRecordDto {
   readonly unitId: string;
+  readonly networkId: string;
+  readonly partitionId: string;
   readonly data: {
     balance: string;
     ownerPredicate: string;
