@@ -11,7 +11,7 @@ import { UnsignedReclaimFeeCreditTransactionOrder } from '../../../src/fees/tran
 import { UnsignedUnlockFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedUnlockFeeCreditTransactionOrder.js';
 import { IUnitId } from '../../../src/IUnitId.js';
 import { Bill } from '../../../src/money/Bill.js';
-import { PartitionIdentifier } from '../../../src/PartitionIdentifier';
+import { PartitionIdentifier } from '../../../src/PartitionIdentifier.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, createTokenClient, http } from '../../../src/StateApiClientFactory.js';
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';

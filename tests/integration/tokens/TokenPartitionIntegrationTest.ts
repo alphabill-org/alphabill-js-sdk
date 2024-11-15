@@ -3,7 +3,7 @@ import { randomBytes } from '@noble/hashes/utils';
 import { CborCodecNode } from '../../../src/codec/cbor/CborCodecNode.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/AddFeeCreditTransactionRecordWithProof.js';
 import { IUnitId } from '../../../src/IUnitId.js';
-import { PartitionIdentifier } from '../../../src/PartitionIdentifier';
+import { PartitionIdentifier } from '../../../src/PartitionIdentifier.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, createTokenClient, http } from '../../../src/StateApiClientFactory.js';
 import { FungibleToken } from '../../../src/tokens/FungibleToken.js';

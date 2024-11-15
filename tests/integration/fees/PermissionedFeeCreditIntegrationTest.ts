@@ -3,7 +3,7 @@ import { DeleteFeeCreditTransactionRecordWithProof } from '../../../src/fees/tra
 import { SetFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/SetFeeCreditTransactionRecordWithProof.js';
 import { UnsignedDeleteFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedDeleteFeeCreditTransactionOrder.js';
 import { UnsignedSetFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedSetFeeCreditTransactionOrder.js';
-import { PartitionIdentifier } from '../../../src/PartitionIdentifier';
+import { PartitionIdentifier } from '../../../src/PartitionIdentifier.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createTokenClient, http } from '../../../src/StateApiClientFactory.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';

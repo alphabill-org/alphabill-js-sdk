@@ -1,6 +1,7 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 
+import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -10,7 +11,6 @@ import { SwapBillsWithDustCollectorAttributes } from '../attributes/SwapBillsWit
 import { MoneyPartitionTransactionType } from '../MoneyPartitionTransactionType.js';
 import { SwapBillsWithDustCollectorTransactionOrder } from './SwapBillsWithDustCollectorTransactionOrder.js';
 import { TransferBillToDustCollectorTransactionRecordWithProof } from './TransferBillToDustCollectorTransactionRecordWithProof.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier';
 
 export interface ISwapBillsWithDustCollectorTransactionData extends ITransactionData {
   proofs: TransferBillToDustCollectorTransactionRecordWithProof[];

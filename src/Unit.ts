@@ -3,7 +3,7 @@ import { IUnitId } from './IUnitId.js';
 
 export class Unit {
   /**
-   * Bill constructor.
+   * Unit constructor.
    * @param {IUnitId} unitId Unit ID.
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
@@ -13,6 +13,6 @@ export class Unit {
     public readonly unitId: IUnitId,
     public readonly networkIdentifier: number,
     public readonly partitionIdentifier: number,
-    public readonly stateProof: IStateProof | null
+    public readonly stateProof: IStateProof | null,
   ) {}
 }

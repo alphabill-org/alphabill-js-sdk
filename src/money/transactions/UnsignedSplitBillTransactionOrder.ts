@@ -1,6 +1,7 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 
+import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -10,7 +11,6 @@ import { SplitBillAttributes } from '../attributes/SplitBillAttributes.js';
 import { MoneyPartitionTransactionType } from '../MoneyPartitionTransactionType.js';
 import { SplitBillUnit } from '../SplitBillUnit.js';
 import { SplitBillTransactionOrder } from './SplitBillTransactionOrder.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier';
 
 export interface ISplitBillTransactionData extends ITransactionData {
   splits: {

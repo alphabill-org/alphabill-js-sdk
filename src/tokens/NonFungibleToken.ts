@@ -1,4 +1,4 @@
-import { IStateProof } from '../IStateProof';
+import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { INonFungibleTokenDto } from '../json-rpc/INonFungibleTokenDto.js';
 import { createStateProof } from '../json-rpc/StateProofFactory.js';

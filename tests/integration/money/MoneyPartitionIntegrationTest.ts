@@ -15,7 +15,7 @@ import { UnsignedSwapBillsWithDustCollectorTransactionOrder } from '../../../src
 import { UnsignedTransferBillToDustCollectorTransactionOrder } from '../../../src/money/transactions/UnsignedTransferBillToDustCollectorTransactionOrder.js';
 import { UnsignedTransferBillTransactionOrder } from '../../../src/money/transactions/UnsignedTransferBillTransactionOrder.js';
 import { UnsignedUnlockBillTransactionOrder } from '../../../src/money/transactions/UnsignedUnlockBillTransactionOrder.js';
-import { PartitionIdentifier } from '../../../src/PartitionIdentifier';
+import { PartitionIdentifier } from '../../../src/PartitionIdentifier.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, http } from '../../../src/StateApiClientFactory.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';

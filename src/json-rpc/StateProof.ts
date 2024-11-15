@@ -5,7 +5,7 @@ import {
   IStateTreePathItem,
   IUnicityCertificate,
   IUnitTreeCertificate,
-} from '../IStateProof';
+} from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 
 /**
