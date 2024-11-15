@@ -1,26 +1,4 @@
 import { IUnitId } from './IUnitId.js';
-import { IPredicate } from './transaction/predicates/IPredicate.js';
-
-/**
- * Unit interface.
- */
-export interface IUnit {
-  /**
-   * Get unit id.
-   * @returns {IUnit} unit id.
-   */
-  get unitId(): IUnitId;
-  /**
-   * Get owner predicate.
-   * @returns {IPredicate} owner predicate.
-   */
-  get ownerPredicate(): IPredicate;
-  /**
-   * Get state proof.
-   * @returns {IStateProof | null} state proof.
-   */
-  get stateProof(): IStateProof | null;
-}
 
 export interface IStateProof {
   /**

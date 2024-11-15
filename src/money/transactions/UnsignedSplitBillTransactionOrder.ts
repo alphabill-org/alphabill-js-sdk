@@ -10,6 +10,7 @@ import { SplitBillAttributes } from '../attributes/SplitBillAttributes.js';
 import { MoneyPartitionTransactionType } from '../MoneyPartitionTransactionType.js';
 import { SplitBillUnit } from '../SplitBillUnit.js';
 import { SplitBillTransactionOrder } from './SplitBillTransactionOrder.js';
+import { PartitionIdentifier } from '../../PartitionIdentifier';
 
 export interface ISplitBillTransactionData extends ITransactionData {
   splits: {
@@ -33,7 +34,7 @@ export class UnsignedSplitBillTransactionOrder {
     return new UnsignedSplitBillTransactionOrder(
       new TransactionPayload<SplitBillAttributes>(
         data.networkIdentifier,
-        PartitionIdentifiers.Money,
+        PartitionIdentifier.MONEY,
         data.bill.unitId,
         MoneyPartitionTransactionType.SplitBill,
         new SplitBillAttributes(

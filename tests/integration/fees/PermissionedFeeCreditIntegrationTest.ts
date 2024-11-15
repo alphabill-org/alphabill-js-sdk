@@ -3,7 +3,7 @@ import { DeleteFeeCreditTransactionRecordWithProof } from '../../../src/fees/tra
 import { SetFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/SetFeeCreditTransactionRecordWithProof.js';
 import { UnsignedDeleteFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedDeleteFeeCreditTransactionOrder.js';
 import { UnsignedSetFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedSetFeeCreditTransactionOrder.js';
-import { PartitionIdentifiers } from '../../../src/PartitionIdentifiers.js';
+import { PartitionIdentifier } from '../../../src/PartitionIdentifier';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createTokenClient, http } from '../../../src/StateApiClientFactory.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
@@ -29,7 +29,7 @@ describe('Permissioned Fee Credit Integration Tests', () => {
     console.log('Setting fee credit...');
     const setFeeCreditTransactionOrder = await UnsignedSetFeeCreditTransactionOrder.create(
       {
-        targetPartitionIdentifier: PartitionIdentifiers.Token,
+        targetPartitionIdentifier: PartitionIdentifier.TOKEN,
         ownerPredicate: ownerPredicate,
         amount: 100n,
         feeCreditRecord: { unitId: null, counter: null },

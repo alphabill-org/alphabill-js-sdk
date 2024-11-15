@@ -15,7 +15,7 @@ import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 import { SetFeeCreditTransactionOrder } from './SetFeeCreditTransactionOrder.js';
 
 interface ISetFeeCreditTransactionData extends ITransactionData {
-  targetPartitionIdentifier: PartitionIdentifier;
+  targetPartitionIdentifier: number;
   ownerPredicate: IPredicate;
   amount: bigint;
   feeCreditRecord: { unitId: IUnitId | null; counter: bigint | null };

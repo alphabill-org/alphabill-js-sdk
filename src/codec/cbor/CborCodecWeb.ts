@@ -1,3 +1,4 @@
+// @ts-expect-error No defined types
 import cbor from 'cbor-web';
 import { ICborCodec } from './ICborCodec.js';
 

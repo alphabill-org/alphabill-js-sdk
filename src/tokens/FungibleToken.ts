@@ -1,4 +1,4 @@
-import { IStateProof } from '../IUnit.js';
+import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { IFungibleTokenDto } from '../json-rpc/IFungibleTokenDto.js';
 import { createStateProof } from '../json-rpc/StateProofFactory.js';
@@ -16,8 +16,8 @@ export class FungibleToken {
   /**
    * Fungible token constructor.
    * @param {IUnitId} unitId Unit ID.
-   * @param {IUnitId} networkId Network ID.
-   * @param {IUnitId} partitionId Partition ID.
+   * @param {number} networkIdentifier Network ID.
+   * @param {number} partitionIdentifier Partition ID.
    * @param {IUnitId} tokenType Token type.
    * @param {bigint} value Token value.
    * @param {IPredicate} ownerPredicate Owner predicate.
@@ -28,8 +28,8 @@ export class FungibleToken {
    */
   public constructor(
     public readonly unitId: IUnitId,
-    public readonly networkId: IUnitId,
-    public readonly partitionId: IUnitId,
+    public readonly networkIdentifier: number,
+    public readonly partitionIdentifier: number,
     public readonly tokenType: IUnitId,
     public readonly value: bigint,
     public readonly ownerPredicate: IPredicate,
@@ -52,8 +52,8 @@ export class FungibleToken {
   public static create({ unitId, networkId, partitionId, data, stateProof }: IFungibleTokenDto): FungibleToken {
     return new FungibleToken(
       UnitId.fromBytes(Base16Converter.decode(unitId)),
-      UnitId.fromBytes(Base16Converter.decode(networkId)),
-      UnitId.fromBytes(Base16Converter.decode(partitionId)),
+      Number(networkId),
+      Number(partitionId),
       UnitId.fromBytes(Base16Converter.decode(data.tokenType)),
       BigInt(data.value),
       new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
@@ -72,8 +72,8 @@ export class FungibleToken {
     return dedent`
       FungibleToken
         Unit ID: ${this.unitId.toString()}
-        Network ID: ${this.networkId.toString()}
-        Partition ID: ${this.partitionId.toString()}
+        Network ID: ${this.networkIdentifier}
+        Partition ID: ${this.partitionIdentifier}
         Token Type: ${this.tokenType.toString()}
         Value: ${this.value}
         Owner Predicate: ${this.ownerPredicate.toString()}

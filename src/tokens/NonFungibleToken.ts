@@ -1,4 +1,4 @@
-import { IStateProof } from '../IUnit.js';
+import { IStateProof } from '../IStateProof';
 import { IUnitId } from '../IUnitId.js';
 import { INonFungibleTokenDto } from '../json-rpc/INonFungibleTokenDto.js';
 import { createStateProof } from '../json-rpc/StateProofFactory.js';
@@ -16,8 +16,8 @@ export class NonFungibleToken {
   /**
    * Non-fungible token constructor.
    * @param {IUnitId} unitId Unit ID.
-   * @param {IUnitId} networkId Network ID.
-   * @param {IUnitId} partitionId Partition ID.
+   * @param {number} networkIdentifier Network ID.
+   * @param {number} partitionIdentifier Partition ID.
    * @param {IUnitId} tokenType Token type.
    * @param {string} name Token name.
    * @param {string} uri Token URI.
@@ -30,8 +30,8 @@ export class NonFungibleToken {
    */
   public constructor(
     public readonly unitId: IUnitId,
-    public readonly networkId: IUnitId,
-    public readonly partitionId: IUnitId,
+    public readonly networkIdentifier: number,
+    public readonly partitionIdentifier: number,
     public readonly tokenType: IUnitId,
     public readonly name: string,
     public readonly uri: string,
@@ -63,8 +63,8 @@ export class NonFungibleToken {
   public static create({ unitId, networkId, partitionId, data, stateProof }: INonFungibleTokenDto): NonFungibleToken {
     return new NonFungibleToken(
       UnitId.fromBytes(Base16Converter.decode(unitId)),
-      UnitId.fromBytes(Base16Converter.decode(networkId)),
-      UnitId.fromBytes(Base16Converter.decode(partitionId)),
+      Number(networkId),
+      Number(partitionId),
       UnitId.fromBytes(Base16Converter.decode(data.typeID)),
       data.name,
       data.uri,
@@ -85,8 +85,8 @@ export class NonFungibleToken {
     return dedent`
       NonFungibleToken
         Unit ID: ${this.unitId.toString()}
-        Network ID: ${this.networkId.toString()} 
-        Partition ID: ${this.partitionId.toString()} 
+        Network ID: ${this.networkIdentifier}
+        Partition ID: ${this.partitionIdentifier}
         Token Type: ${this.tokenType.toString()}
         Name: ${this.name}
         URI: ${this.uri}

@@ -1,4 +1,4 @@
-import { IStateProof } from '../IUnit.js';
+import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { IFungibleTokenTypeDto } from '../json-rpc/IFungibleTokenTypeDto.js';
 import { createStateProof } from '../json-rpc/StateProofFactory.js';
@@ -17,8 +17,8 @@ export class FungibleTokenType {
   /**
    * Fungible token type constructor.
    * @param {IUnitId} unitId Unit ID.
-   * @param {IUnitId} networkId Network ID.
-   * @param {IUnitId} partitionId Partition ID.
+   * @param {number} networkIdentifier Network ID.
+   * @param {number} partitionIdentifier Partition ID.
    * @param {string} symbol Symbol.
    * @param {string} name Name.
    * @param {TokenIcon} icon Icon.
@@ -31,8 +31,8 @@ export class FungibleTokenType {
    */
   public constructor(
     public readonly unitId: IUnitId,
-    public readonly networkId: IUnitId,
-    public readonly partitionId: IUnitId,
+    public readonly networkIdentifier: number,
+    public readonly partitionIdentifier: number,
     public readonly symbol: string,
     public readonly name: string,
     public readonly icon: TokenIcon,
@@ -52,8 +52,8 @@ export class FungibleTokenType {
   public static create({ unitId, networkId, partitionId, data, stateProof }: IFungibleTokenTypeDto): FungibleTokenType {
     return new FungibleTokenType(
       UnitId.fromBytes(Base16Converter.decode(unitId)),
-      UnitId.fromBytes(Base16Converter.decode(networkId)),
-      UnitId.fromBytes(Base16Converter.decode(partitionId)),
+      Number(networkId),
+      Number(partitionId),
       data.symbol,
       data.name,
       new TokenIcon(data.icon.type, Base16Converter.decode(data.icon.data)),
@@ -74,8 +74,8 @@ export class FungibleTokenType {
     return dedent`
       FungibleTokenType
         Unit ID: ${this.unitId.toString()}
-        Network ID: ${this.networkId.toString()}
-        Partition ID: ${this.partitionId.toString()}
+        Network ID: ${this.networkIdentifier}
+        Partition ID: ${this.partitionIdentifier}
         Symbol: ${this.symbol}
         Name: ${this.name}
         Icon: ${this.icon.toString()}

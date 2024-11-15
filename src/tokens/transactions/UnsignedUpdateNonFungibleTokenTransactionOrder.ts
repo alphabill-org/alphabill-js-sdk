@@ -1,6 +1,6 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifiers } from '../../PartitionIdentifiers.js';
+import { PartitionIdentifier } from '../../PartitionIdentifier';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -30,7 +30,7 @@ export class UnsignedUpdateNonFungibleTokenTransactionOrder {
     return new UnsignedUpdateNonFungibleTokenTransactionOrder(
       new TransactionPayload(
         data.networkIdentifier,
-        PartitionIdentifiers.Token,
+        PartitionIdentifier.TOKEN,
         data.token.unitId,
         TokenPartitionTransactionType.UpdateNonFungibleToken,
         new UpdateNonFungibleTokenAttributes(data.data, data.token.counter),

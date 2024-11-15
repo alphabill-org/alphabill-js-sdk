@@ -1,6 +1,7 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 
+import { PartitionIdentifier } from '../../PartitionIdentifier';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -28,7 +29,7 @@ export class UnsignedDeleteFeeCreditTransactionOrder {
     return new UnsignedDeleteFeeCreditTransactionOrder(
       new TransactionPayload<DeleteFeeCreditAttributes>(
         data.networkIdentifier,
-        PartitionIdentifiers.Token,
+        PartitionIdentifier.TOKEN,
         data.feeCredit.unitId,
         FeeCreditTransactionType.DeleteFeeCredit,
         new DeleteFeeCreditAttributes(data.feeCredit.counter),

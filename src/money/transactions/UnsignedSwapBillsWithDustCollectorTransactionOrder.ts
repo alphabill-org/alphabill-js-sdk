@@ -10,6 +10,7 @@ import { SwapBillsWithDustCollectorAttributes } from '../attributes/SwapBillsWit
 import { MoneyPartitionTransactionType } from '../MoneyPartitionTransactionType.js';
 import { SwapBillsWithDustCollectorTransactionOrder } from './SwapBillsWithDustCollectorTransactionOrder.js';
 import { TransferBillToDustCollectorTransactionRecordWithProof } from './TransferBillToDustCollectorTransactionRecordWithProof.js';
+import { PartitionIdentifier } from '../../PartitionIdentifier';
 
 export interface ISwapBillsWithDustCollectorTransactionData extends ITransactionData {
   proofs: TransferBillToDustCollectorTransactionRecordWithProof[];
@@ -32,7 +33,7 @@ export class UnsignedSwapBillsWithDustCollectorTransactionOrder {
     return new UnsignedSwapBillsWithDustCollectorTransactionOrder(
       new TransactionPayload<SwapBillsWithDustCollectorAttributes>(
         data.networkIdentifier,
-        PartitionIdentifiers.Money,
+        PartitionIdentifier.MONEY,
         data.bill.unitId,
         MoneyPartitionTransactionType.SwapBillsWithDustCollector,
         new SwapBillsWithDustCollectorAttributes(data.proofs),

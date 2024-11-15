@@ -15,7 +15,7 @@ import { UnsignedSwapBillsWithDustCollectorTransactionOrder } from '../../../src
 import { UnsignedTransferBillToDustCollectorTransactionOrder } from '../../../src/money/transactions/UnsignedTransferBillToDustCollectorTransactionOrder.js';
 import { UnsignedTransferBillTransactionOrder } from '../../../src/money/transactions/UnsignedTransferBillTransactionOrder.js';
 import { UnsignedUnlockBillTransactionOrder } from '../../../src/money/transactions/UnsignedUnlockBillTransactionOrder.js';
-import { PartitionIdentifiers } from '../../../src/PartitionIdentifiers.js';
+import { PartitionIdentifier } from '../../../src/PartitionIdentifier';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, http } from '../../../src/StateApiClientFactory.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
@@ -56,7 +56,7 @@ describe('Money Client Integration Tests', () => {
     const addFeeCreditHash = await addFeeCredit(
       moneyClient,
       moneyClient,
-      PartitionIdentifiers.Money,
+      PartitionIdentifier.MONEY,
       signingService.publicKey,
       cborCodec,
       proofFactory,

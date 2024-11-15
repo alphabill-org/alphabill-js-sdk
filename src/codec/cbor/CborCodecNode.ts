@@ -24,9 +24,14 @@ export class CborCodecNode implements ICborCodec {
   /**
    * @see {ICborCodec.decode}
    */
-  public decode(input: Uint8Array): Promise<unknown> {
-    return cbor.decodeFirst(input, {
+  public async decode(input: Uint8Array): Promise<unknown> {
+    const results = await cbor.decodeFirst(input, {
       preferWeb: true,
+      extendedResults: true,
     });
+
+    console.log(results.value);
+
+    return results;
   }
 }

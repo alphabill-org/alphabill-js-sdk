@@ -1,4 +1,4 @@
-import { IStateProof } from '../IUnit.js';
+import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { IFeeCreditRecordDto } from '../json-rpc/IFeeCreditRecordDto.js';
 import { createStateProof } from '../json-rpc/StateProofFactory.js';
@@ -16,8 +16,8 @@ export class FeeCreditRecord {
   /**
    * Fee credit record constructor.
    * @param {IUnitId} unitId Unit ID.
-   * @param {IUnitId} networkId Network ID.
-   * @param {IUnitId} partitionId Partition ID.
+   * @param {number} networkIdentifier Network ID.
+   * @param {number} partitionIdentifier Partition ID.
    * @param {bigint} balance Fee credit balance.
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {bigint} locked Is fee credit locked.
@@ -27,8 +27,8 @@ export class FeeCreditRecord {
    */
   public constructor(
     public readonly unitId: IUnitId,
-    public readonly networkId: IUnitId,
-    public readonly partitionId: IUnitId,
+    public readonly networkIdentifier: number,
+    public readonly partitionIdentifier: number,
     public readonly balance: bigint,
     public readonly ownerPredicate: IPredicate,
     public readonly locked: bigint,
@@ -50,8 +50,8 @@ export class FeeCreditRecord {
   public static create({ unitId, networkId, partitionId, data, stateProof }: IFeeCreditRecordDto): FeeCreditRecord {
     return new FeeCreditRecord(
       UnitId.fromBytes(Base16Converter.decode(unitId)),
-      UnitId.fromBytes(Base16Converter.decode(networkId)),
-      UnitId.fromBytes(Base16Converter.decode(partitionId)),
+      Number(networkId),
+      Number(partitionId),
       BigInt(data.balance),
       new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
@@ -69,8 +69,8 @@ export class FeeCreditRecord {
     return dedent`
       FeeCreditRecord
         Unit ID: ${this.unitId.toString()} 
-        Network ID: ${this.networkId.toString()} 
-        Partition ID: ${this.partitionId.toString()} 
+        Network ID: ${this.networkIdentifier}
+        Partition ID: ${this.partitionIdentifier}
         Balance: ${this.balance}
         Owner Predicate: ${this.ownerPredicate.toString()}
         Locked: ${this.locked}

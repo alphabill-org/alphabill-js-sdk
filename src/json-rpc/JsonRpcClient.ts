@@ -1,5 +1,6 @@
 import { sha256 } from '@noble/hashes/sha256';
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
+import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../transaction/order/TransactionOrder.js';
@@ -8,16 +9,32 @@ import { TransactionRecordWithProofArray } from '../transaction/record/Transacti
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { IJsonRpcService } from './IJsonRpcService.js';
+import { IStateProofDto } from './IUnitDto.js';
 import { JsonRpcError } from './JsonRpcError.js';
+import { createStateProof } from './StateProofFactory.js';
 import { TransactionProofDto } from './TransactionProofDto.js';
 
 export type CreateUnit<T, U> = {
-  create: (data: U) => T;
+  create: (
+    unitId: IUnitId,
+    networkIdentifier: number,
+    partitionIdentifier: number,
+    data: U,
+    stateProof: IStateProof | null,
+  ) => T;
 };
 
 export type CreateTransactionRecordWithProof<T> = {
   // TODO: Rename fromArray
   fromArray: (transactionRecordWithProof: TransactionRecordWithProofArray, cborCodec: ICborCodec) => Promise<T>;
+};
+
+type GetUnitResponseDto<T> = {
+  unitId: string;
+  networkId: string;
+  partitionId: string;
+  data: T;
+  stateProof: IStateProofDto;
 };
 
 /**
@@ -79,12 +96,23 @@ export class JsonRpcClient {
     includeStateProof: boolean,
     factory: CreateUnit<T, U>,
   ): Promise<T | null> {
-    const response = await this.request<U>('state_getUnit', Base16Converter.encode(unitId.bytes), includeStateProof);
+    const response = await this.request<GetUnitResponseDto<U>>(
+      'state_getUnit',
+      Base16Converter.encode(unitId.bytes),
+      includeStateProof,
+    );
 
     if (response) {
       try {
-        return factory.create(response);
+        return factory.create(
+          UnitId.fromBytes(Base16Converter.decode(response.unitId)),
+          Number(response.networkId),
+          Number(response.partitionId),
+          response.data,
+          await createStateProof(response.stateProof, this.cborCodec),
+        );
       } catch (error) {
+        console.log(error);
         throw new Error(`Invalid unit for given factory: ${error}`);
       }
     }

@@ -1,3 +1,4 @@
+import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import {
   IIndexedPathItem,
   IInputRecord,
@@ -10,7 +11,7 @@ import {
   IUnicitySeal,
   IUnicityTreeCertificate,
   IUnitTreeCertificate,
-} from '../IUnit.js';
+} from '../IStateProof.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { Base64Converter } from '../util/Base64Converter.js';
@@ -39,15 +40,17 @@ import {
   UnicityTreeCertificate,
 } from './UnicityCertificate.js';
 
-export function createStateProof(data: IStateProofDto): IStateProof {
+export async function createStateProof(data: IStateProofDto, cborCodec: ICborCodec): Promise<IStateProof> {
   return new StateProof(
     BigInt(data.version),
     UnitId.fromBytes(Base16Converter.decode(data.unitId)),
     BigInt(data.unitValue),
     Base16Converter.decode(data.unitLedgerHash),
-    createUnitTreeCertificate(data.unitTreeCertificate),
-    createStateTreeCertificate(data.stateTreeCertificate),
-    createUnicityCertificate(data.unicityCertificate),
+    createUnitTreeCertificate(data.unitTreeCert),
+    createStateTreeCertificate(data.stateTreeCert),
+    createUnicityCertificate(
+      (await cborCodec.decode(Base16Converter.decode(data.unicityCert))) as IUnicityCertificateDto,
+    ),
   );
 }
 

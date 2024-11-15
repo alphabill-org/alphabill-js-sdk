@@ -1,6 +1,7 @@
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
 
+import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -29,7 +30,7 @@ export class UnsignedLockBillTransactionOrder {
     return new UnsignedLockBillTransactionOrder(
       new TransactionPayload<LockBillAttributes>(
         data.networkIdentifier,
-        PartitionIdentifiers.Money,
+        PartitionIdentifier.MONEY,
         data.bill.unitId,
         MoneyPartitionTransactionType.LockBill,
         new LockBillAttributes(data.status, data.bill.counter),

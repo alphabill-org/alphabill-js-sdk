@@ -13,7 +13,7 @@ import {
   UnicityCertificateArray,
   UnicitySealArray,
   UnicityTreeCertificateArray,
-} from '../IUnit.js';
+} from '../IStateProof';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 

@@ -6,9 +6,9 @@ export interface IStateProofDto {
   readonly unitId: string;
   readonly unitValue: bigint;
   readonly unitLedgerHash: string;
-  readonly unitTreeCertificate: IUnitTreeCertificateDto;
-  readonly stateTreeCertificate: IStateTreeCertificateDto;
-  readonly unicityCertificate: IUnicityCertificateDto;
+  readonly unitTreeCert: IUnitTreeCertificateDto;
+  readonly stateTreeCert: IStateTreeCertificateDto;
+  readonly unicityCert: string;
 }
 
 export interface IUnitTreeCertificateDto {

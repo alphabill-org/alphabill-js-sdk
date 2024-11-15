@@ -2,7 +2,7 @@ import { numberToBytesBE } from '@noble/curves/abstract/utils';
 import { sha256 } from '@noble/hashes/sha256';
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifiers } from '../../PartitionIdentifiers.js';
+import { PartitionIdentifier } from '../../PartitionIdentifier';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -48,7 +48,7 @@ export class UnsignedTransferFeeCreditTransactionOrder {
     return new UnsignedTransferFeeCreditTransactionOrder(
       new TransactionPayload<TransferFeeCreditAttributes>(
         data.networkIdentifier,
-        PartitionIdentifiers.Money,
+        PartitionIdentifier.MONEY,
         data.bill.unitId,
         FeeCreditTransactionType.TransferFeeCredit,
         new TransferFeeCreditAttributes(
