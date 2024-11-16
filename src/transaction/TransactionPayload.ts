@@ -1,6 +1,5 @@
 import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { IUnitId } from '../IUnitId.js';
-import { NetworkIdentifier } from '../NetworkIdentifier.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { ClientMetadata, TransactionClientMetadataArray } from './ClientMetadata.js';
@@ -13,7 +12,7 @@ type UnitIdType = Uint8Array;
 type TransactionAttributesType = unknown;
 
 export type PayloadArray = readonly [
-  NetworkIdentifier,
+  number,
   number,
   UnitIdType,
   number,
