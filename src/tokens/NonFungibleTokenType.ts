@@ -1,9 +1,9 @@
 import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { INonFungibleTokenTypeDto } from '../json-rpc/INonFungibleTokenTypeDto.js';
-import { createStateProof } from '../json-rpc/StateProofFactory.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
+import { Unit } from '../Unit.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { Base64Converter } from '../util/Base64Converter.js';
@@ -13,12 +13,13 @@ import { TokenIcon } from './TokenIcon.js';
 /**
  * Non-fungible token type.
  */
-export class NonFungibleTokenType {
+export class NonFungibleTokenType extends Unit {
   /**
    * Non-fungible token type constructor.
    * @param {IUnitId} unitId Unit ID.
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
+   * @param {IStateProof | null} stateProof State proof.
    * @param {string} symbol Symbol.
    * @param {string} name Name.
    * @param {TokenIcon} icon Icon.
@@ -27,12 +28,12 @@ export class NonFungibleTokenType {
    * @param {IPredicate} tokenMintingPredicate Token minting predicate.
    * @param {IPredicate} tokenTypeOwnerPredicate Token type owner predicate.
    * @param {IPredicate} dataUpdatePredicate Data update predicate.
-   * @param {IStateProof | null} stateProof State proof.
    */
   public constructor(
-    public readonly unitId: IUnitId,
-    public readonly networkIdentifier: number,
-    public readonly partitionIdentifier: number,
+    unitId: IUnitId,
+    networkIdentifier: number,
+    partitionIdentifier: number,
+    stateProof: IStateProof | null,
     public readonly symbol: string,
     public readonly name: string,
     public readonly icon: TokenIcon,
@@ -41,25 +42,31 @@ export class NonFungibleTokenType {
     public readonly tokenMintingPredicate: IPredicate,
     public readonly tokenTypeOwnerPredicate: IPredicate,
     public readonly dataUpdatePredicate: IPredicate,
-    public readonly stateProof: IStateProof | null,
-  ) {}
+  ) {
+    super(unitId, networkIdentifier, partitionIdentifier, stateProof);
+  }
 
   /**
    * Create non-fungible token type from DTO.
-   * @param {INonFungibleTokenTypeDto} input Data.
+   * @param {IUnitId} unitId Unit id.
+   * @param {number} networkIdentifier Network identifier.
+   * @param {number} partitionIdentifier Partition identifier.
+   * @param {IStateProof | null} stateProof State proof.
+   * @param {INonFungibleTokenTypeDto} data Non-fungible token type DTO.
    * @returns {NonFungibleTokenType} Non-fungible token type.
    */
-  public static create({
-    unitId,
-    networkId,
-    partitionId,
-    data,
-    stateProof,
-  }: INonFungibleTokenTypeDto): NonFungibleTokenType {
+  public static create(
+    unitId: IUnitId,
+    networkIdentifier: number,
+    partitionIdentifier: number,
+    stateProof: IStateProof | null,
+    data: INonFungibleTokenTypeDto,
+  ): NonFungibleTokenType {
     return new NonFungibleTokenType(
-      UnitId.fromBytes(Base16Converter.decode(unitId)),
-      Number(networkId),
-      Number(partitionId),
+      unitId,
+      networkIdentifier,
+      partitionIdentifier,
+      stateProof,
       data.symbol,
       data.name,
       new TokenIcon(data.icon.type, Base16Converter.decode(data.icon.data)),
@@ -68,7 +75,6 @@ export class NonFungibleTokenType {
       new PredicateBytes(Base64Converter.decode(data.tokenMintingPredicate)),
       new PredicateBytes(Base64Converter.decode(data.tokenTypeOwnerPredicate)),
       new PredicateBytes(Base64Converter.decode(data.dataUpdatePredicate)),
-      stateProof ? createStateProof(stateProof) : null,
     );
   }
 

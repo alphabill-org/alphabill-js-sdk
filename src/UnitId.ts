@@ -1,5 +1,4 @@
 import { IUnitId } from './IUnitId.js';
-import { areUint8ArraysEqual } from './util/ArrayUtils.js';
 import { Base16Converter } from './util/Base16Converter.js';
 
 /**
@@ -48,7 +47,7 @@ export class UnitId implements IUnitId {
     const obj1 = a as IUnitId;
     const obj2 = b as IUnitId;
 
-    return areUint8ArraysEqual(obj1.bytes, obj2.bytes) && areUint8ArraysEqual(obj1.type, obj2.type);
+    return UnitId.areUint8ArraysEqual(obj1.bytes, obj2.bytes) && UnitId.areUint8ArraysEqual(obj1.type, obj2.type);
   }
 
   /**
@@ -72,6 +71,20 @@ export class UnitId implements IUnitId {
    */
   public static fromBytes(id: Uint8Array): IUnitId {
     return new UnitId(id.slice(-1), id);
+  }
+
+  private static areUint8ArraysEqual(arr1: Uint8Array, arr2: Uint8Array): boolean {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < arr1.length; i += 1) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**

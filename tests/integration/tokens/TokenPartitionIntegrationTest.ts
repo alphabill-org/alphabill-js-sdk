@@ -43,7 +43,7 @@ import { AlwaysTrueProofFactory } from '../../../src/transaction/proofs/AlwaysTr
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
 import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
-import { areUint8ArraysEqual } from '../../../src/util/ArrayUtils.js';
+import { UnitId } from '../../../src/UnitId.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
 import config from '../config/config.js';
 import { addFeeCredit, createTransactionData } from '../utils/TestUtils.js';
@@ -173,9 +173,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Fungible token split successful');
 
       const splitTokenId = splitBillProof.transactionRecord.serverMetadata.targetUnitIds.find(
-        (id) =>
-          areUint8ArraysEqual(id.type, TokenPartitionUnitType.FUNGIBLE_TOKEN) &&
-          Base16Converter.encode(id.bytes) !== Base16Converter.encode(token!.unitId.bytes),
+        (id: IUnitId) => !UnitId.equals(id, token!.unitId),
       );
       expect(splitTokenId).not.toBeFalsy();
 

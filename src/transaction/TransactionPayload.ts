@@ -27,7 +27,7 @@ export type PayloadArray = readonly [
  */
 export class TransactionPayload<T extends ITransactionPayloadAttributes> {
   public constructor(
-    public readonly networkIdentifier: NetworkIdentifier,
+    public readonly networkIdentifier: number,
     public readonly partitionIdentifier: number,
     public readonly unitId: IUnitId,
     public readonly type: number,
@@ -43,16 +43,17 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
   public toString(): string {
     return dedent`
       TransactionPayload
-        Network Identifier: ${NetworkIdentifier[this.networkIdentifier]}
-        Partition Identifier: ${this.partitionIdentifier}
-        Unit ID: ${Base16Converter.encode(this.unitId.bytes)}
+        Network ID: ${this.networkIdentifier}
+        Partition ID: ${this.partitionIdentifier}
+        Unit ID: ${this.unitId.toString()}
         Type: ${this.type}
         Attributes:
           ${this.attributes.toString()}
         Client Metadata:
           Timeout: ${this.clientMetadata.timeout}
           Max Transaction Fee: ${this.clientMetadata.maxTransactionFee}
-          Fee Credit Record ID: ${this.clientMetadata.feeCreditRecordId ? Base16Converter.encode(this.clientMetadata.feeCreditRecordId.bytes) : null}`;
+          Fee Credit Record ID: ${this.clientMetadata.feeCreditRecordId ? this.clientMetadata.feeCreditRecordId.toString() : null}
+          Reference Number: ${this.clientMetadata.referenceNumber ? Base16Converter.encode(this.clientMetadata.referenceNumber) : null}`;
   }
 
   public async encode(cborCodec: ICborCodec): Promise<PayloadArray> {

@@ -423,7 +423,7 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
     return dedent`
       Unicity Tree Certificate
         Version: ${this.version}
-        Partition Identifier: ${this.partitionIdentifier}
+        Partition ID: ${this.partitionIdentifier}
         Hash Steps: [${
           this.hashSteps?.length
             ? `\n${this.hashSteps.map((unit: IIndexedPathItem) => unit.toString()).join('\n')}\n`

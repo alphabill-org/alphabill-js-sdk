@@ -2,7 +2,6 @@ import { CborCodecNode } from '../../../src/codec/cbor/CborCodecNode.js';
 import { AddFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/AddFeeCreditTransactionRecordWithProof.js';
 import { IUnitId } from '../../../src/IUnitId.js';
 import { Bill } from '../../../src/money/Bill.js';
-import { MoneyPartitionUnitType } from '../../../src/money/MoneyPartitionUnitType.js';
 import { LockBillTransactionRecordWithProof } from '../../../src/money/transactions/LockBillTransactionRecordWithProof.js';
 import { SplitBillTransactionRecordWithProof } from '../../../src/money/transactions/SplitBillTransactionRecordWithProof.js';
 import { SwapBillsWithDustCollectorTransactionRecordWithProof } from '../../../src/money/transactions/SwapBillsWithDustCollectorTransactionRecordWithProof.js';
@@ -21,7 +20,7 @@ import { createMoneyClient, http } from '../../../src/StateApiClientFactory.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
-import { areUint8ArraysEqual } from '../../../src/util/ArrayUtils.js';
+import { UnitId } from '../../../src/UnitId.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
 import config from '../config/config.js';
 import { addFeeCredit, createTransactionData } from '../utils/TestUtils.js';
@@ -145,8 +144,8 @@ describe('Money Client Integration Tests', () => {
     expect(bill!.value).toBeGreaterThan(0);
 
     const targetBillUnitId = billUnitIds
-      .filter((id) => {
-        return areUint8ArraysEqual(id.type, MoneyPartitionUnitType.BILL) && id.bytes !== bill!.unitId.bytes;
+      .filter((id: IUnitId) => {
+        return !UnitId.equals(id, bill!.unitId);
       })
       .at(0) as IUnitId;
     const targetBill = await moneyClient.getUnit(targetBillUnitId, false, Bill);

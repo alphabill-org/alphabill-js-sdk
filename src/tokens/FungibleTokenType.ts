@@ -1,9 +1,9 @@
 import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { IFungibleTokenTypeDto } from '../json-rpc/IFungibleTokenTypeDto.js';
-import { createStateProof } from '../json-rpc/StateProofFactory.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
+import { Unit } from '../Unit.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { Base64Converter } from '../util/Base64Converter.js';
@@ -13,7 +13,7 @@ import { TokenIcon } from './TokenIcon.js';
 /**
  * Fungible token type.
  */
-export class FungibleTokenType {
+export class FungibleTokenType extends Unit {
   /**
    * Fungible token type constructor.
    * @param {IUnitId} unitId Unit ID.
@@ -30,9 +30,10 @@ export class FungibleTokenType {
    * @param {IStateProof | null} stateProof State proof.
    */
   public constructor(
-    public readonly unitId: IUnitId,
-    public readonly networkIdentifier: number,
-    public readonly partitionIdentifier: number,
+    unitId: IUnitId,
+    networkIdentifier: number,
+    partitionIdentifier: number,
+    stateProof: IStateProof | null,
     public readonly symbol: string,
     public readonly name: string,
     public readonly icon: TokenIcon,
@@ -41,19 +42,31 @@ export class FungibleTokenType {
     public readonly subTypeCreationPredicate: IPredicate,
     public readonly tokenMintingPredicate: IPredicate,
     public readonly tokenTypeOwnerPredicate: IPredicate,
-    public readonly stateProof: IStateProof | null,
-  ) {}
+  ) {
+    super(unitId, networkIdentifier, partitionIdentifier, stateProof);
+  }
 
   /**
    * Create fungible token type from DTO.
-   * @param {IFungibleTokenTypeDto} input Data.
+   * @param {IUnitId} unitId Unit id.
+   * @param {number} networkIdentifier Network identifier.
+   * @param {number} partitionIdentifier Partition identifier.
+   * @param {IStateProof | null} stateProof State proof.
+   * @param {IFungibleTokenTypeDto} data Fungible token type data.
    * @returns {FungibleTokenType} Fungible token type.
    */
-  public static create({ unitId, networkId, partitionId, data, stateProof }: IFungibleTokenTypeDto): FungibleTokenType {
+  public static create(
+    unitId: IUnitId,
+    networkIdentifier: number,
+    partitionIdentifier: number,
+    stateProof: IStateProof | null,
+    data: IFungibleTokenTypeDto,
+  ): FungibleTokenType {
     return new FungibleTokenType(
-      UnitId.fromBytes(Base16Converter.decode(unitId)),
-      Number(networkId),
-      Number(partitionId),
+      unitId,
+      networkIdentifier,
+      partitionIdentifier,
+      stateProof,
       data.symbol,
       data.name,
       new TokenIcon(data.icon.type, Base16Converter.decode(data.icon.data)),
@@ -62,7 +75,6 @@ export class FungibleTokenType {
       new PredicateBytes(Base64Converter.decode(data.subTypeCreationPredicate)),
       new PredicateBytes(Base64Converter.decode(data.tokenMintingPredicate)),
       new PredicateBytes(Base64Converter.decode(data.tokenTypeOwnerPredicate)),
-      stateProof ? createStateProof(stateProof) : null,
     );
   }
 

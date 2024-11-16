@@ -19,8 +19,8 @@ export type CreateUnit<T, U> = {
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    data: U,
     stateProof: IStateProof | null,
+    data: U,
   ) => T;
 };
 
@@ -108,8 +108,8 @@ export class JsonRpcClient {
           UnitId.fromBytes(Base16Converter.decode(response.unitId)),
           Number(response.networkId),
           Number(response.partitionId),
-          response.data,
           await createStateProof(response.stateProof, this.cborCodec),
+          response.data,
         );
       } catch (error) {
         console.log(error);

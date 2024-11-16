@@ -73,7 +73,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
     return dedent`
       TransferFeeCreditAttributes
         Amount: ${this.amount}
-        Target Partition Identifier: ${this.targetPartitionIdentifier.toString()}
+        Target Partition ID: ${this.targetPartitionIdentifier.toString()}
         Target Unit ID: ${this.targetUnitId.toString()}
         Latest Addition Time: ${this.latestAdditionTime}
         Target Unit Counter: ${this.targetUnitCounter === null ? 'null' : this.targetUnitCounter}

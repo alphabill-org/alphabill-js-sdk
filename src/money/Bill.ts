@@ -16,21 +16,21 @@ export class Bill extends Unit {
    * @param {IUnitId} unitId Unit ID.
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
+   * @param {IStateProof | null} stateProof State proof.
    * @param {bigint} value Bill value.
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {boolean} locked Is locked.
    * @param {bigint} counter Counter.
-   * @param {IStateProof | null} stateProof State proof.
    */
   public constructor(
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
+    stateProof: IStateProof | null,
     public readonly value: bigint,
     public readonly ownerPredicate: IPredicate,
     public readonly locked: bigint,
     public readonly counter: bigint,
-    stateProof: IStateProof | null,
   ) {
     super(unitId, networkIdentifier, partitionIdentifier, stateProof);
     this.value = BigInt(this.value);
@@ -40,30 +40,29 @@ export class Bill extends Unit {
 
   /**
    * Create bill from DTO.
-   * @param {IUnitId} unitId
-   * @param {number} networkIdentifier
-   * @param {number} partitionIdentifier
-   * @param {IBillDataDto} input Data.
-   * @param {IStateProof | null} stateProof
+   * @param {IUnitId} unitId Unit ID.
+   * @param {number} networkIdentifier Network identifier.
+   * @param {number} partitionIdentifier Partition identifier.
+   * @param {IStateProof | null} stateProof State proof.
+   * @param {IBillDataDto} data Bill DTO.
    * @returns {Bill} Bill.
-
    */
   public static create(
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    { value, ownerPredicate, locked, counter }: IBillDataDto,
     stateProof: IStateProof | null,
+    data: IBillDataDto,
   ): Bill {
     return new Bill(
       unitId,
       networkIdentifier,
       partitionIdentifier,
-      BigInt(value),
-      new PredicateBytes(Base16Converter.decode(ownerPredicate)),
-      BigInt(locked),
-      BigInt(counter),
       stateProof,
+      BigInt(data.value),
+      new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
+      BigInt(data.locked),
+      BigInt(data.counter),
     );
   }
 
