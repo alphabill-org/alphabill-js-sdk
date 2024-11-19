@@ -1,6 +1,5 @@
-import { add } from '@noble/hashes/_u64';
-import { Base16Converter } from '../../../../src/util/Base16Converter';
-import { Base64Converter } from '../../../../src/util/Base64Converter';
+import { Base16Converter } from '../../../../src/util/Base16Converter.js';
+import { Base64Converter } from '../../../../src/util/Base64Converter.js';
 
 describe('Node Codec test - Valid input', () => {
   it('Decodes and encodes successfully', () => {

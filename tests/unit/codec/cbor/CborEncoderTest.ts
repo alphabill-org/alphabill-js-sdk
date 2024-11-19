@@ -1,5 +1,5 @@
-import { Base16Converter } from '../../../../src/util/Base16Converter.js';
 import { CborEncoder } from '../../../../src/codec/cbor/CborEncoder.js';
+import { Base16Converter } from '../../../../src/util/Base16Converter.js';
 
 describe('Cbor encoder test', () => {
   it('Encode unsigned integer', () => {
