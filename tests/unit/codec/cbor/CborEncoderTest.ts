@@ -80,4 +80,3 @@ describe('Cbor encoder test', () => {
     );
   });
 });
-
