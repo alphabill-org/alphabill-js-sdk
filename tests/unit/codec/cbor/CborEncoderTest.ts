@@ -18,19 +18,19 @@ describe('Cbor encoder test', () => {
   });
 
   it('Encode bytes', () => {
-    expect(CborEncoder.encodeBytes(new Uint8Array(5))).toEqual(Base16Converter.decode('0x450000000000'));
-    expect(CborEncoder.encodeBytes(new Uint8Array(22))).toEqual(
+    expect(CborEncoder.encodeByteString(new Uint8Array(5))).toEqual(Base16Converter.decode('0x450000000000'));
+    expect(CborEncoder.encodeByteString(new Uint8Array(22))).toEqual(
       Base16Converter.decode('0x5600000000000000000000000000000000000000000000'),
     );
-    expect(CborEncoder.encodeBytes(new Uint8Array(25))).toEqual(
+    expect(CborEncoder.encodeByteString(new Uint8Array(25))).toEqual(
       Base16Converter.decode('0x581900000000000000000000000000000000000000000000000000'),
     );
-    expect(CborEncoder.encodeBytes(new Uint8Array(254))).toEqual(
+    expect(CborEncoder.encodeByteString(new Uint8Array(254))).toEqual(
       Base16Converter.decode(
         '0x58FE0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
       ),
     );
-    expect(CborEncoder.encodeBytes(new Uint8Array(275))).toEqual(
+    expect(CborEncoder.encodeByteString(new Uint8Array(275))).toEqual(
       Base16Converter.decode(
         '0x5901130000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
       ),
@@ -38,14 +38,14 @@ describe('Cbor encoder test', () => {
   });
 
   it('Encode string', () => {
-    expect(CborEncoder.encodeString('\n'.repeat(5))).toEqual(Base16Converter.decode('0x650A0A0A0A0A'));
-    expect(CborEncoder.encodeString('\n'.repeat(22))).toEqual(
+    expect(CborEncoder.encodeTextString('\n'.repeat(5))).toEqual(Base16Converter.decode('0x650A0A0A0A0A'));
+    expect(CborEncoder.encodeTextString('\n'.repeat(22))).toEqual(
       Base16Converter.decode('0x760A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A'),
     );
-    expect(CborEncoder.encodeString('\n'.repeat(25))).toEqual(
+    expect(CborEncoder.encodeTextString('\n'.repeat(25))).toEqual(
       Base16Converter.decode('0x78190A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A'),
     );
-    expect(CborEncoder.encodeString('\n'.repeat(275))).toEqual(
+    expect(CborEncoder.encodeTextString('\n'.repeat(275))).toEqual(
       Base16Converter.decode(
         '0x7901130A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A',
       ),
@@ -55,27 +55,27 @@ describe('Cbor encoder test', () => {
   it('Encode array', () => {
     expect(
       CborEncoder.encodeArray([
-        CborEncoder.encodeBytes(new Uint8Array(10)),
+        CborEncoder.encodeByteString(new Uint8Array(10)),
         CborEncoder.encodeTag(100, CborEncoder.encodeUnsignedInteger(5)),
-        CborEncoder.encodeString('test'),
+        CborEncoder.encodeTextString('test'),
       ]),
     ).toEqual(Base16Converter.decode('0x834A00000000000000000000D864056474657374'));
   });
 
   it('Encode tag', () => {
-    expect(CborEncoder.encodeTag(1, CborEncoder.encodeString('\n'.repeat(5)))).toEqual(
+    expect(CborEncoder.encodeTag(1, CborEncoder.encodeTextString('\n'.repeat(5)))).toEqual(
       Base16Converter.decode('0xC1650A0A0A0A0A'),
     );
-    expect(CborEncoder.encodeTag(22, CborEncoder.encodeString('\n'.repeat(25)))).toEqual(
+    expect(CborEncoder.encodeTag(22, CborEncoder.encodeTextString('\n'.repeat(25)))).toEqual(
       Base16Converter.decode('0xD678190A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A'),
     );
-    expect(CborEncoder.encodeTag(25, CborEncoder.encodeString('\n'.repeat(5)))).toEqual(
+    expect(CborEncoder.encodeTag(25, CborEncoder.encodeTextString('\n'.repeat(5)))).toEqual(
       Base16Converter.decode('0xD819650A0A0A0A0A'),
     );
-    expect(CborEncoder.encodeTag(275, CborEncoder.encodeString('\n'.repeat(5)))).toEqual(
+    expect(CborEncoder.encodeTag(275, CborEncoder.encodeTextString('\n'.repeat(5)))).toEqual(
       Base16Converter.decode('0xD90113650A0A0A0A0A'),
     );
-    expect(CborEncoder.encodeTag(18446744073709551615n, CborEncoder.encodeString('\n'.repeat(5)))).toEqual(
+    expect(CborEncoder.encodeTag(18446744073709551615n, CborEncoder.encodeTextString('\n'.repeat(5)))).toEqual(
       Base16Converter.decode('0xDBFFFFFFFFFFFFFFFF650A0A0A0A0A'),
     );
   });

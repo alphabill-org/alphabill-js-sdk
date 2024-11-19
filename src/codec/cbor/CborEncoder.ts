@@ -1,4 +1,4 @@
-import { MajorType } from './MajorType';
+import { MajorType } from './MajorType.js';
 
 export class CborEncoder {
   public static encodeUnsignedInteger(data: bigint | number): Uint8Array {
@@ -18,7 +18,7 @@ export class CborEncoder {
     ]);
   }
 
-  public static encodeBytes(input: Uint8Array): Uint8Array {
+  public static encodeByteString(input: Uint8Array): Uint8Array {
     if (input.length < 24) {
       return new Uint8Array([(MajorType.BYTE_STRING << 5) | input.length, ...input]);
     }
@@ -31,7 +31,7 @@ export class CborEncoder {
     ]);
   }
 
-  public static encodeString(input: string): Uint8Array {
+  public static encodeTextString(input: string): Uint8Array {
     const bytes = new TextEncoder().encode(input);
     if (bytes.length < 24) {
       return new Uint8Array([(MajorType.TEXT_STRING << 5) | bytes.length, ...bytes]);
@@ -65,12 +65,15 @@ export class CborEncoder {
     ]);
   }
 
+  public static encodeMap(): Uint8Array {
+    throw new Error('Not implemented.');
+  }
+
   public static encodeTag(tag: number | bigint, input: Uint8Array): Uint8Array {
-    const value = BigInt(tag);
-    if (value < 24) {
-      return new Uint8Array([(MajorType.TAG << 5) | Number(value), ...input]);
+    if (tag < 24) {
+      return new Uint8Array([(MajorType.TAG << 5) | Number(tag), ...input]);
     }
-    const bytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(value);
+    const bytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(tag);
 
     return new Uint8Array([
       (MajorType.TAG << 5) | CborEncoder.getAdditionalInformationBits(bytes.length),
