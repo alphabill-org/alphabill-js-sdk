@@ -1,3 +1,4 @@
+import { MajorType } from '../../../../src/codec/cbor/MajorType.js';
 import { Base16Converter } from '../../../../src/util/Base16Converter.js';
 import { Base64Converter } from '../../../../src/util/Base64Converter.js';
 
@@ -20,17 +21,17 @@ function parseTag(bytes: Uint8Array, offset: number): ICborTag<unknown> {
   const type = bytes[offset] >> 5;
   // Check additional information, if indefinite do sth in parseArray
   switch (type) {
-    case 0:
+    case MajorType.UNSIGNED_INTEGER:
       return parseUint(bytes, offset);
-    case 1:
+    case MajorType.NEGATIVE_INTEGER:
       throw new Error('Negative integers not supported');
-    case 2:
+    case MajorType.BYTE_STRING:
       return parseBytes(bytes, offset);
-    case 3:
+    case MajorType.TEXT_STRING:
       return parseString(bytes, offset);
-    case 4:
+    case MajorType.ARRAY:
       return parseArray(bytes, offset);
-    case 7:
+    case MajorType.MAP:
       return { offset, length: offset + 1, value: bytes[offset] & 0x1f };
     default:
       console.log(type, bytes[offset] & 0x1f, offset);
