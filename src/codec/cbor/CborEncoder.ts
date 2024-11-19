@@ -1,4 +1,4 @@
-import { MainType } from './MainType.js';
+import { MajorType } from './MajorType';
 
 export class CborEncoder {
   public static encodeUnsignedInteger(data: bigint | number): Uint8Array {
@@ -7,25 +7,25 @@ export class CborEncoder {
     }
 
     if (data < 24) {
-      return new Uint8Array([(MainType.UNSIGNED_INTEGER << 5) | Number(data)]);
+      return new Uint8Array([(MajorType.UNSIGNED_INTEGER << 5) | Number(data)]);
     }
 
     const bytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(data);
 
     return new Uint8Array([
-      (MainType.UNSIGNED_INTEGER << 5) | CborEncoder.getAdditionalInformationBits(bytes.length),
+      (MajorType.UNSIGNED_INTEGER << 5) | CborEncoder.getAdditionalInformationBits(bytes.length),
       ...bytes,
     ]);
   }
 
   public static encodeBytes(input: Uint8Array): Uint8Array {
     if (input.length < 24) {
-      return new Uint8Array([(MainType.BYTE_STRING << 5) | input.length, ...input]);
+      return new Uint8Array([(MajorType.BYTE_STRING << 5) | input.length, ...input]);
     }
 
     const lengthBytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(input.length);
     return new Uint8Array([
-      (MainType.BYTE_STRING << 5) | CborEncoder.getAdditionalInformationBits(lengthBytes.length),
+      (MajorType.BYTE_STRING << 5) | CborEncoder.getAdditionalInformationBits(lengthBytes.length),
       ...lengthBytes,
       ...input,
     ]);
@@ -34,12 +34,12 @@ export class CborEncoder {
   public static encodeString(input: string): Uint8Array {
     const bytes = new TextEncoder().encode(input);
     if (bytes.length < 24) {
-      return new Uint8Array([(MainType.TEXT_STRING << 5) | bytes.length, ...bytes]);
+      return new Uint8Array([(MajorType.TEXT_STRING << 5) | bytes.length, ...bytes]);
     }
 
     const lengthBytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(bytes.length);
     return new Uint8Array([
-      (MainType.TEXT_STRING << 5) | CborEncoder.getAdditionalInformationBits(lengthBytes.length),
+      (MajorType.TEXT_STRING << 5) | CborEncoder.getAdditionalInformationBits(lengthBytes.length),
       ...lengthBytes,
       ...bytes,
     ]);
@@ -54,12 +54,12 @@ export class CborEncoder {
     }
 
     if (input.length < 24) {
-      return new Uint8Array([(MainType.ARRAY << 5) | input.length, ...data]);
+      return new Uint8Array([(MajorType.ARRAY << 5) | input.length, ...data]);
     }
 
     const lengthBytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(input.length);
     return new Uint8Array([
-      (MainType.ARRAY << 5) | CborEncoder.getAdditionalInformationBits(lengthBytes.length),
+      (MajorType.ARRAY << 5) | CborEncoder.getAdditionalInformationBits(lengthBytes.length),
       ...lengthBytes,
       ...data,
     ]);
@@ -68,12 +68,12 @@ export class CborEncoder {
   public static encodeTag(tag: number | bigint, input: Uint8Array): Uint8Array {
     const value = BigInt(tag);
     if (value < 24) {
-      return new Uint8Array([(MainType.TAG << 5) | Number(value), ...input]);
+      return new Uint8Array([(MajorType.TAG << 5) | Number(value), ...input]);
     }
     const bytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(value);
 
     return new Uint8Array([
-      (MainType.TAG << 5) | CborEncoder.getAdditionalInformationBits(bytes.length),
+      (MajorType.TAG << 5) | CborEncoder.getAdditionalInformationBits(bytes.length),
       ...bytes,
       ...input,
     ]);
