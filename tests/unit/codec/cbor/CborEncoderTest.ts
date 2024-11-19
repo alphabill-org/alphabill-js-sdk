@@ -78,5 +78,8 @@ describe('Cbor encoder test', () => {
     expect(CborEncoder.encodeTag(18446744073709551615n, CborEncoder.encodeTextString('\n'.repeat(5)))).toEqual(
       Base16Converter.decode('0xDBFFFFFFFFFFFFFFFF650A0A0A0A0A'),
     );
+    expect(CborEncoder.encodeTag(1, CborEncoder.encodeTag(2, CborEncoder.encodeTextString('\n'.repeat(5))))).toEqual(
+      Base16Converter.decode('0xC1C2650A0A0A0A0A'),
+    );
   });
 });
