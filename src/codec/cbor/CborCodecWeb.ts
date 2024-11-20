@@ -1,4 +1,4 @@
-import * as cbor from 'cbor-web';
+import cbor from 'cbor-web';
 import { ICborCodec } from './ICborCodec.js';
 
 /**
