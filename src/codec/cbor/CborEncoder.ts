@@ -1,16 +1,16 @@
 import { MajorType } from './MajorType.js';
 
 export class CborEncoder {
-  public static encodeUnsignedInteger(data: bigint | number): Uint8Array {
-    if (data < 0) {
+  public static encodeUnsignedInteger(input: bigint | number): Uint8Array {
+    if (input < 0) {
       throw new Error('Only unsigned numbers are allowed.');
     }
 
-    if (data < 24) {
-      return new Uint8Array([MajorType.UNSIGNED_INTEGER | Number(data)]);
+    if (input < 24) {
+      return new Uint8Array([MajorType.UNSIGNED_INTEGER | Number(input)]);
     }
 
-    const bytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(data);
+    const bytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(input);
 
     return new Uint8Array([
       MajorType.UNSIGNED_INTEGER | CborEncoder.getAdditionalInformationBits(bytes.length),
@@ -45,7 +45,7 @@ export class CborEncoder {
     ]);
   }
 
-  public static encodeArray(input: Uint8Array[]) {
+  public static encodeArray(input: Uint8Array[]): Uint8Array {
     const data = new Uint8Array(input.reduce((result, value) => result + value.length, 0));
     let length = 0;
     for (const value of input) {

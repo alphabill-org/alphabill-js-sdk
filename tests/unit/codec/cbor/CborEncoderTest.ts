@@ -3,6 +3,7 @@ import { Base16Converter } from '../../../../src/util/Base16Converter.js';
 
 describe('Cbor encoder test', () => {
   it('Encode unsigned integer', () => {
+    expect(CborEncoder.encodeUnsignedInteger(0)).toEqual(Base16Converter.decode('0x00'));
     expect(CborEncoder.encodeUnsignedInteger(5)).toEqual(Base16Converter.decode('0x05'));
     expect(CborEncoder.encodeUnsignedInteger(22)).toEqual(Base16Converter.decode('0x16'));
     expect(CborEncoder.encodeUnsignedInteger(254)).toEqual(Base16Converter.decode('0x18FE'));
@@ -17,7 +18,8 @@ describe('Cbor encoder test', () => {
     expect(() => CborEncoder.encodeUnsignedInteger(18446744073709551616n)).toThrow('Number is not unsigned long.');
   });
 
-  it('Encode bytes', () => {
+  it('Encode byte string', () => {
+    expect(CborEncoder.encodeByteString(new Uint8Array())).toEqual(Base16Converter.decode('0x40'));
     expect(CborEncoder.encodeByteString(new Uint8Array(5))).toEqual(Base16Converter.decode('0x450000000000'));
     expect(CborEncoder.encodeByteString(new Uint8Array(22))).toEqual(
       Base16Converter.decode('0x5600000000000000000000000000000000000000000000'),
@@ -37,7 +39,7 @@ describe('Cbor encoder test', () => {
     );
   });
 
-  it('Encode string', () => {
+  it('Encode text string', () => {
     expect(CborEncoder.encodeTextString('\n'.repeat(5))).toEqual(Base16Converter.decode('0x650A0A0A0A0A'));
     expect(CborEncoder.encodeTextString('\n'.repeat(22))).toEqual(
       Base16Converter.decode('0x760A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A'),
