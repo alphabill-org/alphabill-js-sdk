@@ -102,28 +102,19 @@ export class CborDecoder {
     const length = this.readLength(majorType);
 
     switch (majorType) {
-      case MajorType.UNSIGNED_INTEGER:
-        return this.data.subarray(offset, this.position);
-      case MajorType.NEGATIVE_INTEGER:
-        throw new Error('Decoding negative integers not supported.');
       case MajorType.BYTE_STRING:
       case MajorType.TEXT_STRING:
         this.position += Number(length);
-        return this.data.subarray(offset, this.position);
+        break;
       case MajorType.ARRAY:
         for (let i = 0; i < Number(length); i++) {
           this.readRawCbor();
         }
-        return this.data.subarray(offset, this.position);
-      case MajorType.MAP:
-        throw new Error('Decoding map not supported.');
+        break;
       case MajorType.TAG:
         this.readRawCbor();
-        return this.data.subarray(offset, this.position);
-      case MajorType.FLOAT_SIMPLE_BREAK:
-        throw new Error('Decoding float, simple value or break not supported.');
-      default:
-        throw new Error('Unknown major type.');
+        break;
     }
+    return this.data.subarray(offset, this.position);
   }
 }
