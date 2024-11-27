@@ -57,11 +57,12 @@ describe('Cbor encoder test', () => {
   it('Encode array', () => {
     expect(
       CborEncoder.encodeArray([
+        CborEncoder.encodeArray([CborEncoder.encodeTag(5, CborEncoder.encodeTextString('test'))]),
         CborEncoder.encodeByteString(new Uint8Array(10)),
         CborEncoder.encodeTag(100, CborEncoder.encodeUnsignedInteger(5)),
         CborEncoder.encodeTextString('test'),
       ]),
-    ).toEqual(Base16Converter.decode('0x834A00000000000000000000D864056474657374'));
+    ).toEqual(Base16Converter.decode('0x8481C564746573744A00000000000000000000D864056474657374'));
   });
 
   it('Encode tag', () => {

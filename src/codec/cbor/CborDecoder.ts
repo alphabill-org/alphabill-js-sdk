@@ -3,12 +3,12 @@ import { MajorType } from './MajorType.js';
 
 export class CborDecoder {
   public static readUnsignedInteger(data: Uint8Array): bigint {
-    const initialByte = data[0];
-    const majorType = initialByte & BitMask.MAJOR_TYPE;
+    const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.UNSIGNED_INTEGER) {
       throw new Error('Major type mismatch, expected unsigned integer.');
     }
-    return CborDecoder.readLength(majorType, data, 0)[0];
+
+    return CborDecoder.readLength(majorType, data, 0).length;
   }
 
   public static readNegativeInteger(): bigint {
@@ -16,40 +16,35 @@ export class CborDecoder {
   }
 
   public static readByteString(data: Uint8Array): Uint8Array {
-    const initialByte = data[0];
-    const majorType = initialByte & BitMask.MAJOR_TYPE;
+    const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.BYTE_STRING) {
       throw new Error('Major type mismatch, expected byte string.');
     }
-    const [length, dataStartPosition] = this.readLength(majorType, data, 0);
-    const endPosition = dataStartPosition + Number(length);
-    return data.subarray(dataStartPosition, endPosition);
+    const { length, position } = CborDecoder.readLength(majorType, data, 0);
+    return this.read(data, position, Number(length));
   }
 
   public static readTextString(data: Uint8Array): string {
-    const initialByte = data[0];
-    const majorType = initialByte & BitMask.MAJOR_TYPE;
+    const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.TEXT_STRING) {
       throw new Error('Major type mismatch, expected text string.');
     }
-    const [length, dataStartPosition] = this.readLength(majorType, data, 0);
-    const endPosition = dataStartPosition + Number(length);
-    return new TextDecoder().decode(data.subarray(dataStartPosition, endPosition));
+    const { length, position } = CborDecoder.readLength(majorType, data, 0);
+    return new TextDecoder().decode(CborDecoder.read(data, position, Number(length)));
   }
 
   public static readArray(data: Uint8Array): Uint8Array[] {
-    const initialByte = data[0];
-    const majorType = initialByte & BitMask.MAJOR_TYPE;
+    const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.ARRAY) {
       throw new Error('Major type mismatch, expected array.');
     }
-    const [length, dataStartPosition] = this.readLength(majorType, data, 0);
-    let newPosition = dataStartPosition;
-    let content;
+    const parsedLength = CborDecoder.readLength(majorType, data, 0);
+    let position = parsedLength.position;
     const result: Uint8Array[] = [];
-    for (let i = 0; i < length; i++) {
-      [content, newPosition] = this.readRawCbor(data, newPosition);
-      result.push(content);
+    for (let i = 0; i < parsedLength.length; i++) {
+      const rawCbor = CborDecoder.readRawCbor(data, position);
+      position = rawCbor.position;
+      result.push(rawCbor.data);
     }
     return result;
   }
@@ -58,21 +53,24 @@ export class CborDecoder {
     throw new Error('Not implemented.');
   }
 
-  public static readTag(data: Uint8Array): [bigint, Uint8Array] {
-    const initialByte = data[0];
-    const majorType = initialByte & BitMask.MAJOR_TYPE;
+  public static readTag(data: Uint8Array): { tag: bigint; data: Uint8Array } {
+    const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.TAG) {
       throw new Error('Major type mismatch, expected tag.');
     }
-    const [tag, dataStartPosition] = this.readLength(majorType, data, 0);
-    return [tag, CborDecoder.readRawCbor(data, dataStartPosition)[0]];
+    const { length: tag, position } = CborDecoder.readLength(majorType, data, 0);
+    return { tag, data: CborDecoder.readRawCbor(data, position).data };
   }
 
-  public static readLength(majorType: number, data: Uint8Array, offset: number): [bigint, number] {
-    const additionalInformation = data[offset++] & BitMask.ADDITIONAL_INFORMATION;
+  private static readLength(majorType: number, data: Uint8Array, offset: number): { length: bigint; position: number } {
+    const additionalInformation = CborDecoder.readByte(data, offset) & BitMask.ADDITIONAL_INFORMATION;
     if (additionalInformation < 24) {
-      return [BigInt(additionalInformation), offset];
+      return {
+        length: BigInt(additionalInformation),
+        position: offset + 1,
+      };
     }
+
     switch (majorType) {
       case MajorType.ARRAY:
       case MajorType.BYTE_STRING:
@@ -85,36 +83,59 @@ export class CborDecoder {
     if (additionalInformation > 27) {
       throw new Error('Encoded item is not well-formed.');
     }
+
     const numberOfLengthBytes = Math.pow(2, additionalInformation - 24);
     let t = BigInt(0);
     for (let i = 0; i < numberOfLengthBytes; ++i) {
-      t = (t << 8n) | BigInt(data[offset++] & 0xff);
+      t = (t << 8n) | BigInt(CborDecoder.readByte(data, offset + 1 + i));
     }
-    return [t, offset];
+
+    return {
+      length: t,
+      position: offset + numberOfLengthBytes + 1,
+    };
   }
 
-  private static readRawCbor(data: Uint8Array, offset: number): [Uint8Array, number] {
-    const majorType = data[offset] & BitMask.MAJOR_TYPE;
-    const [length, dataStartPosition] = CborDecoder.readLength(majorType, data, offset);
-    let endPosition = offset;
+  private static readRawCbor(data: Uint8Array, offset: number): { data: Uint8Array; position: number } {
+    const majorType = CborDecoder.readByte(data, offset) & BitMask.MAJOR_TYPE;
+    const parsedLength = CborDecoder.readLength(majorType, data, offset);
+    const length = parsedLength.length;
+    let position = parsedLength.position;
 
-    let updatedOffset = dataStartPosition;
     switch (majorType) {
       case MajorType.BYTE_STRING:
       case MajorType.TEXT_STRING:
-        endPosition += Number(length);
+        position += Number(length);
         break;
       case MajorType.ARRAY:
-        for (let i = 0; i < Number(length); i++) {
-          updatedOffset = this.readRawCbor(data, updatedOffset)[1];
+        for (let i = 0; i < length; i++) {
+          position = this.readRawCbor(data, position).position;
         }
-        endPosition = updatedOffset;
         break;
       case MajorType.TAG:
-        endPosition += this.readRawCbor(data, offset)[1];
+        position = this.readRawCbor(data, position).position;
         break;
     }
-    console.log('Offset: ' + offset + ', endPos: ' + endPosition);
-    return [data.subarray(offset, endPosition), endPosition];
+
+    return {
+      data: CborDecoder.read(data, offset, position - offset),
+      position,
+    };
+  }
+
+  private static readByte(data: Uint8Array, offset: number): number {
+    if (data.length < offset) {
+      throw new Error('Premature end of data.');
+    }
+
+    return data[offset] & 0xff;
+  }
+
+  private static read(data: Uint8Array, offset: number, length: number): Uint8Array {
+    if (data.length < offset + length) {
+      throw new Error('Premature end of data.');
+    }
+
+    return data.subarray(offset, offset + length);
   }
 }
