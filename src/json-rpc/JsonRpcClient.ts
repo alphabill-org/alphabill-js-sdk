@@ -5,7 +5,6 @@ import { IUnitId } from '../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../transaction/order/TransactionOrder.js';
 import { ITransactionOrderProof } from '../transaction/proofs/ITransactionOrderProof.js';
-import { TransactionRecordWithProofArray } from '../transaction/record/TransactionRecordWithProof.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { IJsonRpcService } from './IJsonRpcService.js';
@@ -25,8 +24,7 @@ export type CreateUnit<T, U> = {
 };
 
 export type CreateTransactionRecordWithProof<T> = {
-  // TODO: Rename fromCbor
-  fromCbor: (transactionRecordWithProof: TransactionRecordWithProofArray, cborCodec: ICborCodec) => Promise<T>;
+  fromCbor: (rawData: Uint8Array) => Promise<T>;
 };
 
 type GetUnitResponseDto<T> = {
@@ -108,7 +106,7 @@ export class JsonRpcClient {
           UnitId.fromBytes(Base16Converter.decode(response.unitId)),
           Number(response.networkId),
           Number(response.partitionId),
-          await createStateProof(response.stateProof, this.cborCodec),
+          createStateProof(response.stateProof),
           response.data,
         );
       } catch (error) {
@@ -140,15 +138,11 @@ export class JsonRpcClient {
       return null;
     }
 
-    const transactionRecordWithProof = (await this.cborCodec.decode(
-      Base16Converter.decode(response.txRecordProof),
-    )) as TransactionRecordWithProofArray;
-
     try {
-      return transactionRecordWithProofFactory.fromCbor(transactionRecordWithProof, this.cborCodec);
+      return transactionRecordWithProofFactory.fromCbor(Base16Converter.decode(response.txRecordProof));
     } catch (error) {
       throw new Error(
-        `Invalid transaction proof for given factory: ${JSON.stringify(transactionRecordWithProof)} [error: ${error}]`,
+        `Invalid transaction proof for given factory: ${JSON.stringify(response.txRecordProof)} [error: ${error}]`,
       );
     }
   }

@@ -57,7 +57,7 @@ export class UnicityCertificate implements IUnicityCertificate {
    * @returns {UnicityCertificate} Unicity certificate.
    */
   public static fromCbor(rawData: Uint8Array): UnicityCertificate {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new UnicityCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
       data[1] ? InputRecord.fromCbor(data[1]) : null,
@@ -172,7 +172,7 @@ export class InputRecord implements IInputRecord {
    * @returns {InputRecord} Input record.
    */
   public static fromCbor(rawData: Uint8Array): InputRecord {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new InputRecord(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readByteString(data[1]),
@@ -357,8 +357,8 @@ export class ShardId implements IShardId {
    * @returns {ShardId} Shard ID.
    */
   public static fromCbor(rawData: Uint8Array): ShardId {
-    const data = CborDecoder.readArray(rawData);
-    return new ShardId(CborDecoder.readByteString(data[0]), CborDecoder.readUnsignedInteger(data[1]));
+    // FIXME
+    return new ShardId(CborDecoder.readByteString(rawData), 0n);
   }
 
   /**
@@ -410,7 +410,7 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
    * @returns {UnicityTreeCertificate} Unicity tree certificate.
    */
   public static fromCbor(rawData: Uint8Array): UnicityTreeCertificate {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new UnicityTreeCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
