@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { UnitId } from '../../UnitId.js';
@@ -36,17 +37,18 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
   }
 
   /**
-   * Create TransferBillToDustCollectorAttributes from array.
-   * @param {TransferBillToDustCollectorAttributesArray} data - Transfer bill to dust collector attributes data array.
+   * Create TransferBillToDustCollectorAttributes from raw CBOR.
+   * @param {Uint8Array} rawData - Transfer bill to dust collector attributes data as raw CBOR.
    * @returns {TransferBillToDustCollectorAttributes} Transfer bill to dust collector attributes instance.
    */
-  public static fromArray([
-    value,
-    targetUnitId,
-    targetUnitCounter,
-    counter,
-  ]: TransferBillToDustCollectorAttributesArray): TransferBillToDustCollectorAttributes {
-    return new TransferBillToDustCollectorAttributes(value, UnitId.fromBytes(targetUnitId), targetUnitCounter, counter);
+  public static fromCbor(rawData: Uint8Array): TransferBillToDustCollectorAttributes {
+    const data = CborDecoder.readArray(rawData);
+    return new TransferBillToDustCollectorAttributes(
+      CborDecoder.readUnsignedInteger(data[0]),
+      UnitId.fromBytes(CborDecoder.readByteString(data[1])),
+      CborDecoder.readUnsignedInteger(data[2]),
+      CborDecoder.readUnsignedInteger(data[3]),
+    );
   }
 
   /**

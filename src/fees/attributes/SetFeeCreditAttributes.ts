@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
@@ -32,12 +33,17 @@ export class SetFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Create SetFeeCreditAttributes from array.
-   * @param {SetFeeCreditAttributesArray} data Set fee credit attributes array.
+   * Create SetFeeCreditAttributes from raw CBOR.
+   * @param {SetFeeCreditAttributesArray} rawData Set fee credit attributes as raw CBOR.
    * @returns {SetFeeCreditAttributes} Set fee credit attributes instance.
    */
-  public static fromArray([ownerPredicate, amount, counter]: SetFeeCreditAttributesArray): SetFeeCreditAttributes {
-    return new SetFeeCreditAttributes(new PredicateBytes(ownerPredicate), amount, counter);
+  public static fromCbor(rawData: Uint8Array): SetFeeCreditAttributes {
+    const data = CborDecoder.readArray(rawData);
+    return new SetFeeCreditAttributes(
+      new PredicateBytes(CborDecoder.readByteString(data[0])),
+      CborDecoder.readUnsignedInteger(data[1]),
+      CborDecoder.readUnsignedInteger(data[2]),
+    );
   }
 
   /**

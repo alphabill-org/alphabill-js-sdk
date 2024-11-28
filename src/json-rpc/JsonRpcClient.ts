@@ -25,8 +25,8 @@ export type CreateUnit<T, U> = {
 };
 
 export type CreateTransactionRecordWithProof<T> = {
-  // TODO: Rename fromArray
-  fromArray: (transactionRecordWithProof: TransactionRecordWithProofArray, cborCodec: ICborCodec) => Promise<T>;
+  // TODO: Rename fromCbor
+  fromCbor: (transactionRecordWithProof: TransactionRecordWithProofArray, cborCodec: ICborCodec) => Promise<T>;
 };
 
 type GetUnitResponseDto<T> = {
@@ -145,7 +145,7 @@ export class JsonRpcClient {
     )) as TransactionRecordWithProofArray;
 
     try {
-      return transactionRecordWithProofFactory.fromArray(transactionRecordWithProof, this.cborCodec);
+      return transactionRecordWithProofFactory.fromCbor(transactionRecordWithProof, this.cborCodec);
     } catch (error) {
       throw new Error(
         `Invalid transaction proof for given factory: ${JSON.stringify(transactionRecordWithProof)} [error: ${error}]`,

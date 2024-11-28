@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
 
@@ -21,12 +22,13 @@ export class UnlockTokenAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Create UnlockTokenAttributes from array.
-   * @param {UnlockTokenAttributesArray} data Unlock token attributes array.
+   * Create UnlockTokenAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Unlock token attributes as raw CBOR.
    * @returns {UnlockTokenAttributes} Unlock token attributes instance.
    */
-  public static fromArray([counter]: UnlockTokenAttributesArray): UnlockTokenAttributes {
-    return new UnlockTokenAttributes(counter);
+  public static fromCbor(rawData: Uint8Array): UnlockTokenAttributes {
+    const data = CborDecoder.readArray(rawData);
+    return new UnlockTokenAttributes(CborDecoder.readUnsignedInteger(data[0]));
   }
 
   /**

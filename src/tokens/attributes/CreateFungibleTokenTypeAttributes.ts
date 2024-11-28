@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -47,29 +48,21 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
   ) {}
 
   /**
-   * Create CreateFungibleTokenTypeAttributes from array.
-   * @param {CreateFungibleTokenTypeAttributesArray} data Create fungible token type attributes array.
+   * Create CreateFungibleTokenTypeAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Create fungible token type attributes as raw CBOR.
    * @returns {CreateFungibleTokenTypeAttributes} Create fungible token type attributes instance.
    */
-  public static fromArray([
-    symbol,
-    name,
-    icon,
-    parentTypeId,
-    decimalPlaces,
-    subTypeCreationPredicate,
-    tokenMintingPredicate,
-    tokenTypeOwnerPredicate,
-  ]: CreateFungibleTokenTypeAttributesArray): CreateFungibleTokenTypeAttributes {
+  public static fromCbor(rawData: Uint8Array): CreateFungibleTokenTypeAttributes {
+    const data = CborDecoder.readArray(rawData);
     return new CreateFungibleTokenTypeAttributes(
-      symbol,
-      name,
-      TokenIcon.fromArray(icon),
-      parentTypeId ? UnitId.fromBytes(parentTypeId) : null,
-      decimalPlaces,
-      new PredicateBytes(subTypeCreationPredicate),
-      new PredicateBytes(tokenMintingPredicate),
-      new PredicateBytes(tokenTypeOwnerPredicate),
+      CborDecoder.readTextString(data[0]),
+      CborDecoder.readTextString(data[1]),
+      TokenIcon.fromCbor(data[2]),
+      data[3] ? UnitId.fromBytes(CborDecoder.readByteString(data[3])) : null,
+      Number(CborDecoder.readUnsignedInteger(data[4])),
+      new PredicateBytes(CborDecoder.readByteString(data[5])),
+      new PredicateBytes(CborDecoder.readByteString(data[6])),
+      new PredicateBytes(CborDecoder.readByteString(data[7])),
     );
   }
 

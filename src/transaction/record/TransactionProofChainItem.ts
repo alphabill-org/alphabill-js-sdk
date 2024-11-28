@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 
@@ -31,12 +32,16 @@ export class TransactionProofChainItem {
   }
 
   /**
-   * Create transaction proof chain item from array.
-   * @param {TransactionProofChainItemArray} data - Transaction proof chain item array.
+   * Create transaction proof chain item from raw CBOR.
+   * @param {Uint8Array} rawData - Transaction proof chain item array as raw CBOR.
    * @returns {TransactionProofChainItem} Transaction proof chain item.
    */
-  public static fromArray(data: TransactionProofChainItemArray): TransactionProofChainItem {
-    return new TransactionProofChainItem(data[0], data[1]);
+  public static fromCbor(rawData: Uint8Array): TransactionProofChainItem {
+    const data = CborDecoder.readArray(rawData);
+    return new TransactionProofChainItem(
+      CborDecoder.readByteString(data[0]),
+      Boolean(CborDecoder.readUnsignedInteger(data[1])),
+    );
   }
 
   /**

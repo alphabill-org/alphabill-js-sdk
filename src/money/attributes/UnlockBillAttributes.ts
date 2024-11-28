@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
 
@@ -21,12 +22,13 @@ export class UnlockBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Create UnlockBillAttributes from array.
-   * @param {UnlockBillAttributesArray} data Unlock bill attributes array.
+   * Create UnlockBillAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Unlock bill attributes as raw CBOR.
    * @returns {UnlockBillAttributes} Unlock bill attributes instance.
    */
-  public static fromArray([counter]: UnlockBillAttributesArray): UnlockBillAttributes {
-    return new UnlockBillAttributes(counter);
+  public static fromCbor(rawData: Uint8Array): UnlockBillAttributes {
+    const data = CborDecoder.readArray(rawData);
+    return new UnlockBillAttributes(CborDecoder.readUnsignedInteger(data[0]));
   }
 
   /**

@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -20,32 +21,29 @@ export type TransferNonFungibleTokenAttributesArray = readonly [
 export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
   /**
    * Transfer non-fungible token attributes constructor.
+   * @param {IUnitId} typeId - Type ID.
    * @param {IPredicate} ownerPredicate - Owner predicate.
    * @param {bigint} counter - Counter.
-   * @param {IUnitId} typeId - Type ID.
    */
   public constructor(
+    public readonly typeId: IUnitId,
     public readonly ownerPredicate: IPredicate,
     public readonly counter: bigint,
-    public readonly typeId: IUnitId,
   ) {
     this.counter = BigInt(this.counter);
   }
 
   /**
-   * Create a TransferNonFungibleTokenAttributes from array.
-   * @param {TransferNonFungibleTokenAttributesArray} data - transfer non-fungible token attributes array.
+   * Create a TransferNonFungibleTokenAttributes from raw CBOR.
+   * @param {Uint8Array} rawData - transfer non-fungible token attributes as raw CBOR.
    * @returns {TransferNonFungibleTokenAttributes} Transfer non-fungible token attributes instance.
    */
-  public static fromArray([
-    typeId,
-    ownerPredicate,
-    counter,
-  ]: TransferNonFungibleTokenAttributesArray): TransferNonFungibleTokenAttributes {
+  public static fromCbor(rawData: Uint8Array): TransferNonFungibleTokenAttributes {
+    const data = CborDecoder.readArray(rawData);
     return new TransferNonFungibleTokenAttributes(
-      new PredicateBytes(ownerPredicate),
-      counter,
-      UnitId.fromBytes(typeId),
+      UnitId.fromBytes(CborDecoder.readByteString(data[0])),
+      new PredicateBytes(CborDecoder.readByteString(data[1])),
+      CborDecoder.readUnsignedInteger(data[2]),
     );
   }
 
@@ -56,9 +54,9 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
   public toString(): string {
     return dedent`
       TransferNonFungibleTokenAttributes
+        Type ID: ${this.typeId.toString()}
         Owner Predicate: ${this.ownerPredicate.toString()}
-        Counter: ${this.counter}
-        Type ID: ${this.typeId.toString()}`;
+        Counter: ${this.counter}`;
   }
 
   /**

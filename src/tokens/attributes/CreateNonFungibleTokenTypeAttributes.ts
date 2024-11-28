@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -47,29 +48,21 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
   ) {}
 
   /**
-   * Create CreateNonFungibleTokenTypeAttributes from array.
-   * @param {CreateNonFungibleTokenTypeAttributesArray} data Create non-fungible token type attributes array.
+   * Create CreateNonFungibleTokenTypeAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Create non-fungible token type attributes as raw CBOR.
    * @returns {CreateNonFungibleTokenTypeAttributes} Create non-fungible token type attributes instance.
    */
-  public static fromArray([
-    symbol,
-    name,
-    icon,
-    parentTypeId,
-    subTypeCreationPredicate,
-    tokenMintingPredicate,
-    tokenTypeOwnerPredicate,
-    dataUpdatePredicate,
-  ]: CreateNonFungibleTokenTypeAttributesArray): CreateNonFungibleTokenTypeAttributes {
+  public static fromCbor(rawData: Uint8Array): CreateNonFungibleTokenTypeAttributes {
+    const data = CborDecoder.readArray(rawData);
     return new CreateNonFungibleTokenTypeAttributes(
-      symbol,
-      name,
-      TokenIcon.fromArray(icon),
-      parentTypeId ? UnitId.fromBytes(parentTypeId) : null,
-      new PredicateBytes(subTypeCreationPredicate),
-      new PredicateBytes(tokenMintingPredicate),
-      new PredicateBytes(tokenTypeOwnerPredicate),
-      new PredicateBytes(dataUpdatePredicate),
+      CborDecoder.readTextString(data[0]),
+      CborDecoder.readTextString(data[1]),
+      TokenIcon.fromCbor(data[2]),
+      data[3] ? UnitId.fromBytes(CborDecoder.readByteString(data[3])) : null,
+      new PredicateBytes(CborDecoder.readByteString(data[4])),
+      new PredicateBytes(CborDecoder.readByteString(data[5])),
+      new PredicateBytes(CborDecoder.readByteString(data[6])),
+      new PredicateBytes(CborDecoder.readByteString(data[7])),
     );
   }
 

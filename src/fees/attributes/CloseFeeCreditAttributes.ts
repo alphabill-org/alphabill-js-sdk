@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { UnitId } from '../../UnitId.js';
@@ -36,17 +37,18 @@ export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Create CloseFeeCreditAttributes from array.
-   * @param {CloseFeeCreditAttributesArray} data Close fee credit attributes array.
+   * Create CloseFeeCreditAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Close fee credit attributes as raw CBOR.
    * @returns {CloseFeeCreditAttributes} Close fee credit attributes instance.
    */
-  public static fromArray([
-    amount,
-    targetUnitId,
-    targetUnitCounter,
-    counter,
-  ]: CloseFeeCreditAttributesArray): CloseFeeCreditAttributes {
-    return new CloseFeeCreditAttributes(amount, UnitId.fromBytes(targetUnitId), targetUnitCounter, counter);
+  public static fromCbor(rawData: Uint8Array): CloseFeeCreditAttributes {
+    const data = CborDecoder.readArray(rawData);
+    return new CloseFeeCreditAttributes(
+      CborDecoder.readUnsignedInteger(data[0]),
+      UnitId.fromBytes(CborDecoder.readByteString(data[1])),
+      CborDecoder.readUnsignedInteger(data[2]),
+      CborDecoder.readUnsignedInteger(data[3]),
+    );
   }
 
   /**

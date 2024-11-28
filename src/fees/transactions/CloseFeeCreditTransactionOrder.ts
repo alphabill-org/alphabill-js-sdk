@@ -1,12 +1,13 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
-import { TransactionOrder, TransactionOrderArray } from '../../transaction/order/TransactionOrder.js';
+import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
-import { OwnerProofAuthProof, OwnerProofAuthProofArray } from '../../transaction/proofs/OwnerProofAuthProof.js';
+import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { StateLock } from '../../transaction/StateLock.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { UnitId } from '../../UnitId.js';
-import { CloseFeeCreditAttributes, CloseFeeCreditAttributesArray } from '../attributes/CloseFeeCreditAttributes.js';
+import { CloseFeeCreditAttributes } from '../attributes/CloseFeeCreditAttributes.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 
 export class CloseFeeCreditTransactionOrder extends TransactionOrder<CloseFeeCreditAttributes, OwnerProofAuthProof> {
@@ -19,31 +20,21 @@ export class CloseFeeCreditTransactionOrder extends TransactionOrder<CloseFeeCre
     super(payload, ownerProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray([
-    networkIdentifier,
-    partitionIdentifier,
-    unitId,
-    ,
-    attributes,
-    stateLock,
-    clientMetadata,
-    stateUnlock,
-    authProof,
-    feeProof,
-  ]: TransactionOrderArray): Promise<CloseFeeCreditTransactionOrder> {
+  public static async fromCbor(rawData: Uint8Array): Promise<CloseFeeCreditTransactionOrder> {
+    const data = CborDecoder.readArray(rawData);
     return new CloseFeeCreditTransactionOrder(
       new TransactionPayload(
-        networkIdentifier,
-        partitionIdentifier,
-        UnitId.fromBytes(unitId),
+        Number(CborDecoder.readUnsignedInteger(data[0])),
+        Number(CborDecoder.readUnsignedInteger(data[1])),
+        UnitId.fromBytes(CborDecoder.readByteString(data[2])),
         FeeCreditTransactionType.CloseFeeCredit,
-        CloseFeeCreditAttributes.fromArray(attributes as CloseFeeCreditAttributesArray),
-        stateLock ? StateLock.fromArray(stateLock) : null,
-        ClientMetadata.fromArray(clientMetadata),
+        CloseFeeCreditAttributes.fromCbor(data[4]),
+        data[5] ? StateLock.fromCbor(data[5]) : null,
+        ClientMetadata.fromCbor(data[6]),
       ),
-      await OwnerProofAuthProof.decode(authProof as OwnerProofAuthProofArray),
-      feeProof,
-      stateUnlock ? new PredicateBytes(stateUnlock) : null,
+      await OwnerProofAuthProof.fromCbor(data[7]),
+      CborDecoder.readByteString(data[8]),
+      data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );
   }
 }

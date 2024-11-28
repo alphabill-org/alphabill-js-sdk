@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -27,9 +28,9 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
    * @param {bigint} nonce Optional nonce.
    */
   public constructor(
-    public readonly ownerPredicate: IPredicate,
     public readonly typeId: IUnitId,
     public readonly value: bigint,
+    public readonly ownerPredicate: IPredicate,
     public readonly nonce: bigint,
   ) {
     this.value = BigInt(this.value);
@@ -37,21 +38,17 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   }
 
   /**
-   * Create CreateFungibleTokenAttributes from array.
-   * @param {CreateFungibleTokenAttributesArray} data Create fungible token attributes array.
+   * Create CreateFungibleTokenAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Create fungible token attributes as raw CBOR.
    * @returns {CreateFungibleTokenAttributes} Create fungible token attributes instance.
    */
-  public static fromArray([
-    typeId,
-    value,
-    ownerPredicate,
-    nonce,
-  ]: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
+  public static fromCbor(rawData: Uint8Array): CreateFungibleTokenAttributes {
+    const data = CborDecoder.readArray(rawData);
     return new CreateFungibleTokenAttributes(
-      new PredicateBytes(ownerPredicate),
-      UnitId.fromBytes(typeId),
-      value,
-      nonce,
+      UnitId.fromBytes(CborDecoder.readByteString(data[0])),
+      CborDecoder.readUnsignedInteger(data[1]),
+      new PredicateBytes(CborDecoder.readByteString(data[2])),
+      CborDecoder.readUnsignedInteger(data[3]),
     );
   }
 
@@ -62,9 +59,9 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   public toString(): string {
     return dedent`
       CreateFungibleTokenAttributes
-        Owner Predicate: ${this.ownerPredicate.toString()}
         Type ID: ${this.typeId.toString()}
         Value: ${this.value}
+        Owner Predicate: ${this.ownerPredicate.toString()}
         Nonce: ${this.nonce}`;
   }
 

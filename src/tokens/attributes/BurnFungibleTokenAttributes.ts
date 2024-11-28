@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { UnitId } from '../../UnitId.js';
@@ -39,23 +40,18 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * Create BurnFungibleTokenAttributes from array.
-   * @param {BurnFungibleTokenAttributesArray} data Burn fungible token attributes array.
+   * Create BurnFungibleTokenAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Burn fungible token attributes as raw CBOR.
    * @returns {BurnFungibleTokenAttributes} Burn fungible token attributes.
    */
-  public static fromArray([
-    typeId,
-    value,
-    targetTokenId,
-    targetTokenCounter,
-    counter,
-  ]: BurnFungibleTokenAttributesArray): BurnFungibleTokenAttributes {
+  public static fromCbor(rawData: Uint8Array): BurnFungibleTokenAttributes {
+    const data = CborDecoder.readArray(rawData);
     return new BurnFungibleTokenAttributes(
-      UnitId.fromBytes(typeId),
-      value,
-      UnitId.fromBytes(targetTokenId),
-      targetTokenCounter,
-      counter,
+      UnitId.fromBytes(CborDecoder.readByteString(data[0])),
+      CborDecoder.readUnsignedInteger(data[1]),
+      UnitId.fromBytes(CborDecoder.readByteString(data[2])),
+      CborDecoder.readUnsignedInteger(data[3]),
+      CborDecoder.readUnsignedInteger(data[4]),
     );
   }
 

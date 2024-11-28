@@ -1,15 +1,13 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
-import { TransactionOrder, TransactionOrderArray } from '../../transaction/order/TransactionOrder.js';
+import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
-import { OwnerProofAuthProof, OwnerProofAuthProofArray } from '../../transaction/proofs/OwnerProofAuthProof.js';
+import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { StateLock } from '../../transaction/StateLock.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { UnitId } from '../../UnitId.js';
-import {
-  TransferFeeCreditAttributes,
-  TransferFeeCreditAttributesArray,
-} from '../attributes/TransferFeeCreditAttributes.js';
+import { TransferFeeCreditAttributes } from '../attributes/TransferFeeCreditAttributes.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 
 export class TransferFeeCreditTransactionOrder extends TransactionOrder<
@@ -25,31 +23,21 @@ export class TransferFeeCreditTransactionOrder extends TransactionOrder<
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray([
-    networkIdentifier,
-    partitionIdentifier,
-    unitId,
-    ,
-    attributes,
-    stateLock,
-    clientMetadata,
-    stateUnlock,
-    authProof,
-    feeProof,
-  ]: TransactionOrderArray): Promise<TransferFeeCreditTransactionOrder> {
+  public static async fromCbor(rawData: Uint8Array): Promise<TransferFeeCreditTransactionOrder> {
+    const data = CborDecoder.readArray(rawData);
     return new TransferFeeCreditTransactionOrder(
       new TransactionPayload(
-        networkIdentifier,
-        partitionIdentifier,
-        UnitId.fromBytes(unitId),
+        Number(CborDecoder.readUnsignedInteger(data[0])),
+        Number(CborDecoder.readUnsignedInteger(data[1])),
+        UnitId.fromBytes(CborDecoder.readByteString(data[2])),
         FeeCreditTransactionType.TransferFeeCredit,
-        TransferFeeCreditAttributes.fromArray(attributes as TransferFeeCreditAttributesArray),
-        stateLock ? StateLock.fromArray(stateLock) : null,
-        ClientMetadata.fromArray(clientMetadata),
+        TransferFeeCreditAttributes.fromCbor(data[4]),
+        data[5] ? StateLock.fromCbor(data[5]) : null,
+        ClientMetadata.fromCbor(data[6]),
       ),
-      await OwnerProofAuthProof.decode(authProof as OwnerProofAuthProofArray),
-      feeProof,
-      stateUnlock ? new PredicateBytes(stateUnlock) : null,
+      await OwnerProofAuthProof.fromCbor(data[7]),
+      CborDecoder.readByteString(data[8]),
+      data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );
   }
 }

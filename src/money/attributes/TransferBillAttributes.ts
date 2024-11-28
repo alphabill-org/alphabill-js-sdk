@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
@@ -32,12 +33,17 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Create TransferBillAttributes from array.
-   * @param {TransferBillAttributesArray} data - Transfer bill attributes array.
+   * Create TransferBillAttributes from raw CBOR.
+   * @param {Uint8Array} rawData - Transfer bill attributes as raw CBOR.
    * @returns {TransferBillAttributes} Transfer bill attributes instance.
    */
-  public static fromArray([targetValue, ownerPredicate, counter]: TransferBillAttributesArray): TransferBillAttributes {
-    return new TransferBillAttributes(new PredicateBytes(ownerPredicate), targetValue, counter);
+  public static fromCbor(rawData: Uint8Array): TransferBillAttributes {
+    const data = CborDecoder.readArray(rawData);
+    return new TransferBillAttributes(
+      new PredicateBytes(CborDecoder.readByteString(data[0])),
+      CborDecoder.readUnsignedInteger(data[1]),
+      CborDecoder.readUnsignedInteger(data[2]),
+    );
   }
 
   /**

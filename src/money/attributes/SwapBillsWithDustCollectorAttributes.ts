@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { TransactionRecordWithProofArray } from '../../transaction/record/TransactionRecordWithProof.js';
@@ -32,15 +33,18 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
   }
 
   /**
-   * Create a SwapBillsWithDustCollectorAttributes object from an array.
-   * @param {SwapBillsWithDustCollectorAttributesArray} data swap bills with dust collector attributes array.
+   * Create a SwapBillsWithDustCollectorAttributes object from raw CBOR.
+   * @param {Uint8Array} rawData swap bills with dust collector attributes as raw CBOR.
    * @returns {SwapBillsWithDustCollectorAttributes} Swap bills with dust collector attributes instance.
    */
-  public static async fromArray([
-    proofs,
-  ]: SwapBillsWithDustCollectorAttributesArray): Promise<SwapBillsWithDustCollectorAttributes> {
+  public static async fromCbor(rawData: Uint8Array): Promise<SwapBillsWithDustCollectorAttributes> {
+    const data = CborDecoder.readArray(rawData);
     return new SwapBillsWithDustCollectorAttributes(
-      await Promise.all(proofs.map((proof) => TransferBillToDustCollectorTransactionRecordWithProof.fromArray(proof))),
+      await Promise.all(
+        CborDecoder.readArray(data[0]).map((rawProof: Uint8Array) =>
+          TransferBillToDustCollectorTransactionRecordWithProof.fromCbor(rawProof),
+        ),
+      ),
     );
   }
 

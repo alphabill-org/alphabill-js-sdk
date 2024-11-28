@@ -34,10 +34,10 @@ export class UnsignedTransferFungibleTokenTransactionOrder {
         data.token.unitId,
         TokenPartitionTransactionType.TransferFungibleToken,
         new TransferFungibleTokenAttributes(
-          data.ownerPredicate,
-          data.token.value,
-          data.token.counter,
           data.type.unitId,
+          data.token.value,
+          data.ownerPredicate,
+          data.token.counter,
         ),
         data.stateLock,
         data.metadata,

@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { UnitId } from '../../UnitId.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
@@ -44,21 +45,17 @@ export class ServerMetadata {
   }
 
   /**
-   * Create server metadata from array.
-   * @param {ServerMetadataArray} data Server metadata array.
+   * Create server metadata from raw CBOR.
+   * @param {Uint8Array} rawData Server metadata as raw CBOR.
    * @returns {ServerMetadata} Server metadata.
    */
-  public static fromArray([
-    actualFee,
-    targetUnits,
-    successIndicator,
-    processingDetails,
-  ]: ServerMetadataArray): ServerMetadata {
+  public static fromCbor(rawData: Uint8Array): ServerMetadata {
+    const data = CborDecoder.readArray(rawData);
     return new ServerMetadata(
-      actualFee,
-      targetUnits.map((unitId) => UnitId.fromBytes(unitId)),
-      successIndicator,
-      processingDetails,
+      CborDecoder.readUnsignedInteger(data[0]),
+      CborDecoder.readArray(data[1]).map((rawUnitId) => UnitId.fromBytes(CborDecoder.readByteString(rawUnitId))),
+      Number(CborDecoder.readUnsignedInteger(data[2])),
+      CborDecoder.readByteString(data[3]),
     );
   }
 

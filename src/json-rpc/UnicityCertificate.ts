@@ -1,3 +1,4 @@
+import { CborDecoder } from '../codec/cbor/CborDecoder.js';
 import {
   IIndexedPathItem,
   IInputRecord,
@@ -51,18 +52,19 @@ export class UnicityCertificate implements IUnicityCertificate {
   }
 
   /**
-   * Create unicity certificate from array.
-   * @param {UnicityCertificateArray} data - Unicity certificate array.
+   * Create unicity certificate from raw CBOR.
+   * @param {Uint8Array} rawData - Unicity certificate as raw CBOR.
    * @returns {UnicityCertificate} Unicity certificate.
    */
-  public static fromArray(data: UnicityCertificateArray): UnicityCertificate {
+  public static fromCbor(rawData: Uint8Array): UnicityCertificate {
+    const data = CborDecoder.readArray(rawData);
     return new UnicityCertificate(
-      data[0],
-      data[1] ? InputRecord.fromArray(data[1]) : null,
+      CborDecoder.readUnsignedInteger(data[0]),
+      data[1] ? InputRecord.fromCbor(data[1]) : null,
       data[2],
-      ShardTreeCertificate.fromArray(data[3]),
-      data[4] ? UnicityTreeCertificate.fromArray(data[4]) : null,
-      data[5] ? UnicitySeal.fromArray(data[5]) : null,
+      ShardTreeCertificate.fromCbor(data[3]),
+      data[4] ? UnicityTreeCertificate.fromCbor(data[4]) : null,
+      data[5] ? UnicitySeal.fromCbor(data[5]) : null,
     );
   }
 
@@ -165,12 +167,23 @@ export class InputRecord implements IInputRecord {
   }
 
   /**
-   * Create input record certificate from array.
-   * @param {InputRecordArray} data - Input record array.
+   * Create input record certificate from raw CBOR.
+   * @param {Uint8Array} rawData - Input record as raw CBOR.
    * @returns {InputRecord} Input record.
    */
-  public static fromArray(data: InputRecordArray): InputRecord {
-    return new InputRecord(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]);
+  public static fromCbor(rawData: Uint8Array): InputRecord {
+    const data = CborDecoder.readArray(rawData);
+    return new InputRecord(
+      CborDecoder.readUnsignedInteger(data[0]),
+      CborDecoder.readByteString(data[1]),
+      CborDecoder.readByteString(data[2]),
+      CborDecoder.readByteString(data[3]),
+      CborDecoder.readByteString(data[4]),
+      CborDecoder.readUnsignedInteger(data[5]),
+      CborDecoder.readUnsignedInteger(data[6]),
+      CborDecoder.readUnsignedInteger(data[7]),
+      CborDecoder.readUnsignedInteger(data[8]),
+    );
   }
 
   /**
@@ -227,12 +240,13 @@ export class ShardTreeCertificate implements IShardTreeCertificate {
   }
 
   /**
-   * Create shard tree certificate from array.
-   * @param {ShardTreeCertificateArray} data - Shard tree certificate array.
+   * Create shard tree certificate from raw CBOR.
+   * @param {Uint8Array} rawData - Shard tree certificate as raw CBOR.
    * @returns {ShardTreeCertificate} Shard tree certificate.
    */
-  public static fromArray(data: ShardTreeCertificateArray): ShardTreeCertificate {
-    return new ShardTreeCertificate(ShardId.fromArray(data[0]), data[1]);
+  public static fromCbor(rawData: Uint8Array): ShardTreeCertificate {
+    const data = CborDecoder.readArray(rawData);
+    return new ShardTreeCertificate(ShardId.fromCbor(data[0]), CborDecoder.readArray(data[1]));
   }
 
   /**
@@ -288,12 +302,13 @@ export class IndexedPathItem implements IIndexedPathItem {
   }
 
   /**
-   * Create indexed path item from array.
-   * @param {IndexedPathItemArray} data - Indexed path item array.
+   * Create indexed path item from raw CBOR.
+   * @param {Uint8Array} rawData - Indexed path item as raw CBOR.
    * @returns {IndexedPathItem} Indexed path item.
    */
-  public static fromArray(data: IndexedPathItemArray): IndexedPathItem {
-    return new IndexedPathItem(data[0], data[1]);
+  public static fromCbor(rawData: Uint8Array): IndexedPathItem {
+    const data = CborDecoder.readArray(rawData);
+    return new IndexedPathItem(CborDecoder.readByteString(data[0]), CborDecoder.readByteString(data[1]));
   }
 
   /**
@@ -337,12 +352,13 @@ export class ShardId implements IShardId {
   }
 
   /**
-   * Create Shard ID from array.
-   * @param {ShardIdArray} data - Shard ID array.
+   * Create Shard ID from raw CBOR.
+   * @param {Uint8Array} rawData - Shard ID as raw CBOR.
    * @returns {ShardId} Shard ID.
    */
-  public static fromArray(data: ShardIdArray): ShardId {
-    return new ShardId(data[0], data[1]);
+  public static fromCbor(rawData: Uint8Array): ShardId {
+    const data = CborDecoder.readArray(rawData);
+    return new ShardId(CborDecoder.readByteString(data[0]), CborDecoder.readUnsignedInteger(data[1]));
   }
 
   /**
@@ -389,16 +405,17 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
   }
 
   /**
-   * Create unicity tree certificate from array.
-   * @param {UnicityTreeCertificateArray} data - Unicity tree certificate array.
+   * Create Unicity tree certificate from raw CBOR.
+   * @param {Uint8Array} rawData - Unicity tree certificate as raw CBOR.
    * @returns {UnicityTreeCertificate} Unicity tree certificate.
    */
-  public static fromArray(data: UnicityTreeCertificateArray): UnicityTreeCertificate {
+  public static fromCbor(rawData: Uint8Array): UnicityTreeCertificate {
+    const data = CborDecoder.readArray(rawData);
     return new UnicityTreeCertificate(
-      data[0],
-      data[1],
-      data[2]?.map((data: IndexedPathItemArray) => IndexedPathItem.fromArray(data)) ?? null,
-      data[3],
+      CborDecoder.readUnsignedInteger(data[0]),
+      CborDecoder.readUnsignedInteger(data[1]),
+      CborDecoder.readArray(data[2])?.map((pathItem: Uint8Array) => IndexedPathItem.fromCbor(pathItem)) ?? null,
+      CborDecoder.readByteString(data[3]),
     );
   }
 
@@ -476,12 +493,20 @@ export class UnicitySeal implements IUnicitySeal {
   }
 
   /**
-   * Create unicity seal from array.
-   * @param {UnicitySealArray} data - Unicity seal array.
+   * Create unicity seal from raw CBOR.
+   * @param {Uint8Array} rawData - Unicity seal as raw CBOR.
    * @returns {UnicitySeal} Unicity seal.
    */
-  public static fromArray(data: UnicitySealArray): UnicitySeal {
-    return new UnicitySeal(data[0], data[1], data[2], data[3], data[4], data[5]);
+  public static fromCbor(rawData: Uint8Array): UnicitySeal {
+    const data = CborDecoder.readArray(rawData);
+    return new UnicitySeal(
+      CborDecoder.readUnsignedInteger(data[0]),
+      CborDecoder.readUnsignedInteger(data[1]),
+      CborDecoder.readUnsignedInteger(data[2]),
+      CborDecoder.readByteString(data[3]),
+      CborDecoder.readByteString(data[4]),
+      new Map(), // TODO
+    );
   }
 
   /**

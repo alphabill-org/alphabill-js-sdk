@@ -30,7 +30,7 @@ export class UnsignedCreateFungibleTokenTransactionOrder {
     data: ICreateFungibleTokenTransactionData,
     codec: ICborCodec,
   ): UnsignedCreateFungibleTokenTransactionOrder {
-    const attributes = new CreateFungibleTokenAttributes(data.ownerPredicate, data.type.unitId, data.value, data.nonce);
+    const attributes = new CreateFungibleTokenAttributes(data.type.unitId, data.value, data.ownerPredicate, data.nonce);
     const payload = TokenUnitId.create(attributes, data.metadata, codec, TokenPartitionUnitType.FUNGIBLE_TOKEN).then(
       (unitId) =>
         new TransactionPayload(

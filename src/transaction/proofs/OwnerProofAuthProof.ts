@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ITransactionOrderProof } from './ITransactionOrderProof.js';
 
 export type OwnerProofAuthProofArray = [Uint8Array];
@@ -11,8 +12,9 @@ export class OwnerProofAuthProof implements ITransactionOrderProof {
     return new Uint8Array(this._ownerProof);
   }
 
-  public static decode([ownerProof]: OwnerProofAuthProofArray): Promise<OwnerProofAuthProof> {
-    return Promise.resolve(new OwnerProofAuthProof(ownerProof));
+  public static fromCbor(rawData: Uint8Array): Promise<OwnerProofAuthProof> {
+    const data = CborDecoder.readArray(rawData);
+    return Promise.resolve(new OwnerProofAuthProof(CborDecoder.readByteString(data[0])));
   }
 
   public encode(): OwnerProofAuthProofArray {

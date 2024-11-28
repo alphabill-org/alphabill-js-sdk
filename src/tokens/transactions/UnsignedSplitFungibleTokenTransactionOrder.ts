@@ -34,7 +34,7 @@ export class UnsignedSplitFungibleTokenTransactionOrder {
         PartitionIdentifier.TOKEN,
         data.token.unitId,
         TokenPartitionTransactionType.SplitFungibleToken,
-        new SplitFungibleTokenAttributes(data.ownerPredicate, data.amount, data.token.counter, data.type.unitId),
+        new SplitFungibleTokenAttributes(data.type.unitId, data.amount, data.ownerPredicate, data.token.counter),
         data.stateLock,
         data.metadata,
       ),

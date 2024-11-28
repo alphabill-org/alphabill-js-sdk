@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -29,17 +30,15 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
   ) {}
 
   /**
-   * Create AddFeeCreditAttributes from array.
-   * @param {AddFeeCreditAttributesArray} data Add fee credit attributes array.
+   * Create AddFeeCreditAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Add fee credit attributes as raw CBOR.
    * @returns {Promise<AddFeeCreditAttributes>} Add fee credit attributes.
    */
-  public static async fromArray([
-    ownerPredicate,
-    [transactionRecord, transactionProof],
-  ]: AddFeeCreditAttributesArray): Promise<AddFeeCreditAttributes> {
+  public static async fromCbor(rawData: Uint8Array): Promise<AddFeeCreditAttributes> {
+    const data = CborDecoder.readArray(rawData);
     return new AddFeeCreditAttributes(
-      new PredicateBytes(ownerPredicate),
-      await TransferFeeCreditTransactionRecordWithProof.fromArray([transactionRecord, transactionProof]),
+      new PredicateBytes(CborDecoder.readByteString(data[0])),
+      await TransferFeeCreditTransactionRecordWithProof.fromCbor(data[1]),
     );
   }
 

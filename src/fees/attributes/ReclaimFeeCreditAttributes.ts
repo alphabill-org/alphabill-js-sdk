@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { TransactionRecordWithProofArray } from '../../transaction/record/TransactionRecordWithProof.js';
@@ -22,16 +23,13 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
   public constructor(public readonly proof: CloseFeeCreditTransactionRecordWithProof) {}
 
   /**
-   * Create ReclaimFeeCreditAttributes from array.
-   * @param {ReclaimFeeCreditAttributesArray} data - Reclaim fee credit attributes data array.
+   * Create ReclaimFeeCreditAttributes from raw CBOR.
+   * @param {Uint8Array} rawData - Reclaim fee credit attributes data as raw CBOR.
    * @returns {ReclaimFeeCreditAttributes} Reclaim fee credit attributes instance.
    */
-  public static async fromArray([
-    transactionRecordWithProof,
-  ]: ReclaimFeeCreditAttributesArray): Promise<ReclaimFeeCreditAttributes> {
-    return new ReclaimFeeCreditAttributes(
-      await CloseFeeCreditTransactionRecordWithProof.fromArray(transactionRecordWithProof),
-    );
+  public static async fromCbor(rawData: Uint8Array): Promise<ReclaimFeeCreditAttributes> {
+    const data = CborDecoder.readArray(rawData);
+    return new ReclaimFeeCreditAttributes(await CloseFeeCreditTransactionRecordWithProof.fromCbor(data[0]));
   }
 
   /**

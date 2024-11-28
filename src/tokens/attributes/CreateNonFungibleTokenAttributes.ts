@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -35,11 +36,11 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
    * @param {bigint} nonce Optional nonce.
    */
   public constructor(
-    public readonly ownerPredicate: IPredicate,
     public readonly typeId: IUnitId,
     public readonly name: string,
     public readonly uri: string,
     public readonly data: INonFungibleTokenData,
+    public readonly ownerPredicate: IPredicate,
     public readonly dataUpdatePredicate: IPredicate,
     public readonly nonce: bigint,
   ) {
@@ -47,27 +48,20 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   }
 
   /**
-   * Create CreateNonFungibleTokenAttributes from array.
-   * @param {CreateNonFungibleTokenAttributesArray} attributes Create non-fungible token attributes array.
+   * Create CreateNonFungibleTokenAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Create non-fungible token attributes as raw CBOR.
    * @returns {CreateNonFungibleTokenAttributes} Create non-fungible token attributes instance.
    */
-  public static fromArray([
-    typeId,
-    name,
-    uri,
-    data,
-    ownerPredicate,
-    dataUpdatePredicate,
-    nonce,
-  ]: CreateNonFungibleTokenAttributesArray): CreateNonFungibleTokenAttributes {
+  public static fromCbor(rawData: Uint8Array): CreateNonFungibleTokenAttributes {
+    const data = CborDecoder.readArray(rawData);
     return new CreateNonFungibleTokenAttributes(
-      new PredicateBytes(ownerPredicate),
-      UnitId.fromBytes(typeId),
-      name,
-      uri,
-      NonFungibleTokenData.createFromBytes(data),
-      new PredicateBytes(dataUpdatePredicate),
-      nonce,
+      UnitId.fromBytes(CborDecoder.readByteString(data[0])),
+      CborDecoder.readTextString(data[1]),
+      CborDecoder.readTextString(data[2]),
+      NonFungibleTokenData.createFromBytes(CborDecoder.readByteString(data[3])),
+      new PredicateBytes(CborDecoder.readByteString(data[4])),
+      new PredicateBytes(CborDecoder.readByteString(data[5])),
+      CborDecoder.readUnsignedInteger(data[6]),
     );
   }
 

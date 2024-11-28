@@ -1,12 +1,13 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
-import { TransactionOrder, TransactionOrderArray } from '../../transaction/order/TransactionOrder.js';
+import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
-import { OwnerProofAuthProof, OwnerProofAuthProofArray } from '../../transaction/proofs/OwnerProofAuthProof.js';
+import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { StateLock } from '../../transaction/StateLock.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { UnitId } from '../../UnitId.js';
-import { SplitBillAttributes, SplitBillAttributesArray } from '../attributes/SplitBillAttributes.js';
+import { SplitBillAttributes } from '../attributes/SplitBillAttributes.js';
 import { MoneyPartitionTransactionType } from '../MoneyPartitionTransactionType.js';
 
 export class SplitBillTransactionOrder extends TransactionOrder<SplitBillAttributes, OwnerProofAuthProof> {
@@ -19,31 +20,21 @@ export class SplitBillTransactionOrder extends TransactionOrder<SplitBillAttribu
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromArray([
-    networkIdentifier,
-    partitionIdentifier,
-    unitId,
-    ,
-    attributes,
-    stateLock,
-    clientMetadata,
-    stateUnlock,
-    authProof,
-    feeProof,
-  ]: TransactionOrderArray): Promise<SplitBillTransactionOrder> {
+  public static async fromCbor(rawData: Uint8Array): Promise<SplitBillTransactionOrder> {
+    const data = CborDecoder.readArray(rawData);
     return new SplitBillTransactionOrder(
       new TransactionPayload(
-        networkIdentifier,
-        partitionIdentifier,
-        UnitId.fromBytes(unitId),
+        Number(CborDecoder.readUnsignedInteger(data[0])),
+        Number(CborDecoder.readUnsignedInteger(data[1])),
+        UnitId.fromBytes(CborDecoder.readByteString(data[2])),
         MoneyPartitionTransactionType.SplitBill,
-        SplitBillAttributes.fromArray(attributes as SplitBillAttributesArray),
-        stateLock ? StateLock.fromArray(stateLock) : null,
-        ClientMetadata.fromArray(clientMetadata),
+        SplitBillAttributes.fromCbor(data[4]),
+        data[5] ? StateLock.fromCbor(data[5]) : null,
+        ClientMetadata.fromCbor(data[6]),
       ),
-      await OwnerProofAuthProof.decode(authProof as OwnerProofAuthProofArray),
-      feeProof,
-      stateUnlock ? new PredicateBytes(stateUnlock) : null,
+      await OwnerProofAuthProof.fromCbor(data[7]),
+      CborDecoder.readByteString(data[8]),
+      data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );
   }
 }

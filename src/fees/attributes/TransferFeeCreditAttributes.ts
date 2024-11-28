@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { UnitId } from '../../UnitId.js';
@@ -43,25 +44,19 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * Create TransferFeeCreditAttributes from array.
-   * @param {TransferFeeCreditAttributesArray} data - Transfer fee credit attributes array.
+   * Create TransferFeeCreditAttributes from raw CBOR.
+   * @param {Uint8Array} rawData - Transfer fee credit attributes as raw CBOR.
    * @returns {TransferFeeCreditAttributes} Transfer fee credit attributes instance.
    */
-  public static fromArray([
-    amount,
-    targetPartitionIdentifier,
-    targetUnitId,
-    latestAdditionTime,
-    targetUnitCounter,
-    counter,
-  ]: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
+  public static fromCbor(rawData: Uint8Array): TransferFeeCreditAttributes {
+    const data = CborDecoder.readArray(rawData);
     return new TransferFeeCreditAttributes(
-      amount,
-      targetPartitionIdentifier,
-      UnitId.fromBytes(targetUnitId),
-      latestAdditionTime,
-      targetUnitCounter,
-      counter,
+      CborDecoder.readUnsignedInteger(data[0]),
+      Number(CborDecoder.readUnsignedInteger(data[1])),
+      UnitId.fromBytes(CborDecoder.readByteString(data[2])),
+      CborDecoder.readUnsignedInteger(data[3]),
+      CborDecoder.readUnsignedInteger(data[4]),
+      CborDecoder.readUnsignedInteger(data[5]),
     );
   }
 

@@ -1,3 +1,4 @@
+import { CborDecoder } from '../codec/cbor/CborDecoder.js';
 import { IUnitId } from '../IUnitId.js';
 import { UnitId } from '../UnitId.js';
 import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
@@ -33,17 +34,13 @@ export class ClientMetadata {
     ];
   }
 
-  public static fromArray([
-    timeout,
-    maxTransactionFee,
-    feeCreditRecordId,
-    referenceNumber,
-  ]: TransactionClientMetadataArray): ITransactionClientMetadata {
+  public static fromCbor(rawData: Uint8Array): ITransactionClientMetadata {
+    const data = CborDecoder.readArray(rawData);
     return ClientMetadata.create(
-      timeout,
-      maxTransactionFee,
-      feeCreditRecordId ? UnitId.fromBytes(feeCreditRecordId) : null,
-      referenceNumber,
+      CborDecoder.readUnsignedInteger(data[0]),
+      CborDecoder.readUnsignedInteger(data[1]),
+      data[2] ? UnitId.fromBytes(CborDecoder.readByteString(data[2])) : null,
+      data[3] ? CborDecoder.readByteString(data[3]) : null,
     );
   }
 }

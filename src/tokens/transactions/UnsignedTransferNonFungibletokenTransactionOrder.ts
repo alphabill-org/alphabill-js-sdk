@@ -35,7 +35,7 @@ export class UnsignedTransferNonFungibletokenTransactionOrder {
         PartitionIdentifier.TOKEN,
         data.token.unitId,
         TokenPartitionTransactionType.TransferNonFungibleToken,
-        new TransferNonFungibleTokenAttributes(data.ownerPredicate, data.token.counter, data.type.unitId),
+        new TransferNonFungibleTokenAttributes(data.type.unitId, data.ownerPredicate, data.token.counter),
         data.stateLock,
         data.metadata,
       ),

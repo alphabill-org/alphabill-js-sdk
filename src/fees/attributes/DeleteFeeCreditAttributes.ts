@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
 
@@ -21,12 +22,13 @@ export class DeleteFeeCreditAttributes implements ITransactionPayloadAttributes 
   }
 
   /**
-   * Create DeleteFeeCreditAttributes from array.
-   * @param {DeleteFeeCreditAttributesArray} data - Delete fee credit attributes data array.
+   * Create DeleteFeeCreditAttributes from raw CBOR.
+   * @param {Uint8Array} rawData - Delete fee credit attributes data as raw CBOR.
    * @returns {DeleteFeeCreditAttributes} Delete fee credit attributes instance.
    */
-  public static fromArray([counter]: DeleteFeeCreditAttributesArray): DeleteFeeCreditAttributes {
-    return new DeleteFeeCreditAttributes(counter);
+  public static fromCbor(rawData: Uint8Array): DeleteFeeCreditAttributes {
+    const data = CborDecoder.readArray(rawData);
+    return new DeleteFeeCreditAttributes(CborDecoder.readUnsignedInteger(data[0]));
   }
 
   /**

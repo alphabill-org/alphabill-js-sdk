@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
 
@@ -27,12 +28,13 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Create LockBillAttributes from array.
-   * @param {LockBillAttributesArray} data - Lock bill attributes data array.
+   * Create LockBillAttributes from raw CBOR.
+   * @param {Uint8Array} rawData - Lock bill attributes data as raw CBOR.
    * @returns {LockBillAttributes} Lock bill attributes instance.
    */
-  public static fromArray([lockStatus, counter]: LockBillAttributesArray): LockBillAttributes {
-    return new LockBillAttributes(lockStatus, counter);
+  public static fromCbor(rawData: Uint8Array): LockBillAttributes {
+    const data = CborDecoder.readArray(rawData);
+    return new LockBillAttributes(CborDecoder.readUnsignedInteger(data[0]), CborDecoder.readUnsignedInteger(data[1]));
   }
 
   /**

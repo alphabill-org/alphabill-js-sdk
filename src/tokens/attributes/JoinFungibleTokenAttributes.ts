@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { TransactionRecordWithProofArray } from '../../transaction/record/TransactionRecordWithProof.js';
@@ -32,13 +33,18 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * Create a JoinFungibleTokenAttributes from an array.
-   * @param {JoinFungibleTokenAttributesArray} data Join fungible token attributes array.
+   * Create a JoinFungibleTokenAttributes from raw CBOR .
+   * @param {JoinFungibleTokenAttributesArray} rawData Join fungible token attributes as raw CBOR.
    * @returns {JoinFungibleTokenAttributes} Join fungible token attributes instance.
    */
-  public static async fromArray([proofs]: JoinFungibleTokenAttributesArray): Promise<JoinFungibleTokenAttributes> {
+  public static async fromCbor(rawData: Uint8Array): Promise<JoinFungibleTokenAttributes> {
+    const data = CborDecoder.readArray(rawData);
     return new JoinFungibleTokenAttributes(
-      await Promise.all(proofs.map((proof) => BurnFungibleTokenTransactionRecordWithProof.fromArray(proof))),
+      await Promise.all(
+        CborDecoder.readArray(data[0]).map((rawProof: Uint8Array) =>
+          BurnFungibleTokenTransactionRecordWithProof.fromCbor(rawProof),
+        ),
+      ),
     );
   }
 

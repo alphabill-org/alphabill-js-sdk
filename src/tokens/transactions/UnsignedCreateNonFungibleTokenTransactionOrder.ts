@@ -35,11 +35,11 @@ export class UnsignedCreateNonFungibleTokenTransactionOrder {
     codec: ICborCodec,
   ): UnsignedCreateNonFungibleTokenTransactionOrder {
     const attributes = new CreateNonFungibleTokenAttributes(
-      data.ownerPredicate,
       data.type.unitId,
       data.name,
       data.uri,
       data.data,
+      data.ownerPredicate,
       data.dataUpdatePredicate,
       data.nonce,
     );

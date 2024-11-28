@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { UnicityCertificateArray } from '../../IStateProof.js';
 import { UnicityCertificate } from '../../json-rpc/UnicityCertificate.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
@@ -44,16 +45,18 @@ export class TransactionProof {
   }
 
   /**
-   * Create transaction proof from array.
-   * @param {TransactionProofArray} data - Transaction proof array.
+   * Create transaction proof from raw CBOR.
+   * @param {Uint8Array} rawData - Transaction proof as raw CBOR.
    * @returns {TransactionProof} Transaction proof.
    */
-  public static fromArray(data: TransactionProofArray): TransactionProof {
+  public static fromCbor(rawData: Uint8Array): TransactionProof {
+    const data = CborDecoder.readArray(rawData);
     return new TransactionProof(
-      data[0],
-      data[1],
-      data[2]?.map((item) => TransactionProofChainItem.fromArray(item)) ?? null,
-      UnicityCertificate.fromArray(data[3]),
+      CborDecoder.readUnsignedInteger(data[0]),
+      CborDecoder.readByteString(data[1]),
+      CborDecoder.readArray(data[2])?.map((chainItem: Uint8Array) => TransactionProofChainItem.fromCbor(chainItem)) ??
+        null,
+      UnicityCertificate.fromCbor(data[3]),
     );
   }
 
