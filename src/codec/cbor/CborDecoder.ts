@@ -1,3 +1,4 @@
+import { Base16Converter } from '../../util/Base16Converter.js';
 import { BitMask } from './BitMask.js';
 import { MajorType } from './MajorType.js';
 
@@ -18,7 +19,7 @@ export class CborDecoder {
   public static readByteString(data: Uint8Array): Uint8Array {
     const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.BYTE_STRING) {
-      throw new Error('Major type mismatch, expected byte string.');
+      throw new Error('Major type mismatch, expected byte string.' + majorType);
     }
     const { length, position } = CborDecoder.readLength(majorType, data, 0);
     return this.read(data, position, Number(length));
@@ -49,8 +50,25 @@ export class CborDecoder {
     return result;
   }
 
-  public static readMap(): Map<unknown, unknown> {
-    throw new Error('Not implemented.');
+  public static readMap(data: Uint8Array): Map<Uint8Array, Uint8Array> {
+    const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
+    if (majorType != MajorType.MAP) {
+      throw new Error('Major type mismatch, expected map.' + majorType);
+    }
+    const parsedLength = CborDecoder.readLength(majorType, data, 0);
+    let position = parsedLength.position;
+    const result: Map<Uint8Array, Uint8Array> = new Map();
+    if (Number(parsedLength.length) % 2 !== 0) {
+      throw new Error('Map must have even number of elements');
+    }
+    for (let i = 0; i <= Number(parsedLength.length) / 2; i++) {
+      const key = CborDecoder.readRawCbor(data, position);
+      position = key.position;
+      const value = CborDecoder.readRawCbor(data, position);
+      position = value.position;
+      result.set(key.data, value.data);
+    }
+    return result;
   }
 
   public static readTag(data: Uint8Array): { tag: bigint; data: Uint8Array } {
@@ -109,6 +127,12 @@ export class CborDecoder {
         break;
       case MajorType.ARRAY:
         for (let i = 0; i < length; i++) {
+          position = this.readRawCbor(data, position).position;
+        }
+        break;
+      case MajorType.MAP:
+        for (let i = 0; i < length; i++) {
+          position = this.readRawCbor(data, position).position;
           position = this.readRawCbor(data, position).position;
         }
         break;

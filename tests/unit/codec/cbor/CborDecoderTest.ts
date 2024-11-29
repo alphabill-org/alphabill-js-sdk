@@ -49,6 +49,20 @@ describe('Cbor decoder test', () => {
     ).toEqual(['0x81C56474657374', '0x4A00000000000000000000', '0xD86405', '0x6474657374']);
   });
 
+  it('Decode map', () => {
+    const decodedMap = CborDecoder.readMap(Base16Converter.decode('0xA2646B657931182A646B6579326676616C756532'));
+    const decodedKeys: string[] = [];
+    const decodedValues: string[] = [];
+    for (const [key, value] of decodedMap) {
+      decodedKeys.push(Base16Converter.encode(key));
+      decodedValues.push(Base16Converter.encode(value));
+    }
+    const expectedKeys = ['0x646B657931', '0x646B657932'];
+    const expectedValues = ['0x182A', '0x6676616C756532'];
+    expect(decodedKeys).toEqual(expectedKeys);
+    expect(decodedValues).toEqual(expectedValues);
+  });
+
   it('Decode tag', () => {
     expect(CborDecoder.readTag(Base16Converter.decode('0xC1650A0A0A0A0A'))).toEqual({
       tag: 1n,

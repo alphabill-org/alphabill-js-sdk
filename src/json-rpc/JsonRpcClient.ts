@@ -106,7 +106,7 @@ export class JsonRpcClient {
           UnitId.fromBytes(Base16Converter.decode(response.unitId)),
           Number(response.networkId),
           Number(response.partitionId),
-          createStateProof(response.stateProof),
+          response.stateProof ? createStateProof(response.stateProof) : null,
           response.data,
         );
       } catch (error) {

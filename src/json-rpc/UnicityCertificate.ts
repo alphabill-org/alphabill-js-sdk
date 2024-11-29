@@ -17,6 +17,7 @@ import {
 } from '../IStateProof.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
+import { IIndexedPathItemDto } from './IUnitDto';
 
 /**
  * Unicity certificate.
@@ -57,6 +58,8 @@ export class UnicityCertificate implements IUnicityCertificate {
    * @returns {UnicityCertificate} Unicity certificate.
    */
   public static fromCbor(rawData: Uint8Array): UnicityCertificate {
+    console.log(Base16Converter.encode(rawData));
+    console.log(Base16Converter.encode(CborDecoder.readTag(rawData).data));
     const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new UnicityCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
@@ -303,12 +306,14 @@ export class IndexedPathItem implements IIndexedPathItem {
 
   /**
    * Create indexed path item from raw CBOR.
-   * @param {Uint8Array} rawData - Indexed path item as raw CBOR.
+   * @param {Uint8Array} rawKey - Indexed path item key as raw CBOR.
+   * @param {Uint8Array} rawHash - Indexed path item hash as raw CBOR.
    * @returns {IndexedPathItem} Indexed path item.
    */
-  public static fromCbor(rawData: Uint8Array): IndexedPathItem {
-    const data = CborDecoder.readArray(rawData);
-    return new IndexedPathItem(CborDecoder.readByteString(data[0]), CborDecoder.readByteString(data[1]));
+  public static fromCbor(rawKey: Uint8Array, rawHash: Uint8Array): IndexedPathItem {
+    const key = new TextEncoder().encode(CborDecoder.readTextString(rawKey));
+    const hash = CborDecoder.readByteString(rawHash);
+    return new IndexedPathItem(key, hash);
   }
 
   /**
@@ -411,10 +416,12 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
    */
   public static fromCbor(rawData: Uint8Array): UnicityTreeCertificate {
     const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
+    console.log(Base16Converter.encode(rawData));
+    const map1 = CborDecoder.readMap(CborDecoder.readArray(data[2])[0]);
     return new UnicityTreeCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
-      CborDecoder.readArray(data[2])?.map((pathItem: Uint8Array) => IndexedPathItem.fromCbor(pathItem)) ?? null,
+      map1?.forEach((value: Uint8Array, key: Uint8Array) => IndexedPathItem.fromCbor(key, value)) ?? null,
       CborDecoder.readByteString(data[3]),
     );
   }
@@ -498,7 +505,7 @@ export class UnicitySeal implements IUnicitySeal {
    * @returns {UnicitySeal} Unicity seal.
    */
   public static fromCbor(rawData: Uint8Array): UnicitySeal {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new UnicitySeal(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
