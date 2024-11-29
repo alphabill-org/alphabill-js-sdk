@@ -1,6 +1,5 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -19,13 +18,9 @@ export class UnsignedDeleteFeeCreditTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<DeleteFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: IDeleteFeeCreditTransactionData,
-    codec: ICborCodec,
-  ): UnsignedDeleteFeeCreditTransactionOrder {
+  public static create(data: IDeleteFeeCreditTransactionData): UnsignedDeleteFeeCreditTransactionOrder {
     return new UnsignedDeleteFeeCreditTransactionOrder(
       new TransactionPayload<DeleteFeeCreditAttributes>(
         data.networkIdentifier,
@@ -37,13 +32,15 @@ export class UnsignedDeleteFeeCreditTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(ownerProofFactory: IProofFactory): Promise<DeleteFeeCreditTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+  public sign(ownerProofFactory: IProofFactory): DeleteFeeCreditTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ]);
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
     return new DeleteFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }

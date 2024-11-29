@@ -6,12 +6,12 @@ import { TransactionRecordWithProof } from '../../transaction/record/Transaction
 import { SplitBillTransactionOrder } from './SplitBillTransactionOrder.js';
 
 export class SplitBillTransactionRecordWithProof extends TransactionRecordWithProof<SplitBillTransactionOrder> {
-  public static async fromCbor(rawData: Uint8Array): Promise<SplitBillTransactionRecordWithProof> {
+  public static fromCbor(rawData: Uint8Array): SplitBillTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
     const txOrderData = CborDecoder.readArray(data[0]);
     return new SplitBillTransactionRecordWithProof(
       new TransactionRecord(
-        await SplitBillTransactionOrder.fromCbor(txOrderData[0]),
+        SplitBillTransactionOrder.fromCbor(txOrderData[0]),
         ServerMetadata.fromCbor(txOrderData[1]),
       ),
       TransactionProof.fromCbor(data[1]),

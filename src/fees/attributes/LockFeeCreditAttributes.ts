@@ -1,14 +1,7 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Lock fee credit attributes array.
- */
-export type LockFeeCreditAttributesArray = readonly [
-  bigint, // Lock Status
-  bigint, // Counter
-];
 
 /**
  * Lock fee credit payload attributes.
@@ -54,7 +47,10 @@ export class LockFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<LockFeeCreditAttributesArray> {
-    return Promise.resolve([this.lockStatus, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.lockStatus),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 }

@@ -1,6 +1,5 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -24,10 +23,9 @@ export class UnsignedTransferBillTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<TransferBillAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: ITransferBillTransactionData, codec: ICborCodec): UnsignedTransferBillTransactionOrder {
+  public static create(data: ITransferBillTransactionData): UnsignedTransferBillTransactionOrder {
     return new UnsignedTransferBillTransactionOrder(
       new TransactionPayload<TransferBillAttributes>(
         data.networkIdentifier,
@@ -39,18 +37,16 @@ export class UnsignedTransferBillTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(
-    ownerProofFactory: IProofFactory,
-    feeProofFactory: IProofFactory | null,
-  ): Promise<TransferBillTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
-    const feeProof =
-      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
+  public sign(ownerProofFactory: IProofFactory, feeProofFactory: IProofFactory | null): TransferBillTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ]);
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
     return new TransferBillTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

@@ -1,16 +1,10 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { IPredicate } from '../predicates/IPredicate.js';
 import { ITransactionOrderProof } from '../proofs/ITransactionOrderProof.js';
-import { PayloadArray, TransactionPayload } from '../TransactionPayload.js';
-
-type StateUnlockType = Uint8Array | null;
-type AuthProofType = unknown;
-type FeeProofType = Uint8Array | null;
-
-export type TransactionOrderArray = readonly [...PayloadArray, StateUnlockType, AuthProofType, FeeProofType];
+import { TransactionPayload } from '../TransactionPayload.js';
 
 /**
  * Transaction order.
@@ -55,12 +49,12 @@ export abstract class TransactionOrder<
         State Unlock: ${this.stateUnlock?.toString() ?? null}`;
   }
 
-  public async encode(cborCodec: ICborCodec): Promise<TransactionOrderArray> {
-    return [
-      ...(await this.payload.encode(cborCodec)),
-      this.stateUnlock?.bytes ?? null,
-      await this.authProof.encode(),
-      this.feeProof,
-    ];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+      this.authProof.encode(),
+      this.feeProof ? CborEncoder.encodeByteString(this.feeProof) : CborEncoder.encodeNull(),
+    ]);
   }
 }

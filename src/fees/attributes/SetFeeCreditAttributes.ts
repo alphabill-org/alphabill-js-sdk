@@ -1,17 +1,9 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Set fee credit attributes array.
- */
-export type SetFeeCreditAttributesArray = readonly [
-  Uint8Array, // Owner predicate
-  bigint, // Amount
-  bigint | null, // Counter
-];
 
 /**
  * Set fee credit payload attributes.
@@ -34,7 +26,7 @@ export class SetFeeCreditAttributes implements ITransactionPayloadAttributes {
 
   /**
    * Create SetFeeCreditAttributes from raw CBOR.
-   * @param {SetFeeCreditAttributesArray} rawData Set fee credit attributes as raw CBOR.
+   * @param {Uint8Array} rawData Set fee credit attributes as raw CBOR.
    * @returns {SetFeeCreditAttributes} Set fee credit attributes instance.
    */
   public static fromCbor(rawData: Uint8Array): SetFeeCreditAttributes {
@@ -61,7 +53,11 @@ export class SetFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<SetFeeCreditAttributesArray> {
-    return Promise.resolve([this.ownerPredicate.bytes, this.amount, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.ownerPredicate.bytes),
+      CborEncoder.encodeUnsignedInteger(this.amount),
+      this.counter ? CborEncoder.encodeUnsignedInteger(this.counter) : CborEncoder.encodeNull(),
+    ]);
   }
 }

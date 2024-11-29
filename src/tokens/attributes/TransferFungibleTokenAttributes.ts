@@ -1,20 +1,11 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Transfer fungible token attributes array.
- */
-export type TransferFungibleTokenAttributesArray = readonly [
-  Uint8Array, // Type ID
-  bigint, // Value
-  Uint8Array, // Owner Predicate
-  bigint, // Counter
-];
 
 /**
  * Transfer fungible token payload attributes.
@@ -39,7 +30,7 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
 
   /**
    * Create TransferFungibleTokenAttributesArray from raw CBOR.
-   * @param {TransferFungibleTokenAttributesArray} rawData - Transfer fungible token attributes as raw CBOR.
+   * @param {Uint8Array} rawData - Transfer fungible token attributes as raw CBOR.
    * @returns {TransferFungibleTokenAttributes} Transfer fungible token attributes instance.
    */
   public static fromCbor(rawData: Uint8Array): TransferFungibleTokenAttributes {
@@ -68,7 +59,12 @@ export class TransferFungibleTokenAttributes implements ITransactionPayloadAttri
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<TransferFungibleTokenAttributesArray> {
-    return Promise.resolve([this.typeId.bytes, this.value, this.ownerPredicate.bytes, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.typeId.bytes),
+      CborEncoder.encodeUnsignedInteger(this.value),
+      CborEncoder.encodeByteString(this.ownerPredicate.bytes),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 }

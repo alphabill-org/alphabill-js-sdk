@@ -23,7 +23,7 @@ export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromCbor(rawData: Uint8Array): Promise<JoinFungibleTokenTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): JoinFungibleTokenTransactionOrder {
     const data = CborDecoder.readArray(rawData);
     return new JoinFungibleTokenTransactionOrder(
       new TransactionPayload(
@@ -31,11 +31,11 @@ export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
         Number(CborDecoder.readUnsignedInteger(data[1])),
         UnitId.fromBytes(CborDecoder.readByteString(data[2])),
         TokenPartitionTransactionType.JoinFungibleToken,
-        await JoinFungibleTokenAttributes.fromCbor(data[4]),
+        JoinFungibleTokenAttributes.fromCbor(data[4]),
         data[5] ? StateLock.fromCbor(data[5]) : null,
         ClientMetadata.fromCbor(data[6]),
       ),
-      await TypeOwnerProofsAuthProof.fromCbor(data[7]),
+      TypeOwnerProofsAuthProof.fromCbor(data[7]),
       CborDecoder.readByteString(data[8]),
       data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );

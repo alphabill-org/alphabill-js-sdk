@@ -1,4 +1,4 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
@@ -18,10 +18,9 @@ export class UnsignedUnlockTokenTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<UnlockTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: IUnlockTokenTransactionData, codec: ICborCodec): UnsignedUnlockTokenTransactionOrder {
+  public static create(data: IUnlockTokenTransactionData): UnsignedUnlockTokenTransactionOrder {
     return new UnsignedUnlockTokenTransactionOrder(
       new TransactionPayload(
         data.networkIdentifier,
@@ -33,18 +32,16 @@ export class UnsignedUnlockTokenTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(
-    ownerProofFactory: IProofFactory,
-    feeProofFactory: IProofFactory | null,
-  ): Promise<UnlockTokenTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
-    const feeProof =
-      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
+  public sign(ownerProofFactory: IProofFactory, feeProofFactory: IProofFactory | null): UnlockTokenTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ]);
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
     return new UnlockTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

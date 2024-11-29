@@ -1,20 +1,9 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Transfer fee credit attributes array.
- */
-export type TransferFeeCreditAttributesArray = readonly [
-  bigint, // Amount
-  number, // Target partition identifier
-  Uint8Array, // Target Unit ID
-  bigint, // Latest addition time
-  bigint | null, // Target unit counter
-  bigint, // Counter
-];
 
 /**
  * Transfer fee credit payload attributes.
@@ -78,14 +67,14 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<TransferFeeCreditAttributesArray> {
-    return Promise.resolve([
-      this.amount,
-      this.targetPartitionIdentifier,
-      this.targetUnitId.bytes,
-      this.latestAdditionTime,
-      this.targetUnitCounter,
-      this.counter,
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.amount),
+      CborEncoder.encodeUnsignedInteger(this.targetPartitionIdentifier),
+      CborEncoder.encodeByteString(this.targetUnitId.bytes),
+      CborEncoder.encodeUnsignedInteger(this.latestAdditionTime),
+      this.targetUnitCounter ? CborEncoder.encodeUnsignedInteger(this.targetUnitCounter) : CborEncoder.encodeNull(),
+      CborEncoder.encodeUnsignedInteger(this.counter),
     ]);
   }
 }

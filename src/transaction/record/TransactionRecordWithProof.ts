@@ -1,15 +1,10 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../order/TransactionOrder.js';
 import { ITransactionOrderProof } from '../proofs/ITransactionOrderProof.js';
-import { TransactionProof, TransactionProofArray } from './TransactionProof.js';
-import { TransactionRecord, TransactionRecordArray } from './TransactionRecord.js';
-
-/**
- * Transaction record with proof array.
- */
-export type TransactionRecordWithProofArray = readonly [TransactionRecordArray, TransactionProofArray];
+import { TransactionProof } from './TransactionProof.js';
+import { TransactionRecord } from './TransactionRecord.js';
 
 /**
  * Transaction record with proof.
@@ -40,14 +35,16 @@ export class TransactionRecordWithProof<
   }
 
   /**
-   * Encode transaction record with proof to array.
-   * @param {ICborCodec} cborCodec
-   * @returns {TransactionRecordWithProofArray} Transaction record with proof array structure.
+   * Encode transaction record with proof to raw CBOR.
+   * @returns {Uint8Array} Transaction record with proof as raw CBOR.
    */
-  public async encode(cborCodec: ICborCodec): Promise<TransactionRecordWithProofArray> {
-    return [
-      [await this.transactionRecord.transactionOrder.encode(cborCodec), this.transactionRecord.serverMetadata.encode()],
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeArray([
+        this.transactionRecord.transactionOrder.encode(),
+        this.transactionRecord.serverMetadata.encode(),
+      ]),
       this.transactionProof.encode(),
-    ];
+    ]);
   }
 }

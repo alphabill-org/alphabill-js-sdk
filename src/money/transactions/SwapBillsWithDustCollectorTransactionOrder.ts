@@ -23,7 +23,7 @@ export class SwapBillsWithDustCollectorTransactionOrder extends TransactionOrder
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromCbor(rawData: Uint8Array): Promise<SwapBillsWithDustCollectorTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): SwapBillsWithDustCollectorTransactionOrder {
     const data = CborDecoder.readArray(rawData);
     return new SwapBillsWithDustCollectorTransactionOrder(
       new TransactionPayload(
@@ -31,11 +31,11 @@ export class SwapBillsWithDustCollectorTransactionOrder extends TransactionOrder
         Number(CborDecoder.readUnsignedInteger(data[1])),
         UnitId.fromBytes(CborDecoder.readByteString(data[2])),
         MoneyPartitionTransactionType.SwapBillsWithDustCollector,
-        await SwapBillsWithDustCollectorAttributes.fromCbor(data[4]),
+        SwapBillsWithDustCollectorAttributes.fromCbor(data[4]),
         data[5] ? StateLock.fromCbor(data[5]) : null,
         ClientMetadata.fromCbor(data[6]),
       ),
-      await OwnerProofAuthProof.fromCbor(data[7]),
+      OwnerProofAuthProof.fromCbor(data[7]),
       CborDecoder.readByteString(data[8]),
       data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );

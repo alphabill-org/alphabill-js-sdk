@@ -6,12 +6,12 @@ import { TransactionRecordWithProof } from '../../transaction/record/Transaction
 import { SwapBillsWithDustCollectorTransactionOrder } from './SwapBillsWithDustCollectorTransactionOrder.js';
 
 export class SwapBillsWithDustCollectorTransactionRecordWithProof extends TransactionRecordWithProof<SwapBillsWithDustCollectorTransactionOrder> {
-  public static async fromCbor(rawData: Uint8Array): Promise<SwapBillsWithDustCollectorTransactionRecordWithProof> {
+  public static fromCbor(rawData: Uint8Array): SwapBillsWithDustCollectorTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
     const txOrderData = CborDecoder.readArray(data[0]);
     return new SwapBillsWithDustCollectorTransactionRecordWithProof(
       new TransactionRecord(
-        await SwapBillsWithDustCollectorTransactionOrder.fromCbor(txOrderData[0]),
+        SwapBillsWithDustCollectorTransactionOrder.fromCbor(txOrderData[0]),
         ServerMetadata.fromCbor(txOrderData[1]),
       ),
       TransactionProof.fromCbor(data[1]),

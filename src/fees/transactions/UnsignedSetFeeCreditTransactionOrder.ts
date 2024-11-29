@@ -1,8 +1,7 @@
 import { numberToBytesBE } from '@noble/curves/abstract/utils';
 import { sha256 } from '@noble/hashes/sha256';
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -25,10 +24,9 @@ export class UnsignedSetFeeCreditTransactionOrder {
   private constructor(
     public readonly payload: TransactionPayload<SetFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: ISetFeeCreditTransactionData, codec: ICborCodec): UnsignedSetFeeCreditTransactionOrder {
+  public static create(data: ISetFeeCreditTransactionData): UnsignedSetFeeCreditTransactionOrder {
     let feeCreditRecordId: IUnitId;
     if (data.feeCreditRecord.unitId == null) {
       const unitBytes = sha256
@@ -51,13 +49,15 @@ export class UnsignedSetFeeCreditTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(ownerProofFactory: IProofFactory): Promise<SetFeeCreditTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+  public sign(ownerProofFactory: IProofFactory): SetFeeCreditTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ]);
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
     return new SetFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }

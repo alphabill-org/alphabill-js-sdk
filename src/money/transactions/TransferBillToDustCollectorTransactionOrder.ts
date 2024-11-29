@@ -23,7 +23,7 @@ export class TransferBillToDustCollectorTransactionOrder extends TransactionOrde
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromCbor(rawData: Uint8Array): Promise<TransferBillToDustCollectorTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): TransferBillToDustCollectorTransactionOrder {
     const data = CborDecoder.readArray(rawData);
     return new TransferBillToDustCollectorTransactionOrder(
       new TransactionPayload(
@@ -35,7 +35,7 @@ export class TransferBillToDustCollectorTransactionOrder extends TransactionOrde
         data[5] ? StateLock.fromCbor(data[5]) : null,
         ClientMetadata.fromCbor(data[6]),
       ),
-      await OwnerProofAuthProof.fromCbor(data[7]),
+      OwnerProofAuthProof.fromCbor(data[7]),
       CborDecoder.readByteString(data[8]),
       data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );

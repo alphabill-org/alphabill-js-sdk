@@ -1,6 +1,5 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -20,13 +19,9 @@ export class UnsignedCloseFeeCreditTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<CloseFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: ICloseFeeCreditTransactionData,
-    codec: ICborCodec,
-  ): UnsignedCloseFeeCreditTransactionOrder {
+  public static create(data: ICloseFeeCreditTransactionData): UnsignedCloseFeeCreditTransactionOrder {
     return new UnsignedCloseFeeCreditTransactionOrder(
       new TransactionPayload<CloseFeeCreditAttributes>(
         data.networkIdentifier,
@@ -43,13 +38,15 @@ export class UnsignedCloseFeeCreditTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(ownerProofFactory: IProofFactory): Promise<CloseFeeCreditTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+  public sign(ownerProofFactory: IProofFactory): CloseFeeCreditTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ]);
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
     return new CloseFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }

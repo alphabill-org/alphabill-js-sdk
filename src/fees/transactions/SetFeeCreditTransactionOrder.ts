@@ -20,7 +20,7 @@ export class SetFeeCreditTransactionOrder extends TransactionOrder<SetFeeCreditA
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromCbor(rawData: Uint8Array): Promise<SetFeeCreditTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): SetFeeCreditTransactionOrder {
     const data = CborDecoder.readArray(rawData);
     return new SetFeeCreditTransactionOrder(
       new TransactionPayload(
@@ -28,11 +28,11 @@ export class SetFeeCreditTransactionOrder extends TransactionOrder<SetFeeCreditA
         Number(CborDecoder.readUnsignedInteger(data[1])),
         UnitId.fromBytes(CborDecoder.readByteString(data[2])),
         FeeCreditTransactionType.SetFeeCredit,
-        await SetFeeCreditAttributes.fromCbor(data[4]),
+        SetFeeCreditAttributes.fromCbor(data[4]),
         data[5] ? StateLock.fromCbor(data[5]) : null,
         ClientMetadata.fromCbor(data[6]),
       ),
-      await OwnerProofAuthProof.fromCbor(data[7]),
+      OwnerProofAuthProof.fromCbor(data[7]),
       CborDecoder.readByteString(data[8]),
       data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );

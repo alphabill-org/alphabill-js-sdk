@@ -1,10 +1,6 @@
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import { Base16Converter } from '../util/Base16Converter.js';
-
-/**
- * Token icon array.
- */
-export type TokenIconArray = readonly [string, Uint8Array];
 
 /**
  * Token icon.
@@ -49,10 +45,10 @@ export class TokenIcon {
   }
 
   /**
-   * Convert to array.
-   * @returns {TokenIconArray} Token icon array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Token icon as raw CBOR.
    */
-  public encode(): TokenIconArray {
-    return [this.type, this.data];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([CborEncoder.encodeTextString(this.type), CborEncoder.encodeByteString(this.data)]);
   }
 }

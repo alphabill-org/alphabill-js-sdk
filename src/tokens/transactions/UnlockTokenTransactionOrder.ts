@@ -20,7 +20,7 @@ export class UnlockTokenTransactionOrder extends TransactionOrder<UnlockTokenAtt
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromCbor(rawData: Uint8Array): Promise<UnlockTokenTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): UnlockTokenTransactionOrder {
     const data = CborDecoder.readArray(rawData);
     return new UnlockTokenTransactionOrder(
       new TransactionPayload(
@@ -32,7 +32,7 @@ export class UnlockTokenTransactionOrder extends TransactionOrder<UnlockTokenAtt
         data[5] ? StateLock.fromCbor(data[5]) : null,
         ClientMetadata.fromCbor(data[6]),
       ),
-      await OwnerProofAuthProof.fromCbor(data[7]),
+      OwnerProofAuthProof.fromCbor(data[7]),
       CborDecoder.readByteString(data[8]),
       data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );

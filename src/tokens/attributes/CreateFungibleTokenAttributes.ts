@@ -1,20 +1,11 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Create fungible token attributes array.
- */
-export type CreateFungibleTokenAttributesArray = readonly [
-  Uint8Array, // Type ID
-  bigint, // Value
-  Uint8Array, // Owner predicate
-  bigint, // Nonce
-];
 
 /**
  * Create fungible token payload attributes.
@@ -68,7 +59,12 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<CreateFungibleTokenAttributesArray> {
-    return Promise.resolve([this.typeId.bytes, this.value, this.ownerPredicate.bytes, this.nonce]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.typeId.bytes),
+      CborEncoder.encodeUnsignedInteger(this.value),
+      CborEncoder.encodeByteString(this.ownerPredicate.bytes),
+      CborEncoder.encodeUnsignedInteger(this.nonce),
+    ]);
   }
 }

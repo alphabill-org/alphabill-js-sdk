@@ -1,4 +1,4 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
@@ -21,13 +21,9 @@ export class UnsignedSplitFungibleTokenTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<SplitFungibleTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: ISplitFungibleTokenTransactionData,
-    codec: ICborCodec,
-  ): UnsignedSplitFungibleTokenTransactionOrder {
+  public static create(data: ISplitFungibleTokenTransactionData): UnsignedSplitFungibleTokenTransactionOrder {
     return new UnsignedSplitFungibleTokenTransactionOrder(
       new TransactionPayload(
         data.networkIdentifier,
@@ -39,23 +35,23 @@ export class UnsignedSplitFungibleTokenTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(
+  public sign(
     ownerProofFactory: IProofFactory,
     feeProofFactory: IProofFactory | null,
     tokenTypeOwnerProofs: IProofFactory[],
-  ): Promise<SplitFungibleTokenTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const authProofBytes = await this.codec.encode(authProof);
+  ): SplitFungibleTokenTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ]);
     const ownerProof = new TypeOwnerProofsAuthProof(
-      await ownerProofFactory.create(authProofBytes),
-      await Promise.all(tokenTypeOwnerProofs.map((factory) => factory.create(authProofBytes))),
+      ownerProofFactory.create(authProof),
+      tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
     );
-    const feeProof =
-      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
     return new SplitFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

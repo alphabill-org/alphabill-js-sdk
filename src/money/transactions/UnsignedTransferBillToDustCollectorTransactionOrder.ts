@@ -1,4 +1,4 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
@@ -27,12 +27,10 @@ export class UnsignedTransferBillToDustCollectorTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<TransferBillToDustCollectorAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
   public static create(
     data: ISwapBillsWithDustCollectorTransactionData,
-    codec: ICborCodec,
   ): UnsignedTransferBillToDustCollectorTransactionOrder {
     return new UnsignedTransferBillToDustCollectorTransactionOrder(
       new TransactionPayload<TransferBillToDustCollectorAttributes>(
@@ -50,18 +48,19 @@ export class UnsignedTransferBillToDustCollectorTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(
+  public sign(
     ownerProofFactory: IProofFactory,
     feeProofFactory: IProofFactory | null,
-  ): Promise<TransferBillToDustCollectorTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
-    const feeProof =
-      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
+  ): TransferBillToDustCollectorTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ]);
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
     return new TransferBillToDustCollectorTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

@@ -1,4 +1,4 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
@@ -27,13 +27,9 @@ export class UnsignedCreateFungibleTokenTypeTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<CreateFungibleTokenTypeAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: ICreateFungibleTokenTypeTransactionData,
-    codec: ICborCodec,
-  ): UnsignedCreateFungibleTokenTypeTransactionOrder {
+  public static create(data: ICreateFungibleTokenTypeTransactionData): UnsignedCreateFungibleTokenTypeTransactionOrder {
     return new UnsignedCreateFungibleTokenTypeTransactionOrder(
       new TransactionPayload(
         data.networkIdentifier,
@@ -54,21 +50,21 @@ export class UnsignedCreateFungibleTokenTypeTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(
+  public sign(
     feeProofFactory: IProofFactory | null,
     subTypeCreationProofs: IProofFactory[],
-  ): Promise<CreateFungibleTokenTypeTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const authProofBytes = await this.codec.encode(authProof);
+  ): CreateFungibleTokenTypeTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ]);
     const ownerProof = new SubTypeOwnerProofsAuthProof(
-      await Promise.all(subTypeCreationProofs.map((factory) => factory.create(authProofBytes))),
+      subTypeCreationProofs.map((factory) => factory.create(authProof)),
     );
-    const feeProof =
-      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
     return new CreateFungibleTokenTypeTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

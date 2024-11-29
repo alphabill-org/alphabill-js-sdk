@@ -1,16 +1,8 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
-import { TransactionRecordWithProofArray } from '../../transaction/record/TransactionRecordWithProof.js';
 import { dedent } from '../../util/StringUtils.js';
 import { TransferBillToDustCollectorTransactionRecordWithProof } from '../transactions/TransferBillToDustCollectorTransactionRecordWithProof.js';
-
-/**
- * Swap bills with dust collector attributes array.
- */
-export type SwapBillsWithDustCollectorAttributesArray = readonly [
-  TransactionRecordWithProofArray[], // Transfer Bill To Dust Collector Transaction Record With Proofs
-];
 
 /**
  * Swap bills with dust collector payload attributes.
@@ -37,13 +29,11 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
    * @param {Uint8Array} rawData swap bills with dust collector attributes as raw CBOR.
    * @returns {SwapBillsWithDustCollectorAttributes} Swap bills with dust collector attributes instance.
    */
-  public static async fromCbor(rawData: Uint8Array): Promise<SwapBillsWithDustCollectorAttributes> {
+  public static fromCbor(rawData: Uint8Array): SwapBillsWithDustCollectorAttributes {
     const data = CborDecoder.readArray(rawData);
     return new SwapBillsWithDustCollectorAttributes(
-      await Promise.all(
-        CborDecoder.readArray(data[0]).map((rawProof: Uint8Array) =>
-          TransferBillToDustCollectorTransactionRecordWithProof.fromCbor(rawProof),
-        ),
+      CborDecoder.readArray(data[0]).map((rawProof: Uint8Array) =>
+        TransferBillToDustCollectorTransactionRecordWithProof.fromCbor(rawProof),
       ),
     );
   }
@@ -63,7 +53,7 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public async encode(cborCodec: ICborCodec): Promise<SwapBillsWithDustCollectorAttributesArray> {
-    return [await Promise.all(this.proofs.map((proof) => proof.encode(cborCodec)))];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([CborEncoder.encodeArray(this.proofs.map((proof) => proof.encode()))]);
   }
 }

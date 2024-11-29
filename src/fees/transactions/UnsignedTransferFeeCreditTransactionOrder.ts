@@ -1,6 +1,6 @@
 import { numberToBytesBE } from '@noble/curves/abstract/utils';
 import { sha256 } from '@noble/hashes/sha256';
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
@@ -34,13 +34,9 @@ export class UnsignedTransferFeeCreditTransactionOrder {
   private constructor(
     public readonly payload: TransactionPayload<TransferFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: ITransferFeeCreditTransactionData,
-    codec: ICborCodec,
-  ): UnsignedTransferFeeCreditTransactionOrder {
+  public static create(data: ITransferFeeCreditTransactionData): UnsignedTransferFeeCreditTransactionOrder {
     let feeCreditRecordId = data.feeCreditRecord.unitId;
     if (feeCreditRecordId == null) {
       feeCreditRecordId = this.createUnitId(data.metadata.timeout, data.feeCreditRecord.ownerPredicate);
@@ -63,7 +59,6 @@ export class UnsignedTransferFeeCreditTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
@@ -72,9 +67,12 @@ export class UnsignedTransferFeeCreditTransactionOrder {
     return new UnitIdWithType(unitBytes, FeeCreditUnitType.FEE_CREDIT_RECORD);
   }
 
-  public async sign(ownerProofFactory: IProofFactory): Promise<TransferFeeCreditTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+  public sign(ownerProofFactory: IProofFactory): TransferFeeCreditTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? this.stateUnlock.bytes : CborEncoder.encodeNull(),
+    ]);
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
     return new TransferFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }

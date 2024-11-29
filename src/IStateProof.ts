@@ -125,15 +125,6 @@ export interface IStateTreePathItem {
   get siblingSummaryValue(): bigint;
 }
 
-export type UnicityCertificateArray = readonly [
-  bigint,
-  InputRecordArray | null,
-  Uint8Array,
-  ShardTreeCertificateArray,
-  UnicityTreeCertificateArray | null,
-  UnicitySealArray | null,
-];
-
 export interface IUnicityCertificate {
   get version(): bigint;
   get inputRecord(): IInputRecord | null;
@@ -141,20 +132,8 @@ export interface IUnicityCertificate {
   get shardTreeCertificate(): IShardTreeCertificate;
   get unicityTreeCertificate(): IUnicityTreeCertificate | null;
   get unicitySeal(): IUnicitySeal | null;
-  encode(): UnicityCertificateArray;
+  encode(): Uint8Array;
 }
-
-export type InputRecordArray = readonly [
-  bigint,
-  Uint8Array,
-  Uint8Array,
-  Uint8Array,
-  Uint8Array,
-  bigint,
-  bigint,
-  bigint,
-  bigint,
-];
 
 export interface IInputRecord {
   get version(): bigint;
@@ -165,44 +144,34 @@ export interface IInputRecord {
   get roundNumber(): bigint;
   get epoch(): bigint;
   get sumOfEarnedFees(): bigint;
-  encode(): InputRecordArray;
+  encode(): Uint8Array;
 }
-
-export type ShardTreeCertificateArray = readonly [ShardIdArray, Uint8Array[]];
 
 export interface IShardTreeCertificate {
   get shard(): IShardId;
   get siblingHashes(): Uint8Array[];
-  encode(): ShardTreeCertificateArray;
+  encode(): Uint8Array;
 }
-
-export type ShardIdArray = readonly [Uint8Array, bigint];
 
 export interface IShardId {
   get bits(): Uint8Array;
   get length(): bigint;
-  encode(): ShardIdArray;
+  encode(): Uint8Array;
 }
-
-export type UnicityTreeCertificateArray = readonly [bigint, bigint, IndexedPathItemArray[] | null, Uint8Array];
 
 export interface IUnicityTreeCertificate {
   get version(): bigint;
   get partitionIdentifier(): bigint;
   get hashSteps(): IIndexedPathItem[] | null;
   get partitionDescriptionHash(): Uint8Array;
-  encode(): UnicityTreeCertificateArray;
+  encode(): Uint8Array;
 }
-
-export type IndexedPathItemArray = readonly [Uint8Array, Uint8Array];
 
 export interface IIndexedPathItem {
   get key(): Uint8Array;
   get hash(): Uint8Array;
-  encode(): IndexedPathItemArray;
+  encode(): Uint8Array;
 }
-
-export type UnicitySealArray = readonly [bigint, bigint, bigint, Uint8Array, Uint8Array, Map<string, Uint8Array>];
 
 export interface IUnicitySeal {
   get version(): bigint;
@@ -211,5 +180,5 @@ export interface IUnicitySeal {
   get previousHash(): Uint8Array;
   get hash(): Uint8Array;
   get signatures(): Map<string, Uint8Array>;
-  encode(): UnicitySealArray;
+  encode(): Uint8Array;
 }

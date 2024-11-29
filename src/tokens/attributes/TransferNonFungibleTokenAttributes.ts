@@ -1,19 +1,11 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Transfer non-fungible token attributes array.
- */
-export type TransferNonFungibleTokenAttributesArray = readonly [
-  Uint8Array, // Type ID
-  Uint8Array, // Owner Predicate
-  bigint, // Counter
-];
 
 /**
  * Transfer non-fungible token payload attributes.
@@ -62,7 +54,11 @@ export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAt
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<TransferNonFungibleTokenAttributesArray> {
-    return Promise.resolve([this.typeId.bytes, this.ownerPredicate.bytes, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.typeId.bytes),
+      CborEncoder.encodeByteString(this.ownerPredicate.bytes),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 }

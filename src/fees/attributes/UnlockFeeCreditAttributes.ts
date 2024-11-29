@@ -1,13 +1,7 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Unlock fee credit attributes array.
- */
-export type UnlockFeeCreditAttributesArray = readonly [
-  bigint, // Counter
-];
 
 /**
  * Unlock fee credit payload attributes.
@@ -23,7 +17,7 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
 
   /**
    * Create UnlockFeeCreditAttributes from raw CBOR.
-   * @param {UnlockFeeCreditAttributesArray} rawData - Unlock fee credit attributes data as raw CBOR.
+   * @param {Uint8Array} rawData - Unlock fee credit attributes data as raw CBOR.
    * @returns {UnlockFeeCreditAttributes} Unlock fee credit attributes instance.
    */
   public static fromCbor(rawData: Uint8Array): UnlockFeeCreditAttributes {
@@ -44,7 +38,7 @@ export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes 
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<UnlockFeeCreditAttributesArray> {
-    return Promise.resolve([this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([CborEncoder.encodeUnsignedInteger(this.counter)]);
   }
 }

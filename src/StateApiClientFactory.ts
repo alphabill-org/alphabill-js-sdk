@@ -1,4 +1,3 @@
-import { ICborCodec } from './codec/cbor/ICborCodec.js';
 import { JsonRpcClient } from './json-rpc/JsonRpcClient.js';
 import { JsonRpcHttpService } from './json-rpc/JsonRpcHttpService.js';
 import { MoneyPartitionJsonRpcClient } from './json-rpc/MoneyPartitionJsonRpcClient.js';
@@ -29,9 +28,8 @@ export function createTokenClient(options: StateApiClientOptions): TokenPartitio
 /**
  * Create HTTP state API service.
  * @param {string} url URL.
- * @param {ICborCodec} cborCodec CBOR codec.
  * @returns {JsonRpcClient} State API service.
  */
-export function http(url: string, cborCodec: ICborCodec): JsonRpcClient {
-  return new JsonRpcClient(new JsonRpcHttpService(url), cborCodec);
+export function http(url: string): JsonRpcClient {
+  return new JsonRpcClient(new JsonRpcHttpService(url));
 }

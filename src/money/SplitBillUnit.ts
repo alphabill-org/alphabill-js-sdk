@@ -1,12 +1,8 @@
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { dedent } from '../util/StringUtils.js';
-
-/**
- * Split bill unit array.
- */
-export type SplitBillUnitArray = readonly [bigint, Uint8Array];
 
 /**
  * Split bill unit.
@@ -49,10 +45,13 @@ export class SplitBillUnit {
   }
 
   /**
-   * Convert to array.
-   * @returns {SplitBillUnitArray} Split bill unit array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Split bill unit as raw CBOR.
    */
-  public encode(): SplitBillUnitArray {
-    return [this.value, this.ownerPredicate.bytes];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.value),
+      CborEncoder.encodeByteString(this.ownerPredicate.bytes),
+    ]);
   }
 }

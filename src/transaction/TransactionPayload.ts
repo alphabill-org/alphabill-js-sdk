@@ -1,25 +1,10 @@
-import { ICborCodec } from '../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../IUnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
-import { ClientMetadata, TransactionClientMetadataArray } from './ClientMetadata.js';
 import { IStateLock } from './IStateLock.js';
 import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { StateLockArray } from './StateLock.js';
-
-type UnitIdType = Uint8Array;
-type TransactionAttributesType = unknown;
-
-export type PayloadArray = readonly [
-  number,
-  number,
-  UnitIdType,
-  number,
-  TransactionAttributesType,
-  StateLockArray | null,
-  TransactionClientMetadataArray,
-];
 
 /**
  * Transaction payload.
@@ -55,15 +40,15 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
           Reference Number: ${this.clientMetadata.referenceNumber ? Base16Converter.encode(this.clientMetadata.referenceNumber) : null}`;
   }
 
-  public async encode(cborCodec: ICborCodec): Promise<PayloadArray> {
-    return [
-      this.networkIdentifier,
-      this.partitionIdentifier,
-      this.unitId.bytes,
-      this.type,
-      await this.attributes.encode(cborCodec),
-      this.stateLock ? this.stateLock.encode() : null,
-      ClientMetadata.encode(this.clientMetadata),
-    ];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.networkIdentifier),
+      CborEncoder.encodeUnsignedInteger(this.partitionIdentifier),
+      CborEncoder.encodeByteString(this.unitId.bytes),
+      CborEncoder.encodeUnsignedInteger(this.type),
+      this.attributes.encode(),
+      this.stateLock ? this.stateLock.encode() : CborEncoder.encodeNull(),
+      this.clientMetadata.encode(),
+    ]);
   }
 }

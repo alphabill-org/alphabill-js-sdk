@@ -1,3 +1,3 @@
 export interface ITransactionOrderProof {
-  encode(): unknown;
+  encode(): Uint8Array;
 }

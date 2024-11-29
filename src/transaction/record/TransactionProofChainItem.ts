@@ -1,11 +1,7 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Transaction proof chain item array.
- */
-export type TransactionProofChainItemArray = readonly [Uint8Array, boolean];
 
 /**
  * Transaction proof chain item.
@@ -56,10 +52,10 @@ export class TransactionProofChainItem {
   }
 
   /**
-   * Convert to array.
-   * @returns {TransactionProofChainItemArray} Transaction proof chain item array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Transaction proof chain item as raw CBOR.
    */
-  public encode(): TransactionProofChainItemArray {
-    return [this.hash, this.left];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([CborEncoder.encodeByteString(this.hash), CborEncoder.encodeBoolean(this.left)]);
   }
 }

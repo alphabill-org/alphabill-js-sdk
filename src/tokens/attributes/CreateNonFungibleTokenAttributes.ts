@@ -1,4 +1,5 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -7,19 +8,6 @@ import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
 import { INonFungibleTokenData } from '../INonFungibleTokenData.js';
 import { NonFungibleTokenData } from '../NonFungibleTokenData.js';
-
-/**
- * Create non-fungible token attributes array.
- */
-export type CreateNonFungibleTokenAttributesArray = readonly [
-  Uint8Array, // Type ID
-  string, // Name
-  string, // URI
-  Uint8Array, // Data
-  Uint8Array, // Owner predicate
-  Uint8Array, // Data update predicate
-  bigint, // Nonce
-];
 
 /**
  * Create non-fungible token payload attributes.
@@ -84,15 +72,15 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<CreateNonFungibleTokenAttributesArray> {
-    return Promise.resolve([
-      this.typeId.bytes,
-      this.name,
-      this.uri,
-      this.data.bytes,
-      this.ownerPredicate.bytes,
-      this.dataUpdatePredicate.bytes,
-      this.nonce,
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.typeId.bytes),
+      CborEncoder.encodeTextString(this.name),
+      CborEncoder.encodeTextString(this.uri),
+      CborEncoder.encodeByteString(this.data.bytes),
+      CborEncoder.encodeByteString(this.ownerPredicate.bytes),
+      CborEncoder.encodeByteString(this.dataUpdatePredicate.bytes),
+      CborEncoder.encodeUnsignedInteger(this.nonce),
     ]);
   }
 }

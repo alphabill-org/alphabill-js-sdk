@@ -1,20 +1,11 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Split fungible token attributes array.
- */
-export type SplitFungibleTokenAttributesArray = readonly [
-  Uint8Array, // TypeId
-  bigint, // TargetValue
-  Uint8Array, // Owner predicate
-  bigint, // Counter
-];
 
 /**
  * Split fungible token payload attributes.
@@ -39,7 +30,7 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
 
   /**
    * Create a SplitFungibleTokenAttributes from raw CBOR.
-   * @param {SplitFungibleTokenAttributesArray} rawData - Split fungible token attributes as raw CBOR.
+   * @param {Uint8Array} rawData - Split fungible token attributes as raw CBOR.
    * @returns {SplitFungibleTokenAttributes} Split fungible token attributes instance.
    */
   public static fromCbor(rawData: Uint8Array): SplitFungibleTokenAttributes {
@@ -68,7 +59,12 @@ export class SplitFungibleTokenAttributes implements ITransactionPayloadAttribut
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<SplitFungibleTokenAttributesArray> {
-    return Promise.resolve([this.typeId.bytes, this.targetValue, this.ownerPredicate.bytes, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.typeId.bytes),
+      CborEncoder.encodeUnsignedInteger(this.targetValue),
+      CborEncoder.encodeByteString(this.ownerPredicate.bytes),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 }

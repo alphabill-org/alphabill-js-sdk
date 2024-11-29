@@ -1,9 +1,8 @@
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import { IStateLock } from './IStateLock.js';
 import { IPredicate } from './predicates/IPredicate.js';
 import { PredicateBytes } from './predicates/PredicateBytes.js';
-
-export type StateLockArray = [Uint8Array, Uint8Array];
 
 export class StateLock implements IStateLock {
   public constructor(
@@ -19,7 +18,10 @@ export class StateLock implements IStateLock {
     );
   }
 
-  public encode(): StateLockArray {
-    return [this.executionPredicate.bytes, this.rollbackPredicate.bytes];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.executionPredicate.bytes),
+      CborEncoder.encodeByteString(this.rollbackPredicate.bytes),
+    ]);
   }
 }

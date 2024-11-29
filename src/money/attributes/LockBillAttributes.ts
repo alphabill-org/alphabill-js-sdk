@@ -1,14 +1,7 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Lock bill attributes array.
- */
-export type LockBillAttributesArray = readonly [
-  bigint, // Lock Status
-  bigint, // Counter
-];
 
 /**
  * Lock bill payload attributes.
@@ -51,7 +44,10 @@ export class LockBillAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<LockBillAttributesArray> {
-    return Promise.resolve([this.lockStatus, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.lockStatus),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 }

@@ -1,6 +1,5 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -23,10 +22,9 @@ export class UnsignedLockFeeCreditTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<LockFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: ILockFeeCreditTransactionData, codec: ICborCodec): UnsignedLockFeeCreditTransactionOrder {
+  public static create(data: ILockFeeCreditTransactionData): UnsignedLockFeeCreditTransactionOrder {
     return new UnsignedLockFeeCreditTransactionOrder(
       new TransactionPayload<LockFeeCreditAttributes>(
         data.networkIdentifier,
@@ -38,13 +36,15 @@ export class UnsignedLockFeeCreditTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(ownerProofFactory: IProofFactory): Promise<LockFeeCreditTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+  public sign(ownerProofFactory: IProofFactory): LockFeeCreditTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ]);
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
     return new LockFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }

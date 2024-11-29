@@ -1,13 +1,7 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Delete fee credit attributes array.
- */
-export type DeleteFeeCreditAttributesArray = readonly [
-  bigint, // Counter
-];
 
 /**
  * Delete fee credit payload attributes.
@@ -44,7 +38,7 @@ export class DeleteFeeCreditAttributes implements ITransactionPayloadAttributes 
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<DeleteFeeCreditAttributesArray> {
-    return Promise.resolve([this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([CborEncoder.encodeUnsignedInteger(this.counter)]);
   }
 }

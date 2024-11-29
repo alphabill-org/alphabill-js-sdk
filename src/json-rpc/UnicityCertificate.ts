@@ -1,23 +1,16 @@
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import {
   IIndexedPathItem,
   IInputRecord,
-  IndexedPathItemArray,
-  InputRecordArray,
   IShardId,
   IShardTreeCertificate,
   IUnicityCertificate,
   IUnicitySeal,
   IUnicityTreeCertificate,
-  ShardIdArray,
-  ShardTreeCertificateArray,
-  UnicityCertificateArray,
-  UnicitySealArray,
-  UnicityTreeCertificateArray,
 } from '../IStateProof.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
-import { IIndexedPathItemDto } from './IUnitDto';
 
 /**
  * Unicity certificate.
@@ -72,18 +65,18 @@ export class UnicityCertificate implements IUnicityCertificate {
   }
 
   /**
-   * Convert to array.
-   * @returns {UnicityCertificateArray} Unicity certificate array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Unicity certificate as raw CBOR.
    */
-  public encode(): UnicityCertificateArray {
-    return [
-      this.version,
-      this.inputRecord?.encode() ?? null,
-      this.trHash,
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.version),
+      this.inputRecord ? this.inputRecord.encode() : CborEncoder.encodeNull(),
+      CborEncoder.encodeByteString(this.trHash),
       this.shardTreeCertificate.encode(),
-      this.unicityTreeCertificate?.encode() ?? null,
-      this.unicitySeal?.encode() ?? null,
-    ];
+      this.unicityTreeCertificate ? this.unicityTreeCertificate.encode() : CborEncoder.encodeNull(),
+      this.unicitySeal ? this.unicitySeal.encode() : CborEncoder.encodeNull(),
+    ]);
   }
 
   /**
@@ -190,21 +183,21 @@ export class InputRecord implements IInputRecord {
   }
 
   /**
-   * Convert to array.
-   * @returns {InputRecordArray} Input record array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Input record as raw CBOR.
    */
-  public encode(): InputRecordArray {
-    return [
-      this.version,
-      this.previousHash,
-      this.hash,
-      this.blockHash,
-      this.summaryValue,
-      this.timestamp,
-      this.roundNumber,
-      this.epoch,
-      this.sumOfEarnedFees,
-    ];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.version),
+      CborEncoder.encodeByteString(this._previousHash),
+      CborEncoder.encodeByteString(this._hash),
+      CborEncoder.encodeByteString(this._blockHash),
+      CborEncoder.encodeByteString(this._summaryValue),
+      CborEncoder.encodeUnsignedInteger(this.timestamp),
+      CborEncoder.encodeUnsignedInteger(this.roundNumber),
+      CborEncoder.encodeUnsignedInteger(this.epoch),
+      CborEncoder.encodeUnsignedInteger(this.sumOfEarnedFees),
+    ]);
   }
 
   /**
@@ -253,11 +246,14 @@ export class ShardTreeCertificate implements IShardTreeCertificate {
   }
 
   /**
-   * Convert to array.
-   * @returns {ShardTreeCertificateArray} Shard tree certificate array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Shard tree certificate as raw CBOR.
    */
-  public encode(): ShardTreeCertificateArray {
-    return [this.shard.encode(), this.siblingHashes];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      this.shard.encode(),
+      CborEncoder.encodeArray(this.siblingHashes.map((hash: Uint8Array) => CborEncoder.encodeByteString(hash))),
+    ]);
   }
 
   /**
@@ -317,11 +313,11 @@ export class IndexedPathItem implements IIndexedPathItem {
   }
 
   /**
-   * Convert to array.
-   * @returns {IndexedPathItemArray} Indexed path item array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Indexed path item as raw CBOR.
    */
-  public encode(): IndexedPathItemArray {
-    return [this._key, this._hash];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([CborEncoder.encodeByteString(this._key), CborEncoder.encodeByteString(this._hash)]);
   }
 
   /**
@@ -363,15 +359,16 @@ export class ShardId implements IShardId {
    */
   public static fromCbor(rawData: Uint8Array): ShardId {
     // FIXME
-    return new ShardId(CborDecoder.readByteString(rawData), 0n);
+    return new ShardId(CborDecoder.readBitString(rawData), 0n);
   }
 
   /**
-   * Convert to array.
-   * @returns {ShardIdArray} Shard ID array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Shard ID as raw CBOR.
    */
-  public encode(): ShardIdArray {
-    return [this.bits, this.length];
+  public encode(): Uint8Array {
+    // FIXME
+    return CborEncoder.encodeBitString([this.bits, this.length]);
   }
 
   /**
@@ -427,16 +424,18 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
   }
 
   /**
-   * Convert to array.
-   * @returns {UnicityTreeCertificateArray} Unicity tree certificate array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Unicity tree certificate as raw CBOR.
    */
-  public encode(): UnicityTreeCertificateArray {
-    return [
-      this.version,
-      this.partitionIdentifier,
-      this.hashSteps?.map((pathItem: IIndexedPathItem) => pathItem.encode()) ?? null,
-      this._partitionDescriptionHash,
-    ];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.version),
+      CborEncoder.encodeUnsignedInteger(this.partitionIdentifier),
+      this.hashSteps
+        ? CborEncoder.encodeArray(this.hashSteps.map((pathItem: IIndexedPathItem) => pathItem.encode()))
+        : CborEncoder.encodeNull(),
+      CborEncoder.encodeByteString(this._partitionDescriptionHash),
+    ]);
   }
 
   /**
@@ -517,11 +516,18 @@ export class UnicitySeal implements IUnicitySeal {
   }
 
   /**
-   * Convert to array.
-   * @returns {UnicitySealArray} Unicity seal array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Unicity seal as raw CBOR.
    */
-  public encode(): UnicitySealArray {
-    return [this.version, this.rootChainRoundNumber, this.timestamp, this.previousHash, this.hash, this.signatures];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.version),
+      CborEncoder.encodeUnsignedInteger(this.rootChainRoundNumber),
+      CborEncoder.encodeUnsignedInteger(this.timestamp),
+      CborEncoder.encodeByteString(this.previousHash),
+      CborEncoder.encodeByteString(this.hash),
+      CborEncoder.encodeMap(this.signatures),
+    ]);
   }
 
   /**

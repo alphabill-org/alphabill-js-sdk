@@ -20,7 +20,7 @@ export class LockBillTransactionOrder extends TransactionOrder<LockBillAttribute
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromCbor(rawData: Uint8Array): Promise<LockBillTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): LockBillTransactionOrder {
     const data = CborDecoder.readArray(rawData);
     return new LockBillTransactionOrder(
       new TransactionPayload(
@@ -32,7 +32,7 @@ export class LockBillTransactionOrder extends TransactionOrder<LockBillAttribute
         data[5] ? StateLock.fromCbor(data[5]) : null,
         ClientMetadata.fromCbor(data[6]),
       ),
-      await OwnerProofAuthProof.fromCbor(data[7]),
+      OwnerProofAuthProof.fromCbor(data[7]),
       CborDecoder.readByteString(data[8]),
       data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );

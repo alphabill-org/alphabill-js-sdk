@@ -6,12 +6,12 @@ import { TransactionRecordWithProof } from '../../../transaction/record/Transact
 import { ReclaimFeeCreditTransactionOrder } from '../ReclaimFeeCreditTransactionOrder.js';
 
 export class ReclaimFeeCreditTransactionRecordWithProof extends TransactionRecordWithProof<ReclaimFeeCreditTransactionOrder> {
-  public static async fromCbor(rawData: Uint8Array): Promise<ReclaimFeeCreditTransactionRecordWithProof> {
+  public static fromCbor(rawData: Uint8Array): ReclaimFeeCreditTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
     const txOrderData = CborDecoder.readArray(data[0]);
     return new ReclaimFeeCreditTransactionRecordWithProof(
       new TransactionRecord(
-        await ReclaimFeeCreditTransactionOrder.fromCbor(txOrderData[0]),
+        ReclaimFeeCreditTransactionOrder.fromCbor(txOrderData[0]),
         ServerMetadata.fromCbor(txOrderData[1]),
       ),
       TransactionProof.fromCbor(data[1]),

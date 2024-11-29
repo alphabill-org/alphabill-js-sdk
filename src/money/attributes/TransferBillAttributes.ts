@@ -1,17 +1,9 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Transfer bill attributes array.
- */
-export type TransferBillAttributesArray = [
-  bigint, // Target Value
-  Uint8Array, // Owner Predicate
-  bigint, // Counter
-];
 
 /**
  * Transfer bill payload attributes.
@@ -61,7 +53,11 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<TransferBillAttributesArray> {
-    return Promise.resolve([this.targetValue, this.ownerPredicate.bytes, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.targetValue),
+      CborEncoder.encodeByteString(this.ownerPredicate.bytes),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 }

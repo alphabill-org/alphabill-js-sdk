@@ -1,6 +1,5 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -27,10 +26,9 @@ export class UnsignedSplitBillTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<SplitBillAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: ISplitBillTransactionData, codec: ICborCodec): UnsignedSplitBillTransactionOrder {
+  public static create(data: ISplitBillTransactionData): UnsignedSplitBillTransactionOrder {
     return new UnsignedSplitBillTransactionOrder(
       new TransactionPayload<SplitBillAttributes>(
         data.networkIdentifier,
@@ -45,18 +43,16 @@ export class UnsignedSplitBillTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(
-    ownerProofFactory: IProofFactory,
-    feeProofFactory: IProofFactory | null,
-  ): Promise<SplitBillTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
-    const feeProof =
-      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
+  public sign(ownerProofFactory: IProofFactory, feeProofFactory: IProofFactory | null): SplitBillTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ]);
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
     return new SplitBillTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

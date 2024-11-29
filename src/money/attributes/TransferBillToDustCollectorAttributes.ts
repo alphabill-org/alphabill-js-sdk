@@ -1,18 +1,9 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Transfer bill to dust collector attributes array.
- */
-export type TransferBillToDustCollectorAttributesArray = readonly [
-  bigint, // Value
-  Uint8Array, // Target Unit ID
-  bigint, // Target Unit Counter
-  bigint, // Counter
-];
 
 /**
  * Transfer bill to dust collector payload attributes.
@@ -54,8 +45,13 @@ export class TransferBillToDustCollectorAttributes implements ITransactionPayloa
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<TransferBillToDustCollectorAttributesArray> {
-    return Promise.resolve([this.value, this.targetUnitId.bytes, this.targetUnitCounter, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.value),
+      CborEncoder.encodeByteString(this.targetUnitId.bytes),
+      CborEncoder.encodeUnsignedInteger(this.targetUnitCounter),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 
   /**

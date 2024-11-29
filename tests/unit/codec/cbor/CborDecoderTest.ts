@@ -87,4 +87,8 @@ describe('Cbor decoder test', () => {
       data: Base16Converter.decode('0xC2650A0A0A0A0A'),
     });
   });
+
+  it('Decode bitstring', () => {
+      // TODO
+  });
 });

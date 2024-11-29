@@ -1,16 +1,9 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
 import { INonFungibleTokenData } from '../INonFungibleTokenData.js';
 import { NonFungibleTokenData } from '../NonFungibleTokenData.js';
-
-/**
- * Update non-fungible token attributes array.
- */
-export type UpdateNonFungibleTokenAttributesArray = readonly [
-  Uint8Array, // Data
-  bigint, // Counter
-];
 
 /**
  * Update non-fungible token payload attributes.
@@ -55,7 +48,10 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<UpdateNonFungibleTokenAttributesArray> {
-    return Promise.resolve([this.data.bytes, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.data.bytes),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 }

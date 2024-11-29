@@ -1,25 +1,12 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
-import { TokenIcon, TokenIconArray } from '../TokenIcon.js';
-
-/**
- * Create non-fungible token type attributes array.
- */
-export type CreateNonFungibleTokenTypeAttributesArray = readonly [
-  string, // Symbol
-  string, // Name
-  TokenIconArray, // Icon
-  Uint8Array | null, // Parent Type ID
-  Uint8Array, // SubType Creation Predicate
-  Uint8Array, // Token Minting Predicate
-  Uint8Array, // Token Type Owner Predicate
-  Uint8Array, // Data Update Predicate
-];
+import { TokenIcon } from '../TokenIcon.js';
 
 /**
  * Create non-fungible token type payload attributes.
@@ -86,16 +73,16 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<CreateNonFungibleTokenTypeAttributesArray> {
-    return Promise.resolve([
-      this.symbol,
-      this.name,
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeTextString(this.symbol),
+      CborEncoder.encodeTextString(this.name),
       this.icon.encode(),
-      this.parentTypeId?.bytes || null,
-      this.subTypeCreationPredicate.bytes,
-      this.tokenMintingPredicate.bytes,
-      this.tokenTypeOwnerPredicate.bytes,
-      this.dataUpdatePredicate.bytes,
+      this.parentTypeId ? CborEncoder.encodeByteString(this.parentTypeId.bytes) : CborEncoder.encodeNull(),
+      CborEncoder.encodeByteString(this.subTypeCreationPredicate.bytes),
+      CborEncoder.encodeByteString(this.tokenMintingPredicate.bytes),
+      CborEncoder.encodeByteString(this.tokenTypeOwnerPredicate.bytes),
+      CborEncoder.encodeByteString(this.dataUpdatePredicate.bytes),
     ]);
   }
 }

@@ -1,4 +1,3 @@
-import { Base16Converter } from '../../util/Base16Converter.js';
 import { BitMask } from './BitMask.js';
 import { MajorType } from './MajorType.js';
 
@@ -78,6 +77,20 @@ export class CborDecoder {
     }
     const { length: tag, position } = CborDecoder.readLength(majorType, data, 0);
     return { tag, data: CborDecoder.readRawCbor(data, position).data };
+  }
+
+  public static readBitString(data: Uint8Array): { length: number; data: Uint8Array } {
+    const byteCount = data.length - 1;
+    const zc = this.trailingZeros8(data[byteCount]);
+    switch (zc) {
+      case 8:
+        throw new Error('Invalid bit string encoding: last byte doesnt contain end marker');
+      case 7:
+        return { length: byteCount * 8, data: data.subarray(0, byteCount) };
+      default:
+        data[byteCount] ^= 1 << zc; // clear end marker
+        return { length: byteCount * 8 + 7 - zc, data: data };
+    }
   }
 
   private static readLength(majorType: number, data: Uint8Array, offset: number): { length: bigint; position: number } {
@@ -161,5 +174,21 @@ export class CborDecoder {
     }
 
     return data.subarray(offset, offset + length);
+  }
+
+  private static trailingZeros8(x: number): number {
+    // Ensure x is within 8-bit range
+    x &= 0xff;
+
+    if (x === 0) {
+      return 8; // Special case for zero
+    }
+
+    let count = 0;
+    while ((x & 1) === 0) {
+      count++;
+      x >>= 1;
+    }
+    return count;
   }
 }

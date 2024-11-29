@@ -1,6 +1,5 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -24,13 +23,9 @@ export class UnsignedReclaimFeeCreditTransactionOrder {
   public constructor(
     public readonly payload: TransactionPayload<ReclaimFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: IReclaimFeeCreditTransactionData,
-    codec: ICborCodec,
-  ): UnsignedReclaimFeeCreditTransactionOrder {
+  public static create(data: IReclaimFeeCreditTransactionData): UnsignedReclaimFeeCreditTransactionOrder {
     return new UnsignedReclaimFeeCreditTransactionOrder(
       new TransactionPayload<ReclaimFeeCreditAttributes>(
         data.networkIdentifier,
@@ -42,13 +37,15 @@ export class UnsignedReclaimFeeCreditTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(ownerProofFactory: IProofFactory): Promise<ReclaimFeeCreditTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+  public sign(ownerProofFactory: IProofFactory): ReclaimFeeCreditTransactionOrder {
+    const authProof = CborEncoder.encodeArray([
+      this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ]);
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
     return new ReclaimFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
   }

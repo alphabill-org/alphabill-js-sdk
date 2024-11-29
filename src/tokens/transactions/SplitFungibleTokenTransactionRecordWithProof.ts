@@ -6,12 +6,12 @@ import { TransactionRecordWithProof } from '../../transaction/record/Transaction
 import { SplitFungibleTokenTransactionOrder } from './SplitFungibleTokenTransactionOrder.js';
 
 export class SplitFungibleTokenTransactionRecordWithProof extends TransactionRecordWithProof<SplitFungibleTokenTransactionOrder> {
-  public static async fromCbor(rawData: Uint8Array): Promise<SplitFungibleTokenTransactionRecordWithProof> {
+  public static fromCbor(rawData: Uint8Array): SplitFungibleTokenTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
     const txOrderData = CborDecoder.readArray(data[0]);
     return new SplitFungibleTokenTransactionRecordWithProof(
       new TransactionRecord(
-        await SplitFungibleTokenTransactionOrder.fromCbor(txOrderData[0]),
+        SplitFungibleTokenTransactionOrder.fromCbor(txOrderData[0]),
         ServerMetadata.fromCbor(txOrderData[1]),
       ),
       TransactionProof.fromCbor(data[1]),

@@ -6,12 +6,12 @@ import { TransactionRecordWithProof } from '../../transaction/record/Transaction
 import { UnlockBillTransactionOrder } from './UnlockBillTransactionOrder.js';
 
 export class UnlockBillTransactionRecordWithProof extends TransactionRecordWithProof<UnlockBillTransactionOrder> {
-  public static async fromCbor(rawData: Uint8Array): Promise<UnlockBillTransactionRecordWithProof> {
+  public static fromCbor(rawData: Uint8Array): UnlockBillTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
     const txOrderData = CborDecoder.readArray(data[0]);
     return new UnlockBillTransactionRecordWithProof(
       new TransactionRecord(
-        await UnlockBillTransactionOrder.fromCbor(txOrderData[0]),
+        UnlockBillTransactionOrder.fromCbor(txOrderData[0]),
         ServerMetadata.fromCbor(txOrderData[1]),
       ),
       TransactionProof.fromCbor(data[1]),

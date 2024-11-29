@@ -23,7 +23,7 @@ export class CreateFungibleTokenTransactionOrder extends TransactionOrder<
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromCbor(rawData: Uint8Array): Promise<CreateFungibleTokenTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): CreateFungibleTokenTransactionOrder {
     const data = CborDecoder.readArray(rawData);
     return new CreateFungibleTokenTransactionOrder(
       new TransactionPayload(
@@ -35,7 +35,7 @@ export class CreateFungibleTokenTransactionOrder extends TransactionOrder<
         data[5] ? StateLock.fromCbor(data[5]) : null,
         ClientMetadata.fromCbor(data[6]),
       ),
-      await OwnerProofAuthProof.fromCbor(data[7]),
+      OwnerProofAuthProof.fromCbor(data[7]),
       CborDecoder.readByteString(data[8]),
       data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );

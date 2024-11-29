@@ -65,7 +65,7 @@ export class CborEncoder {
     ]);
   }
 
-  public static encodeMap(): Uint8Array {
+  public static encodeMap(data: Map<string, Uint8Array>): Uint8Array {
     throw new Error('Not implemented.');
   }
 
@@ -76,6 +76,18 @@ export class CborEncoder {
     const bytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(tag);
 
     return new Uint8Array([MajorType.TAG | CborEncoder.getAdditionalInformationBits(bytes.length), ...bytes, ...input]);
+  }
+
+  public static encodeBoolean(data: boolean): Uint8Array {
+    throw new Error('Not implemented');
+  }
+
+  public static encodeBitString(data: Uint8Array): Uint8Array {
+    throw new Error('Not implemented');
+  }
+
+  public static encodeNull(): Uint8Array {
+    return new Uint8Array([0xf6]);
   }
 
   private static getAdditionalInformationBits(length: number): number {

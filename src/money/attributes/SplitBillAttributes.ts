@@ -1,15 +1,8 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
-import { SplitBillUnit, SplitBillUnitArray } from '../SplitBillUnit.js';
-
-/**
- * Split bill attributes array.
- */
-export type SplitBillAttributesArray = [
-  SplitBillUnitArray[], // Target Split Bill Units
-  bigint, // Counter
-];
+import { SplitBillUnit } from '../SplitBillUnit.js';
 
 /**
  * Split bill attributes.
@@ -38,7 +31,7 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
 
   /**
    * Create a SplitBillAttributes from raw CBOR.
-   * @param {SplitBillAttributesArray} rawData - Split bill attributes as raw CBOR.
+   * @param {Uint8Array} rawData - Split bill attributes as raw CBOR.
    * @returns {SplitBillAttributes} Split bill attributes instance.
    */
   public static fromCbor(rawData: Uint8Array): SplitBillAttributes {
@@ -52,8 +45,11 @@ export class SplitBillAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<SplitBillAttributesArray> {
-    return Promise.resolve([this.targetUnits.map((unit) => unit.encode()), this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeArray(this.targetUnits.map((unit) => unit.encode())),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 
   /**

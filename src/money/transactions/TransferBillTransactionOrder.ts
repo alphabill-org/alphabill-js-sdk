@@ -20,7 +20,7 @@ export class TransferBillTransactionOrder extends TransactionOrder<TransferBillA
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromCbor(rawData: Uint8Array): Promise<TransferBillTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): TransferBillTransactionOrder {
     const data = CborDecoder.readArray(rawData);
     return new TransferBillTransactionOrder(
       new TransactionPayload(
@@ -32,7 +32,7 @@ export class TransferBillTransactionOrder extends TransactionOrder<TransferBillA
         data[5] ? StateLock.fromCbor(data[5]) : null,
         ClientMetadata.fromCbor(data[6]),
       ),
-      await OwnerProofAuthProof.fromCbor(data[7]),
+      OwnerProofAuthProof.fromCbor(data[7]),
       CborDecoder.readByteString(data[8]),
       data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );

@@ -20,7 +20,7 @@ export class SplitBillTransactionOrder extends TransactionOrder<SplitBillAttribu
     super(payload, authProof, feeProof, stateUnlock);
   }
 
-  public static async fromCbor(rawData: Uint8Array): Promise<SplitBillTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): SplitBillTransactionOrder {
     const data = CborDecoder.readArray(rawData);
     return new SplitBillTransactionOrder(
       new TransactionPayload(
@@ -32,7 +32,7 @@ export class SplitBillTransactionOrder extends TransactionOrder<SplitBillAttribu
         data[5] ? StateLock.fromCbor(data[5]) : null,
         ClientMetadata.fromCbor(data[6]),
       ),
-      await OwnerProofAuthProof.fromCbor(data[7]),
+      OwnerProofAuthProof.fromCbor(data[7]),
       CborDecoder.readByteString(data[8]),
       data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
     );

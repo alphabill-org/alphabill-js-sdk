@@ -1,5 +1,4 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
@@ -24,7 +23,7 @@ export type CreateUnit<T, U> = {
 };
 
 export type CreateTransactionRecordWithProof<T> = {
-  fromCbor: (rawData: Uint8Array) => Promise<T>;
+  fromCbor: (rawData: Uint8Array) => T;
 };
 
 type GetUnitResponseDto<T> = {
@@ -39,10 +38,7 @@ type GetUnitResponseDto<T> = {
  * State API JSON-RPC service.
  */
 export class JsonRpcClient {
-  public constructor(
-    private readonly service: IJsonRpcService,
-    public readonly cborCodec: ICborCodec,
-  ) {}
+  public constructor(private readonly service: IJsonRpcService) {}
 
   /**
    * Get round number.
@@ -157,7 +153,7 @@ export class JsonRpcClient {
   ): Promise<Uint8Array> {
     const response = (await this.request(
       'state_sendTransaction',
-      Base16Converter.encode(await this.cborCodec.encode(await transaction.encode(this.cborCodec))),
+      Base16Converter.encode(transaction.encode()),
     )) as string;
 
     return Base16Converter.decode(response);

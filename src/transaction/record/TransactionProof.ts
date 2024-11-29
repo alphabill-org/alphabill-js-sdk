@@ -1,19 +1,9 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
-import { UnicityCertificateArray } from '../../IStateProof.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { UnicityCertificate } from '../../json-rpc/UnicityCertificate.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
-import { TransactionProofChainItem, TransactionProofChainItemArray } from './TransactionProofChainItem.js';
-
-/**
- * Transaction proof array.
- */
-export type TransactionProofArray = readonly [
-  bigint,
-  Uint8Array,
-  TransactionProofChainItemArray[] | null,
-  UnicityCertificateArray,
-];
+import { TransactionProofChainItem } from './TransactionProofChainItem.js';
 
 /**
  * Transaction proof.
@@ -61,16 +51,18 @@ export class TransactionProof {
   }
 
   /**
-   * Convert to array.
-   * @returns {TransactionProofArray} Transaction proof array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Transaction proof as raw CBOR.
    */
-  public encode(): TransactionProofArray {
-    return [
-      this.version,
-      this.blockHeaderHash,
-      this.chain?.map((item: TransactionProofChainItem) => item.encode()) ?? null,
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.version),
+      CborEncoder.encodeByteString(this.blockHeaderHash),
+      this.chain
+        ? CborEncoder.encodeArray(this.chain.map((item: TransactionProofChainItem) => item.encode()))
+        : CborEncoder.encodeNull(),
       this.unicityCertificate.encode(),
-    ];
+    ]);
   }
 
   /**

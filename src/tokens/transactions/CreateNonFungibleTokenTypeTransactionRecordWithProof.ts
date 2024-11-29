@@ -6,12 +6,12 @@ import { TransactionRecordWithProof } from '../../transaction/record/Transaction
 import { CreateNonFungibleTokenTypeTransactionOrder } from './CreateNonFungibleTokenTypeTransactionOrder.js';
 
 export class CreateNonFungibleTokenTypeTransactionRecordWithProof extends TransactionRecordWithProof<CreateNonFungibleTokenTypeTransactionOrder> {
-  public static async fromCbor(rawData: Uint8Array): Promise<CreateNonFungibleTokenTypeTransactionRecordWithProof> {
+  public static fromCbor(rawData: Uint8Array): CreateNonFungibleTokenTypeTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
     const txOrderData = CborDecoder.readArray(data[0]);
     return new CreateNonFungibleTokenTypeTransactionRecordWithProof(
       new TransactionRecord(
-        await CreateNonFungibleTokenTypeTransactionOrder.fromCbor(txOrderData[0]),
+        CreateNonFungibleTokenTypeTransactionOrder.fromCbor(txOrderData[0]),
         ServerMetadata.fromCbor(txOrderData[1]),
       ),
       TransactionProof.fromCbor(data[1]),

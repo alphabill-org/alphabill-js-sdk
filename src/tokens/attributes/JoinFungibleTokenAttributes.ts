@@ -1,16 +1,8 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
-import { TransactionRecordWithProofArray } from '../../transaction/record/TransactionRecordWithProof.js';
 import { dedent } from '../../util/StringUtils.js';
 import { BurnFungibleTokenTransactionRecordWithProof } from '../transactions/BurnFungibleTokenTransactionRecordWithProof.js';
-
-/**
- * Join fungible token attributes array.
- */
-export type JoinFungibleTokenAttributesArray = [
-  TransactionRecordWithProofArray[], // Burn Fungible Token Transaction Record With Proof array
-];
 
 /**
  * Join fungible token payload attributes.
@@ -33,17 +25,15 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * Create a JoinFungibleTokenAttributes from raw CBOR .
-   * @param {JoinFungibleTokenAttributesArray} rawData Join fungible token attributes as raw CBOR.
+   * Create a JoinFungibleTokenAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Join fungible token attributes as raw CBOR.
    * @returns {JoinFungibleTokenAttributes} Join fungible token attributes instance.
    */
-  public static async fromCbor(rawData: Uint8Array): Promise<JoinFungibleTokenAttributes> {
+  public static fromCbor(rawData: Uint8Array): JoinFungibleTokenAttributes {
     const data = CborDecoder.readArray(rawData);
     return new JoinFungibleTokenAttributes(
-      await Promise.all(
-        CborDecoder.readArray(data[0]).map((rawProof: Uint8Array) =>
-          BurnFungibleTokenTransactionRecordWithProof.fromCbor(rawProof),
-        ),
+      CborDecoder.readArray(data[0]).map((rawProof: Uint8Array) =>
+        BurnFungibleTokenTransactionRecordWithProof.fromCbor(rawProof),
       ),
     );
   }
@@ -51,8 +41,8 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public async encode(cborCodec: ICborCodec): Promise<JoinFungibleTokenAttributesArray> {
-    return [await Promise.all(this.proofs.map((proof) => proof.encode(cborCodec)))];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([CborEncoder.encodeArray(this.proofs.map((proof) => proof.encode()))]);
   }
 
   /**
