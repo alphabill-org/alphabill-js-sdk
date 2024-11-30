@@ -81,6 +81,9 @@ export class CborDecoder {
 
   public static readBitString(data: Uint8Array): { length: number; data: Uint8Array } {
     const byteCount = data.length - 1;
+    if (byteCount < 0) {
+      throw new Error('Invalid bit string encoding: empty input');
+    }
     const zc = this.trailingZeros8(data[byteCount]);
     switch (zc) {
       case 8:

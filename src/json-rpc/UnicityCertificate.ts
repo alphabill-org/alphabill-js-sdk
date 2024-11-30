@@ -339,10 +339,9 @@ export class IndexedPathItem implements IIndexedPathItem {
 export class ShardId implements IShardId {
   public constructor(
     private readonly _bits: Uint8Array,
-    public readonly length: bigint,
+    public readonly length: number,
   ) {
     this._bits = new Uint8Array(this._bits);
-    this.length = BigInt(this.length);
   }
 
   /**
@@ -358,8 +357,8 @@ export class ShardId implements IShardId {
    * @returns {ShardId} Shard ID.
    */
   public static fromCbor(rawData: Uint8Array): ShardId {
-    // FIXME
-    return new ShardId(CborDecoder.readBitString(rawData), 0n);
+    const decodedShardId = CborDecoder.readBitString(rawData);
+    return new ShardId(decodedShardId.data, decodedShardId.length);
   }
 
   /**
@@ -367,8 +366,7 @@ export class ShardId implements IShardId {
    * @returns {Uint8Array} Shard ID as raw CBOR.
    */
   public encode(): Uint8Array {
-    // FIXME
-    return CborEncoder.encodeBitString([this.bits, this.length]);
+    return CborEncoder.encodeBitString(this.bits, this.length);
   }
 
   /**

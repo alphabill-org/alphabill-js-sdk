@@ -82,8 +82,20 @@ export class CborEncoder {
     throw new Error('Not implemented');
   }
 
-  public static encodeBitString(data: Uint8Array): Uint8Array {
-    throw new Error('Not implemented');
+  public static encodeBitString(data: Uint8Array, length: number): Uint8Array {
+    const byteCount = Math.floor(length / 8);
+    const bitCount = length % 8;
+    const bs = new Uint8Array(byteCount + 1);
+    bs.set(data.subarray(0, byteCount));
+    if (bitCount == 0) {
+      bs[byteCount] = 0b10000000;
+    } else {
+      // clear trailing bits
+      const v = data[byteCount] & ~(0xff >> bitCount);
+      // add end marker
+      bs[byteCount] = v | (1 << (7 - bitCount));
+    }
+    return bs;
   }
 
   public static encodeNull(): Uint8Array {

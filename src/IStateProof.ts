@@ -155,7 +155,7 @@ export interface IShardTreeCertificate {
 
 export interface IShardId {
   get bits(): Uint8Array;
-  get length(): bigint;
+  get length(): number;
   encode(): Uint8Array;
 }
 

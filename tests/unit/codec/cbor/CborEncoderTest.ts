@@ -85,4 +85,16 @@ describe('Cbor encoder test', () => {
       Base16Converter.decode('0xC1C2650A0A0A0A0A'),
     );
   });
+
+  it('Encode bitstring', () => {
+    expect(CborEncoder.encodeBitString(new Uint8Array([]), 0)).toEqual(new Uint8Array([128]));
+    expect(CborEncoder.encodeBitString(new Uint8Array([0]), 1)).toEqual(new Uint8Array([0b0100_0000]));
+    expect(CborEncoder.encodeBitString(new Uint8Array([128]), 1)).toEqual(new Uint8Array([0b1100_0000]));
+    expect(CborEncoder.encodeBitString(new Uint8Array([0]), 7)).toEqual(new Uint8Array([1]));
+    expect(CborEncoder.encodeBitString(new Uint8Array([0b1111_1110]), 7)).toEqual(new Uint8Array([0xff]));
+    expect(CborEncoder.encodeBitString(new Uint8Array([0]), 8)).toEqual(new Uint8Array([0, 128]));
+    expect(CborEncoder.encodeBitString(new Uint8Array([0xff]), 8)).toEqual(new Uint8Array([0xff, 128]));
+    expect(CborEncoder.encodeBitString(new Uint8Array([0, 0]), 9)).toEqual(new Uint8Array([0, 0b0100_0000]));
+    expect(CborEncoder.encodeBitString(new Uint8Array([0xff, 0xff]), 9)).toEqual(new Uint8Array([0xff, 0b1100_0000]));
+  });
 });
