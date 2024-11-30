@@ -50,11 +50,14 @@ export abstract class TransactionOrder<
   }
 
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray([
-      this.payload.encode(),
-      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
-      this.authProof.encode(),
-      this.feeProof ? CborEncoder.encodeByteString(this.feeProof) : CborEncoder.encodeNull(),
-    ]);
+    return CborEncoder.encodeTag(
+      1016,
+      CborEncoder.encodeArray([
+        this.payload.encode(),
+        this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+        this.authProof.encode(),
+        this.feeProof ? CborEncoder.encodeByteString(this.feeProof) : CborEncoder.encodeNull(),
+      ]),
+    );
   }
 }
