@@ -15,29 +15,31 @@ export class CreateFungibleTokenTypeTransactionOrder extends TransactionOrder<
   SubTypeOwnerProofsAuthProof
 > {
   public constructor(
+    version: bigint,
     payload: TransactionPayload<CreateFungibleTokenTypeAttributes>,
     authProof: SubTypeOwnerProofsAuthProof,
     feeProof: Uint8Array | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(payload, authProof, feeProof, stateUnlock);
+    super(version, payload, authProof, feeProof, stateUnlock);
   }
 
   public static fromCbor(rawData: Uint8Array): CreateFungibleTokenTypeTransactionOrder {
     const data = CborDecoder.readArray(rawData);
     return new CreateFungibleTokenTypeTransactionOrder(
+      CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(
-        Number(CborDecoder.readUnsignedInteger(data[0])),
         Number(CborDecoder.readUnsignedInteger(data[1])),
-        UnitId.fromBytes(CborDecoder.readByteString(data[2])),
+        Number(CborDecoder.readUnsignedInteger(data[2])),
+        UnitId.fromBytes(CborDecoder.readByteString(data[3])),
         TokenPartitionTransactionType.CreateFungibleTokenType,
-        CreateFungibleTokenTypeAttributes.fromCbor(data[4]),
-        data[5] ? StateLock.fromCbor(data[5]) : null,
-        ClientMetadata.fromCbor(data[6]),
+        CreateFungibleTokenTypeAttributes.fromCbor(data[5]),
+        data[6] ? StateLock.fromCbor(data[6]) : null,
+        ClientMetadata.fromCbor(data[7]),
       ),
-      SubTypeOwnerProofsAuthProof.fromCbor(data[7]),
-      CborDecoder.readByteString(data[8]),
-      data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
+      SubTypeOwnerProofsAuthProof.fromCbor(data[8]),
+      CborDecoder.readByteString(data[9]),
+      data[10] ? new PredicateBytes(CborDecoder.readByteString(data[10])) : null,
     );
   }
 }

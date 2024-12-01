@@ -21,12 +21,14 @@ interface IReclaimFeeCreditTransactionData extends ITransactionData {
 
 export class UnsignedReclaimFeeCreditTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<ReclaimFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: IReclaimFeeCreditTransactionData): UnsignedReclaimFeeCreditTransactionOrder {
     return new UnsignedReclaimFeeCreditTransactionOrder(
+      data.version,
       new TransactionPayload<ReclaimFeeCreditAttributes>(
         data.networkIdentifier,
         PartitionIdentifier.MONEY,
@@ -47,6 +49,6 @@ export class UnsignedReclaimFeeCreditTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
-    return new ReclaimFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new ReclaimFeeCreditTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

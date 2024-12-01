@@ -18,12 +18,14 @@ interface IUpdateNonFungibleTokenTransactionData extends ITransactionData {
 
 export class UnsignedUpdateNonFungibleTokenTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<UpdateNonFungibleTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: IUpdateNonFungibleTokenTransactionData): UnsignedUpdateNonFungibleTokenTransactionOrder {
     return new UnsignedUpdateNonFungibleTokenTransactionOrder(
+      data.version,
       new TransactionPayload(
         data.networkIdentifier,
         PartitionIdentifier.TOKEN,
@@ -51,6 +53,12 @@ export class UnsignedUpdateNonFungibleTokenTransactionOrder {
       tokenTypeDataUpdateProofs.map((factory) => factory.create(authProof)),
     );
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new UpdateNonFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new UpdateNonFungibleTokenTransactionOrder(
+      this.version,
+      this.payload,
+      ownerProof,
+      feeProof,
+      this.stateUnlock,
+    );
   }
 }

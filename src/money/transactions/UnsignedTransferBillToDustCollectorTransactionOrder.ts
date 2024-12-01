@@ -25,6 +25,7 @@ export interface ISwapBillsWithDustCollectorTransactionData extends ITransaction
 
 export class UnsignedTransferBillToDustCollectorTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<TransferBillToDustCollectorAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
@@ -33,6 +34,7 @@ export class UnsignedTransferBillToDustCollectorTransactionOrder {
     data: ISwapBillsWithDustCollectorTransactionData,
   ): UnsignedTransferBillToDustCollectorTransactionOrder {
     return new UnsignedTransferBillToDustCollectorTransactionOrder(
+      data.version,
       new TransactionPayload<TransferBillToDustCollectorAttributes>(
         data.networkIdentifier,
         PartitionIdentifier.MONEY,
@@ -61,6 +63,6 @@ export class UnsignedTransferBillToDustCollectorTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new TransferBillToDustCollectorTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new TransferBillToDustCollectorTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

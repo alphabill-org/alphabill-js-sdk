@@ -12,29 +12,31 @@ import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 
 export class CloseFeeCreditTransactionOrder extends TransactionOrder<CloseFeeCreditAttributes, OwnerProofAuthProof> {
   public constructor(
+    version: bigint,
     payload: TransactionPayload<CloseFeeCreditAttributes>,
     ownerProof: OwnerProofAuthProof,
     feeProof: Uint8Array | null,
     stateUnlock: IPredicate | null,
   ) {
-    super(payload, ownerProof, feeProof, stateUnlock);
+    super(version, payload, ownerProof, feeProof, stateUnlock);
   }
 
   public static fromCbor(rawData: Uint8Array): CloseFeeCreditTransactionOrder {
     const data = CborDecoder.readArray(rawData);
     return new CloseFeeCreditTransactionOrder(
+      CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(
-        Number(CborDecoder.readUnsignedInteger(data[0])),
         Number(CborDecoder.readUnsignedInteger(data[1])),
-        UnitId.fromBytes(CborDecoder.readByteString(data[2])),
+        Number(CborDecoder.readUnsignedInteger(data[2])),
+        UnitId.fromBytes(CborDecoder.readByteString(data[3])),
         FeeCreditTransactionType.CloseFeeCredit,
-        CloseFeeCreditAttributes.fromCbor(data[4]),
-        data[5] ? StateLock.fromCbor(data[5]) : null,
-        ClientMetadata.fromCbor(data[6]),
+        CloseFeeCreditAttributes.fromCbor(data[5]),
+        data[6] ? StateLock.fromCbor(data[6]) : null,
+        ClientMetadata.fromCbor(data[7]),
       ),
-      OwnerProofAuthProof.fromCbor(data[7]),
-      CborDecoder.readByteString(data[8]),
-      data[9] ? new PredicateBytes(CborDecoder.readByteString(data[9])) : null,
+      OwnerProofAuthProof.fromCbor(data[8]),
+      CborDecoder.readByteString(data[9]),
+      data[10] ? new PredicateBytes(CborDecoder.readByteString(data[10])) : null,
     );
   }
 }

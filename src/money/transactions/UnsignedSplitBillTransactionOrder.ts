@@ -24,12 +24,14 @@ export interface ISplitBillTransactionData extends ITransactionData {
 
 export class UnsignedSplitBillTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<SplitBillAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: ISplitBillTransactionData): UnsignedSplitBillTransactionOrder {
     return new UnsignedSplitBillTransactionOrder(
+      data.version,
       new TransactionPayload<SplitBillAttributes>(
         data.networkIdentifier,
         PartitionIdentifier.MONEY,
@@ -53,6 +55,6 @@ export class UnsignedSplitBillTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new SplitBillTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new SplitBillTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

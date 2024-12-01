@@ -19,12 +19,14 @@ interface ISplitFungibleTokenTransactionData extends ITransactionData {
 
 export class UnsignedSplitFungibleTokenTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<SplitFungibleTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: ISplitFungibleTokenTransactionData): UnsignedSplitFungibleTokenTransactionOrder {
     return new UnsignedSplitFungibleTokenTransactionOrder(
+      data.version,
       new TransactionPayload(
         data.networkIdentifier,
         PartitionIdentifier.TOKEN,
@@ -52,6 +54,6 @@ export class UnsignedSplitFungibleTokenTransactionOrder {
       tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
     );
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new SplitFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new SplitFungibleTokenTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

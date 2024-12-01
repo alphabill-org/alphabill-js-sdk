@@ -17,12 +17,14 @@ export interface ILockTokenTransactionData extends ITransactionData {
 
 export class UnsignedLockTokenTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<LockTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: ILockTokenTransactionData): UnsignedLockTokenTransactionOrder {
     return new UnsignedLockTokenTransactionOrder(
+      data.version,
       new TransactionPayload(
         data.networkIdentifier,
         PartitionIdentifier.TOKEN,
@@ -43,6 +45,6 @@ export class UnsignedLockTokenTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new LockTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new LockTokenTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

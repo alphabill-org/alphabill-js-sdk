@@ -17,12 +17,14 @@ interface ICloseFeeCreditTransactionData extends ITransactionData {
 
 export class UnsignedCloseFeeCreditTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<CloseFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: ICloseFeeCreditTransactionData): UnsignedCloseFeeCreditTransactionOrder {
     return new UnsignedCloseFeeCreditTransactionOrder(
+      data.version,
       new TransactionPayload<CloseFeeCreditAttributes>(
         data.networkIdentifier,
         PartitionIdentifier.MONEY,
@@ -48,6 +50,6 @@ export class UnsignedCloseFeeCreditTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
-    return new CloseFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new CloseFeeCreditTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

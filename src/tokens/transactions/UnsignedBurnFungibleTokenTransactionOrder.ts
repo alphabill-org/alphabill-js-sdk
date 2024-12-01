@@ -18,12 +18,14 @@ interface IBurnFungibleTokenTransactionData extends ITransactionData {
 
 export class UnsignedBurnFungibleTokenTransactionOrder {
   private constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<BurnFungibleTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: IBurnFungibleTokenTransactionData): UnsignedBurnFungibleTokenTransactionOrder {
     return new UnsignedBurnFungibleTokenTransactionOrder(
+      data.version,
       new TransactionPayload(
         data.networkIdentifier,
         PartitionIdentifier.TOKEN,
@@ -57,6 +59,6 @@ export class UnsignedBurnFungibleTokenTransactionOrder {
       tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
     );
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new BurnFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new BurnFungibleTokenTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

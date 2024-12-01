@@ -18,12 +18,14 @@ interface IJoinFungibleTokensTransactionData extends ITransactionData {
 
 export class UnsignedJoinFungibleTokenTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<JoinFungibleTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: IJoinFungibleTokensTransactionData): UnsignedJoinFungibleTokenTransactionOrder {
     return new UnsignedJoinFungibleTokenTransactionOrder(
+      data.version,
       new TransactionPayload(
         data.networkIdentifier,
         PartitionIdentifier.TOKEN,
@@ -51,6 +53,6 @@ export class UnsignedJoinFungibleTokenTransactionOrder {
       tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
     );
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new JoinFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new JoinFungibleTokenTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

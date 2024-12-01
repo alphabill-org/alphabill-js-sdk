@@ -32,6 +32,7 @@ interface ITransferFeeCreditTransactionData extends ITransactionData {
 
 export class UnsignedTransferFeeCreditTransactionOrder {
   private constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<TransferFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
@@ -42,6 +43,7 @@ export class UnsignedTransferFeeCreditTransactionOrder {
       feeCreditRecordId = this.createUnitId(data.metadata.timeout, data.feeCreditRecord.ownerPredicate);
     }
     return new UnsignedTransferFeeCreditTransactionOrder(
+      data.version,
       new TransactionPayload<TransferFeeCreditAttributes>(
         data.networkIdentifier,
         PartitionIdentifier.MONEY,
@@ -74,6 +76,6 @@ export class UnsignedTransferFeeCreditTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
-    return new TransferFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new TransferFeeCreditTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

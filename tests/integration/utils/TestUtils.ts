@@ -17,6 +17,7 @@ import { TransactionStatus } from '../../../src/transaction/record/TransactionSt
 
 export function createTransactionData(round: bigint, feeCreditRecordId?: IUnitId): ITransactionData {
   return {
+    version: 1n,
     networkIdentifier: NetworkIdentifier.LOCAL,
     stateLock: null,
     metadata: createMetadata(round, feeCreditRecordId),

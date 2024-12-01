@@ -21,12 +21,14 @@ export interface ITransferBillTransactionData extends ITransactionData {
 
 export class UnsignedTransferBillTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<TransferBillAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: ITransferBillTransactionData): UnsignedTransferBillTransactionOrder {
     return new UnsignedTransferBillTransactionOrder(
+      data.version,
       new TransactionPayload<TransferBillAttributes>(
         data.networkIdentifier,
         PartitionIdentifier.MONEY,
@@ -47,6 +49,6 @@ export class UnsignedTransferBillTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new TransferBillTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new TransferBillTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

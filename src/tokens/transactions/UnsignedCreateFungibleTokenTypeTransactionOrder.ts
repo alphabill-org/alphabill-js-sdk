@@ -25,12 +25,14 @@ interface ICreateFungibleTokenTypeTransactionData extends ITransactionData {
 
 export class UnsignedCreateFungibleTokenTypeTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<CreateFungibleTokenTypeAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: ICreateFungibleTokenTypeTransactionData): UnsignedCreateFungibleTokenTypeTransactionOrder {
     return new UnsignedCreateFungibleTokenTypeTransactionOrder(
+      data.version,
       new TransactionPayload(
         data.networkIdentifier,
         PartitionIdentifier.TOKEN,
@@ -65,6 +67,12 @@ export class UnsignedCreateFungibleTokenTypeTransactionOrder {
       subTypeCreationProofs.map((factory) => factory.create(authProof)),
     );
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new CreateFungibleTokenTypeTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new CreateFungibleTokenTypeTransactionOrder(
+      this.version,
+      this.payload,
+      ownerProof,
+      feeProof,
+      this.stateUnlock,
+    );
   }
 }

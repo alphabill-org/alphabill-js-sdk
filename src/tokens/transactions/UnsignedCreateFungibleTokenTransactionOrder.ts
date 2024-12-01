@@ -21,6 +21,7 @@ interface ICreateFungibleTokenTransactionData extends ITransactionData {
 
 export class UnsignedCreateFungibleTokenTransactionOrder {
   private constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<CreateFungibleTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
@@ -28,16 +29,19 @@ export class UnsignedCreateFungibleTokenTransactionOrder {
   public static create(data: ICreateFungibleTokenTransactionData): UnsignedCreateFungibleTokenTransactionOrder {
     const attributes = new CreateFungibleTokenAttributes(data.type.unitId, data.value, data.ownerPredicate, data.nonce);
     const tokenUnitId = TokenUnitId.create(attributes, data.metadata, TokenPartitionUnitType.FUNGIBLE_TOKEN);
-    const payload = new TransactionPayload(
-      data.networkIdentifier,
-      PartitionIdentifier.TOKEN,
-      tokenUnitId,
-      TokenPartitionTransactionType.CreateFungibleToken,
-      attributes,
-      data.stateLock,
-      data.metadata,
+    return new UnsignedCreateFungibleTokenTransactionOrder(
+      data.version,
+      new TransactionPayload(
+        data.networkIdentifier,
+        PartitionIdentifier.TOKEN,
+        tokenUnitId,
+        TokenPartitionTransactionType.CreateFungibleToken,
+        attributes,
+        data.stateLock,
+        data.metadata,
+      ),
+      data.stateUnlock,
     );
-    return new UnsignedCreateFungibleTokenTransactionOrder(payload, data.stateUnlock);
   }
 
   public sign(
@@ -50,6 +54,6 @@ export class UnsignedCreateFungibleTokenTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(tokenMintingProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new CreateFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new CreateFungibleTokenTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

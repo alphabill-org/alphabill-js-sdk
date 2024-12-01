@@ -19,12 +19,14 @@ interface IUnlockFeeCreditTransactionData extends ITransactionData {
 
 export class UnsignedUnlockFeeCreditTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<UnlockFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: IUnlockFeeCreditTransactionData): UnsignedUnlockFeeCreditTransactionOrder {
     return new UnsignedUnlockFeeCreditTransactionOrder(
+      data.version,
       new TransactionPayload<UnlockFeeCreditAttributes>(
         data.networkIdentifier,
         PartitionIdentifier.MONEY,
@@ -45,6 +47,6 @@ export class UnsignedUnlockFeeCreditTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
-    return new UnlockFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new UnlockFeeCreditTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

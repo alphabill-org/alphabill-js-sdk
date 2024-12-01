@@ -19,12 +19,14 @@ export interface ILockBillTransactionData extends ITransactionData {
 
 export class UnsignedUnlockBillTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<UnlockBillAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: ILockBillTransactionData): UnsignedUnlockBillTransactionOrder {
     return new UnsignedUnlockBillTransactionOrder(
+      data.version,
       new TransactionPayload<UnlockBillAttributes>(
         data.networkIdentifier,
         PartitionIdentifier.MONEY,
@@ -45,6 +47,6 @@ export class UnsignedUnlockBillTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new UnlockBillTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new UnlockBillTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

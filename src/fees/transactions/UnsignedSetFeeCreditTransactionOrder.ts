@@ -22,6 +22,7 @@ interface ISetFeeCreditTransactionData extends ITransactionData {
 
 export class UnsignedSetFeeCreditTransactionOrder {
   private constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<SetFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
@@ -39,6 +40,7 @@ export class UnsignedSetFeeCreditTransactionOrder {
       feeCreditRecordId = data.feeCreditRecord.unitId;
     }
     return new UnsignedSetFeeCreditTransactionOrder(
+      data.version,
       new TransactionPayload<SetFeeCreditAttributes>(
         data.networkIdentifier,
         data.targetPartitionIdentifier,
@@ -59,6 +61,6 @@ export class UnsignedSetFeeCreditTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
-    return new SetFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new SetFeeCreditTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

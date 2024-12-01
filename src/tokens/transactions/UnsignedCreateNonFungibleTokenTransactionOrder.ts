@@ -25,6 +25,7 @@ interface ICreateNonFungibleTokenTransactionData extends ITransactionData {
 
 export class UnsignedCreateNonFungibleTokenTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<CreateNonFungibleTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
@@ -39,19 +40,20 @@ export class UnsignedCreateNonFungibleTokenTransactionOrder {
       data.dataUpdatePredicate,
       data.nonce,
     );
-
     const tokenUnitId = TokenUnitId.create(attributes, data.metadata, TokenPartitionUnitType.NON_FUNGIBLE_TOKEN);
-    const payload = new TransactionPayload(
-      data.networkIdentifier,
-      PartitionIdentifier.TOKEN,
-      tokenUnitId,
-      TokenPartitionTransactionType.CreateNonFungibleToken,
-      attributes,
-      data.stateLock,
-      data.metadata,
+    return new UnsignedCreateNonFungibleTokenTransactionOrder(
+      data.version,
+      new TransactionPayload(
+        data.networkIdentifier,
+        PartitionIdentifier.TOKEN,
+        tokenUnitId,
+        TokenPartitionTransactionType.CreateNonFungibleToken,
+        attributes,
+        data.stateLock,
+        data.metadata,
+      ),
+      data.stateUnlock,
     );
-
-    return new UnsignedCreateNonFungibleTokenTransactionOrder(payload, data.stateUnlock);
   }
 
   public sign(
@@ -64,6 +66,12 @@ export class UnsignedCreateNonFungibleTokenTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(tokenMintingProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new CreateNonFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new CreateNonFungibleTokenTransactionOrder(
+      this.version,
+      this.payload,
+      ownerProof,
+      feeProof,
+      this.stateUnlock,
+    );
   }
 }

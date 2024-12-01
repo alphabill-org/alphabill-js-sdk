@@ -18,12 +18,14 @@ interface ITransferFungibleTokenTransactionData extends ITransactionData {
 
 export class UnsignedTransferFungibleTokenTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<TransferFungibleTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: ITransferFungibleTokenTransactionData): UnsignedTransferFungibleTokenTransactionOrder {
     return new UnsignedTransferFungibleTokenTransactionOrder(
+      data.version,
       new TransactionPayload(
         data.networkIdentifier,
         PartitionIdentifier.TOKEN,
@@ -56,6 +58,12 @@ export class UnsignedTransferFungibleTokenTransactionOrder {
       tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
     );
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new TransferFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new TransferFungibleTokenTransactionOrder(
+      this.version,
+      this.payload,
+      ownerProof,
+      feeProof,
+      this.stateUnlock,
+    );
   }
 }

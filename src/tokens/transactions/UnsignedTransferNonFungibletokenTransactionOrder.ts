@@ -20,6 +20,7 @@ interface ITransferNonFungibleTokenTransactionData extends ITransactionData {
 
 export class UnsignedTransferNonFungibletokenTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<TransferNonFungibleTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
@@ -28,6 +29,7 @@ export class UnsignedTransferNonFungibletokenTransactionOrder {
     data: ITransferNonFungibleTokenTransactionData,
   ): UnsignedTransferNonFungibletokenTransactionOrder {
     return new UnsignedTransferNonFungibletokenTransactionOrder(
+      data.version,
       new TransactionPayload(
         data.networkIdentifier,
         PartitionIdentifier.TOKEN,
@@ -55,6 +57,12 @@ export class UnsignedTransferNonFungibletokenTransactionOrder {
       tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
     );
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new TransferNonFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new TransferNonFungibleTokenTransactionOrder(
+      this.version,
+      this.payload,
+      ownerProof,
+      feeProof,
+      this.stateUnlock,
+    );
   }
 }

@@ -16,12 +16,14 @@ interface IDeleteFeeCreditTransactionData extends ITransactionData {
 
 export class UnsignedDeleteFeeCreditTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<DeleteFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
   ) {}
 
   public static create(data: IDeleteFeeCreditTransactionData): UnsignedDeleteFeeCreditTransactionOrder {
     return new UnsignedDeleteFeeCreditTransactionOrder(
+      data.version,
       new TransactionPayload<DeleteFeeCreditAttributes>(
         data.networkIdentifier,
         PartitionIdentifier.TOKEN,
@@ -42,6 +44,6 @@ export class UnsignedDeleteFeeCreditTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
-    return new DeleteFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new DeleteFeeCreditTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
   }
 }

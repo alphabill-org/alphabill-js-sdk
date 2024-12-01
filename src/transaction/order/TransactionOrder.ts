@@ -17,17 +17,20 @@ export abstract class TransactionOrder<
   /**
    * Transaction order constructor.
    * @template Attributes Attributes type.
+   * @param {bigint} version - Alphabill version.
    * @param {TransactionPayload<Attributes>} payload Payload.
    * @param {ITransactionOrderProof} authProof Transaction proof.
    * @param {Uint8Array} _feeProof Fee proof.
    * @param {Uint8Array | null} stateUnlock State unlock.
    */
   protected constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<Attributes>,
     public readonly authProof: AuthProof,
     private readonly _feeProof: Uint8Array | null,
     public readonly stateUnlock: IPredicate | null,
   ) {
+    this.version = BigInt(version);
     this._feeProof = _feeProof ? new Uint8Array(_feeProof) : null;
   }
 
@@ -43,6 +46,7 @@ export abstract class TransactionOrder<
   public toString(): string {
     return dedent`
       TransactionOrder
+        Version: ${this.version}
         ${this.payload.toString()}
         Auth Proof: ${this.authProof?.toString() ?? null}
         Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}
@@ -53,6 +57,7 @@ export abstract class TransactionOrder<
     return CborEncoder.encodeTag(
       1016,
       CborEncoder.encodeArray([
+        CborEncoder.encodeUnsignedInteger(this.version),
         this.payload.encode(),
         this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
         this.authProof.encode(),
