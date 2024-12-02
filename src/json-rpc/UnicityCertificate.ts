@@ -55,7 +55,7 @@ export class UnicityCertificate implements IUnicityCertificate {
     return new UnicityCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readOptional(data[1], InputRecord.fromCbor),
-      data[2],
+      CborDecoder.readByteString(data[2]),
       ShardTreeCertificate.fromCbor(data[3]),
       CborDecoder.readOptional(data[4], UnicityTreeCertificate.fromCbor),
       CborDecoder.readOptional(data[5], UnicitySeal.fromCbor),
@@ -67,14 +67,17 @@ export class UnicityCertificate implements IUnicityCertificate {
    * @returns {Uint8Array} Unicity certificate as raw CBOR.
    */
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray([
-      CborEncoder.encodeUnsignedInteger(this.version),
-      this.inputRecord ? this.inputRecord.encode() : CborEncoder.encodeNull(),
-      CborEncoder.encodeByteString(this.trHash),
-      this.shardTreeCertificate.encode(),
-      this.unicityTreeCertificate ? this.unicityTreeCertificate.encode() : CborEncoder.encodeNull(),
-      this.unicitySeal ? this.unicitySeal.encode() : CborEncoder.encodeNull(),
-    ]);
+    return CborEncoder.encodeTag(
+      1007,
+      CborEncoder.encodeArray([
+        CborEncoder.encodeUnsignedInteger(this.version),
+        this.inputRecord ? this.inputRecord.encode() : CborEncoder.encodeNull(),
+        CborEncoder.encodeByteString(this._trHash),
+        this.shardTreeCertificate.encode(),
+        this.unicityTreeCertificate ? this.unicityTreeCertificate.encode() : CborEncoder.encodeNull(),
+        this.unicitySeal ? this.unicitySeal.encode() : CborEncoder.encodeNull(),
+      ]),
+    );
   }
 
   /**

@@ -40,7 +40,7 @@ export class UnsignedTransferFeeCreditTransactionOrder {
   public static create(data: ITransferFeeCreditTransactionData): UnsignedTransferFeeCreditTransactionOrder {
     let feeCreditRecordId = data.feeCreditRecord.unitId;
     if (feeCreditRecordId == null) {
-      feeCreditRecordId = this.createUnitId(data.metadata.timeout, data.feeCreditRecord.ownerPredicate);
+      feeCreditRecordId = this.createUnitId(data.feeCreditRecord.ownerPredicate, data.latestAdditionTime);
     }
     return new UnsignedTransferFeeCreditTransactionOrder(
       data.version,
@@ -64,8 +64,12 @@ export class UnsignedTransferFeeCreditTransactionOrder {
     );
   }
 
-  private static createUnitId(timeout: bigint, ownerPredicate: IPredicate): UnitId {
-    const unitBytes = sha256.create().update(ownerPredicate.bytes).update(numberToBytesBE(timeout, 8)).digest();
+  private static createUnitId(ownerPredicate: IPredicate, latestAdditionTime: bigint): UnitId {
+    const unitBytes = sha256
+      .create()
+      .update(CborEncoder.encodeByteString(ownerPredicate.bytes))
+      .update(CborEncoder.encodeUnsignedInteger(latestAdditionTime))
+      .digest();
     return new UnitIdWithType(unitBytes, FeeCreditUnitType.FEE_CREDIT_RECORD);
   }
 
