@@ -97,17 +97,13 @@ export class JsonRpcClient {
     );
 
     if (response) {
-      try {
-        return factory.create(
-          UnitId.fromBytes(Base16Converter.decode(response.unitId)),
-          Number(response.networkId),
-          Number(response.partitionId),
-          response.stateProof ? createStateProof(response.stateProof) : null,
-          response.data,
-        );
-      } catch (error) {
-        throw new Error(`Invalid unit for given factory`, { cause: error });
-      }
+      return factory.create(
+        UnitId.fromBytes(Base16Converter.decode(response.unitId)),
+        Number(response.networkId),
+        Number(response.partitionId),
+        response.stateProof ? createStateProof(response.stateProof) : null,
+        response.data,
+      );
     }
 
     return null;
@@ -133,11 +129,7 @@ export class JsonRpcClient {
       return null;
     }
 
-    try {
-      return transactionRecordWithProofFactory.fromCbor(Base16Converter.decode(response.txRecordProof));
-    } catch (error) {
-      throw new Error(`Invalid transaction proof for given factory`, { cause: error });
-    }
+    return transactionRecordWithProofFactory.fromCbor(Base16Converter.decode(response.txRecordProof));
   }
 
   /**
