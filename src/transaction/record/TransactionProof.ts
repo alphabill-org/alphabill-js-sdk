@@ -55,14 +55,17 @@ export class TransactionProof {
    * @returns {Uint8Array} Transaction proof as raw CBOR.
    */
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray([
-      CborEncoder.encodeUnsignedInteger(this.version),
-      CborEncoder.encodeByteString(this.blockHeaderHash),
-      this.chain
-        ? CborEncoder.encodeArray(this.chain.map((item: TransactionProofChainItem) => item.encode()))
-        : CborEncoder.encodeNull(),
-      this.unicityCertificate.encode(),
-    ]);
+    return CborEncoder.encodeTag(
+      1009,
+      CborEncoder.encodeArray([
+        CborEncoder.encodeUnsignedInteger(this.version),
+        CborEncoder.encodeByteString(this.blockHeaderHash),
+        this.chain
+          ? CborEncoder.encodeArray(this.chain.map((item: TransactionProofChainItem) => item.encode()))
+          : CborEncoder.encodeNull(),
+        this.unicityCertificate.encode(),
+      ]),
+    );
   }
 
   /**

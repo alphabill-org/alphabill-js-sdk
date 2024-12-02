@@ -51,8 +51,6 @@ export class UnicityCertificate implements IUnicityCertificate {
    * @returns {UnicityCertificate} Unicity certificate.
    */
   public static fromCbor(rawData: Uint8Array): UnicityCertificate {
-    console.log(Base16Converter.encode(rawData));
-    console.log(Base16Converter.encode(CborDecoder.readTag(rawData).data));
     const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new UnicityCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
@@ -187,17 +185,20 @@ export class InputRecord implements IInputRecord {
    * @returns {Uint8Array} Input record as raw CBOR.
    */
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray([
-      CborEncoder.encodeUnsignedInteger(this.version),
-      CborEncoder.encodeByteString(this._previousHash),
-      CborEncoder.encodeByteString(this._hash),
-      CborEncoder.encodeByteString(this._blockHash),
-      CborEncoder.encodeByteString(this._summaryValue),
-      CborEncoder.encodeUnsignedInteger(this.timestamp),
-      CborEncoder.encodeUnsignedInteger(this.roundNumber),
-      CborEncoder.encodeUnsignedInteger(this.epoch),
-      CborEncoder.encodeUnsignedInteger(this.sumOfEarnedFees),
-    ]);
+    return CborEncoder.encodeTag(
+      1008,
+      CborEncoder.encodeArray([
+        CborEncoder.encodeUnsignedInteger(this.version),
+        CborEncoder.encodeByteString(this._previousHash),
+        CborEncoder.encodeByteString(this._hash),
+        CborEncoder.encodeByteString(this._blockHash),
+        CborEncoder.encodeByteString(this._summaryValue),
+        CborEncoder.encodeUnsignedInteger(this.timestamp),
+        CborEncoder.encodeUnsignedInteger(this.roundNumber),
+        CborEncoder.encodeUnsignedInteger(this.epoch),
+        CborEncoder.encodeUnsignedInteger(this.sumOfEarnedFees),
+      ]),
+    );
   }
 
   /**
@@ -411,7 +412,6 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
    */
   public static fromCbor(rawData: Uint8Array): UnicityTreeCertificate {
     const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
-    console.log(Base16Converter.encode(rawData));
     const map1 = CborDecoder.readMap(CborDecoder.readArray(data[2])[0]);
     return new UnicityTreeCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
@@ -426,14 +426,17 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
    * @returns {Uint8Array} Unicity tree certificate as raw CBOR.
    */
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray([
-      CborEncoder.encodeUnsignedInteger(this.version),
-      CborEncoder.encodeUnsignedInteger(this.partitionIdentifier),
-      this.hashSteps
-        ? CborEncoder.encodeArray(this.hashSteps.map((pathItem: IIndexedPathItem) => pathItem.encode()))
-        : CborEncoder.encodeNull(),
-      CborEncoder.encodeByteString(this._partitionDescriptionHash),
-    ]);
+    return CborEncoder.encodeTag(
+      1014,
+      CborEncoder.encodeArray([
+        CborEncoder.encodeUnsignedInteger(this.version),
+        CborEncoder.encodeUnsignedInteger(this.partitionIdentifier),
+        this.hashSteps
+          ? CborEncoder.encodeArray(this.hashSteps.map((pathItem: IIndexedPathItem) => pathItem.encode()))
+          : CborEncoder.encodeNull(),
+        CborEncoder.encodeByteString(this._partitionDescriptionHash),
+      ]),
+    );
   }
 
   /**
@@ -518,14 +521,17 @@ export class UnicitySeal implements IUnicitySeal {
    * @returns {Uint8Array} Unicity seal as raw CBOR.
    */
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray([
-      CborEncoder.encodeUnsignedInteger(this.version),
-      CborEncoder.encodeUnsignedInteger(this.rootChainRoundNumber),
-      CborEncoder.encodeUnsignedInteger(this.timestamp),
-      CborEncoder.encodeByteString(this.previousHash),
-      CborEncoder.encodeByteString(this.hash),
-      CborEncoder.encodeMap(this.signatures),
-    ]);
+    return CborEncoder.encodeTag(
+      1001,
+      CborEncoder.encodeArray([
+        CborEncoder.encodeUnsignedInteger(this.version),
+        CborEncoder.encodeUnsignedInteger(this.rootChainRoundNumber),
+        CborEncoder.encodeUnsignedInteger(this.timestamp),
+        CborEncoder.encodeByteString(this.previousHash),
+        CborEncoder.encodeByteString(this.hash),
+        CborEncoder.encodeMap(this.signatures),
+      ]),
+    );
   }
 
   /**

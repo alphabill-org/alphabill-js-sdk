@@ -17,6 +17,6 @@ export class OwnerProofAuthProof implements ITransactionOrderProof {
   }
 
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray([this.ownerProof]);
+    return CborEncoder.encodeArray([CborEncoder.encodeByteString(this._ownerProof)]);
   }
 }

@@ -39,9 +39,6 @@ export class TransactionRecordWithProof<
    * @returns {Uint8Array} Transaction record with proof as raw CBOR.
    */
   public encode(): Uint8Array {
-    return CborEncoder.encodeTag(
-      1015,
-      CborEncoder.encodeArray([this.transactionRecord.encode(), this.transactionProof.encode()]),
-    );
+    return CborEncoder.encodeArray([this.transactionRecord.encode(), this.transactionProof.encode()]);
   }
 }

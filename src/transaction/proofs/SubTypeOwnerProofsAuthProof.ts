@@ -17,6 +17,8 @@ export class SubTypeOwnerProofsAuthProof implements ITransactionOrderProof {
   }
 
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray(this.subTypeCreationProofs);
+    return CborEncoder.encodeArray(
+      this.subTypeCreationProofs.map((proof: Uint8Array) => CborEncoder.encodeByteString(proof)),
+    );
   }
 }

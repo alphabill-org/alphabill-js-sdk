@@ -35,10 +35,13 @@ export class TransactionRecord<T extends TransactionOrder<ITransactionPayloadAtt
   }
 
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray([
-      CborEncoder.encodeUnsignedInteger(this.version),
-      this.transactionOrder.encode(),
-      this.serverMetadata.encode(),
-    ]);
+    return CborEncoder.encodeTag(
+      1015,
+      CborEncoder.encodeArray([
+        CborEncoder.encodeUnsignedInteger(this.version),
+        this.transactionOrder.encode(),
+        this.serverMetadata.encode(),
+      ]),
+    );
   }
 }
