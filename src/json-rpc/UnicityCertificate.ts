@@ -419,7 +419,8 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
     return new UnicityTreeCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
-      map1?.forEach((value: Uint8Array, key: Uint8Array) => IndexedPathItem.fromCbor(key, value)) ?? null,
+      map1?.forEach((value: Uint8Array, key: string) => IndexedPathItem.fromCbor(Base16Converter.decode(key), value)) ??
+        null,
       CborDecoder.readByteString(data[3]),
     );
   }
@@ -515,7 +516,7 @@ export class UnicitySeal implements IUnicitySeal {
       CborDecoder.readUnsignedInteger(data[2]),
       CborDecoder.readByteString(data[3]),
       CborDecoder.readByteString(data[4]),
-      new Map(), // TODO
+      CborDecoder.readMap(data[5]),
     );
   }
 
@@ -532,7 +533,7 @@ export class UnicitySeal implements IUnicitySeal {
         CborEncoder.encodeUnsignedInteger(this.timestamp),
         CborEncoder.encodeByteString(this.previousHash),
         CborEncoder.encodeByteString(this.hash),
-        CborEncoder.encodeNull(), // FIXME
+        CborEncoder.encodeMap(this._signatures),
       ]),
     );
   }

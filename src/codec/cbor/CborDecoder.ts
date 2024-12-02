@@ -1,3 +1,4 @@
+import { Base16Converter } from '../../util/Base16Converter.js';
 import { BitMask } from './BitMask.js';
 import { MajorType } from './MajorType.js';
 
@@ -58,23 +59,20 @@ export class CborDecoder {
     return result;
   }
 
-  public static readMap(data: Uint8Array): Map<Uint8Array, Uint8Array> {
+  public static readMap(data: Uint8Array): Map<string, Uint8Array> {
     const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.MAP) {
       throw new Error('Major type mismatch, expected map.');
     }
     const parsedLength = CborDecoder.readLength(majorType, data, 0);
     let position = parsedLength.position;
-    const result: Map<Uint8Array, Uint8Array> = new Map();
-    if (Number(parsedLength.length) % 2 !== 0) {
-      throw new Error('Map must have even number of elements');
-    }
+    const result: Map<string, Uint8Array> = new Map();
     for (let i = 0; i <= Number(parsedLength.length) / 2; i++) {
       const key = CborDecoder.readRawCbor(data, position);
       position = key.position;
       const value = CborDecoder.readRawCbor(data, position);
       position = value.position;
-      result.set(key.data, value.data);
+      result.set(Base16Converter.encode(key.data), value.data);
     }
     return result;
   }
