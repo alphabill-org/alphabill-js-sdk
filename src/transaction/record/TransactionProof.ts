@@ -40,7 +40,7 @@ export class TransactionProof {
    * @returns {TransactionProof} Transaction proof.
    */
   public static fromCbor(rawData: Uint8Array): TransactionProof {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new TransactionProof(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readByteString(data[1]),

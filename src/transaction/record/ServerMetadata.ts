@@ -49,9 +49,11 @@ export class ServerMetadata {
     const data = CborDecoder.readArray(rawData);
     return new ServerMetadata(
       CborDecoder.readUnsignedInteger(data[0]),
-      CborDecoder.readArray(data[1]).map((rawUnitId) => UnitId.fromBytes(CborDecoder.readByteString(rawUnitId))),
+      CborDecoder.readArray(data[1]).map((rawUnitId: Uint8Array) =>
+        UnitId.fromBytes(CborDecoder.readByteString(rawUnitId)),
+      ),
       Number(CborDecoder.readUnsignedInteger(data[2])),
-      CborDecoder.readByteString(data[3]),
+      CborDecoder.readOptional(data[3], CborDecoder.readByteString),
     );
   }
 

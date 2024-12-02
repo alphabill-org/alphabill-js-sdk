@@ -34,12 +34,12 @@ export class TransferNonFungibleTokenTransactionOrder extends TransactionOrder<
         UnitId.fromBytes(CborDecoder.readByteString(data[3])),
         TokenPartitionTransactionType.TransferNonFungibleToken,
         TransferNonFungibleTokenAttributes.fromCbor(data[5]),
-        data[6] ? StateLock.fromCbor(data[6]) : null,
+        CborDecoder.readOptional(data[6], StateLock.fromCbor),
         ClientMetadata.fromCbor(data[7]),
       ),
-      data[8] ? new PredicateBytes(CborDecoder.readByteString(data[8])) : null,
+      CborDecoder.readOptional(data[8], PredicateBytes.fromCbor),
       TypeOwnerProofsAuthProof.fromCbor(data[9]),
-      CborDecoder.readByteString(data[10]),
+      CborDecoder.readOptional(data[10], CborDecoder.readByteString),
     );
   }
 }

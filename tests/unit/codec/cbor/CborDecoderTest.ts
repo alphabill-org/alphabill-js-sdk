@@ -12,6 +12,7 @@ describe('Cbor decoder test', () => {
   });
 
   it('Decode byte string', () => {
+    expect(CborDecoder.readByteString(Base16Converter.decode('0x40'))).toEqual(new Uint8Array(0));
     expect(CborDecoder.readByteString(Base16Converter.decode('0x40'))).toEqual(new Uint8Array());
     expect(CborDecoder.readByteString(Base16Converter.decode('0x450000000000'))).toEqual(new Uint8Array(5));
     expect(

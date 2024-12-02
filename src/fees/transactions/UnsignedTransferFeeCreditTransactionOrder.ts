@@ -71,8 +71,9 @@ export class UnsignedTransferFeeCreditTransactionOrder {
 
   public sign(ownerProofFactory: IProofFactory): TransferFeeCreditTransactionOrder {
     const authProof = CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
-      this.stateUnlock ? this.stateUnlock.bytes : CborEncoder.encodeNull(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;

@@ -54,11 +54,11 @@ export class UnicityCertificate implements IUnicityCertificate {
     const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new UnicityCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
-      data[1] ? InputRecord.fromCbor(data[1]) : null,
+      CborDecoder.readOptional(data[1], InputRecord.fromCbor),
       data[2],
       ShardTreeCertificate.fromCbor(data[3]),
-      data[4] ? UnicityTreeCertificate.fromCbor(data[4]) : null,
-      data[5] ? UnicitySeal.fromCbor(data[5]) : null,
+      CborDecoder.readOptional(data[4], UnicityTreeCertificate.fromCbor),
+      CborDecoder.readOptional(data[5], UnicitySeal.fromCbor),
     );
   }
 
@@ -529,7 +529,7 @@ export class UnicitySeal implements IUnicitySeal {
         CborEncoder.encodeUnsignedInteger(this.timestamp),
         CborEncoder.encodeByteString(this.previousHash),
         CborEncoder.encodeByteString(this.hash),
-        CborEncoder.encodeMap(this.signatures),
+        CborEncoder.encodeNull(), // FIXME
       ]),
     );
   }

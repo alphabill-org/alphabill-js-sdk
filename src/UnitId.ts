@@ -1,3 +1,4 @@
+import { CborDecoder } from './codec/cbor/CborDecoder.js';
 import { IUnitId } from './IUnitId.js';
 import { Base16Converter } from './util/Base16Converter.js';
 
@@ -70,6 +71,19 @@ export class UnitId implements IUnitId {
    * @returns {IUnitId} Unit identifier.
    */
   public static fromBytes(id: Uint8Array): IUnitId {
+    return new UnitId(id.slice(-1), id);
+  }
+
+  /**
+   * Create unit identifier from raw CBOR.
+   * @param {Uint8Array} data - bytes.
+   * @returns {IUnitId} Unit identifier.
+   */
+  public static fromCbor(data: Uint8Array): IUnitId | null {
+    const id = CborDecoder.readOptional(data, CborDecoder.readByteString);
+    if (id === null) {
+      return null;
+    }
     return new UnitId(id.slice(-1), id);
   }
 

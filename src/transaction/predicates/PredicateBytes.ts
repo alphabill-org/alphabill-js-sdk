@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { IPredicate } from './IPredicate.js';
 
@@ -21,6 +22,19 @@ export class PredicateBytes implements IPredicate {
    */
   public get bytes(): Uint8Array {
     return new Uint8Array(this._bytes);
+  }
+
+  /**
+   * Create predicate bytes from raw CBOR.
+   * @param {Uint8Array} data - bytes.
+   * @returns {IPredicate} Predicate bytes.
+   */
+  public static fromCbor(data: Uint8Array): IPredicate | null {
+    const bytes = CborDecoder.readOptional(data, CborDecoder.readByteString);
+    if (bytes === null) {
+      return null;
+    }
+    return new PredicateBytes(bytes);
   }
 
   /**

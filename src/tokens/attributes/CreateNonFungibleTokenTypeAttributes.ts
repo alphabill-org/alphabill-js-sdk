@@ -45,7 +45,7 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
       CborDecoder.readTextString(data[0]),
       CborDecoder.readTextString(data[1]),
       TokenIcon.fromCbor(data[2]),
-      data[3] ? UnitId.fromBytes(CborDecoder.readByteString(data[3])) : null,
+      CborDecoder.readOptional(data[3], UnitId.fromCbor),
       new PredicateBytes(CborDecoder.readByteString(data[4])),
       new PredicateBytes(CborDecoder.readByteString(data[5])),
       new PredicateBytes(CborDecoder.readByteString(data[6])),

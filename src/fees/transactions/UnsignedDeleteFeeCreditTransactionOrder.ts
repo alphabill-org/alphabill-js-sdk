@@ -39,6 +39,7 @@ export class UnsignedDeleteFeeCreditTransactionOrder {
 
   public sign(ownerProofFactory: IProofFactory): DeleteFeeCreditTransactionOrder {
     const authProof = CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ]);

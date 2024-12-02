@@ -44,6 +44,7 @@ export class UnsignedTransferBillTransactionOrder {
 
   public sign(ownerProofFactory: IProofFactory, feeProofFactory: IProofFactory | null): TransferBillTransactionOrder {
     const authProof = CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ]);

@@ -29,8 +29,8 @@ export class ClientMetadata implements ITransactionClientMetadata {
     return new ClientMetadata(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
-      data[2] ? UnitId.fromBytes(CborDecoder.readByteString(data[2])) : null,
-      data[3] ? CborDecoder.readByteString(data[3]) : null,
+      CborDecoder.readOptional(data[2], UnitId.fromCbor),
+      CborDecoder.readOptional(data[3], CborDecoder.readByteString),
     );
   }
 

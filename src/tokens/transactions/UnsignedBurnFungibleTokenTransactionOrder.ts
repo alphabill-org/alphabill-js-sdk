@@ -51,6 +51,7 @@ export class UnsignedBurnFungibleTokenTransactionOrder {
     tokenTypeOwnerProofs: IProofFactory[],
   ): BurnFungibleTokenTransactionOrder {
     const authProof = CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ]);

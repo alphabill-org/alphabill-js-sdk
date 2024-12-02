@@ -137,9 +137,7 @@ export class JsonRpcClient {
     try {
       return transactionRecordWithProofFactory.fromCbor(Base16Converter.decode(response.txRecordProof));
     } catch (error) {
-      throw new Error(
-        `Invalid transaction proof for given factory: ${JSON.stringify(response.txRecordProof)} [error: ${error}]`,
-      );
+      throw new Error(`Invalid transaction proof for given factory: [error: ${error}]`);
     }
   }
 
@@ -151,11 +149,8 @@ export class JsonRpcClient {
   public async sendTransaction(
     transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>,
   ): Promise<Uint8Array> {
-    const response = (await this.request(
-      'state_sendTransaction',
-      Base16Converter.encode(transaction.encode()),
-    )) as string;
-
+    const hex = Base16Converter.encode(transaction.encode());
+    const response = (await this.request('state_sendTransaction', hex)) as string;
     return Base16Converter.decode(response);
   }
 

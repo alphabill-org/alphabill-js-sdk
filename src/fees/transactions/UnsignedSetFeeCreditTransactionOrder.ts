@@ -56,6 +56,7 @@ export class UnsignedSetFeeCreditTransactionOrder {
 
   public sign(ownerProofFactory: IProofFactory): SetFeeCreditTransactionOrder {
     const authProof = CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ]);

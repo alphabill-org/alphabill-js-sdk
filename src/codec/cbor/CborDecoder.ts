@@ -2,6 +2,14 @@ import { BitMask } from './BitMask.js';
 import { MajorType } from './MajorType.js';
 
 export class CborDecoder {
+  public static readOptional<T>(data: Uint8Array, reader: (data: Uint8Array) => T): T | null {
+    const initialByte = CborDecoder.readByte(data, 0);
+    if (initialByte === 0xf6) {
+      return null;
+    }
+    return reader(data);
+  }
+
   public static readUnsignedInteger(data: Uint8Array): bigint {
     const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.UNSIGNED_INTEGER) {
@@ -18,10 +26,11 @@ export class CborDecoder {
   public static readByteString(data: Uint8Array): Uint8Array {
     const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.BYTE_STRING) {
-      throw new Error('Major type mismatch, expected byte string.' + majorType);
+      throw new Error('Major type mismatch, expected byte string.');
     }
+
     const { length, position } = CborDecoder.readLength(majorType, data, 0);
-    return this.read(data, position, Number(length));
+    return CborDecoder.read(data, position, Number(length));
   }
 
   public static readTextString(data: Uint8Array): string {
@@ -52,7 +61,7 @@ export class CborDecoder {
   public static readMap(data: Uint8Array): Map<Uint8Array, Uint8Array> {
     const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.MAP) {
-      throw new Error('Major type mismatch, expected map.' + majorType);
+      throw new Error('Major type mismatch, expected map.');
     }
     const parsedLength = CborDecoder.readLength(majorType, data, 0);
     let position = parsedLength.position;
@@ -84,7 +93,7 @@ export class CborDecoder {
     if (byteCount < 0) {
       throw new Error('Invalid bit string encoding: empty input');
     }
-    const zc = this.trailingZeros8(data[byteCount]);
+    const zc = CborDecoder.trailingZeros8(data[byteCount]);
     switch (zc) {
       case 8:
         throw new Error('Invalid bit string encoding: last byte doesnt contain end marker');
@@ -143,17 +152,17 @@ export class CborDecoder {
         break;
       case MajorType.ARRAY:
         for (let i = 0; i < length; i++) {
-          position = this.readRawCbor(data, position).position;
+          position = CborDecoder.readRawCbor(data, position).position;
         }
         break;
       case MajorType.MAP:
         for (let i = 0; i < length; i++) {
-          position = this.readRawCbor(data, position).position;
-          position = this.readRawCbor(data, position).position;
+          position = CborDecoder.readRawCbor(data, position).position;
+          position = CborDecoder.readRawCbor(data, position).position;
         }
         break;
       case MajorType.TAG:
-        position = this.readRawCbor(data, position).position;
+        position = CborDecoder.readRawCbor(data, position).position;
         break;
     }
 
