@@ -106,8 +106,7 @@ export class JsonRpcClient {
           response.data,
         );
       } catch (error) {
-        console.log(error);
-        throw new Error(`Invalid unit for given factory: ${error}`);
+        throw new Error(`Invalid unit for given factory`, { cause: error });
       }
     }
 
@@ -137,7 +136,7 @@ export class JsonRpcClient {
     try {
       return transactionRecordWithProofFactory.fromCbor(Base16Converter.decode(response.txRecordProof));
     } catch (error) {
-      throw new Error(`Invalid transaction proof for given factory: [error: ${error}]`);
+      throw new Error(`Invalid transaction proof for given factory`, { cause: error });
     }
   }
 

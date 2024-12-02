@@ -1,9 +1,11 @@
+import { Base16Converter } from '../../util/Base16Converter.js';
+import { CborError } from './CborError.js';
 import { MajorType } from './MajorType.js';
 
 export class CborEncoder {
   public static encodeUnsignedInteger(input: bigint | number): Uint8Array {
     if (input < 0) {
-      throw new Error('Only unsigned numbers are allowed.');
+      throw new CborError('Only unsigned numbers are allowed.');
     }
 
     if (input < 24) {
@@ -65,8 +67,42 @@ export class CborEncoder {
     ]);
   }
 
-  public static encodeMap(data: Map<string, Uint8Array>): Uint8Array {
-    throw new Error('Not implemented.');
+  public static encodeMap(input: Map<string, Uint8Array>): Uint8Array {
+    const processedArray = Array.from(input.entries()).map(([key, value]) => [Base16Converter.decode(key), value]);
+    processedArray.sort(([a], [b]) => {
+      if (a.length !== b.length) {
+        return a.length - b.length;
+      }
+
+      for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) {
+          return a[i] - b[i];
+        }
+      }
+
+      return 0;
+    });
+
+    const dataLength = processedArray.reduce((result, [key, value]) => result + key.length + value.length, 0);
+    const data = new Uint8Array(dataLength);
+    let length = 0;
+    for (const [key, value] of processedArray) {
+      data.set(key, length);
+      length += key.length;
+      data.set(value, length);
+      length += value.length;
+    }
+
+    if (input.size < 24) {
+      return new Uint8Array([MajorType.ARRAY | input.size, ...data]);
+    }
+
+    const lengthBytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(input.size);
+    return new Uint8Array([
+      MajorType.MAP | CborEncoder.getAdditionalInformationBits(lengthBytes.length),
+      ...lengthBytes,
+      ...data,
+    ]);
   }
 
   public static encodeTag(tag: number | bigint, input: Uint8Array): Uint8Array {
@@ -108,7 +144,7 @@ export class CborEncoder {
 
   private static getUnsignedIntegerAsPaddedBytes(input: bigint | number): Uint8Array {
     if (input < 0) {
-      throw new Error('Only unsigned numbers are allowed.');
+      throw new CborError('Only unsigned numbers are allowed.');
     }
 
     let t: bigint;
@@ -119,7 +155,7 @@ export class CborEncoder {
     }
 
     if (bytes.length > 8) {
-      throw new Error('Number is not unsigned long.');
+      throw new CborError('Number is not unsigned long.');
     }
 
     if (bytes.length === 0) {
