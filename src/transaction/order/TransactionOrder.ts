@@ -58,7 +58,7 @@ export abstract class TransactionOrder<
       1016,
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
-        this.payload.encode(),
+        ...this.payload.encode(),
         this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
         this.authProof.encode(),
         this.feeProof ? CborEncoder.encodeByteString(this.feeProof) : CborEncoder.encodeNull(),

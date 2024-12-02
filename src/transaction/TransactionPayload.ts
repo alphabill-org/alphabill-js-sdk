@@ -40,8 +40,8 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
           Reference Number: ${this.clientMetadata.referenceNumber ? Base16Converter.encode(this.clientMetadata.referenceNumber) : null}`;
   }
 
-  public encode(): Uint8Array {
-    return CborEncoder.encodeArray([
+  public encode(): Uint8Array[] {
+    return [
       CborEncoder.encodeUnsignedInteger(this.networkIdentifier),
       CborEncoder.encodeUnsignedInteger(this.partitionIdentifier),
       CborEncoder.encodeByteString(this.unitId.bytes),
@@ -49,6 +49,6 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
       this.attributes.encode(),
       this.stateLock ? this.stateLock.encode() : CborEncoder.encodeNull(),
       this.clientMetadata.encode(),
-    ]);
+    ];
   }
 }

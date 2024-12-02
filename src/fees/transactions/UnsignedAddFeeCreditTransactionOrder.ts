@@ -42,7 +42,7 @@ export class UnsignedAddFeeCreditTransactionOrder {
 
   public sign(ownerProofFactory: IProofFactory): AddFeeCreditTransactionOrder {
     const authProof = CborEncoder.encodeArray([
-      this.payload.encode(),
+      ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));

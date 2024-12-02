@@ -60,7 +60,7 @@ export class UnsignedCreateFungibleTokenTypeTransactionOrder {
     subTypeCreationProofs: IProofFactory[],
   ): CreateFungibleTokenTypeTransactionOrder {
     const authProof = CborEncoder.encodeArray([
-      this.payload.encode(),
+      ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ]);
     const ownerProof = new SubTypeOwnerProofsAuthProof(

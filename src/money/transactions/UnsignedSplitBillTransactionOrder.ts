@@ -50,7 +50,7 @@ export class UnsignedSplitBillTransactionOrder {
 
   public sign(ownerProofFactory: IProofFactory, feeProofFactory: IProofFactory | null): SplitBillTransactionOrder {
     const authProof = CborEncoder.encodeArray([
-      this.payload.encode(),
+      ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
