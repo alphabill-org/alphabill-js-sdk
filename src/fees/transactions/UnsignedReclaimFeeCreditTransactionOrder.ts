@@ -49,6 +49,6 @@ export class UnsignedReclaimFeeCreditTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
-    return new ReclaimFeeCreditTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new ReclaimFeeCreditTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

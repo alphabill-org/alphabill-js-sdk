@@ -8,11 +8,12 @@ import { TransferBillTransactionOrder } from './TransferBillTransactionOrder.js'
 export class TransferBillTransactionRecordWithProof extends TransactionRecordWithProof<TransferBillTransactionOrder> {
   public static fromCbor(rawData: Uint8Array): TransferBillTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
-    const txOrderData = CborDecoder.readArray(data[0]);
+    const txRecordData = CborDecoder.readArray(data[0]);
     return new TransferBillTransactionRecordWithProof(
       new TransactionRecord(
-        TransferBillTransactionOrder.fromCbor(txOrderData[0]),
-        ServerMetadata.fromCbor(txOrderData[1]),
+        CborDecoder.readUnsignedInteger(txRecordData[0]),
+        TransferBillTransactionOrder.fromCbor(txRecordData[1]),
+        ServerMetadata.fromCbor(txRecordData[2]),
       ),
       TransactionProof.fromCbor(data[1]),
     );

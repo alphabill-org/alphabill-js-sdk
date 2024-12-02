@@ -61,9 +61,9 @@ export class UnsignedTransferFungibleTokenTransactionOrder {
     return new TransferFungibleTokenTransactionOrder(
       this.version,
       this.payload,
+      this.stateUnlock,
       ownerProof,
       feeProof,
-      this.stateUnlock,
     );
   }
 }

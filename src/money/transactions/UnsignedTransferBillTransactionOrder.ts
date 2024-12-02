@@ -49,6 +49,6 @@ export class UnsignedTransferBillTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new TransferBillTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new TransferBillTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

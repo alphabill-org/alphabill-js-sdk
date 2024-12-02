@@ -72,9 +72,9 @@ export class UnsignedCreateNonFungibleTokenTypeTransactionOrder {
     return new CreateNonFungibleTokenTypeTransactionOrder(
       this.version,
       this.payload,
+      this.stateUnlock,
       ownerProof,
       feeProof,
-      this.stateUnlock,
     );
   }
 }

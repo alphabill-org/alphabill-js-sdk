@@ -53,6 +53,6 @@ export class UnsignedJoinFungibleTokenTransactionOrder {
       tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
     );
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new JoinFungibleTokenTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new JoinFungibleTokenTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

@@ -44,6 +44,6 @@ export class UnsignedUnlockTokenTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new UnlockTokenTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new UnlockTokenTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

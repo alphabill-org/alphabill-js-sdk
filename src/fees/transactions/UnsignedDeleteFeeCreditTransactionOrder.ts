@@ -44,6 +44,6 @@ export class UnsignedDeleteFeeCreditTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
-    return new DeleteFeeCreditTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new DeleteFeeCreditTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

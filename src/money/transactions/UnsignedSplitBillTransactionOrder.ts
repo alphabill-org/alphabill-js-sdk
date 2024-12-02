@@ -55,6 +55,6 @@ export class UnsignedSplitBillTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new SplitBillTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new SplitBillTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

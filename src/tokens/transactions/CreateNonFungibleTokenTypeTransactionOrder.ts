@@ -17,11 +17,11 @@ export class CreateNonFungibleTokenTypeTransactionOrder extends TransactionOrder
   public constructor(
     version: bigint,
     payload: TransactionPayload<CreateNonFungibleTokenTypeAttributes>,
+    stateUnlock: IPredicate | null,
     authProof: SubTypeOwnerProofsAuthProof,
     feeProof: Uint8Array | null,
-    stateUnlock: IPredicate | null,
   ) {
-    super(version, payload, authProof, feeProof, stateUnlock);
+    super(version, payload, stateUnlock, authProof, feeProof);
   }
 
   public static fromCbor(rawData: Uint8Array): CreateNonFungibleTokenTypeTransactionOrder {
@@ -37,9 +37,9 @@ export class CreateNonFungibleTokenTypeTransactionOrder extends TransactionOrder
         data[6] ? StateLock.fromCbor(data[6]) : null,
         ClientMetadata.fromCbor(data[7]),
       ),
-      SubTypeOwnerProofsAuthProof.fromCbor(data[7]),
-      CborDecoder.readByteString(data[8]),
-      data[10] ? new PredicateBytes(CborDecoder.readByteString(data[10])) : null,
+      data[8] ? new PredicateBytes(CborDecoder.readByteString(data[8])) : null,
+      SubTypeOwnerProofsAuthProof.fromCbor(data[9]),
+      CborDecoder.readByteString(data[10]),
     );
   }
 }

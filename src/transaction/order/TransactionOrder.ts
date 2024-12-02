@@ -17,7 +17,7 @@ export abstract class TransactionOrder<
   /**
    * Transaction order constructor.
    * @template Attributes Attributes type.
-   * @param {bigint} version - Alphabill version.
+   * @param {bigint} version - version.
    * @param {TransactionPayload<Attributes>} payload Payload.
    * @param {ITransactionOrderProof} authProof Transaction proof.
    * @param {Uint8Array} _feeProof Fee proof.
@@ -26,9 +26,9 @@ export abstract class TransactionOrder<
   protected constructor(
     public readonly version: bigint,
     public readonly payload: TransactionPayload<Attributes>,
+    public readonly stateUnlock: IPredicate | null,
     public readonly authProof: AuthProof,
     private readonly _feeProof: Uint8Array | null,
-    public readonly stateUnlock: IPredicate | null,
   ) {
     this.version = BigInt(version);
     this._feeProof = _feeProof ? new Uint8Array(_feeProof) : null;
@@ -48,9 +48,9 @@ export abstract class TransactionOrder<
       TransactionOrder
         Version: ${this.version}
         ${this.payload.toString()}
+        State Unlock: ${this.stateUnlock?.toString() ?? null}
         Auth Proof: ${this.authProof?.toString() ?? null}
-        Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}
-        State Unlock: ${this.stateUnlock?.toString() ?? null}`;
+        Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}`;
   }
 
   public encode(): Uint8Array {

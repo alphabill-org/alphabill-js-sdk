@@ -17,11 +17,11 @@ export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
   public constructor(
     version: bigint,
     payload: TransactionPayload<JoinFungibleTokenAttributes>,
+    stateUnlock: IPredicate | null,
     authProof: TypeOwnerProofsAuthProof,
     feeProof: Uint8Array | null,
-    stateUnlock: IPredicate | null,
   ) {
-    super(version, payload, authProof, feeProof, stateUnlock);
+    super(version, payload, stateUnlock, authProof, feeProof);
   }
 
   public static fromCbor(rawData: Uint8Array): JoinFungibleTokenTransactionOrder {
@@ -37,9 +37,9 @@ export class JoinFungibleTokenTransactionOrder extends TransactionOrder<
         data[6] ? StateLock.fromCbor(data[6]) : null,
         ClientMetadata.fromCbor(data[7]),
       ),
-      TypeOwnerProofsAuthProof.fromCbor(data[8]),
-      CborDecoder.readByteString(data[9]),
-      data[10] ? new PredicateBytes(CborDecoder.readByteString(data[10])) : null,
+      data[8] ? new PredicateBytes(CborDecoder.readByteString(data[8])) : null,
+      TypeOwnerProofsAuthProof.fromCbor(data[9]),
+      CborDecoder.readByteString(data[10]),
     );
   }
 }

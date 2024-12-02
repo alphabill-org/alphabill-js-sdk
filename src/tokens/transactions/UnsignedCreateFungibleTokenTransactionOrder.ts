@@ -54,6 +54,6 @@ export class UnsignedCreateFungibleTokenTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(tokenMintingProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new CreateFungibleTokenTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new CreateFungibleTokenTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

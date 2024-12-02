@@ -1,3 +1,4 @@
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../order/TransactionOrder.js';
@@ -11,10 +12,12 @@ import { ServerMetadata } from './ServerMetadata.js';
 export class TransactionRecord<T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>> {
   /**
    * Transaction record constructor.
+   * @param {bigint} version - version.
    * @param {TransactionOrder<T>} transactionOrder - transaction order.
    * @param {ServerMetadata} serverMetadata - server metadata.
    */
   public constructor(
+    public readonly version: bigint,
     public readonly transactionOrder: T,
     public readonly serverMetadata: ServerMetadata,
   ) {}
@@ -26,7 +29,16 @@ export class TransactionRecord<T extends TransactionOrder<ITransactionPayloadAtt
   public toString(): string {
     return dedent`
       TransactionRecord
+        ${this.version}
         ${this.transactionOrder.toString()}
         ${this.serverMetadata.toString()}`;
+  }
+
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.version),
+      this.transactionOrder.encode(),
+      this.serverMetadata.encode(),
+    ]);
   }
 }

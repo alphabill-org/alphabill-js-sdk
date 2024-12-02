@@ -48,6 +48,6 @@ export class UnsignedLockFeeCreditTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = null;
-    return new LockFeeCreditTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new LockFeeCreditTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

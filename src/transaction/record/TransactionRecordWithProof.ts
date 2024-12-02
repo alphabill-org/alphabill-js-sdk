@@ -41,13 +41,7 @@ export class TransactionRecordWithProof<
   public encode(): Uint8Array {
     return CborEncoder.encodeTag(
       1015,
-      CborEncoder.encodeArray([
-        CborEncoder.encodeArray([
-          this.transactionRecord.transactionOrder.encode(),
-          this.transactionRecord.serverMetadata.encode(),
-        ]),
-        this.transactionProof.encode(),
-      ]),
+      CborEncoder.encodeArray([this.transactionRecord.encode(), this.transactionProof.encode()]),
     );
   }
 }

@@ -8,11 +8,12 @@ import { SplitFungibleTokenTransactionOrder } from './SplitFungibleTokenTransact
 export class SplitFungibleTokenTransactionRecordWithProof extends TransactionRecordWithProof<SplitFungibleTokenTransactionOrder> {
   public static fromCbor(rawData: Uint8Array): SplitFungibleTokenTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
-    const txOrderData = CborDecoder.readArray(data[0]);
+    const txRecordData = CborDecoder.readArray(data[0]);
     return new SplitFungibleTokenTransactionRecordWithProof(
       new TransactionRecord(
-        SplitFungibleTokenTransactionOrder.fromCbor(txOrderData[0]),
-        ServerMetadata.fromCbor(txOrderData[1]),
+        CborDecoder.readUnsignedInteger(txRecordData[0]),
+        SplitFungibleTokenTransactionOrder.fromCbor(txRecordData[1]),
+        ServerMetadata.fromCbor(txRecordData[2]),
       ),
       TransactionProof.fromCbor(data[1]),
     );

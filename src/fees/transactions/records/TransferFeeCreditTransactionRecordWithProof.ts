@@ -8,11 +8,12 @@ import { TransferFeeCreditTransactionOrder } from '../TransferFeeCreditTransacti
 export class TransferFeeCreditTransactionRecordWithProof extends TransactionRecordWithProof<TransferFeeCreditTransactionOrder> {
   public static fromCbor(rawData: Uint8Array): TransferFeeCreditTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
-    const txOrderData = CborDecoder.readArray(data[0]);
+    const txRecordData = CborDecoder.readArray(data[0]);
     return new TransferFeeCreditTransactionRecordWithProof(
       new TransactionRecord(
-        TransferFeeCreditTransactionOrder.fromCbor(txOrderData[0]),
-        ServerMetadata.fromCbor(txOrderData[1]),
+        CborDecoder.readUnsignedInteger(txRecordData[0]),
+        TransferFeeCreditTransactionOrder.fromCbor(txRecordData[1]),
+        ServerMetadata.fromCbor(txRecordData[2]),
       ),
       TransactionProof.fromCbor(data[1]),
     );

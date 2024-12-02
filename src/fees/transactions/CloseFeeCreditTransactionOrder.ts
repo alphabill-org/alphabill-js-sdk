@@ -14,11 +14,11 @@ export class CloseFeeCreditTransactionOrder extends TransactionOrder<CloseFeeCre
   public constructor(
     version: bigint,
     payload: TransactionPayload<CloseFeeCreditAttributes>,
+    stateUnlock: IPredicate | null,
     ownerProof: OwnerProofAuthProof,
     feeProof: Uint8Array | null,
-    stateUnlock: IPredicate | null,
   ) {
-    super(version, payload, ownerProof, feeProof, stateUnlock);
+    super(version, payload, stateUnlock, ownerProof, feeProof);
   }
 
   public static fromCbor(rawData: Uint8Array): CloseFeeCreditTransactionOrder {
@@ -34,9 +34,9 @@ export class CloseFeeCreditTransactionOrder extends TransactionOrder<CloseFeeCre
         data[6] ? StateLock.fromCbor(data[6]) : null,
         ClientMetadata.fromCbor(data[7]),
       ),
-      OwnerProofAuthProof.fromCbor(data[8]),
-      CborDecoder.readByteString(data[9]),
-      data[10] ? new PredicateBytes(CborDecoder.readByteString(data[10])) : null,
+      data[8] ? new PredicateBytes(CborDecoder.readByteString(data[8])) : null,
+      OwnerProofAuthProof.fromCbor(data[9]),
+      CborDecoder.readByteString(data[10]),
     );
   }
 }

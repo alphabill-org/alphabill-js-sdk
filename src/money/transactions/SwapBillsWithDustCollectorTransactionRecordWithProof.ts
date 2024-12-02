@@ -8,11 +8,12 @@ import { SwapBillsWithDustCollectorTransactionOrder } from './SwapBillsWithDustC
 export class SwapBillsWithDustCollectorTransactionRecordWithProof extends TransactionRecordWithProof<SwapBillsWithDustCollectorTransactionOrder> {
   public static fromCbor(rawData: Uint8Array): SwapBillsWithDustCollectorTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
-    const txOrderData = CborDecoder.readArray(data[0]);
+    const txRecordData = CborDecoder.readArray(data[0]);
     return new SwapBillsWithDustCollectorTransactionRecordWithProof(
       new TransactionRecord(
-        SwapBillsWithDustCollectorTransactionOrder.fromCbor(txOrderData[0]),
-        ServerMetadata.fromCbor(txOrderData[1]),
+        CborDecoder.readUnsignedInteger(txRecordData[0]),
+        SwapBillsWithDustCollectorTransactionOrder.fromCbor(txRecordData[1]),
+        ServerMetadata.fromCbor(txRecordData[2]),
       ),
       TransactionProof.fromCbor(data[1]),
     );

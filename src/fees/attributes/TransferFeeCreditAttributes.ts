@@ -44,7 +44,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
       Number(CborDecoder.readUnsignedInteger(data[1])),
       UnitId.fromBytes(CborDecoder.readByteString(data[2])),
       CborDecoder.readUnsignedInteger(data[3]),
-      CborDecoder.readUnsignedInteger(data[4]),
+      data[4] ? CborDecoder.readUnsignedInteger(data[4]) : null,
       CborDecoder.readUnsignedInteger(data[5]),
     );
   }

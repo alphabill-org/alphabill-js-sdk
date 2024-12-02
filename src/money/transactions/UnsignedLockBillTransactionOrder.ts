@@ -48,6 +48,6 @@ export class UnsignedLockBillTransactionOrder {
     ]);
     const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
     const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
-    return new LockBillTransactionOrder(this.version, this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new LockBillTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

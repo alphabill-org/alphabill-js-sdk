@@ -29,9 +29,9 @@ export class PayToPublicKeyHashPredicate implements IPredicate {
   public static create(publicKey: Uint8Array): PayToPublicKeyHashPredicate {
     return new PayToPublicKeyHashPredicate(
       CborEncoder.encodeArray([
-        new Uint8Array(0x00),
-        new Uint8Array(PayToPublicKeyHashPredicate.P2pkh256ID),
-        sha256(publicKey),
+        CborEncoder.encodeUnsignedInteger(0x00),
+        CborEncoder.encodeByteString(new Uint8Array([PayToPublicKeyHashPredicate.P2pkh256ID])),
+        CborEncoder.encodeByteString(sha256(publicKey)),
       ]),
     );
   }

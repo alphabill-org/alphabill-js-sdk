@@ -56,9 +56,9 @@ export class UnsignedUpdateNonFungibleTokenTransactionOrder {
     return new UpdateNonFungibleTokenTransactionOrder(
       this.version,
       this.payload,
+      this.stateUnlock,
       ownerProof,
       feeProof,
-      this.stateUnlock,
     );
   }
 }

@@ -8,11 +8,12 @@ import { TransferNonFungibleTokenTransactionOrder } from './TransferNonFungibleT
 export class TransferNonFungibleTokenTransactionRecordWithProof extends TransactionRecordWithProof<TransferNonFungibleTokenTransactionOrder> {
   public static fromCbor(rawData: Uint8Array): TransferNonFungibleTokenTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
-    const txOrderData = CborDecoder.readArray(data[0]);
+    const txRecordData = CborDecoder.readArray(data[0]);
     return new TransferNonFungibleTokenTransactionRecordWithProof(
       new TransactionRecord(
-        TransferNonFungibleTokenTransactionOrder.fromCbor(txOrderData[0]),
-        ServerMetadata.fromCbor(txOrderData[1]),
+        CborDecoder.readUnsignedInteger(txRecordData[0]),
+        TransferNonFungibleTokenTransactionOrder.fromCbor(txRecordData[1]),
+        ServerMetadata.fromCbor(txRecordData[2]),
       ),
       TransactionProof.fromCbor(data[1]),
     );

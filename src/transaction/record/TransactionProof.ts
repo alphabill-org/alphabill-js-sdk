@@ -11,7 +11,7 @@ import { TransactionProofChainItem } from './TransactionProofChainItem.js';
 export class TransactionProof {
   /**
    * Transaction proof constructor.
-   * @param {bigint} version - Alphabill version.
+   * @param {bigint} version - version.
    * @param {Uint8Array} _blockHeaderHash - block header hash.
    * @param {TransactionProofChainItem[]} chain - chain.
    * @param {UnicityCertificate} unicityCertificate - unicity certificate.
