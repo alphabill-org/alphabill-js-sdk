@@ -34,10 +34,7 @@ export class TransactionProofChainItem {
    */
   public static fromCbor(rawData: Uint8Array): TransactionProofChainItem {
     const data = CborDecoder.readArray(rawData);
-    return new TransactionProofChainItem(
-      Boolean(CborDecoder.readUnsignedInteger(data[0])),
-      CborDecoder.readByteString(data[1]),
-    );
+    return new TransactionProofChainItem(CborDecoder.readBoolean(data[0]), CborDecoder.readByteString(data[1]));
   }
 
   /**

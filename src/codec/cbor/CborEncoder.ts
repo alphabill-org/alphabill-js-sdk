@@ -115,7 +115,10 @@ export class CborEncoder {
   }
 
   public static encodeBoolean(data: boolean): Uint8Array {
-    throw new Error('Not implemented');
+    if (data) {
+      return new Uint8Array([0xf5]);
+    }
+    return new Uint8Array([0xf4]);
   }
 
   public static encodeBitString(data: Uint8Array, length: number): Uint8Array {

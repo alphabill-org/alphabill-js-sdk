@@ -86,6 +86,16 @@ export class CborDecoder {
     return { tag, data: CborDecoder.readRawCbor(data, position).data };
   }
 
+  public static readBoolean(data: Uint8Array): boolean {
+    if (data == new Uint8Array([0xf5])) {
+      return true;
+    }
+    if (data == new Uint8Array([0xf4])) {
+      return false;
+    }
+    throw new Error('Type mismatch, expected boolean.');
+  }
+
   public static readBitString(data: Uint8Array): { length: number; data: Uint8Array } {
     const byteCount = data.length - 1;
     if (byteCount < 0) {
