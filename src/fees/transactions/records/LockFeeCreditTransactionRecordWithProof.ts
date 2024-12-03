@@ -8,7 +8,7 @@ import { LockFeeCreditTransactionOrder } from '../LockFeeCreditTransactionOrder.
 export class LockFeeCreditTransactionRecordWithProof extends TransactionRecordWithProof<LockFeeCreditTransactionOrder> {
   public static fromCbor(rawData: Uint8Array): LockFeeCreditTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
-    const txRecordData = CborDecoder.readArray(data[0]);
+    const txRecordData = CborDecoder.readArray(CborDecoder.readTag(data[0]).data);
     return new LockFeeCreditTransactionRecordWithProof(
       new TransactionRecord(
         CborDecoder.readUnsignedInteger(txRecordData[0]),

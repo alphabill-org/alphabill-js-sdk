@@ -22,7 +22,7 @@ export class LockFeeCreditTransactionOrder extends TransactionOrder<LockFeeCredi
   }
 
   public static fromCbor(rawData: Uint8Array): LockFeeCreditTransactionOrder {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new LockFeeCreditTransactionOrder(
       CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(

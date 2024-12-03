@@ -105,7 +105,7 @@ describe('Money Client Integration Tests', () => {
 
   it('Split and transfer bill', async () => {
     const round = await moneyClient.getRoundNumber();
-    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
+    let billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
     const billUnitId = billUnitIds[0];
     let bill = await moneyClient.getUnit(billUnitId, false, Bill);
@@ -130,6 +130,8 @@ describe('Money Client Integration Tests', () => {
     bill = await moneyClient.getUnit(billUnitId, false, Bill);
     expect(bill!.value).toBeGreaterThan(0);
 
+    billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
+    console.log(billUnitIds);
     const targetBillUnitId = billUnitIds
       .filter((id: IUnitId) => {
         return !UnitId.equals(id, bill!.unitId);

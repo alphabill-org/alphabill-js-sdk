@@ -34,7 +34,7 @@ export class UnsignedTransferBillTransactionOrder {
         PartitionIdentifier.MONEY,
         data.bill.unitId,
         MoneyPartitionTransactionType.TransferBill,
-        new TransferBillAttributes(data.ownerPredicate, data.bill.value, data.bill.counter),
+        new TransferBillAttributes(data.bill.value, data.ownerPredicate, data.bill.counter),
         data.stateLock,
         data.metadata,
       ),
@@ -43,13 +43,13 @@ export class UnsignedTransferBillTransactionOrder {
   }
 
   public sign(ownerProofFactory: IProofFactory, feeProofFactory: IProofFactory | null): TransferBillTransactionOrder {
-    const authProof = CborEncoder.encodeArray([
+    const authProofBytes: Uint8Array[] = [
       CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
-    ]);
-    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
-    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
+    ];
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()])) ?? null;
     return new TransferBillTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

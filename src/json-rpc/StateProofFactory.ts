@@ -7,7 +7,6 @@ import {
 } from '../IStateProof.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
-import { Base64Converter } from '../util/Base64Converter.js';
 import {
   IPathItemDto,
   IStateProofDto,
@@ -45,7 +44,7 @@ function createUnitTreeCertificate(data: IUnitTreeCertificateDto): IUnitTreeCert
 }
 
 function createPathItem(data: IPathItemDto): IStateProofPathItem {
-  return new StateProofPathItem(data.directionLeft, Base64Converter.decode(data.hash));
+  return new StateProofPathItem(data.directionLeft, Base16Converter.decode(data.hash));
 }
 
 function createStateTreeCertificate(data: IStateTreeCertificateDto): IStateTreeCertificate {

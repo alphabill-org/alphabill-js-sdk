@@ -44,12 +44,12 @@ export class UnsignedCloseFeeCreditTransactionOrder {
   }
 
   public sign(ownerProofFactory: IProofFactory): CloseFeeCreditTransactionOrder {
-    const authProof = CborEncoder.encodeArray([
+    const authProofBytes = [
       CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
-    ]);
-    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(authProof));
+    ];
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
     const feeProof = null;
     return new CloseFeeCreditTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }

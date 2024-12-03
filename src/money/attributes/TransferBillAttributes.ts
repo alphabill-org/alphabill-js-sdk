@@ -11,13 +11,13 @@ import { dedent } from '../../util/StringUtils.js';
 export class TransferBillAttributes implements ITransactionPayloadAttributes {
   /**
    * Transfer bill attributes constructor.
-   * @param {IPredicate} ownerPredicate - Owner predicate.
    * @param {bigint} targetValue - Target value.
+   * @param {IPredicate} ownerPredicate - Owner predicate.
    * @param {bigint} counter - Counter.
    */
   public constructor(
-    public readonly ownerPredicate: IPredicate,
     public readonly targetValue: bigint,
+    public readonly ownerPredicate: IPredicate,
     public readonly counter: bigint,
   ) {
     this.targetValue = BigInt(this.targetValue);
@@ -32,8 +32,8 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   public static fromCbor(rawData: Uint8Array): TransferBillAttributes {
     const data = CborDecoder.readArray(rawData);
     return new TransferBillAttributes(
-      new PredicateBytes(CborDecoder.readByteString(data[0])),
-      CborDecoder.readUnsignedInteger(data[1]),
+      CborDecoder.readUnsignedInteger(data[0]),
+      new PredicateBytes(CborDecoder.readByteString(data[1])),
       CborDecoder.readUnsignedInteger(data[2]),
     );
   }
@@ -45,8 +45,8 @@ export class TransferBillAttributes implements ITransactionPayloadAttributes {
   public toString(): string {
     return dedent`
       TransferBillAttributes
-        Owner Predicate: ${this.ownerPredicate.toString()}
         Target Value: ${this.targetValue}
+        Owner Predicate: ${this.ownerPredicate.toString()}
         Counter: ${this.counter}`;
   }
 

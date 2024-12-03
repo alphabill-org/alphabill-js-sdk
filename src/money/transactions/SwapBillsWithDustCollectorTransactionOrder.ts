@@ -25,7 +25,7 @@ export class SwapBillsWithDustCollectorTransactionOrder extends TransactionOrder
   }
 
   public static fromCbor(rawData: Uint8Array): SwapBillsWithDustCollectorTransactionOrder {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new SwapBillsWithDustCollectorTransactionOrder(
       CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(

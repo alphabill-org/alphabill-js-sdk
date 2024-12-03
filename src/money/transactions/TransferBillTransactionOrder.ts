@@ -22,7 +22,7 @@ export class TransferBillTransactionOrder extends TransactionOrder<TransferBillA
   }
 
   public static fromCbor(rawData: Uint8Array): TransferBillTransactionOrder {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new TransferBillTransactionOrder(
       CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(

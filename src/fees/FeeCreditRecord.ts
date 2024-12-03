@@ -4,7 +4,7 @@ import { IFeeCreditRecordDto } from '../json-rpc/IFeeCreditRecordDto.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { Unit } from '../Unit.js';
-import { Base64Converter } from '../util/Base64Converter.js';
+import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 
 /**
@@ -64,7 +64,7 @@ export class FeeCreditRecord extends Unit {
       partitionIdentifier,
       stateProof,
       BigInt(data.balance),
-      new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
+      new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
       BigInt(data.timeout),

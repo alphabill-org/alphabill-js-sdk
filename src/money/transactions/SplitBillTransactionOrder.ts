@@ -22,7 +22,7 @@ export class SplitBillTransactionOrder extends TransactionOrder<SplitBillAttribu
   }
 
   public static fromCbor(rawData: Uint8Array): SplitBillTransactionOrder {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new SplitBillTransactionOrder(
       CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(

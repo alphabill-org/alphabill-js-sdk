@@ -25,7 +25,7 @@ export class ReclaimFeeCreditTransactionOrder extends TransactionOrder<
   }
 
   public static fromCbor(rawData: Uint8Array): ReclaimFeeCreditTransactionOrder {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new ReclaimFeeCreditTransactionOrder(
       CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(

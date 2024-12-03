@@ -13,12 +13,16 @@ export class SubTypeOwnerProofsAuthProof implements ITransactionOrderProof {
 
   public static fromCbor(rawData: Uint8Array): SubTypeOwnerProofsAuthProof {
     const data = CborDecoder.readArray(rawData);
-    return new SubTypeOwnerProofsAuthProof(CborDecoder.readArray(data[0]));
+    return new SubTypeOwnerProofsAuthProof(
+      CborDecoder.readArray(data[0]).map((proof: Uint8Array) => CborDecoder.readByteString(proof)),
+    );
   }
 
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray(
-      this.subTypeCreationProofs.map((proof: Uint8Array) => CborEncoder.encodeByteString(proof)),
-    );
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeArray(
+        this.subTypeCreationProofs.map((proof: Uint8Array) => CborEncoder.encodeByteString(proof)),
+      ),
+    ]);
   }
 }
