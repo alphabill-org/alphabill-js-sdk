@@ -1,4 +1,5 @@
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
+import { CborTag } from '../../codec/cbor/CborTag.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../order/TransactionOrder.js';
@@ -36,7 +37,7 @@ export class TransactionRecord<T extends TransactionOrder<ITransactionPayloadAtt
 
   public encode(): Uint8Array {
     return CborEncoder.encodeTag(
-      1015,
+      CborTag.TRANSACTION_RECORD,
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
         this.transactionOrder.encode(),

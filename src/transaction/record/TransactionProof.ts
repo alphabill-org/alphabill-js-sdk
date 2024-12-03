@@ -1,5 +1,6 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
+import { CborTag } from '../../codec/cbor/CborTag.js';
 import { UnicityCertificate } from '../../json-rpc/UnicityCertificate.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
@@ -40,7 +41,11 @@ export class TransactionProof {
    * @returns {TransactionProof} Transaction proof.
    */
   public static fromCbor(rawData: Uint8Array): TransactionProof {
-    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
+    const tag = CborDecoder.readTag(rawData);
+    if (Number(tag.tag) !== CborTag.TX_PROOF) {
+      throw new Error(`Invalid tag, expected ${CborTag.TX_PROOF}, was ` + tag.tag);
+    }
+    const data = CborDecoder.readArray(tag.data);
     return new TransactionProof(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readByteString(data[1]),
@@ -56,7 +61,7 @@ export class TransactionProof {
    */
   public encode(): Uint8Array {
     return CborEncoder.encodeTag(
-      1009,
+      CborTag.TX_PROOF,
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
         CborEncoder.encodeByteString(this.blockHeaderHash),

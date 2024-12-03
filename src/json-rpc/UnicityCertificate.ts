@@ -1,5 +1,6 @@
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../codec/cbor/CborEncoder.js';
+import { CborTag } from '../codec/cbor/CborTag.js';
 import {
   IInputRecord,
   IShardId,
@@ -51,7 +52,11 @@ export class UnicityCertificate implements IUnicityCertificate {
    * @returns {UnicityCertificate} Unicity certificate.
    */
   public static fromCbor(rawData: Uint8Array): UnicityCertificate {
-    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
+    const tag = CborDecoder.readTag(rawData);
+    if (Number(tag.tag) !== CborTag.UNICITY_CERTIFICATE) {
+      throw new Error(`Invalid tag, expected ${CborTag.UNICITY_CERTIFICATE}, was ` + tag.tag);
+    }
+    const data = CborDecoder.readArray(tag.data);
     return new UnicityCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
       InputRecord.fromCbor(data[1]),
@@ -68,7 +73,7 @@ export class UnicityCertificate implements IUnicityCertificate {
    */
   public encode(): Uint8Array {
     return CborEncoder.encodeTag(
-      1007,
+      CborTag.UNICITY_CERTIFICATE,
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
         this.inputRecord.encode(),
@@ -164,12 +169,16 @@ export class InputRecord implements IInputRecord {
   }
 
   /**
-   * Create input record certificate from raw CBOR.
+   * Create input record from raw CBOR.
    * @param {Uint8Array} rawData - Input record as raw CBOR.
    * @returns {InputRecord} Input record.
    */
   public static fromCbor(rawData: Uint8Array): InputRecord {
-    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
+    const tag = CborDecoder.readTag(rawData);
+    if (Number(tag.tag) !== CborTag.INPUT_RECORD) {
+      throw new Error(`Invalid tag, expected ${CborTag.INPUT_RECORD}, was ` + tag.tag);
+    }
+    const data = CborDecoder.readArray(tag.data);
     return new InputRecord(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
@@ -189,7 +198,7 @@ export class InputRecord implements IInputRecord {
    */
   public encode(): Uint8Array {
     return CborEncoder.encodeTag(
-      1008,
+      CborTag.INPUT_RECORD,
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
         CborEncoder.encodeUnsignedInteger(this.roundNumber),
@@ -408,7 +417,11 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
    * @returns {UnicityTreeCertificate} Unicity tree certificate.
    */
   public static fromCbor(rawData: Uint8Array): UnicityTreeCertificate {
-    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
+    const tag = CborDecoder.readTag(rawData);
+    if (Number(tag.tag) !== CborTag.UNICITY_TREE_CERTIFICATE) {
+      throw new Error(`Invalid tag, expected ${CborTag.UNICITY_TREE_CERTIFICATE}, was ` + tag.tag);
+    }
+    const data = CborDecoder.readArray(tag.data);
     return new UnicityTreeCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
@@ -423,7 +436,7 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
    */
   public encode(): Uint8Array {
     return CborEncoder.encodeTag(
-      1014,
+      CborTag.UNICITY_TREE_CERTIFICATE,
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
         CborEncoder.encodeUnsignedInteger(this.partitionIdentifier),
@@ -442,8 +455,8 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
       Unicity Tree Certificate
         Version: ${this.version}
         Partition ID: ${this.partitionIdentifier}
-        Hash Steps: [${`\n${this.hashSteps.map((unit: IHashStep) => unit.toString()).join('\n')}\n`}]
-        Partition Description Hash: ${Base16Converter.encode(this._partitionDescriptionHash)}`;
+        Partition Description Hash: ${Base16Converter.encode(this._partitionDescriptionHash)}
+        Hash Steps: [${`\n${this.hashSteps.map((unit: IHashStep) => unit.toString()).join('\n')}\n`}]`;
   }
 }
 
@@ -495,7 +508,11 @@ export class UnicitySeal implements IUnicitySeal {
    * @returns {UnicitySeal} Unicity seal.
    */
   public static fromCbor(rawData: Uint8Array): UnicitySeal {
-    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
+    const tag = CborDecoder.readTag(rawData);
+    if (Number(tag.tag) !== CborTag.UNICITY_SEAL) {
+      throw new Error(`Invalid tag, expected ${CborTag.UNICITY_SEAL}, was ` + tag.tag);
+    }
+    const data = CborDecoder.readArray(tag.data);
     return new UnicitySeal(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
@@ -512,7 +529,7 @@ export class UnicitySeal implements IUnicitySeal {
    */
   public encode(): Uint8Array {
     return CborEncoder.encodeTag(
-      1001,
+      CborTag.UNICITY_SEAL,
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
         CborEncoder.encodeUnsignedInteger(this.rootChainRoundNumber),
