@@ -97,4 +97,23 @@ describe('Cbor encoder test', () => {
     expect(CborEncoder.encodeBitString(new Uint8Array([0, 0]), 9)).toEqual(new Uint8Array([0, 0b0100_0000]));
     expect(CborEncoder.encodeBitString(new Uint8Array([0xff, 0xff]), 9)).toEqual(new Uint8Array([0xff, 0b1100_0000]));
   });
+
+  it('Encode map', () => {
+    expect(
+      Base16Converter.encode(
+        CborEncoder.encodeMap(
+          new Map([
+            [Base16Converter.encode(CborEncoder.encodeTextString('a')), CborEncoder.encodeTextString('A')],
+            [Base16Converter.encode(CborEncoder.encodeTextString('b')), CborEncoder.encodeTextString('B')],
+            [Base16Converter.encode(CborEncoder.encodeTextString('c')), CborEncoder.encodeTextString('C')],
+            [
+              Base16Converter.encode(CborEncoder.encodeArray([CborEncoder.encodeTextString('d')])),
+              CborEncoder.encodeTextString('D'),
+            ],
+            [Base16Converter.encode(CborEncoder.encodeUnsignedInteger(1)), CborEncoder.encodeTextString('E')],
+          ]),
+        ),
+      ),
+    ).toEqual('0xA50161456161614161626142616361438161646144');
+  });
 });
