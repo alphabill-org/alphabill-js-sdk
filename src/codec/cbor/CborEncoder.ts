@@ -94,7 +94,7 @@ export class CborEncoder {
     }
 
     if (input.size < 24) {
-      return new Uint8Array([MajorType.ARRAY | input.size, ...data]);
+      return new Uint8Array([MajorType.MAP | input.size, ...data]);
     }
 
     const lengthBytes = CborEncoder.getUnsignedIntegerAsPaddedBytes(input.size);
