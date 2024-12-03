@@ -99,6 +99,7 @@ describe('Cbor encoder test', () => {
   });
 
   it('Encode map', () => {
+    expect(CborEncoder.encodeMap(new Map<string, Uint8Array>([]))).toEqual(Base16Converter.decode('0xA0'));
     expect(
       Base16Converter.encode(
         CborEncoder.encodeMap(

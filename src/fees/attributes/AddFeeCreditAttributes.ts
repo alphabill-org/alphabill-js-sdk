@@ -41,8 +41,7 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
     return dedent`
       AddFeeCreditAttributes
         Owner Predicate: ${this.ownerPredicate.toString()}
-        Transaction Record with Proof: 
-          ${this.transactionRecordWithProof.toString()}`;
+        ${this.transactionRecordWithProof.toString()}`;
   }
 
   /**

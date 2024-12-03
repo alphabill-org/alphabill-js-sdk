@@ -55,7 +55,7 @@ describe('Cbor decoder test', () => {
     const decodedKeys: string[] = [];
     const decodedValues: string[] = [];
     for (const [key, value] of decodedMap) {
-      decodedKeys.push(Base16Converter.encode(key));
+      decodedKeys.push(key);
       decodedValues.push(Base16Converter.encode(value));
     }
     const expectedKeys = ['0x646B657931', '0x646B657932'];

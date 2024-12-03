@@ -67,7 +67,7 @@ export class CborDecoder {
     const parsedLength = CborDecoder.readLength(majorType, data, 0);
     let position = parsedLength.position;
     const result: Map<string, Uint8Array> = new Map();
-    for (let i = 0; i <= Number(parsedLength.length) / 2; i++) {
+    for (let i = 0; i < parsedLength.length; i++) {
       const key = CborDecoder.readRawCbor(data, position);
       position = key.position;
       const value = CborDecoder.readRawCbor(data, position);

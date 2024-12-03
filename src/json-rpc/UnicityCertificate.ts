@@ -531,8 +531,8 @@ export class UnicitySeal implements IUnicitySeal {
         CborEncoder.encodeUnsignedInteger(this.version),
         CborEncoder.encodeUnsignedInteger(this.rootChainRoundNumber),
         CborEncoder.encodeUnsignedInteger(this.timestamp),
-        CborEncoder.encodeByteString(this.previousHash),
-        CborEncoder.encodeByteString(this.hash),
+        CborEncoder.encodeByteString(this._previousHash),
+        CborEncoder.encodeByteString(this._hash),
         CborEncoder.encodeMap(this._signatures),
       ]),
     );
