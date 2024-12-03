@@ -8,7 +8,7 @@ import { JoinFungibleTokenTransactionOrder } from './JoinFungibleTokenTransactio
 export class JoinFungibleTokenTransactionRecordWithProof extends TransactionRecordWithProof<JoinFungibleTokenTransactionOrder> {
   public static fromCbor(rawData: Uint8Array): JoinFungibleTokenTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
-    const txRecordData = CborDecoder.readArray(data[0]);
+    const txRecordData = CborDecoder.readArray(CborDecoder.readTag(data[0]).data);
     return new JoinFungibleTokenTransactionRecordWithProof(
       new TransactionRecord(
         CborDecoder.readUnsignedInteger(txRecordData[0]),

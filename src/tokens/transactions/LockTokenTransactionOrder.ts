@@ -22,7 +22,7 @@ export class LockTokenTransactionOrder extends TransactionOrder<LockTokenAttribu
   }
 
   public static fromCbor(rawData: Uint8Array): LockTokenTransactionOrder {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new LockTokenTransactionOrder(
       CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(

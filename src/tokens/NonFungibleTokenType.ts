@@ -6,7 +6,6 @@ import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { Unit } from '../Unit.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
-import { Base64Converter } from '../util/Base64Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { TokenIcon } from './TokenIcon.js';
 
@@ -71,10 +70,10 @@ export class NonFungibleTokenType extends Unit {
       data.name,
       new TokenIcon(data.icon.type, Base16Converter.decode(data.icon.data)),
       UnitId.fromBytes(Base16Converter.decode(data.parentTypeId)),
-      new PredicateBytes(Base64Converter.decode(data.subTypeCreationPredicate)),
-      new PredicateBytes(Base64Converter.decode(data.tokenMintingPredicate)),
-      new PredicateBytes(Base64Converter.decode(data.tokenTypeOwnerPredicate)),
-      new PredicateBytes(Base64Converter.decode(data.dataUpdatePredicate)),
+      new PredicateBytes(Base16Converter.decode(data.subTypeCreationPredicate)),
+      new PredicateBytes(Base16Converter.decode(data.tokenMintingPredicate)),
+      new PredicateBytes(Base16Converter.decode(data.tokenTypeOwnerPredicate)),
+      new PredicateBytes(Base16Converter.decode(data.dataUpdatePredicate)),
     );
   }
 

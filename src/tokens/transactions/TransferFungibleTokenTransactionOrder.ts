@@ -25,7 +25,7 @@ export class TransferFungibleTokenTransactionOrder extends TransactionOrder<
   }
 
   public static fromCbor(rawData: Uint8Array): TransferFungibleTokenTransactionOrder {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new TransferFungibleTokenTransactionOrder(
       CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(

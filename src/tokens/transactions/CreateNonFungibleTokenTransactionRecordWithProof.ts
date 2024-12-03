@@ -8,7 +8,7 @@ import { CreateNonFungibleTokenTransactionOrder } from './CreateNonFungibleToken
 export class CreateNonFungibleTokenTransactionRecordWithProof extends TransactionRecordWithProof<CreateNonFungibleTokenTransactionOrder> {
   public static fromCbor(rawData: Uint8Array): CreateNonFungibleTokenTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
-    const txRecordData = CborDecoder.readArray(data[0]);
+    const txRecordData = CborDecoder.readArray(CborDecoder.readTag(data[0]).data);
     return new CreateNonFungibleTokenTransactionRecordWithProof(
       new TransactionRecord(
         CborDecoder.readUnsignedInteger(txRecordData[0]),

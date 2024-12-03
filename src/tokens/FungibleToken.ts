@@ -6,7 +6,6 @@ import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { Unit } from '../Unit.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
-import { Base64Converter } from '../util/Base64Converter.js';
 import { dedent } from '../util/StringUtils.js';
 
 /**
@@ -68,7 +67,7 @@ export class FungibleToken extends Unit {
       stateProof,
       UnitId.fromBytes(Base16Converter.decode(data.tokenType)),
       BigInt(data.value),
-      new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
+      new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
       BigInt(data.timeout),

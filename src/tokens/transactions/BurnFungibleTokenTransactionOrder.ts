@@ -25,7 +25,7 @@ export class BurnFungibleTokenTransactionOrder extends TransactionOrder<
   }
 
   public static fromCbor(rawData: Uint8Array): BurnFungibleTokenTransactionOrder {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new BurnFungibleTokenTransactionOrder(
       CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(

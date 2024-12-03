@@ -50,16 +50,17 @@ export class UnsignedBurnFungibleTokenTransactionOrder {
     feeProofFactory: IProofFactory | null,
     tokenTypeOwnerProofs: IProofFactory[],
   ): BurnFungibleTokenTransactionOrder {
-    const authProof = CborEncoder.encodeArray([
+    const authProofBytes: Uint8Array[] = [
       CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
-    ]);
+    ];
+    const authProof = CborEncoder.encodeArray(authProofBytes);
     const ownerProof = new TypeOwnerProofsAuthProof(
       ownerProofFactory.create(authProof),
       tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
     );
-    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([authProof, ownerProof.encode()])) ?? null;
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()])) ?? null;
     return new BurnFungibleTokenTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

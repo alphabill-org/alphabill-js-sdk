@@ -8,7 +8,7 @@ import { LockTokenTransactionOrder } from './LockTokenTransactionOrder.js';
 export class LockTokenTransactionRecordWithProof extends TransactionRecordWithProof<LockTokenTransactionOrder> {
   public static fromCbor(rawData: Uint8Array): LockTokenTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
-    const txRecordData = CborDecoder.readArray(data[0]);
+    const txRecordData = CborDecoder.readArray(CborDecoder.readTag(data[0]).data);
     return new LockTokenTransactionRecordWithProof(
       new TransactionRecord(
         CborDecoder.readUnsignedInteger(txRecordData[0]),

@@ -6,7 +6,6 @@ import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
 import { Unit } from '../Unit.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
-import { Base64Converter } from '../util/Base64Converter.js';
 import { dedent } from '../util/StringUtils.js';
 
 /**
@@ -80,9 +79,9 @@ export class NonFungibleToken extends Unit {
       UnitId.fromBytes(Base16Converter.decode(data.typeID)),
       data.name,
       data.uri,
-      Base64Converter.decode(data.data),
-      new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
-      new PredicateBytes(Base64Converter.decode(data.dataUpdatePredicate)),
+      Base16Converter.decode(data.data),
+      new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
+      new PredicateBytes(Base16Converter.decode(data.dataUpdatePredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
     );
