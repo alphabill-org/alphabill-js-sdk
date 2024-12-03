@@ -22,7 +22,7 @@ export class LockBillTransactionOrder extends TransactionOrder<LockBillAttribute
   }
 
   public static fromCbor(rawData: Uint8Array): LockBillTransactionOrder {
-    const data = CborDecoder.readArray(rawData);
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new LockBillTransactionOrder(
       CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(

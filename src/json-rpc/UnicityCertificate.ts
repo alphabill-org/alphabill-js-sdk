@@ -1,13 +1,13 @@
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import {
-  IIndexedPathItem,
   IInputRecord,
   IShardId,
   IShardTreeCertificate,
   IUnicityCertificate,
   IUnicitySeal,
   IUnicityTreeCertificate,
+  IHashStep,
 } from '../IStateProof.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
@@ -28,11 +28,11 @@ export class UnicityCertificate implements IUnicityCertificate {
    */
   public constructor(
     public readonly version: bigint,
-    public readonly inputRecord: IInputRecord | null,
+    public readonly inputRecord: IInputRecord,
     private readonly _trHash: Uint8Array,
     public readonly shardTreeCertificate: IShardTreeCertificate,
-    public readonly unicityTreeCertificate: IUnicityTreeCertificate | null,
-    public readonly unicitySeal: IUnicitySeal | null,
+    public readonly unicityTreeCertificate: IUnicityTreeCertificate,
+    public readonly unicitySeal: IUnicitySeal,
   ) {
     this.version = BigInt(this.version);
     this._trHash = new Uint8Array(this._trHash);
@@ -54,11 +54,11 @@ export class UnicityCertificate implements IUnicityCertificate {
     const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new UnicityCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
-      CborDecoder.readOptional(data[1], InputRecord.fromCbor),
+      InputRecord.fromCbor(data[1]),
       CborDecoder.readByteString(data[2]),
       ShardTreeCertificate.fromCbor(data[3]),
-      CborDecoder.readOptional(data[4], UnicityTreeCertificate.fromCbor),
-      CborDecoder.readOptional(data[5], UnicitySeal.fromCbor),
+      UnicityTreeCertificate.fromCbor(data[4]),
+      UnicitySeal.fromCbor(data[5]),
     );
   }
 
@@ -71,11 +71,11 @@ export class UnicityCertificate implements IUnicityCertificate {
       1007,
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
-        this.inputRecord ? this.inputRecord.encode() : CborEncoder.encodeNull(),
+        this.inputRecord.encode(),
         CborEncoder.encodeByteString(this._trHash),
         this.shardTreeCertificate.encode(),
-        this.unicityTreeCertificate ? this.unicityTreeCertificate.encode() : CborEncoder.encodeNull(),
-        this.unicitySeal ? this.unicitySeal.encode() : CborEncoder.encodeNull(),
+        this.unicityTreeCertificate.encode(),
+        this.unicitySeal.encode(),
       ]),
     );
   }
@@ -88,11 +88,11 @@ export class UnicityCertificate implements IUnicityCertificate {
     return dedent`
       Unicity Certificate
         Version: ${this.version}
-        ${this.inputRecord?.toString()}}
+        ${this.inputRecord.toString()}}
         Transaction Record Hash: ${Base16Converter.encode(this.trHash)}
         ${this.shardTreeCertificate.toString()}
-        ${this.unicityTreeCertificate?.toString()}
-        ${this.unicitySeal?.toString()}`;
+        ${this.unicityTreeCertificate.toString()}
+        ${this.unicitySeal.toString()}`;
   }
 }
 
@@ -104,34 +104,34 @@ export class InputRecord implements IInputRecord {
   /**
    * Input record constructor.
    * @param {bigint} version - version.
-   * @param {Uint8Array} _previousHash - previously certified state hash.
-   * @param {Uint8Array} _hash - state hash to be certified.
-   * @param {Uint8Array} _blockHash - hash of the block.
-   * @param {Uint8Array} _summaryValue - summary value to certified.
-   * @param {bigint} timestamp - reference time for transaction validation.
    * @param {bigint} roundNumber - shard’s round number.
    * @param {bigint} epoch - shard’s epoch number.
+   * @param {Uint8Array} _previousHash - previously certified state hash.
+   * @param {Uint8Array} _hash - state hash to be certified.
+   * @param {Uint8Array} _summaryValue - summary value to certified.
+   * @param {bigint} timestamp - reference time for transaction validation.
+   * @param {Uint8Array} _blockHash - hash of the block.
    * @param {bigint} sumOfEarnedFees - sum of the actual fees over all transaction records in the block.
    */
   public constructor(
     public readonly version: bigint,
-    private readonly _previousHash: Uint8Array,
-    private readonly _hash: Uint8Array,
-    private readonly _blockHash: Uint8Array,
-    private readonly _summaryValue: Uint8Array,
-    public readonly timestamp: bigint,
     public readonly roundNumber: bigint,
     public readonly epoch: bigint,
+    private readonly _previousHash: Uint8Array,
+    private readonly _hash: Uint8Array,
+    private readonly _summaryValue: Uint8Array,
+    public readonly timestamp: bigint,
+    private readonly _blockHash: Uint8Array,
     public readonly sumOfEarnedFees: bigint,
   ) {
     this.version = BigInt(this.version);
-    this._previousHash = new Uint8Array(this._previousHash);
-    this._hash = new Uint8Array(this._hash);
-    this._blockHash = new Uint8Array(this._blockHash);
-    this._summaryValue = new Uint8Array(this._summaryValue);
-    this.timestamp = BigInt(this.timestamp);
     this.roundNumber = BigInt(this.roundNumber);
     this.epoch = BigInt(this.epoch);
+    this._previousHash = new Uint8Array(this._previousHash);
+    this._hash = new Uint8Array(this._hash);
+    this._summaryValue = new Uint8Array(this._summaryValue);
+    this.timestamp = BigInt(this.timestamp);
+    this._blockHash = new Uint8Array(this._blockHash);
     this.sumOfEarnedFees = BigInt(this.sumOfEarnedFees);
   }
 
@@ -150,17 +150,17 @@ export class InputRecord implements IInputRecord {
   }
 
   /**
-   * @see {IInputRecord.blockHash}
-   */
-  public get blockHash(): Uint8Array {
-    return new Uint8Array(this._blockHash);
-  }
-
-  /**
    * @see {IInputRecord.summaryValue}
    */
   public get summaryValue(): Uint8Array {
     return new Uint8Array(this._summaryValue);
+  }
+
+  /**
+   * @see {IInputRecord.blockHash}
+   */
+  public get blockHash(): Uint8Array {
+    return new Uint8Array(this._blockHash);
   }
 
   /**
@@ -172,13 +172,13 @@ export class InputRecord implements IInputRecord {
     const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new InputRecord(
       CborDecoder.readUnsignedInteger(data[0]),
-      CborDecoder.readByteString(data[1]),
-      CborDecoder.readByteString(data[2]),
+      CborDecoder.readUnsignedInteger(data[1]),
+      CborDecoder.readUnsignedInteger(data[2]),
       CborDecoder.readByteString(data[3]),
       CborDecoder.readByteString(data[4]),
-      CborDecoder.readUnsignedInteger(data[5]),
+      CborDecoder.readByteString(data[5]),
       CborDecoder.readUnsignedInteger(data[6]),
-      CborDecoder.readUnsignedInteger(data[7]),
+      CborDecoder.readByteString(data[7]),
       CborDecoder.readUnsignedInteger(data[8]),
     );
   }
@@ -192,13 +192,13 @@ export class InputRecord implements IInputRecord {
       1008,
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
-        CborEncoder.encodeByteString(this._previousHash),
-        CborEncoder.encodeByteString(this._hash),
-        CborEncoder.encodeByteString(this._blockHash),
-        CborEncoder.encodeByteString(this._summaryValue),
-        CborEncoder.encodeUnsignedInteger(this.timestamp),
         CborEncoder.encodeUnsignedInteger(this.roundNumber),
         CborEncoder.encodeUnsignedInteger(this.epoch),
+        CborEncoder.encodeByteString(this._previousHash),
+        CborEncoder.encodeByteString(this._hash),
+        CborEncoder.encodeByteString(this._summaryValue),
+        CborEncoder.encodeUnsignedInteger(this.timestamp),
+        CborEncoder.encodeByteString(this._blockHash),
         CborEncoder.encodeUnsignedInteger(this.sumOfEarnedFees),
       ]),
     );
@@ -212,13 +212,13 @@ export class InputRecord implements IInputRecord {
     return dedent`
       Input Record
         Version: ${this.version}
-        Previous Hash: ${Base16Converter.encode(this._previousHash)}
-        Hash: ${Base16Converter.encode(this._hash)}
-        Block Hash: ${Base16Converter.encode(this._blockHash)}
-        Summary Value: ${Base16Converter.encode(this._summaryValue)}
-        Timestamp: ${this.timestamp}
         Round Number: ${this.roundNumber}
         Epoch: ${this.epoch}
+        Previous Hash: ${Base16Converter.encode(this._previousHash)}
+        Hash: ${Base16Converter.encode(this._hash)}
+        Summary Value: ${Base16Converter.encode(this._summaryValue)}
+        Timestamp: ${this.timestamp}
+        Block Hash: ${Base16Converter.encode(this._blockHash)}
         Sum Of Earned Fees: ${this.sumOfEarnedFees}`;
   }
 }
@@ -276,52 +276,46 @@ export class ShardTreeCertificate implements IShardTreeCertificate {
   }
 }
 
-export class IndexedPathItem implements IIndexedPathItem {
+export class HashStep implements IHashStep {
   /**
-   * Indexed path item constructor.
-   * @param _key - key.
+   * Hash step constructor.
+   * @param key - key.
    * @param _hash - hash.
    */
   public constructor(
-    private readonly _key: Uint8Array,
+    public readonly key: bigint,
     private readonly _hash: Uint8Array,
   ) {
-    this._key = new Uint8Array(this._key);
+    this.key = BigInt(this.key);
     this._hash = new Uint8Array(this._hash);
   }
 
   /**
-   * @see {IIndexedPathItem.key}
-   */
-  public get key(): Uint8Array {
-    return new Uint8Array(this._key);
-  }
-
-  /**
-   * @see {IIndexedPathItem.hash}
+   * @see {IHashStep.hash}
    */
   public get hash(): Uint8Array {
     return new Uint8Array(this._hash);
   }
 
   /**
-   * Create indexed path item from raw CBOR.
-   * @param {Uint8Array} rawKey - Indexed path item key as raw CBOR.
-   * @param {Uint8Array} rawHash - Indexed path item hash as raw CBOR.
-   * @returns {IndexedPathItem} Indexed path item.
+   * Create hash step from raw CBOR.
+   * @param {Uint8Array} rawData Hash step as raw CBOR.
+   * @returns {HashStep} Hash step.
    */
-  public static fromCbor(rawKey: Uint8Array, rawHash: Uint8Array): IndexedPathItem {
-    const key = new TextEncoder().encode(CborDecoder.readTextString(rawKey));
-    const hash = CborDecoder.readByteString(rawHash);
-    return new IndexedPathItem(key, hash);
+  public static fromCbor(rawData: Uint8Array): IHashStep {
+    const data = CborDecoder.readArray(rawData);
+    return new HashStep(CborDecoder.readUnsignedInteger(data[0]), CborDecoder.readByteString(data[1]));
   }
 
   /**
    * Convert to raw CBOR.
-   * @returns {Uint8Array} Indexed path item as raw CBOR.
+   * @returns {Uint8Array} Hash step as raw CBOR.
    */
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray([CborEncoder.encodeByteString(this._key), CborEncoder.encodeByteString(this._hash)]);
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.key),
+      CborEncoder.encodeByteString(this._hash),
+    ]);
   }
 
   /**
@@ -330,8 +324,8 @@ export class IndexedPathItem implements IIndexedPathItem {
    */
   public toString(): string {
     return dedent`
-      Indexed Path Item
-        Key: ${Base16Converter.encode(this._key)}
+      Hash Step
+        Key: ${this.key}
         Hash: ${Base16Converter.encode(this._hash)}`;
   }
 }
@@ -393,8 +387,8 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
   public constructor(
     public readonly version: bigint,
     public readonly partitionIdentifier: bigint,
-    public readonly hashSteps: IIndexedPathItem[] | null,
     public readonly _partitionDescriptionHash: Uint8Array,
+    public readonly hashSteps: IHashStep[],
   ) {
     this.version = BigInt(version);
     this.partitionIdentifier = BigInt(partitionIdentifier);
@@ -415,13 +409,11 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
    */
   public static fromCbor(rawData: Uint8Array): UnicityTreeCertificate {
     const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
-    const map1 = CborDecoder.readMap(CborDecoder.readArray(data[2])[0]);
     return new UnicityTreeCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
-      map1?.forEach((value: Uint8Array, key: string) => IndexedPathItem.fromCbor(Base16Converter.decode(key), value)) ??
-        null,
-      CborDecoder.readByteString(data[3]),
+      CborDecoder.readByteString(data[2]),
+      CborDecoder.readArray(data[3]).map((hashStep) => HashStep.fromCbor(hashStep)),
     );
   }
 
@@ -435,10 +427,8 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
         CborEncoder.encodeUnsignedInteger(this.partitionIdentifier),
-        this.hashSteps
-          ? CborEncoder.encodeArray(this.hashSteps.map((pathItem: IIndexedPathItem) => pathItem.encode()))
-          : CborEncoder.encodeNull(),
         CborEncoder.encodeByteString(this._partitionDescriptionHash),
+        CborEncoder.encodeArray(this.hashSteps.map((hashStep) => hashStep.encode())),
       ]),
     );
   }
@@ -452,11 +442,7 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
       Unicity Tree Certificate
         Version: ${this.version}
         Partition ID: ${this.partitionIdentifier}
-        Hash Steps: [${
-          this.hashSteps?.length
-            ? `\n${this.hashSteps.map((unit: IIndexedPathItem) => unit.toString()).join('\n')}\n`
-            : ''
-        }]
+        Hash Steps: [${`\n${this.hashSteps.map((unit: IHashStep) => unit.toString()).join('\n')}\n`}]
         Partition Description Hash: ${Base16Converter.encode(this._partitionDescriptionHash)}`;
   }
 }

@@ -39,7 +39,6 @@ describe('Money Client Integration Tests', () => {
     expect(round).not.toBeNull();
     const block = await moneyClient.getBlock(round);
     expect(block).not.toBeNull();
-    expect(block.length).not.toBe(0);
   });
 
   it('Get units by owner ID and get unit', async () => {

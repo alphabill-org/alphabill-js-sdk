@@ -51,9 +51,9 @@ export interface IUnitTreeCertificate {
   get unitDataHash(): Uint8Array;
   /**
    * Get path.
-   * @returns {IPathItem[] | null} path.
+   * @returns {IStateProofPathItem[] | null} path.
    */
-  get path(): readonly IPathItem[] | null;
+  get path(): readonly IStateProofPathItem[] | null;
 }
 
 export interface IStateTreeCertificate {
@@ -84,17 +84,17 @@ export interface IStateTreeCertificate {
   get path(): readonly IStateTreePathItem[] | null;
 }
 
-export interface IPathItem {
+export interface IStateProofPathItem {
+  /**
+   * Get direction.
+   * @returns {bigint} value.
+   */
+  get left(): boolean;
   /**
    * Get hash.
    * @returns {Uint8Array} hash.
    */
   get hash(): Uint8Array;
-  /**
-   * Get value.
-   * @returns {bigint} value.
-   */
-  get left(): boolean;
 }
 
 export interface IStateTreePathItem {
@@ -162,13 +162,13 @@ export interface IShardId {
 export interface IUnicityTreeCertificate {
   get version(): bigint;
   get partitionIdentifier(): bigint;
-  get hashSteps(): IIndexedPathItem[] | null;
   get partitionDescriptionHash(): Uint8Array;
+  get hashSteps(): IHashStep[];
   encode(): Uint8Array;
 }
 
-export interface IIndexedPathItem {
-  get key(): Uint8Array;
+export interface IHashStep {
+  get key(): bigint;
   get hash(): Uint8Array;
   encode(): Uint8Array;
 }

@@ -1,5 +1,5 @@
 import {
-  IPathItem,
+  IStateProofPathItem,
   IStateProof,
   IStateTreeCertificate,
   IStateTreePathItem,
@@ -15,7 +15,13 @@ import {
   IStateTreePathItemDto,
   IUnitTreeCertificateDto,
 } from './IUnitDto.js';
-import { PathItem, StateProof, StateTreeCertificate, StateTreePathItem, UnitTreeCertificate } from './StateProof.js';
+import {
+  StateProofPathItem,
+  StateProof,
+  StateTreeCertificate,
+  StateTreePathItem,
+  UnitTreeCertificate,
+} from './StateProof.js';
 import { UnicityCertificate } from './UnicityCertificate.js';
 
 export function createStateProof(data: IStateProofDto): IStateProof {
@@ -38,8 +44,8 @@ function createUnitTreeCertificate(data: IUnitTreeCertificateDto): IUnitTreeCert
   );
 }
 
-function createPathItem(data: IPathItemDto): IPathItem {
-  return new PathItem(Base64Converter.decode(data.hash), data.directionLeft);
+function createPathItem(data: IPathItemDto): IStateProofPathItem {
+  return new StateProofPathItem(data.directionLeft, Base64Converter.decode(data.hash));
 }
 
 function createStateTreeCertificate(data: IStateTreeCertificateDto): IStateTreeCertificate {

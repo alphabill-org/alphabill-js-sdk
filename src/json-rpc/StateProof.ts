@@ -1,5 +1,5 @@
 import {
-  IPathItem,
+  IStateProofPathItem,
   IStateProof,
   IStateTreeCertificate,
   IStateTreePathItem,
@@ -54,12 +54,12 @@ export class UnitTreeCertificate implements IUnitTreeCertificate {
    * Unit tree certificate constructor.
    * @param {Uint8Array} _transactionRecordHash - transaction record hash.
    * @param {Uint8Array} _unitDataHash - unit data hash.
-   * @param {IPathItem[] | null} path - path.
+   * @param {IStateProofPathItem[] | null} path - path.
    */
   public constructor(
     private readonly _transactionRecordHash: Uint8Array,
     private readonly _unitDataHash: Uint8Array,
-    public readonly path: readonly IPathItem[] | null,
+    public readonly path: readonly IStateProofPathItem[] | null,
   ) {
     this._transactionRecordHash = new Uint8Array(this._transactionRecordHash);
     this._unitDataHash = new Uint8Array(this._unitDataHash);
@@ -82,24 +82,24 @@ export class UnitTreeCertificate implements IUnitTreeCertificate {
 }
 
 /**
- * Path item.
- * @implements {IPathItem}
+ * State proof path item.
+ * @implements {IStateProofPathItem}
  */
-export class PathItem implements IPathItem {
+export class StateProofPathItem implements IStateProofPathItem {
   /**
-   * Path item constructor.
-   * @param _hash - hash.
+   * State proof path item constructor.
    * @param {boolean} left - // Direction from parent node. True - left from parent, False - right from parent.
+   * @param _hash - hash.
    */
   public constructor(
-    private readonly _hash: Uint8Array,
     public readonly left: boolean,
+    private readonly _hash: Uint8Array,
   ) {
     this._hash = new Uint8Array(this._hash);
   }
 
   /**
-   * @see {IPathItem.hash}
+   * @see {IStateProofPathItem.hash}
    */
   public get hash(): Uint8Array {
     return new Uint8Array(this._hash);

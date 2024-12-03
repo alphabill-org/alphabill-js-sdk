@@ -9,12 +9,12 @@ import { dedent } from '../../util/StringUtils.js';
 export class TransactionProofChainItem {
   /**
    * Transaction proof chain item constructor.
-   * @param {Uint8Array} _hash - hash.
    * @param {boolean} left - Direction from parent node. True - left from parent, False - right from parent.
+   * @param {Uint8Array} _hash - hash.
    */
   public constructor(
-    private readonly _hash: Uint8Array,
     public readonly left: boolean,
+    private readonly _hash: Uint8Array,
   ) {
     this._hash = new Uint8Array(this._hash);
   }
@@ -35,8 +35,8 @@ export class TransactionProofChainItem {
   public static fromCbor(rawData: Uint8Array): TransactionProofChainItem {
     const data = CborDecoder.readArray(rawData);
     return new TransactionProofChainItem(
-      CborDecoder.readByteString(data[0]),
-      Boolean(CborDecoder.readUnsignedInteger(data[1])),
+      Boolean(CborDecoder.readUnsignedInteger(data[0])),
+      CborDecoder.readByteString(data[1]),
     );
   }
 
@@ -47,8 +47,8 @@ export class TransactionProofChainItem {
   public toString(): string {
     return dedent`
       TransactionProofChainItem
-        Hash: ${Base16Converter.encode(this._hash)}
-        Left: ${this.left}`;
+        Left: ${this.left}
+        Hash: ${Base16Converter.encode(this._hash)}`;
   }
 
   /**
@@ -56,6 +56,6 @@ export class TransactionProofChainItem {
    * @returns {Uint8Array} Transaction proof chain item as raw CBOR.
    */
   public encode(): Uint8Array {
-    return CborEncoder.encodeArray([CborEncoder.encodeByteString(this.hash), CborEncoder.encodeBoolean(this.left)]);
+    return CborEncoder.encodeArray([CborEncoder.encodeBoolean(this.left), CborEncoder.encodeByteString(this.hash)]);
   }
 }
