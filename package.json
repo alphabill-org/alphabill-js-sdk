@@ -1,6 +1,6 @@
 {
   "name": "@alphabill/alphabill-js-sdk",
-  "version": "0.5.0-rc1",
+  "version": "1.0.0-rc1",
   "type": "module",
   "exports": {
     ".": "./lib/main.js",

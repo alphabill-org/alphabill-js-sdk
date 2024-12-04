@@ -1,5 +1,6 @@
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { BitMask } from './BitMask.js';
+import { CborError } from './CborError.js';
 import { MajorType } from './MajorType.js';
 
 export class CborDecoder {
@@ -14,20 +15,20 @@ export class CborDecoder {
   public static readUnsignedInteger(data: Uint8Array): bigint {
     const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.UNSIGNED_INTEGER) {
-      throw new Error('Major type mismatch, expected unsigned integer.');
+      throw new CborError('Major type mismatch, expected unsigned integer.');
     }
 
     return CborDecoder.readLength(majorType, data, 0).length;
   }
 
   public static readNegativeInteger(): bigint {
-    throw new Error('Not implemented.');
+    throw new CborError('Not implemented.');
   }
 
   public static readByteString(data: Uint8Array): Uint8Array {
     const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.BYTE_STRING) {
-      throw new Error('Major type mismatch, expected byte string.');
+      throw new CborError('Major type mismatch, expected byte string.');
     }
 
     const { length, position } = CborDecoder.readLength(majorType, data, 0);
@@ -37,7 +38,7 @@ export class CborDecoder {
   public static readTextString(data: Uint8Array): string {
     const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.TEXT_STRING) {
-      throw new Error('Major type mismatch, expected text string.');
+      throw new CborError('Major type mismatch, expected text string.');
     }
     const { length, position } = CborDecoder.readLength(majorType, data, 0);
     return new TextDecoder().decode(CborDecoder.read(data, position, Number(length)));
@@ -46,7 +47,7 @@ export class CborDecoder {
   public static readArray(data: Uint8Array): Uint8Array[] {
     const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.ARRAY) {
-      throw new Error('Major type mismatch, expected array.');
+      throw new CborError('Major type mismatch, expected array.');
     }
     const parsedLength = CborDecoder.readLength(majorType, data, 0);
     let position = parsedLength.position;
@@ -62,7 +63,7 @@ export class CborDecoder {
   public static readMap(data: Uint8Array): Map<string, Uint8Array> {
     const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.MAP) {
-      throw new Error('Major type mismatch, expected map.');
+      throw new CborError('Major type mismatch, expected map.');
     }
     const parsedLength = CborDecoder.readLength(majorType, data, 0);
     let position = parsedLength.position;
@@ -80,7 +81,7 @@ export class CborDecoder {
   public static readTag(data: Uint8Array): { tag: bigint; data: Uint8Array } {
     const majorType = CborDecoder.readByte(data, 0) & BitMask.MAJOR_TYPE;
     if (majorType != MajorType.TAG) {
-      throw new Error('Major type mismatch, expected tag.');
+      throw new CborError('Major type mismatch, expected tag.');
     }
     const { length: tag, position } = CborDecoder.readLength(majorType, data, 0);
     return { tag, data: CborDecoder.readRawCbor(data, position).data };
@@ -88,7 +89,7 @@ export class CborDecoder {
 
   public static readBoolean(data: Uint8Array): boolean {
     if (!data || data.length === 0) {
-      throw new Error('Encoded item is not well-formed.');
+      throw new CborError('Encoded item is not well-formed.');
     }
     if (data[0] === 0xf5) {
       return true;
@@ -96,18 +97,18 @@ export class CborDecoder {
     if (data[0] === 0xf4) {
       return false;
     }
-    throw new Error('Type mismatch, expected boolean.');
+    throw new CborError('Type mismatch, expected boolean.');
   }
 
   public static readBitString(data: Uint8Array): { length: number; data: Uint8Array } {
     const byteCount = data.length - 1;
     if (byteCount < 0) {
-      throw new Error('Invalid bit string encoding: empty input');
+      throw new CborError('Invalid bit string encoding: empty input');
     }
     const zc = CborDecoder.trailingZeros8(data[byteCount]);
     switch (zc) {
       case 8:
-        throw new Error('Invalid bit string encoding: last byte doesnt contain end marker');
+        throw new CborError('Invalid bit string encoding: last byte doesnt contain end marker');
       case 7:
         return { length: byteCount * 8, data: data.subarray(0, byteCount) };
       default:
@@ -130,12 +131,12 @@ export class CborDecoder {
       case MajorType.BYTE_STRING:
       case MajorType.TEXT_STRING:
         if (additionalInformation == 31) {
-          throw new Error('Indefinite length array not supported.');
+          throw new CborError('Indefinite length array not supported.');
         }
     }
 
     if (additionalInformation > 27) {
-      throw new Error('Encoded item is not well-formed.');
+      throw new CborError('Encoded item is not well-formed.');
     }
 
     const numberOfLengthBytes = Math.pow(2, additionalInformation - 24);
@@ -185,7 +186,7 @@ export class CborDecoder {
 
   private static readByte(data: Uint8Array, offset: number): number {
     if (data.length < offset) {
-      throw new Error('Premature end of data.');
+      throw new CborError('Premature end of data.');
     }
 
     return data[offset] & 0xff;
@@ -193,7 +194,7 @@ export class CborDecoder {
 
   private static read(data: Uint8Array, offset: number, length: number): Uint8Array {
     if (data.length < offset + length) {
-      throw new Error('Premature end of data.');
+      throw new CborError('Premature end of data.');
     }
 
     return data.subarray(offset, offset + length);
