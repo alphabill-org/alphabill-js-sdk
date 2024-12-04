@@ -131,7 +131,6 @@ describe('Money Client Integration Tests', () => {
     expect(bill!.value).toBeGreaterThan(0);
 
     billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
-    console.log(billUnitIds);
     const targetBillUnitId = billUnitIds
       .filter((id: IUnitId) => {
         return !UnitId.equals(id, bill!.unitId);
