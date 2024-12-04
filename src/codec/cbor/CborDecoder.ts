@@ -87,10 +87,13 @@ export class CborDecoder {
   }
 
   public static readBoolean(data: Uint8Array): boolean {
-    if (data == new Uint8Array([0xf5])) {
+    if (!data || data.length === 0) {
+      throw new Error('Encoded item is not well-formed.');
+    }
+    if (data[0] === 0xf5) {
       return true;
     }
-    if (data == new Uint8Array([0xf4])) {
+    if (data[0] === 0xf4) {
       return false;
     }
     throw new Error('Type mismatch, expected boolean.');
