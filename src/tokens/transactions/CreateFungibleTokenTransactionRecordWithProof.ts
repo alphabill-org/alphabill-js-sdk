@@ -1,23 +1,21 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ServerMetadata } from '../../transaction/record/ServerMetadata.js';
 import { TransactionProof } from '../../transaction/record/TransactionProof.js';
 import { TransactionRecord } from '../../transaction/record/TransactionRecord.js';
-import {
-  TransactionRecordWithProof,
-  TransactionRecordWithProofArray,
-} from '../../transaction/record/TransactionRecordWithProof.js';
+import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { CreateFungibleTokenTransactionOrder } from './CreateFungibleTokenTransactionOrder.js';
 
 export class CreateFungibleTokenTransactionRecordWithProof extends TransactionRecordWithProof<CreateFungibleTokenTransactionOrder> {
-  public static async fromArray([
-    [transactionOrder, serverMetadata],
-    transactionProof,
-  ]: TransactionRecordWithProofArray): Promise<CreateFungibleTokenTransactionRecordWithProof> {
+  public static fromCbor(rawData: Uint8Array): CreateFungibleTokenTransactionRecordWithProof {
+    const data = CborDecoder.readArray(rawData);
+    const txRecordData = CborDecoder.readArray(CborDecoder.readTag(data[0]).data);
     return new CreateFungibleTokenTransactionRecordWithProof(
       new TransactionRecord(
-        await CreateFungibleTokenTransactionOrder.fromArray(transactionOrder),
-        ServerMetadata.fromArray(serverMetadata),
+        CborDecoder.readUnsignedInteger(txRecordData[0]),
+        CreateFungibleTokenTransactionOrder.fromCbor(txRecordData[1]),
+        ServerMetadata.fromCbor(txRecordData[2]),
       ),
-      TransactionProof.fromArray(transactionProof),
+      TransactionProof.fromCbor(data[1]),
     );
   }
 }

@@ -1,13 +1,7 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Lock token attributes array.
- */
-export type LockTokenAttributesArray = readonly [
-  bigint, // Lock Status
-  bigint, // Counter
-];
 
 /**
  * Lock token payload attributes.
@@ -27,12 +21,13 @@ export class LockTokenAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Create LockTokenAttributes from array.
-   * @param {LockTokenAttributesArray} data - Lock token attributes data array.
+   * Create LockTokenAttributes from raw CBOR.
+   * @param {Uint8Array} rawData - Lock token attributes data as raw CBOR.
    * @returns {LockTokenAttributes} Lock token attributes instance.
    */
-  public static fromArray([lockStatus, counter]: LockTokenAttributesArray): LockTokenAttributes {
-    return new LockTokenAttributes(lockStatus, counter);
+  public static fromCbor(rawData: Uint8Array): LockTokenAttributes {
+    const data = CborDecoder.readArray(rawData);
+    return new LockTokenAttributes(CborDecoder.readUnsignedInteger(data[0]), CborDecoder.readUnsignedInteger(data[1]));
   }
 
   /**
@@ -49,7 +44,10 @@ export class LockTokenAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<LockTokenAttributesArray> {
-    return Promise.resolve([this.lockStatus, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.lockStatus),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 }

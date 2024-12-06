@@ -1,6 +1,6 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
+import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -21,43 +21,42 @@ interface ICreateFungibleTokenTransactionData extends ITransactionData {
 
 export class UnsignedCreateFungibleTokenTransactionOrder {
   private constructor(
-    public readonly payload: Promise<TransactionPayload<CreateFungibleTokenAttributes>>,
+    public readonly version: bigint,
+    public readonly payload: TransactionPayload<CreateFungibleTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: ICreateFungibleTokenTransactionData,
-    codec: ICborCodec,
-  ): UnsignedCreateFungibleTokenTransactionOrder {
-    const attributes = new CreateFungibleTokenAttributes(data.ownerPredicate, data.type.unitId, data.value, data.nonce);
-    const payload = TokenUnitId.create(attributes, data.metadata, codec, TokenPartitionUnitType.FUNGIBLE_TOKEN).then(
-      (unitId) =>
-        new TransactionPayload(
-          data.networkIdentifier,
-          SystemIdentifier.TOKEN_PARTITION,
-          unitId,
-          TokenPartitionTransactionType.CreateFungibleToken,
-          attributes,
-          data.stateLock,
-          data.metadata,
-        ),
+  public static create(data: ICreateFungibleTokenTransactionData): UnsignedCreateFungibleTokenTransactionOrder {
+    const attributes = new CreateFungibleTokenAttributes(data.type.unitId, data.value, data.ownerPredicate, data.nonce);
+    const tokenUnitId = TokenUnitId.create(attributes, data.metadata, TokenPartitionUnitType.FUNGIBLE_TOKEN);
+    return new UnsignedCreateFungibleTokenTransactionOrder(
+      data.version,
+      new TransactionPayload(
+        data.networkIdentifier,
+        PartitionIdentifier.TOKEN,
+        tokenUnitId,
+        TokenPartitionTransactionType.CreateFungibleToken,
+        attributes,
+        data.stateLock,
+        data.metadata,
+      ),
+      data.stateUnlock,
     );
-
-    return new UnsignedCreateFungibleTokenTransactionOrder(payload, data.stateUnlock, codec);
   }
 
-  public async sign(
+  public sign(
     tokenMintingProofFactory: IProofFactory,
     feeProofFactory: IProofFactory | null,
-  ): Promise<CreateFungibleTokenTransactionOrder> {
-    const payload = await this.payload;
-    const authProof = [...(await payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
+  ): CreateFungibleTokenTransactionOrder {
+    const authProofBytes: Uint8Array[] = [
+      CborEncoder.encodeUnsignedInteger(this.version),
+      ...this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ];
     const ownerProof = new OwnerProofAuthProof(
-      await tokenMintingProofFactory.create(await this.codec.encode(authProof)),
+      tokenMintingProofFactory.create(CborEncoder.encodeArray(authProofBytes)),
     );
-    const feeProof =
-      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
-    return new CreateFungibleTokenTransactionOrder(payload, ownerProof, feeProof, this.stateUnlock);
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()])) ?? null;
+    return new CreateFungibleTokenTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

@@ -1,13 +1,7 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Lock fee credit attributes array.
- */
-export type LockFeeCreditAttributesArray = readonly [
-  bigint, // Lock Status
-  bigint, // Counter
-];
 
 /**
  * Lock fee credit payload attributes.
@@ -27,12 +21,16 @@ export class LockFeeCreditAttributes implements ITransactionPayloadAttributes {
   }
 
   /**
-   * Create LockFeeCreditAttributes from array.
-   * @param {LockFeeCreditAttributesArray} data - Lock fee credit attributes array.
+   * Create LockFeeCreditAttributes from raw CBOR.
+   * @param {Uint8Array} rawData - Lock fee credit attributes as raw CBOR.
    * @returns {LockFeeCreditAttributes} Lock fee credit attributes instance.
    */
-  public static fromArray([lockStatus, counter]: LockFeeCreditAttributesArray): LockFeeCreditAttributes {
-    return new LockFeeCreditAttributes(lockStatus, counter);
+  public static fromCbor(rawData: Uint8Array): LockFeeCreditAttributes {
+    const data = CborDecoder.readArray(rawData);
+    return new LockFeeCreditAttributes(
+      CborDecoder.readUnsignedInteger(data[0]),
+      CborDecoder.readUnsignedInteger(data[1]),
+    );
   }
 
   /**
@@ -49,7 +47,10 @@ export class LockFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<LockFeeCreditAttributesArray> {
-    return Promise.resolve([this.lockStatus, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.lockStatus),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 }

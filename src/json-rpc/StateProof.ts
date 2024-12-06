@@ -1,4 +1,11 @@
-import { IPathItem, IStateProof, IStateTreeCert, IStateTreePathItem, IUnitTreeCert } from '../IUnit.js';
+import {
+  IStateProofPathItem,
+  IStateProof,
+  IStateTreeCertificate,
+  IStateTreePathItem,
+  IUnicityCertificate,
+  IUnitTreeCertificate,
+} from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 
 /**
@@ -8,21 +15,25 @@ import { IUnitId } from '../IUnitId.js';
 export class StateProof implements IStateProof {
   /**
    * State proof constructor.
+   * @param {bigint} version - version.
    * @param {IUnitId} unitId - unit identifier.
    * @param {bigint} unitValue - unit value.
    * @param {Uint8Array} _unitLedgerHash - unit ledger hash.
-   * @param {IUnitTreeCert} unitTreeCert - unit tree certificate.
-   * @param {IStateTreeCert} stateTreeCert - state tree certificate.
-   * @param {unknown} unicityCertificate - unicity certificate.
+   * @param {IUnitTreeCertificate} unitTreeCertificate - unit tree certificate.
+   * @param {IStateTreeCertificate} stateTreeCertificate - state tree certificate.
+   * @param {IUnicityCertificate} unicityCertificate - unicity certificate.
    */
   public constructor(
+    public readonly version: bigint,
     public readonly unitId: IUnitId,
     public readonly unitValue: bigint,
     private readonly _unitLedgerHash: Uint8Array,
-    public readonly unitTreeCert: IUnitTreeCert,
-    public readonly stateTreeCert: IStateTreeCert,
-    public readonly unicityCertificate: unknown,
+    public readonly unitTreeCertificate: IUnitTreeCertificate,
+    public readonly stateTreeCertificate: IStateTreeCertificate,
+    public readonly unicityCertificate: IUnicityCertificate,
   ) {
+    this.version = BigInt(this.version);
+    this.unitValue = BigInt(unitValue);
     this._unitLedgerHash = new Uint8Array(this._unitLedgerHash);
   }
 
@@ -36,19 +47,19 @@ export class StateProof implements IStateProof {
 
 /**
  * Unit tree certificate.
- * @implements {IUnitTreeCert}
+ * @implements {IUnitTreeCertificate}
  */
-export class UnitTreeCert implements IUnitTreeCert {
+export class UnitTreeCertificate implements IUnitTreeCertificate {
   /**
    * Unit tree certificate constructor.
    * @param {Uint8Array} _transactionRecordHash - transaction record hash.
    * @param {Uint8Array} _unitDataHash - unit data hash.
-   * @param {IPathItem[] | null} path - path.
+   * @param {IStateProofPathItem[] | null} path - path.
    */
   public constructor(
     private readonly _transactionRecordHash: Uint8Array,
     private readonly _unitDataHash: Uint8Array,
-    public readonly path: readonly IPathItem[] | null,
+    public readonly path: readonly IStateProofPathItem[] | null,
   ) {
     this._transactionRecordHash = new Uint8Array(this._transactionRecordHash);
     this._unitDataHash = new Uint8Array(this._unitDataHash);
@@ -56,14 +67,14 @@ export class UnitTreeCert implements IUnitTreeCert {
   }
 
   /**
-   * @see {IUnitTreeCert.transactionRecordHash}
+   * @see {IUnitTreeCertificate.transactionRecordHash}
    */
   public get transactionRecordHash(): Uint8Array {
     return new Uint8Array(this._transactionRecordHash);
   }
 
   /**
-   * @see {IUnitTreeCert.unitDataHash}
+   * @see {IUnitTreeCertificate.unitDataHash}
    */
   public get unitDataHash(): Uint8Array {
     return new Uint8Array(this._unitDataHash);
@@ -71,24 +82,24 @@ export class UnitTreeCert implements IUnitTreeCert {
 }
 
 /**
- * Path item.
- * @implements {IPathItem}
+ * State proof path item.
+ * @implements {IStateProofPathItem}
  */
-export class PathItem implements IPathItem {
+export class StateProofPathItem implements IStateProofPathItem {
   /**
-   * Path item constructor.
-   * @param _hash - hash.
+   * State proof path item constructor.
    * @param {boolean} left - // Direction from parent node. True - left from parent, False - right from parent.
+   * @param _hash - hash.
    */
   public constructor(
-    private readonly _hash: Uint8Array,
     public readonly left: boolean,
+    private readonly _hash: Uint8Array,
   ) {
     this._hash = new Uint8Array(this._hash);
   }
 
   /**
-   * @see {IPathItem.hash}
+   * @see {IStateProofPathItem.hash}
    */
   public get hash(): Uint8Array {
     return new Uint8Array(this._hash);
@@ -97,9 +108,9 @@ export class PathItem implements IPathItem {
 
 /**
  * State tree certificate.
- * @implements {IStateTreeCert}
+ * @implements {IStateTreeCertificate}
  */
-export class StateTreeCert implements IStateTreeCert {
+export class StateTreeCertificate implements IStateTreeCertificate {
   /**
    * State tree certificate constructor.
    * @param {Uint8Array} _leftSummaryHash - left summary hash.
@@ -116,21 +127,21 @@ export class StateTreeCert implements IStateTreeCert {
     public readonly path: readonly IStateTreePathItem[] | null,
   ) {
     this._leftSummaryHash = new Uint8Array(this._leftSummaryHash);
-    this.leftSummaryValue = BigInt(leftSummaryValue);
+    this.leftSummaryValue = BigInt(this.leftSummaryValue);
     this._rightSummaryHash = new Uint8Array(this._rightSummaryHash);
-    this.rightSummaryValue = BigInt(rightSummaryValue);
+    this.rightSummaryValue = BigInt(this.rightSummaryValue);
     this.path = this.path ? Object.freeze(Array.from(this.path)) : null;
   }
 
   /**
-   * @see {IStateTreeCert.leftSummaryHash}
+   * @see {IStateTreeCertificate.leftSummaryHash}
    */
   public get leftSummaryHash(): Uint8Array {
     return new Uint8Array(this._leftSummaryHash);
   }
 
   /**
-   * @see {IStateTreeCert.rightSummaryHash}
+   * @see {IStateTreeCertificate.rightSummaryHash}
    */
   public get rightSummaryHash(): Uint8Array {
     return new Uint8Array(this._rightSummaryHash);

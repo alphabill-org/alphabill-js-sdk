@@ -1,6 +1,6 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionOrderProof } from './ITransactionOrderProof.js';
-
-export type TypeOwnerProofsAuthProofArray = [Uint8Array, Uint8Array[]];
 
 export class TypeOwnerProofsAuthProof implements ITransactionOrderProof {
   public constructor(
@@ -19,14 +19,15 @@ export class TypeOwnerProofsAuthProof implements ITransactionOrderProof {
     return this._typeOwnerProofs.map((proof) => new Uint8Array(proof));
   }
 
-  public static decode([
-    ownerProof,
-    tokenTypeOwnerProofs,
-  ]: TypeOwnerProofsAuthProofArray): Promise<TypeOwnerProofsAuthProof> {
-    return Promise.resolve(new TypeOwnerProofsAuthProof(ownerProof, tokenTypeOwnerProofs));
+  public static fromCbor(rawData: Uint8Array): TypeOwnerProofsAuthProof {
+    const data = CborDecoder.readArray(rawData);
+    return new TypeOwnerProofsAuthProof(CborDecoder.readByteString(data[0]), CborDecoder.readArray(data[1]));
   }
 
-  public encode(): TypeOwnerProofsAuthProofArray {
-    return [this.ownerProof, this.typeOwnerProofs];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.ownerProof),
+      CborEncoder.encodeArray(this.typeOwnerProofs),
+    ]);
   }
 }

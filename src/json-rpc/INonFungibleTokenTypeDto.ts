@@ -1,23 +1,17 @@
-import { IStateProofDto } from './IUnitDto.js';
-
 /**
  * Non-fungible token type data from getUnit.
  * @interface INonFungibleTokenTypeDto
  */
 export interface INonFungibleTokenTypeDto {
-  readonly unitId: string;
-  readonly data: {
-    symbol: string;
-    name: string;
-    icon: {
-      type: string;
-      data: string;
-    };
-    parentTypeId: string;
-    subTypeCreationPredicate: string;
-    tokenMintingPredicate: string;
-    tokenTypeOwnerPredicate: string;
-    dataUpdatePredicate: string;
+  symbol: string;
+  name: string;
+  icon: {
+    type: string;
+    data: string;
   };
-  readonly stateProof?: IStateProofDto;
+  parentTypeId: string;
+  subTypeCreationPredicate: string;
+  tokenMintingPredicate: string;
+  tokenTypeOwnerPredicate: string;
+  dataUpdatePredicate: string;
 }

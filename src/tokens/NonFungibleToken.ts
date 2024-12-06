@@ -1,21 +1,23 @@
-import { IStateProof } from '../IUnit.js';
+import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { INonFungibleTokenDto } from '../json-rpc/INonFungibleTokenDto.js';
-import { createStateProof } from '../json-rpc/StateProofFactory.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
+import { Unit } from '../Unit.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
-import { Base64Converter } from '../util/Base64Converter.js';
 import { dedent } from '../util/StringUtils.js';
 
 /**
  * Non-fungible token.
  */
-export class NonFungibleToken {
+export class NonFungibleToken extends Unit {
   /**
    * Non-fungible token constructor.
    * @param {IUnitId} unitId Unit ID.
+   * @param {number} networkIdentifier Network ID.
+   * @param {number} partitionIdentifier Partition ID.
+   * @param {IStateProof | null} stateProof State proof.
    * @param {IUnitId} tokenType Token type.
    * @param {string} name Token name.
    * @param {string} uri Token URI.
@@ -24,10 +26,12 @@ export class NonFungibleToken {
    * @param {IPredicate} dataUpdatePredicate Data update predicate.
    * @param {bigint} locked Is token locked.
    * @param {bigint} counter Counter.
-   * @param {IStateProof | null} stateProof State proof.
    */
   public constructor(
-    public readonly unitId: IUnitId,
+    unitId: IUnitId,
+    networkIdentifier: number,
+    partitionIdentifier: number,
+    stateProof: IStateProof | null,
     public readonly tokenType: IUnitId,
     public readonly name: string,
     public readonly uri: string,
@@ -36,8 +40,8 @@ export class NonFungibleToken {
     public readonly dataUpdatePredicate: IPredicate,
     public readonly locked: bigint,
     public readonly counter: bigint,
-    public readonly stateProof: IStateProof | null,
   ) {
+    super(unitId, networkIdentifier, partitionIdentifier, stateProof);
     this._data = new Uint8Array(this._data);
     this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
@@ -53,21 +57,33 @@ export class NonFungibleToken {
 
   /**
    * Create non-fungible token from DTO.
-   * @param {INonFungibleTokenDto} input Data.
+   * @param {IUnitId} unitId Unit id.
+   * @param {number} networkIdentifier Network identifier.
+   * @param {number} partitionIdentifier Partition identifier.
+   * @param {IStateProof | null} stateProof State proof.
+   * @param {INonFungibleTokenDto} data Non-fungible token DTO.
    * @returns {NonFungibleToken} Non-fungible token.
    */
-  public static create({ unitId, data, stateProof }: INonFungibleTokenDto): NonFungibleToken {
+  public static create(
+    unitId: IUnitId,
+    networkIdentifier: number,
+    partitionIdentifier: number,
+    stateProof: IStateProof | null,
+    data: INonFungibleTokenDto,
+  ): NonFungibleToken {
     return new NonFungibleToken(
-      UnitId.fromBytes(Base16Converter.decode(unitId)),
+      unitId,
+      networkIdentifier,
+      partitionIdentifier,
+      stateProof,
       UnitId.fromBytes(Base16Converter.decode(data.typeID)),
       data.name,
       data.uri,
-      Base64Converter.decode(data.data),
-      new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
-      new PredicateBytes(Base64Converter.decode(data.dataUpdatePredicate)),
+      Base16Converter.decode(data.data),
+      new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
+      new PredicateBytes(Base16Converter.decode(data.dataUpdatePredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
-      stateProof ? createStateProof(stateProof) : null,
     );
   }
 
@@ -79,6 +95,8 @@ export class NonFungibleToken {
     return dedent`
       NonFungibleToken
         Unit ID: ${this.unitId.toString()}
+        Network ID: ${this.networkIdentifier}
+        Partition ID: ${this.partitionIdentifier}
         Token Type: ${this.tokenType.toString()}
         Name: ${this.name}
         URI: ${this.uri}
