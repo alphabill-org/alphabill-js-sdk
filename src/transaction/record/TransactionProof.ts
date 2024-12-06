@@ -18,7 +18,7 @@ export class TransactionProof {
    * @param {UnicityCertificate} unicityCertificate - unicity certificate.
    */
   public constructor(
-    private readonly version: bigint,
+    public readonly version: bigint,
     private readonly _blockHeaderHash: Uint8Array,
     public readonly chain: TransactionProofChainItem[] | null,
     public readonly unicityCertificate: UnicityCertificate,
@@ -42,8 +42,8 @@ export class TransactionProof {
    */
   public static fromCbor(rawData: Uint8Array): TransactionProof {
     const tag = CborDecoder.readTag(rawData);
-    if (Number(tag.tag) !== CborTag.TX_PROOF) {
-      throw new Error(`Invalid tag, expected ${CborTag.TX_PROOF}, was ` + tag.tag);
+    if (Number(tag.tag) !== CborTag.TRANSACTION_PROOF) {
+      throw new Error(`Invalid tag, expected ${CborTag.TRANSACTION_PROOF}, was ` + tag.tag);
     }
     const data = CborDecoder.readArray(tag.data);
     return new TransactionProof(
@@ -61,7 +61,7 @@ export class TransactionProof {
    */
   public encode(): Uint8Array {
     return CborEncoder.encodeTag(
-      CborTag.TX_PROOF,
+      CborTag.TRANSACTION_PROOF,
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
         CborEncoder.encodeByteString(this.blockHeaderHash),

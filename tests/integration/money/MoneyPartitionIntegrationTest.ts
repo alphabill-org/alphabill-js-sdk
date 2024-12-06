@@ -34,11 +34,16 @@ describe('Money Client Integration Tests', () => {
 
   let feeCreditRecordId: IUnitId; // can no longer be static as hash contains timeout
 
-  it('Get round number and get block', async () => {
+  it('Get round number, get block and get trust base', async () => {
     const round = await moneyClient.getRoundNumber();
     expect(round).not.toBeNull();
     const block = await moneyClient.getBlock(round);
     expect(block).not.toBeNull();
+    const rootTrustBase = await moneyClient.getTrustBase(round);
+    expect(rootTrustBase).not.toBeNull();
+    expect(rootTrustBase.epoch).toEqual(1n); // TODO after backend changes, this should be equal to round number, currently hardcoded to 1
+    expect(rootTrustBase.rootNodes.size).toEqual(3); // TODO could possibly be a different number, depending on backend
+    expect(rootTrustBase.signatures.size).toEqual(3); // TODO could possibly be a different number, depending on backend
   });
 
   it('Get units by owner ID and get unit', async () => {

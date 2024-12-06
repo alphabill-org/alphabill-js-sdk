@@ -7,8 +7,10 @@ import { ITransactionOrderProof } from '../transaction/proofs/ITransactionOrderP
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { IJsonRpcService } from './IJsonRpcService.js';
+import { IRootTrustBaseDto } from './IRootTrustBaseDto.js';
 import { IStateProofDto } from './IUnitDto.js';
 import { JsonRpcError } from './JsonRpcError.js';
+import { RootTrustBase } from './RootTrustBase.js';
 import { createStateProof } from './StateProofFactory.js';
 import { TransactionProofDto } from './TransactionProofDto.js';
 
@@ -143,6 +145,16 @@ export class JsonRpcClient {
     const hex = Base16Converter.encode(transaction.encode());
     const response = (await this.request('state_sendTransaction', hex)) as string;
     return Base16Converter.decode(response);
+  }
+
+  /**
+   * Get trust base.
+   * @param {bigint} epochNumber Epoch number.
+   * @returns {Promise<RootTrustBase>} Trust base.
+   */
+  public async getTrustBase(epochNumber: bigint): Promise<RootTrustBase> {
+    const response = (await this.request('state_getTrustBase', String(epochNumber))) as IRootTrustBaseDto;
+    return RootTrustBase.create(response);
   }
 
   /**

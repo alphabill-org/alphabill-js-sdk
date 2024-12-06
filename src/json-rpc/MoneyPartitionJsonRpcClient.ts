@@ -29,6 +29,7 @@ import { IBillDataDto } from './IBillDataDto.js';
 import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
 import { CreateTransactionRecordWithProof, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
 import { MoneyPartitionUnitIdResponse } from './MoneyPartitionUnitIdResponse.js';
+import { RootTrustBase } from './RootTrustBase.js';
 
 type MoneyPartitionUnitTypes = Bill | FeeCreditRecord;
 
@@ -129,5 +130,12 @@ export class MoneyPartitionJsonRpcClient {
    */
   public sendTransaction(transaction: MoneyPartitionTransactionOrderTypes): Promise<Uint8Array> {
     return this.client.sendTransaction(transaction);
+  }
+
+  /**
+   * @see {JsonRpcClient.getTrustBase}
+   */
+  public getTrustBase(epochNumber: bigint): Promise<RootTrustBase> {
+    return this.client.getTrustBase(epochNumber);
   }
 }
