@@ -34,7 +34,7 @@ export class SetFeeCreditAttributes implements ITransactionPayloadAttributes {
     return new SetFeeCreditAttributes(
       new PredicateBytes(CborDecoder.readByteString(data[0])),
       CborDecoder.readUnsignedInteger(data[1]),
-      CborDecoder.readUnsignedInteger(data[2]),
+      CborDecoder.readOptional(data[2], CborDecoder.readUnsignedInteger),
     );
   }
 

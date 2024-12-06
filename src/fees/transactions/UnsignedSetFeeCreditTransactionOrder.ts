@@ -1,4 +1,3 @@
-import { numberToBytesBE } from '@noble/curves/abstract/utils';
 import { sha256 } from '@noble/hashes/sha256';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
@@ -32,8 +31,8 @@ export class UnsignedSetFeeCreditTransactionOrder {
     if (data.feeCreditRecord.unitId == null) {
       const unitBytes = sha256
         .create()
-        .update(data.ownerPredicate.bytes)
-        .update(numberToBytesBE(data.metadata.timeout, 8))
+        .update(CborEncoder.encodeByteString(data.ownerPredicate.bytes))
+        .update(CborEncoder.encodeUnsignedInteger(data.metadata.timeout))
         .digest();
       feeCreditRecordId = new UnitIdWithType(unitBytes, FeeCreditUnitType.FEE_CREDIT_RECORD);
     } else {
