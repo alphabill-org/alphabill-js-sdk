@@ -1,5 +1,5 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { IPredicate } from './IPredicate.js';
 
@@ -23,13 +23,16 @@ export class PayToPublicKeyHashPredicate implements IPredicate {
 
   /**
    * Create pay to public key hash predicate.
-   * @param {ICborCodec} cborCodec - CBOR codec.
    * @param {Uint8Array} publicKey - Public key.
-   * @returns {Promise<PayToPublicKeyHashPredicate>} Pay to public key hash predicate.
+   * @returns {PayToPublicKeyHashPredicate} Pay to public key hash predicate.
    */
-  public static async create(cborCodec: ICborCodec, publicKey: Uint8Array): Promise<PayToPublicKeyHashPredicate> {
+  public static create(publicKey: Uint8Array): PayToPublicKeyHashPredicate {
     return new PayToPublicKeyHashPredicate(
-      await cborCodec.encode([0x00, new Uint8Array([PayToPublicKeyHashPredicate.P2pkh256ID]), sha256(publicKey)]),
+      CborEncoder.encodeArray([
+        CborEncoder.encodeUnsignedInteger(0x00),
+        CborEncoder.encodeByteString(new Uint8Array([PayToPublicKeyHashPredicate.P2pkh256ID])),
+        CborEncoder.encodeByteString(sha256(publicKey)),
+      ]),
     );
   }
 

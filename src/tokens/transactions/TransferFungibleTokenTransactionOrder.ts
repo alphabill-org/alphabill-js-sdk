@@ -1,18 +1,13 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
-import { TransactionOrder, TransactionOrderArray } from '../../transaction/order/TransactionOrder.js';
+import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
-import {
-  TypeOwnerProofsAuthProof,
-  TypeOwnerProofsAuthProofArray,
-} from '../../transaction/proofs/TypeOwnerProofsAuthProof.js';
+import { TypeOwnerProofsAuthProof } from '../../transaction/proofs/TypeOwnerProofsAuthProof.js';
 import { StateLock } from '../../transaction/StateLock.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { UnitId } from '../../UnitId.js';
-import {
-  TransferFungibleTokenAttributes,
-  TransferFungibleTokenAttributesArray,
-} from '../attributes/TransferFungibleTokenAttributes.js';
+import { TransferFungibleTokenAttributes } from '../attributes/TransferFungibleTokenAttributes.js';
 import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
 
 export class TransferFungibleTokenTransactionOrder extends TransactionOrder<
@@ -20,39 +15,31 @@ export class TransferFungibleTokenTransactionOrder extends TransactionOrder<
   TypeOwnerProofsAuthProof
 > {
   public constructor(
+    version: bigint,
     payload: TransactionPayload<TransferFungibleTokenAttributes>,
+    stateUnlock: IPredicate | null,
     authProof: TypeOwnerProofsAuthProof,
     feeProof: Uint8Array | null,
-    stateUnlock: IPredicate | null,
   ) {
-    super(payload, authProof, feeProof, stateUnlock);
+    super(version, payload, stateUnlock, authProof, feeProof);
   }
 
-  public static async fromArray([
-    networkIdentifier,
-    systemIdentifier,
-    unitId,
-    ,
-    attributes,
-    stateLock,
-    clientMetadata,
-    stateUnlock,
-    authProof,
-    feeProof,
-  ]: TransactionOrderArray): Promise<TransferFungibleTokenTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): TransferFungibleTokenTransactionOrder {
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new TransferFungibleTokenTransactionOrder(
+      CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(
-        networkIdentifier,
-        systemIdentifier,
-        UnitId.fromBytes(unitId),
+        Number(CborDecoder.readUnsignedInteger(data[1])),
+        Number(CborDecoder.readUnsignedInteger(data[2])),
+        UnitId.fromBytes(CborDecoder.readByteString(data[3])),
         TokenPartitionTransactionType.TransferFungibleToken,
-        TransferFungibleTokenAttributes.fromArray(attributes as TransferFungibleTokenAttributesArray),
-        stateLock ? StateLock.fromArray(stateLock) : null,
-        ClientMetadata.fromArray(clientMetadata),
+        TransferFungibleTokenAttributes.fromCbor(data[5]),
+        CborDecoder.readOptional(data[6], StateLock.fromCbor),
+        ClientMetadata.fromCbor(data[7]),
       ),
-      await TypeOwnerProofsAuthProof.decode(authProof as TypeOwnerProofsAuthProofArray),
-      feeProof,
-      stateUnlock ? new PredicateBytes(stateUnlock) : null,
+      CborDecoder.readOptional(data[8], PredicateBytes.fromCbor),
+      TypeOwnerProofsAuthProof.fromCbor(data[9]),
+      CborDecoder.readOptional(data[10], CborDecoder.readByteString),
     );
   }
 }

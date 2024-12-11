@@ -1,4 +1,3 @@
-import { ICborCodec } from '../codec/cbor/ICborCodec.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 import { INonFungibleTokenData } from './INonFungibleTokenData.js';
@@ -21,12 +20,11 @@ export class NonFungibleTokenData implements INonFungibleTokenData {
 
   /**
    * Create non-fungible token data.
-   * @param {ICborCodec} cborCodec - CBOR codec.
-   * @param {unknown} data - Data.
+   * @param {Uint8Array} data - Data.
    * @returns {Promise<NonFungibleTokenData>} Non-fungible token data.
    */
-  public static async create(cborCodec: ICborCodec, data: unknown): Promise<NonFungibleTokenData> {
-    return new NonFungibleTokenData(await cborCodec.encode(data));
+  public static create(data: Uint8Array): NonFungibleTokenData {
+    return new NonFungibleTokenData(data);
   }
 
   /**

@@ -1,6 +1,6 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
+import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -25,19 +25,17 @@ interface ICreateFungibleTokenTypeTransactionData extends ITransactionData {
 
 export class UnsignedCreateFungibleTokenTypeTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<CreateFungibleTokenTypeAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: ICreateFungibleTokenTypeTransactionData,
-    codec: ICborCodec,
-  ): UnsignedCreateFungibleTokenTypeTransactionOrder {
+  public static create(data: ICreateFungibleTokenTypeTransactionData): UnsignedCreateFungibleTokenTypeTransactionOrder {
     return new UnsignedCreateFungibleTokenTypeTransactionOrder(
+      data.version,
       new TransactionPayload(
         data.networkIdentifier,
-        SystemIdentifier.TOKEN_PARTITION,
+        PartitionIdentifier.TOKEN,
         data.type.unitId,
         TokenPartitionTransactionType.CreateFungibleTokenType,
         new CreateFungibleTokenTypeAttributes(
@@ -54,21 +52,29 @@ export class UnsignedCreateFungibleTokenTypeTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(
+  public sign(
     feeProofFactory: IProofFactory | null,
     subTypeCreationProofs: IProofFactory[],
-  ): Promise<CreateFungibleTokenTypeTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const authProofBytes = await this.codec.encode(authProof);
+  ): CreateFungibleTokenTypeTransactionOrder {
+    const authProofBytes: Uint8Array[] = [
+      CborEncoder.encodeUnsignedInteger(this.version),
+      ...this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ];
+    const authProof = CborEncoder.encodeArray(authProofBytes);
     const ownerProof = new SubTypeOwnerProofsAuthProof(
-      await Promise.all(subTypeCreationProofs.map((factory) => factory.create(authProofBytes))),
+      subTypeCreationProofs.map((factory) => factory.create(authProof)),
     );
-    const feeProof =
-      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
-    return new CreateFungibleTokenTypeTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()])) ?? null;
+    return new CreateFungibleTokenTypeTransactionOrder(
+      this.version,
+      this.payload,
+      this.stateUnlock,
+      ownerProof,
+      feeProof,
+    );
   }
 }

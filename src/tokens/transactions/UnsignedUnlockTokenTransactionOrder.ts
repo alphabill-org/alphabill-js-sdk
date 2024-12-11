@@ -1,6 +1,6 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
+import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -16,16 +16,17 @@ export interface IUnlockTokenTransactionData extends ITransactionData {
 
 export class UnsignedUnlockTokenTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<UnlockTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: IUnlockTokenTransactionData, codec: ICborCodec): UnsignedUnlockTokenTransactionOrder {
+  public static create(data: IUnlockTokenTransactionData): UnsignedUnlockTokenTransactionOrder {
     return new UnsignedUnlockTokenTransactionOrder(
+      data.version,
       new TransactionPayload(
         data.networkIdentifier,
-        SystemIdentifier.TOKEN_PARTITION,
+        PartitionIdentifier.TOKEN,
         data.token.unitId,
         TokenPartitionTransactionType.UnlockToken,
         new UnlockTokenAttributes(data.token.counter),
@@ -33,18 +34,17 @@ export class UnsignedUnlockTokenTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(
-    ownerProofFactory: IProofFactory,
-    feeProofFactory: IProofFactory | null,
-  ): Promise<UnlockTokenTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
-    const feeProof =
-      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
-    return new UnlockTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+  public sign(ownerProofFactory: IProofFactory, feeProofFactory: IProofFactory | null): UnlockTokenTransactionOrder {
+    const authProofBytes: Uint8Array[] = [
+      CborEncoder.encodeUnsignedInteger(this.version),
+      ...this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ];
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()])) ?? null;
+    return new UnlockTokenTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

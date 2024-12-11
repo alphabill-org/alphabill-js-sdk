@@ -1,20 +1,9 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Transfer fee credit attributes array.
- */
-export type TransferFeeCreditAttributesArray = readonly [
-  bigint, // Amount
-  SystemIdentifier, // Target system identifier
-  Uint8Array, // Target Unit ID
-  bigint, // Latest addition time
-  bigint | null, // Target unit counter
-  bigint, // Counter
-];
 
 /**
  * Transfer fee credit payload attributes.
@@ -23,7 +12,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   /**
    * Transfer fee credit attributes constructor.
    * @param {bigint} amount - Amount.
-   * @param {SystemIdentifier} targetSystemIdentifier - Target system identifier.
+   * @param {number} targetPartitionIdentifier - Target partition identifier.
    * @param {IUnitId} targetUnitId - Target unit ID.
    * @param {bigint} latestAdditionTime - Latest addition time.
    * @param {bigint | null} targetUnitCounter - Target unit counter.
@@ -31,7 +20,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
    */
   public constructor(
     public readonly amount: bigint,
-    public readonly targetSystemIdentifier: SystemIdentifier,
+    public readonly targetPartitionIdentifier: number,
     public readonly targetUnitId: IUnitId,
     public readonly latestAdditionTime: bigint,
     public readonly targetUnitCounter: bigint | null,
@@ -44,25 +33,19 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * Create TransferFeeCreditAttributes from array.
-   * @param {TransferFeeCreditAttributesArray} data - Transfer fee credit attributes array.
+   * Create TransferFeeCreditAttributes from raw CBOR.
+   * @param {Uint8Array} rawData - Transfer fee credit attributes as raw CBOR.
    * @returns {TransferFeeCreditAttributes} Transfer fee credit attributes instance.
    */
-  public static fromArray([
-    amount,
-    targetSystemIdentifier,
-    targetUnitId,
-    latestAdditionTime,
-    targetUnitCounter,
-    counter,
-  ]: TransferFeeCreditAttributesArray): TransferFeeCreditAttributes {
+  public static fromCbor(rawData: Uint8Array): TransferFeeCreditAttributes {
+    const data = CborDecoder.readArray(rawData);
     return new TransferFeeCreditAttributes(
-      amount,
-      targetSystemIdentifier,
-      UnitId.fromBytes(targetUnitId),
-      latestAdditionTime,
-      targetUnitCounter,
-      counter,
+      CborDecoder.readUnsignedInteger(data[0]),
+      Number(CborDecoder.readUnsignedInteger(data[1])),
+      UnitId.fromBytes(CborDecoder.readByteString(data[2])),
+      CborDecoder.readUnsignedInteger(data[3]),
+      CborDecoder.readOptional(data[4], CborDecoder.readUnsignedInteger),
+      CborDecoder.readUnsignedInteger(data[5]),
     );
   }
 
@@ -74,7 +57,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
     return dedent`
       TransferFeeCreditAttributes
         Amount: ${this.amount}
-        Target System Identifier: ${this.targetSystemIdentifier.toString()}
+        Target Partition ID: ${this.targetPartitionIdentifier.toString()}
         Target Unit ID: ${this.targetUnitId.toString()}
         Latest Addition Time: ${this.latestAdditionTime}
         Target Unit Counter: ${this.targetUnitCounter === null ? 'null' : this.targetUnitCounter}
@@ -82,16 +65,16 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * @see {ITransactionPayloadAttributes.toArray}
+   * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<TransferFeeCreditAttributesArray> {
-    return Promise.resolve([
-      this.amount,
-      this.targetSystemIdentifier,
-      this.targetUnitId.bytes,
-      this.latestAdditionTime,
-      this.targetUnitCounter,
-      this.counter,
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.amount),
+      CborEncoder.encodeUnsignedInteger(this.targetPartitionIdentifier),
+      CborEncoder.encodeByteString(this.targetUnitId.bytes),
+      CborEncoder.encodeUnsignedInteger(this.latestAdditionTime),
+      this.targetUnitCounter ? CborEncoder.encodeUnsignedInteger(this.targetUnitCounter) : CborEncoder.encodeNull(),
+      CborEncoder.encodeUnsignedInteger(this.counter),
     ]);
   }
 }

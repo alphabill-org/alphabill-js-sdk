@@ -1,19 +1,11 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Create fungible token attributes array.
- */
-export type CreateFungibleTokenAttributesArray = readonly [
-  Uint8Array, // Type ID
-  bigint, // Value
-  Uint8Array, // Owner predicate
-  bigint, // Nonce
-];
 
 /**
  * Create fungible token payload attributes.
@@ -27,9 +19,9 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
    * @param {bigint} nonce Optional nonce.
    */
   public constructor(
-    public readonly ownerPredicate: IPredicate,
     public readonly typeId: IUnitId,
     public readonly value: bigint,
+    public readonly ownerPredicate: IPredicate,
     public readonly nonce: bigint,
   ) {
     this.value = BigInt(this.value);
@@ -37,21 +29,17 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   }
 
   /**
-   * Create CreateFungibleTokenAttributes from array.
-   * @param {CreateFungibleTokenAttributesArray} data Create fungible token attributes array.
+   * Create CreateFungibleTokenAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Create fungible token attributes as raw CBOR.
    * @returns {CreateFungibleTokenAttributes} Create fungible token attributes instance.
    */
-  public static fromArray([
-    typeId,
-    value,
-    ownerPredicate,
-    nonce,
-  ]: CreateFungibleTokenAttributesArray): CreateFungibleTokenAttributes {
+  public static fromCbor(rawData: Uint8Array): CreateFungibleTokenAttributes {
+    const data = CborDecoder.readArray(rawData);
     return new CreateFungibleTokenAttributes(
-      new PredicateBytes(ownerPredicate),
-      UnitId.fromBytes(typeId),
-      value,
-      nonce,
+      UnitId.fromBytes(CborDecoder.readByteString(data[0])),
+      CborDecoder.readUnsignedInteger(data[1]),
+      new PredicateBytes(CborDecoder.readByteString(data[2])),
+      CborDecoder.readUnsignedInteger(data[3]),
     );
   }
 
@@ -62,16 +50,21 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
   public toString(): string {
     return dedent`
       CreateFungibleTokenAttributes
-        Owner Predicate: ${this.ownerPredicate.toString()}
         Type ID: ${this.typeId.toString()}
         Value: ${this.value}
+        Owner Predicate: ${this.ownerPredicate.toString()}
         Nonce: ${this.nonce}`;
   }
 
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<CreateFungibleTokenAttributesArray> {
-    return Promise.resolve([this.typeId.bytes, this.value, this.ownerPredicate.bytes, this.nonce]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.typeId.bytes),
+      CborEncoder.encodeUnsignedInteger(this.value),
+      CborEncoder.encodeByteString(this.ownerPredicate.bytes),
+      CborEncoder.encodeUnsignedInteger(this.nonce),
+    ]);
   }
 }

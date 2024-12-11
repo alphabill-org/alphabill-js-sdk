@@ -1,5 +1,4 @@
 import { IPredicate } from './predicates/IPredicate.js';
-import { StateLockArray } from './StateLock.js';
 
 /**
  * Transaction payload state lock.
@@ -19,8 +18,8 @@ export interface IStateLock {
   readonly rollbackPredicate: IPredicate;
 
   /**
-   * Convert to array.
-   * @returns {readonly Uint8Array[]} Array of payload state lock predicates.
+   * Convert to raw CBOR.
+   * @returns {readonly Uint8Array} Raw CBOR of payload state lock predicates.
    */
-  encode(): StateLockArray;
+  encode(): Uint8Array;
 }

@@ -1,8 +1,7 @@
-import { numberToBytesBE } from '@noble/curves/abstract/utils';
 import { sha256 } from '@noble/hashes/sha256';
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
+import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -17,7 +16,7 @@ import { TransferFeeCreditTransactionOrder } from './TransferFeeCreditTransactio
 
 interface ITransferFeeCreditTransactionData extends ITransactionData {
   amount: bigint;
-  targetSystemIdentifier: SystemIdentifier;
+  targetPartitionIdentifier: number;
   latestAdditionTime: bigint;
   feeCreditRecord: {
     ownerPredicate: IPredicate;
@@ -32,28 +31,26 @@ interface ITransferFeeCreditTransactionData extends ITransactionData {
 
 export class UnsignedTransferFeeCreditTransactionOrder {
   private constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<TransferFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(
-    data: ITransferFeeCreditTransactionData,
-    codec: ICborCodec,
-  ): UnsignedTransferFeeCreditTransactionOrder {
+  public static create(data: ITransferFeeCreditTransactionData): UnsignedTransferFeeCreditTransactionOrder {
     let feeCreditRecordId = data.feeCreditRecord.unitId;
     if (feeCreditRecordId == null) {
-      feeCreditRecordId = this.createUnitId(data.metadata.timeout, data.feeCreditRecord.ownerPredicate);
+      feeCreditRecordId = this.createUnitId(data.feeCreditRecord.ownerPredicate, data.latestAdditionTime);
     }
     return new UnsignedTransferFeeCreditTransactionOrder(
+      data.version,
       new TransactionPayload<TransferFeeCreditAttributes>(
         data.networkIdentifier,
-        SystemIdentifier.MONEY_PARTITION,
+        PartitionIdentifier.MONEY,
         data.bill.unitId,
         FeeCreditTransactionType.TransferFeeCredit,
         new TransferFeeCreditAttributes(
           data.amount,
-          data.targetSystemIdentifier,
+          data.targetPartitionIdentifier,
           feeCreditRecordId,
           data.latestAdditionTime,
           data.feeCreditRecord?.counter ?? 0n,
@@ -63,19 +60,26 @@ export class UnsignedTransferFeeCreditTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  private static createUnitId(timeout: bigint, ownerPredicate: IPredicate): UnitId {
-    const unitBytes = sha256.create().update(ownerPredicate.bytes).update(numberToBytesBE(timeout, 8)).digest();
+  private static createUnitId(ownerPredicate: IPredicate, latestAdditionTime: bigint): UnitId {
+    const unitBytes = sha256
+      .create()
+      .update(CborEncoder.encodeByteString(ownerPredicate.bytes))
+      .update(CborEncoder.encodeUnsignedInteger(latestAdditionTime))
+      .digest();
     return new UnitIdWithType(unitBytes, FeeCreditUnitType.FEE_CREDIT_RECORD);
   }
 
-  public async sign(ownerProofFactory: IProofFactory): Promise<TransferFeeCreditTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+  public sign(ownerProofFactory: IProofFactory): TransferFeeCreditTransactionOrder {
+    const authProofBytes = [
+      CborEncoder.encodeUnsignedInteger(this.version),
+      ...this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ];
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
     const feeProof = null;
-    return new TransferFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new TransferFeeCreditTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }
