@@ -3,7 +3,7 @@
  * @interface IFungibleTokenDto
  */
 export interface IFungibleTokenDto {
-  tokenType: string;
+  typeId: string;
   value: string;
   locked: string;
   ownerPredicate: string;

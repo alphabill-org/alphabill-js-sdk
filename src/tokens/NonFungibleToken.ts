@@ -18,7 +18,7 @@ export class NonFungibleToken extends Unit {
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
    * @param {IStateProof | null} stateProof State proof.
-   * @param {IUnitId} tokenType Token type.
+   * @param {IUnitId} typeId Token type ID.
    * @param {string} name Token name.
    * @param {string} uri Token URI.
    * @param {Uint8Array} _data Token data.
@@ -32,7 +32,7 @@ export class NonFungibleToken extends Unit {
     networkIdentifier: number,
     partitionIdentifier: number,
     stateProof: IStateProof | null,
-    public readonly tokenType: IUnitId,
+    public readonly typeId: IUnitId,
     public readonly name: string,
     public readonly uri: string,
     private readonly _data: Uint8Array,
@@ -76,7 +76,7 @@ export class NonFungibleToken extends Unit {
       networkIdentifier,
       partitionIdentifier,
       stateProof,
-      UnitId.fromBytes(Base16Converter.decode(data.typeID)),
+      UnitId.fromBytes(Base16Converter.decode(data.typeId)),
       data.name,
       data.uri,
       Base16Converter.decode(data.data),
@@ -97,7 +97,7 @@ export class NonFungibleToken extends Unit {
         Unit ID: ${this.unitId.toString()}
         Network ID: ${this.networkIdentifier}
         Partition ID: ${this.partitionIdentifier}
-        Token Type: ${this.tokenType.toString()}
+        Type ID: ${this.typeId.toString()}
         Name: ${this.name}
         URI: ${this.uri}
         Data: ${Base16Converter.encode(this._data)}

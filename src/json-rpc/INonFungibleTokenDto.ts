@@ -3,7 +3,7 @@
  * @interface INonFungibleTokenDto
  */
 export interface INonFungibleTokenDto {
-  typeID: string;
+  typeId: string;
   name: string;
   uri: string;
   data: string;
