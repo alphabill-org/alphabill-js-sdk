@@ -8,5 +8,5 @@ export interface IFungibleTokenDto {
   locked: string;
   ownerPredicate: string;
   counter: string;
-  timeout: string;
+  minLifetime: string;
 }

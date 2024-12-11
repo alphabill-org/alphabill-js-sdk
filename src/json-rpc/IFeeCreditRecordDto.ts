@@ -7,5 +7,5 @@ export interface IFeeCreditRecordDto {
   ownerPredicate: string;
   locked: string;
   counter: string;
-  timeout: string;
+  minLifetime: string;
 }

@@ -20,7 +20,8 @@ describe('Permissioned Fee Credit Integration Tests', () => {
     transport: http(config.tokenPartitionUrl),
   });
 
-  it('Set and delete fee credit', async () => {
+  // Uncomment skip to run this test. Backend needs to be started in permissioned mode for this to succeed.
+  it.skip('Set and delete fee credit', async () => {
     const round = await tokenClient.getRoundNumber();
     const ownerPredicate = PayToPublicKeyHashPredicate.create(signingService.publicKey);
 

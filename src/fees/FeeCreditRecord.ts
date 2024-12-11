@@ -21,7 +21,7 @@ export class FeeCreditRecord extends Unit {
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {bigint} locked Is fee credit locked.
    * @param {bigint} counter Fee credit counter.
-   * @param {bigint} timeout Fee credit timeout.
+   * @param {bigint} minLifetime The earliest round number when this record may be deleted if the balance goes to zero.
    */
   public constructor(
     unitId: IUnitId,
@@ -32,13 +32,13 @@ export class FeeCreditRecord extends Unit {
     public readonly ownerPredicate: IPredicate,
     public readonly locked: bigint,
     public readonly counter: bigint,
-    public readonly timeout: bigint,
+    public readonly minLifetime: bigint,
   ) {
     super(unitId, networkIdentifier, partitionIdentifier, stateProof);
     this.balance = BigInt(this.balance);
     this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
-    this.timeout = BigInt(this.timeout);
+    this.minLifetime = BigInt(this.minLifetime);
   }
 
   /**
@@ -67,7 +67,7 @@ export class FeeCreditRecord extends Unit {
       new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
-      BigInt(data.timeout),
+      BigInt(data.minLifetime),
     );
   }
 
@@ -85,6 +85,6 @@ export class FeeCreditRecord extends Unit {
         Owner Predicate: ${this.ownerPredicate.toString()}
         Locked: ${this.locked}
         Counter: ${this.counter}
-        Timeout: ${this.timeout}`;
+        Minimum Lifetime: ${this.minLifetime}`;
   }
 }

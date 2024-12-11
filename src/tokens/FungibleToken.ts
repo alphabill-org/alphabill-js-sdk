@@ -23,7 +23,7 @@ export class FungibleToken extends Unit {
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {bigint} counter Counter.
    * @param {bigint} locked Is token locked.
-   * @param {bigint} timeout The earliest round number when this token may be deleted if the balance goes to zero.
+   * @param {bigint} minLifetime The earliest round number when this token may be deleted if the balance goes to zero.
    */
   public constructor(
     unitId: IUnitId,
@@ -35,13 +35,13 @@ export class FungibleToken extends Unit {
     public readonly ownerPredicate: IPredicate,
     public readonly locked: bigint,
     public readonly counter: bigint,
-    public readonly timeout: bigint,
+    public readonly minLifetime: bigint,
   ) {
     super(unitId, networkIdentifier, partitionIdentifier, stateProof);
     this.value = BigInt(this.value);
     this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
-    this.timeout = BigInt(this.timeout);
+    this.minLifetime = BigInt(this.minLifetime);
   }
 
   /**
@@ -70,7 +70,7 @@ export class FungibleToken extends Unit {
       new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
-      BigInt(data.timeout),
+      BigInt(data.minLifetime),
     );
   }
 
@@ -89,6 +89,6 @@ export class FungibleToken extends Unit {
         Owner Predicate: ${this.ownerPredicate.toString()}
         Locked: ${this.locked}
         Counter: ${this.counter}
-        Timeout: ${this.timeout}`;
+        Minimum Lifetime: ${this.minLifetime}`;
   }
 }
