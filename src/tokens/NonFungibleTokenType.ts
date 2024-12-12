@@ -1,8 +1,8 @@
-import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { INonFungibleTokenTypeDto } from '../json-rpc/INonFungibleTokenTypeDto.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
+import { StateProof } from '../unit/StateProof.js';
 import { Unit } from '../Unit.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
@@ -18,7 +18,7 @@ export class NonFungibleTokenType extends Unit {
    * @param {IUnitId} unitId Unit ID.
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {StateProof | null} stateProof State proof.
    * @param {string} symbol Symbol.
    * @param {string} name Name.
    * @param {TokenIcon} icon Icon.
@@ -32,7 +32,7 @@ export class NonFungibleTokenType extends Unit {
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    stateProof: IStateProof | null,
+    stateProof: StateProof | null,
     public readonly symbol: string,
     public readonly name: string,
     public readonly icon: TokenIcon,
@@ -50,7 +50,7 @@ export class NonFungibleTokenType extends Unit {
    * @param {IUnitId} unitId Unit id.
    * @param {number} networkIdentifier Network identifier.
    * @param {number} partitionIdentifier Partition identifier.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {StateProof | null} stateProof State proof.
    * @param {INonFungibleTokenTypeDto} data Non-fungible token type DTO.
    * @returns {NonFungibleTokenType} Non-fungible token type.
    */
@@ -58,7 +58,7 @@ export class NonFungibleTokenType extends Unit {
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    stateProof: IStateProof | null,
+    stateProof: StateProof | null,
     data: INonFungibleTokenTypeDto,
   ): NonFungibleTokenType {
     return new NonFungibleTokenType(

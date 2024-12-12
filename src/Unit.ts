@@ -1,5 +1,5 @@
-import { IStateProof } from './IStateProof.js';
 import { IUnitId } from './IUnitId.js';
+import { StateProof } from './unit/StateProof.js';
 
 export class Unit {
   /**
@@ -7,12 +7,12 @@ export class Unit {
    * @param {IUnitId} unitId Unit ID.
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {StateProof | null} stateProof State proof.
    */
   public constructor(
     public readonly unitId: IUnitId,
     public readonly networkIdentifier: number,
     public readonly partitionIdentifier: number,
-    public readonly stateProof: IStateProof | null,
+    public readonly stateProof: StateProof | null,
   ) {}
 }

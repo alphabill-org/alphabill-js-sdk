@@ -3,9 +3,9 @@
  * @interface IFeeCreditRecordDto
  */
 export interface IFeeCreditRecordDto {
-  balance: string;
-  ownerPredicate: string;
-  locked: string;
-  counter: string;
-  minLifetime: string;
+  readonly balance: string;
+  readonly ownerPredicate: string;
+  readonly locked: string;
+  readonly counter: string;
+  readonly minLifetime: string;
 }

@@ -1,8 +1,8 @@
-import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { IBillDataDto } from '../json-rpc/IBillDataDto.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
+import { StateProof } from '../unit/StateProof.js';
 import { Unit } from '../Unit.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
@@ -16,7 +16,7 @@ export class Bill extends Unit {
    * @param {IUnitId} unitId Unit ID.
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {StateProof | null} stateProof State proof.
    * @param {bigint} value Bill value.
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {boolean} locked Is locked.
@@ -26,7 +26,7 @@ export class Bill extends Unit {
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    stateProof: IStateProof | null,
+    stateProof: StateProof | null,
     public readonly value: bigint,
     public readonly ownerPredicate: IPredicate,
     public readonly locked: bigint,
@@ -51,7 +51,7 @@ export class Bill extends Unit {
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    stateProof: IStateProof | null,
+    stateProof: StateProof | null,
     data: IBillDataDto,
   ): Bill {
     return new Bill(

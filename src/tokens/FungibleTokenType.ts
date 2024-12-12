@@ -1,8 +1,8 @@
-import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { IFungibleTokenTypeDto } from '../json-rpc/IFungibleTokenTypeDto.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
+import { StateProof } from '../unit/StateProof.js';
 import { Unit } from '../Unit.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
@@ -26,13 +26,13 @@ export class FungibleTokenType extends Unit {
    * @param {IPredicate} subTypeCreationPredicate Sub type creation predicate.
    * @param {IPredicate} tokenMintingPredicate Token minting predicate.
    * @param {IPredicate} tokenTypeOwnerPredicate Token type owner predicate.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {StateProof | null} stateProof State proof.
    */
   public constructor(
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    stateProof: IStateProof | null,
+    stateProof: StateProof | null,
     public readonly symbol: string,
     public readonly name: string,
     public readonly icon: TokenIcon,
@@ -58,7 +58,7 @@ export class FungibleTokenType extends Unit {
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    stateProof: IStateProof | null,
+    stateProof: StateProof | null,
     data: IFungibleTokenTypeDto,
   ): FungibleTokenType {
     return new FungibleTokenType(

@@ -3,12 +3,12 @@
  * @interface INonFungibleTokenDto
  */
 export interface INonFungibleTokenDto {
-  typeId: string;
-  name: string;
-  uri: string;
-  data: string;
-  ownerPredicate: string;
-  dataUpdatePredicate: string;
-  locked: string;
-  counter: string;
+  readonly typeId: string;
+  readonly name: string;
+  readonly uri: string;
+  readonly data: string;
+  readonly ownerPredicate: string;
+  readonly dataUpdatePredicate: string;
+  readonly locked: string;
+  readonly counter: string;
 }

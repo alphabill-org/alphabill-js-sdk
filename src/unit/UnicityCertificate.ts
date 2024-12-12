@@ -1,47 +1,34 @@
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import { CborTag } from '../codec/cbor/CborTag.js';
-import {
-  IInputRecord,
-  IShardId,
-  IShardTreeCertificate,
-  IUnicityCertificate,
-  IUnicitySeal,
-  IUnicityTreeCertificate,
-  IHashStep,
-} from '../IStateProof.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
 
 /**
  * Unicity certificate.
- * @implements {IUnicityCertificate}
  */
-export class UnicityCertificate implements IUnicityCertificate {
+export class UnicityCertificate {
   /**
    * State proof constructor.
    * @param {bigint} version - version.
-   * @param {IInputRecord} inputRecord - unit identifier.
+   * @param {InputRecord} inputRecord - unit identifier.
    * @param {Uint8Array} _trHash - hash of the technical record.
-   * @param {IShardTreeCertificate} shardTreeCertificate - shard tree certificate.
-   * @param {IUnicityTreeCertificate} unicityTreeCertificate - unicity tree certificate.
-   * @param {IUnicitySeal} unicitySeal - unicity seal.
+   * @param {ShardTreeCertificate} shardTreeCertificate - shard tree certificate.
+   * @param {UnicityTreeCertificate} unicityTreeCertificate - unicity tree certificate.
+   * @param {UnicitySeal} unicitySeal - unicity seal.
    */
   public constructor(
     public readonly version: bigint,
-    public readonly inputRecord: IInputRecord,
+    public readonly inputRecord: InputRecord,
     private readonly _trHash: Uint8Array,
-    public readonly shardTreeCertificate: IShardTreeCertificate,
-    public readonly unicityTreeCertificate: IUnicityTreeCertificate,
-    public readonly unicitySeal: IUnicitySeal,
+    public readonly shardTreeCertificate: ShardTreeCertificate,
+    public readonly unicityTreeCertificate: UnicityTreeCertificate,
+    public readonly unicitySeal: UnicitySeal,
   ) {
     this.version = BigInt(this.version);
     this._trHash = new Uint8Array(this._trHash);
   }
 
-  /**
-   * @see {IUnicityCertificate.trHash}
-   */
   public get trHash(): Uint8Array {
     return new Uint8Array(this._trHash);
   }
@@ -103,9 +90,8 @@ export class UnicityCertificate implements IUnicityCertificate {
 
 /**
  * Input record.
- * @implements {IInputRecord}
  */
-export class InputRecord implements IInputRecord {
+export class InputRecord {
   /**
    * Input record constructor.
    * @param {bigint} version - version.
@@ -140,30 +126,18 @@ export class InputRecord implements IInputRecord {
     this.sumOfEarnedFees = BigInt(this.sumOfEarnedFees);
   }
 
-  /**
-   * @see {IInputRecord.previousHash}
-   */
   public get previousHash(): Uint8Array {
     return new Uint8Array(this._previousHash);
   }
 
-  /**
-   * @see {IInputRecord.hash}
-   */
   public get hash(): Uint8Array {
     return new Uint8Array(this._hash);
   }
 
-  /**
-   * @see {IInputRecord.summaryValue}
-   */
   public get summaryValue(): Uint8Array {
     return new Uint8Array(this._summaryValue);
   }
 
-  /**
-   * @see {IInputRecord.blockHash}
-   */
   public get blockHash(): Uint8Array {
     return new Uint8Array(this._blockHash);
   }
@@ -234,11 +208,10 @@ export class InputRecord implements IInputRecord {
 
 /**
  * Shard tree certificate.
- * @implements {IShardTreeCertificate}
  */
-export class ShardTreeCertificate implements IShardTreeCertificate {
+export class ShardTreeCertificate {
   public constructor(
-    public readonly shard: IShardId,
+    public readonly shard: ShardId,
     private readonly _siblingHashes: Uint8Array[],
   ) {
     this._siblingHashes = this._siblingHashes.map((siblingHash: Uint8Array) => new Uint8Array(siblingHash));
@@ -285,7 +258,7 @@ export class ShardTreeCertificate implements IShardTreeCertificate {
   }
 }
 
-export class HashStep implements IHashStep {
+export class HashStep {
   /**
    * Hash step constructor.
    * @param key - key.
@@ -299,9 +272,6 @@ export class HashStep implements IHashStep {
     this._hash = new Uint8Array(this._hash);
   }
 
-  /**
-   * @see {IHashStep.hash}
-   */
   public get hash(): Uint8Array {
     return new Uint8Array(this._hash);
   }
@@ -311,7 +281,7 @@ export class HashStep implements IHashStep {
    * @param {Uint8Array} rawData Hash step as raw CBOR.
    * @returns {HashStep} Hash step.
    */
-  public static fromCbor(rawData: Uint8Array): IHashStep {
+  public static fromCbor(rawData: Uint8Array): HashStep {
     const data = CborDecoder.readArray(rawData);
     return new HashStep(CborDecoder.readUnsignedInteger(data[0]), CborDecoder.readByteString(data[1]));
   }
@@ -341,9 +311,8 @@ export class HashStep implements IHashStep {
 
 /**
  * Shard ID.
- * @implements {IShardId}
  */
-export class ShardId implements IShardId {
+export class ShardId implements ShardId {
   public constructor(
     private readonly _bits: Uint8Array,
     public readonly length: number,
@@ -351,9 +320,6 @@ export class ShardId implements IShardId {
     this._bits = new Uint8Array(this._bits);
   }
 
-  /**
-   * @see {IShardId.bits}
-   */
   public get bits(): Uint8Array {
     return new Uint8Array(this._bits);
   }
@@ -390,23 +356,19 @@ export class ShardId implements IShardId {
 
 /**
  * Unicity tree certificate.
- * @implements {IUnicityTreeCertificate}
  */
-export class UnicityTreeCertificate implements IUnicityTreeCertificate {
+export class UnicityTreeCertificate {
   public constructor(
     public readonly version: bigint,
     public readonly partitionIdentifier: bigint,
     public readonly _partitionDescriptionHash: Uint8Array,
-    public readonly hashSteps: IHashStep[],
+    public readonly hashSteps: HashStep[],
   ) {
     this.version = BigInt(version);
     this.partitionIdentifier = BigInt(partitionIdentifier);
     this._partitionDescriptionHash = new Uint8Array(_partitionDescriptionHash);
   }
 
-  /**
-   * @see {IUnicityTreeCertificate.partitionDescriptionHash}
-   */
   public get partitionDescriptionHash(): Uint8Array {
     return new Uint8Array(this._partitionDescriptionHash);
   }
@@ -456,15 +418,14 @@ export class UnicityTreeCertificate implements IUnicityTreeCertificate {
         Version: ${this.version}
         Partition ID: ${this.partitionIdentifier}
         Partition Description Hash: ${Base16Converter.encode(this._partitionDescriptionHash)}
-        Hash Steps: [${`\n${this.hashSteps.map((unit: IHashStep) => unit.toString()).join('\n')}\n`}]`;
+        Hash Steps: [${`\n${this.hashSteps.map((unit: HashStep) => unit.toString()).join('\n')}\n`}]`;
   }
 }
 
 /**
  * Unicity seal.
- * @implements {IUnicitySeal}
  */
-export class UnicitySeal implements IUnicitySeal {
+export class UnicitySeal {
   public constructor(
     public readonly version: bigint,
     public readonly rootChainRoundNumber: bigint,
@@ -481,23 +442,14 @@ export class UnicitySeal implements IUnicitySeal {
     this._signatures = new Map(Array.from(this._signatures).map(([id, signature]) => [id, new Uint8Array(signature)]));
   }
 
-  /**
-   * @see {IUnicitySeal.previousHash}
-   */
   public get previousHash(): Uint8Array {
     return new Uint8Array(this._previousHash);
   }
 
-  /**
-   * @see {IUnicitySeal.hash}
-   */
   public get hash(): Uint8Array {
     return new Uint8Array(this._hash);
   }
 
-  /**
-   * @see {IUnicitySeal.signatures}
-   */
   public get signatures(): Map<string, Uint8Array> {
     return new Map(Array.from(this._signatures).map(([id, signature]) => [id, new Uint8Array(signature)]));
   }

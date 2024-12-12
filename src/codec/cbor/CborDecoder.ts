@@ -88,13 +88,11 @@ export class CborDecoder {
   }
 
   public static readBoolean(data: Uint8Array): boolean {
-    if (!data || data.length === 0) {
-      throw new CborError('Encoded item is not well-formed.');
-    }
-    if (data[0] === 0xf5) {
+    const byte = CborDecoder.readByte(data, 0);
+    if (byte === 0xf5) {
       return true;
     }
-    if (data[0] === 0xf4) {
+    if (byte === 0xf4) {
       return false;
     }
     throw new CborError('Type mismatch, expected boolean.');

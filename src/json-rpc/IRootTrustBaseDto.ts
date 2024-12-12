@@ -1,17 +1,17 @@
 export interface IRootTrustBaseDto {
-  version: bigint;
-  epoch: bigint;
-  epochStartRound: bigint;
-  rootNodes: { [key: string]: INodeInfoDto };
-  quorumThreshold: bigint;
-  stateHash: string;
-  changeRecordHash: string;
-  previousEntryHash: string;
-  signatures: { [key: string]: string };
+  readonly version: bigint;
+  readonly epoch: bigint;
+  readonly epochStartRound: bigint;
+  readonly rootNodes: { [key: string]: INodeInfoDto };
+  readonly quorumThreshold: bigint;
+  readonly stateHash: string;
+  readonly changeRecordHash: string;
+  readonly previousEntryHash: string;
+  readonly signatures: { [key: string]: string };
 }
 
 export interface INodeInfoDto {
-  nodeId: string;
-  publicKey: string;
-  stake: bigint;
+  readonly nodeId: string;
+  readonly publicKey: string;
+  readonly stake: bigint;
 }

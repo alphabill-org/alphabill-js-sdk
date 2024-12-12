@@ -3,8 +3,8 @@
  * @interface IBillDataDto
  */
 export interface IBillDataDto {
-  value: string;
-  ownerPredicate: string;
-  locked: string;
-  counter: string;
+  readonly value: string;
+  readonly ownerPredicate: string;
+  readonly locked: string;
+  readonly counter: string;
 }

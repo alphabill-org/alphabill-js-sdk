@@ -1,8 +1,8 @@
-import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { INonFungibleTokenDto } from '../json-rpc/INonFungibleTokenDto.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
+import { StateProof } from '../unit/StateProof.js';
 import { Unit } from '../Unit.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
@@ -17,7 +17,7 @@ export class NonFungibleToken extends Unit {
    * @param {IUnitId} unitId Unit ID.
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {StateProof | null} stateProof State proof.
    * @param {IUnitId} typeId Token type ID.
    * @param {string} name Token name.
    * @param {string} uri Token URI.
@@ -31,7 +31,7 @@ export class NonFungibleToken extends Unit {
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    stateProof: IStateProof | null,
+    stateProof: StateProof | null,
     public readonly typeId: IUnitId,
     public readonly name: string,
     public readonly uri: string,
@@ -60,7 +60,7 @@ export class NonFungibleToken extends Unit {
    * @param {IUnitId} unitId Unit id.
    * @param {number} networkIdentifier Network identifier.
    * @param {number} partitionIdentifier Partition identifier.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {StateProof | null} stateProof State proof.
    * @param {INonFungibleTokenDto} data Non-fungible token DTO.
    * @returns {NonFungibleToken} Non-fungible token.
    */
@@ -68,7 +68,7 @@ export class NonFungibleToken extends Unit {
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    stateProof: IStateProof | null,
+    stateProof: StateProof | null,
     data: INonFungibleTokenDto,
   ): NonFungibleToken {
     return new NonFungibleToken(
