@@ -37,14 +37,18 @@ export class UnsignedUnlockTokenTransactionOrder {
     );
   }
 
-  public sign(ownerProofFactory: IProofFactory, feeProofFactory: IProofFactory | null): UnlockTokenTransactionOrder {
+  public async sign(
+    ownerProofFactory: IProofFactory,
+    feeProofFactory: IProofFactory | null,
+  ): Promise<UnlockTokenTransactionOrder> {
     const authProofBytes: Uint8Array[] = [
       CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ];
-    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
-    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()])) ?? null;
+    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
+    const feeProof =
+      (await feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()]))) ?? null;
     return new UnlockTokenTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

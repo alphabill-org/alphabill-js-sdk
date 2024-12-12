@@ -37,13 +37,13 @@ export class UnsignedDeleteFeeCreditTransactionOrder {
     );
   }
 
-  public sign(ownerProofFactory: IProofFactory): DeleteFeeCreditTransactionOrder {
+  public async sign(ownerProofFactory: IProofFactory): Promise<DeleteFeeCreditTransactionOrder> {
     const authProofBytes = [
       CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ];
-    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
+    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
     const feeProof = null;
     return new DeleteFeeCreditTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }

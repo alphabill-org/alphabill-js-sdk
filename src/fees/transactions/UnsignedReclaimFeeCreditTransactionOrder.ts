@@ -42,13 +42,13 @@ export class UnsignedReclaimFeeCreditTransactionOrder {
     );
   }
 
-  public sign(ownerProofFactory: IProofFactory): ReclaimFeeCreditTransactionOrder {
+  public async sign(ownerProofFactory: IProofFactory): Promise<ReclaimFeeCreditTransactionOrder> {
     const authProofBytes = [
       CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ];
-    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
+    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
     const feeProof = null;
     return new ReclaimFeeCreditTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }

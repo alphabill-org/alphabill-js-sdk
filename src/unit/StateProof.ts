@@ -5,7 +5,7 @@ import {
   IStateTreeCertificateDto,
   IStateTreePathItemDto,
   IUnitTreeCertificateDto,
-} from '../json-rpc/IStateProofDto';
+} from '../json-rpc/IStateProofDto.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { UnicityCertificate } from './UnicityCertificate.js';

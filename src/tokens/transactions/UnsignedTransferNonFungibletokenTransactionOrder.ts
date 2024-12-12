@@ -43,11 +43,11 @@ export class UnsignedTransferNonFungibletokenTransactionOrder {
     );
   }
 
-  public sign(
+  public async sign(
     ownerProofFactory: IProofFactory,
     feeProofFactory: IProofFactory | null,
     tokenTypeOwnerProofs: IProofFactory[],
-  ): TransferNonFungibleTokenTransactionOrder {
+  ): Promise<TransferNonFungibleTokenTransactionOrder> {
     const authProofBytes: Uint8Array[] = [
       CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
@@ -55,10 +55,11 @@ export class UnsignedTransferNonFungibletokenTransactionOrder {
     ];
     const authProof = CborEncoder.encodeArray(authProofBytes);
     const ownerProof = new TypeOwnerProofsAuthProof(
-      ownerProofFactory.create(authProof),
-      tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
+      await ownerProofFactory.create(authProof),
+      await Promise.all(tokenTypeOwnerProofs.map((factory) => factory.create(authProof))),
     );
-    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()])) ?? null;
+    const feeProof =
+      (await feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()]))) ?? null;
     return new TransferNonFungibleTokenTransactionOrder(
       this.version,
       this.payload,
