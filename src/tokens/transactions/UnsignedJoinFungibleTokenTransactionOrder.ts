@@ -8,8 +8,8 @@ import { TypeOwnerProofsAuthProof } from '../../transaction/proofs/TypeOwnerProo
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { JoinFungibleTokenAttributes } from '../attributes/JoinFungibleTokenAttributes.js';
 import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
-import { BurnFungibleTokenTransactionRecordWithProof } from './BurnFungibleTokenTransactionRecordWithProof.js';
 import { JoinFungibleTokenTransactionOrder } from './JoinFungibleTokenTransactionOrder.js';
+import { BurnFungibleTokenTransactionRecordWithProof } from './records/BurnFungibleTokenTransactionRecordWithProof.js';
 
 interface IJoinFungibleTokensTransactionData extends ITransactionData {
   token: { unitId: IUnitId };

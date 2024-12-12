@@ -1,3 +1,4 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { CborTag } from '../../codec/cbor/CborTag.js';
 import { dedent } from '../../util/StringUtils.js';
@@ -22,6 +23,20 @@ export class TransactionRecord<T extends TransactionOrder<ITransactionPayloadAtt
     public readonly transactionOrder: T,
     public readonly serverMetadata: ServerMetadata,
   ) {}
+
+  public static fromCbor<T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>>(
+    rawData: Uint8Array,
+    factory: {
+      fromCbor: (rawData: Uint8Array) => T;
+    },
+  ): TransactionRecord<T> {
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
+    return new TransactionRecord(
+      CborDecoder.readUnsignedInteger(data[0]),
+      factory.fromCbor(data[1]),
+      ServerMetadata.fromCbor(data[2]),
+    );
+  }
 
   /**
    * Convert to string.

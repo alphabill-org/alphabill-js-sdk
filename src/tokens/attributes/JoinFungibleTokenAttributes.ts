@@ -2,7 +2,7 @@ import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
-import { BurnFungibleTokenTransactionRecordWithProof } from '../transactions/BurnFungibleTokenTransactionRecordWithProof.js';
+import { BurnFungibleTokenTransactionRecordWithProof } from '../transactions/records/BurnFungibleTokenTransactionRecordWithProof.js';
 
 /**
  * Join fungible token payload attributes.

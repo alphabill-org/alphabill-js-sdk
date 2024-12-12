@@ -2,13 +2,13 @@ import { CborDecoder } from '../../../codec/cbor/CborDecoder.js';
 import { TransactionProof } from '../../../transaction/record/TransactionProof.js';
 import { TransactionRecord } from '../../../transaction/record/TransactionRecord.js';
 import { TransactionRecordWithProof } from '../../../transaction/record/TransactionRecordWithProof.js';
-import { AddFeeCreditTransactionOrder } from '../AddFeeCreditTransactionOrder.js';
+import { SplitBillTransactionOrder } from '../SplitBillTransactionOrder.js';
 
-export class AddFeeCreditTransactionRecordWithProof extends TransactionRecordWithProof<AddFeeCreditTransactionOrder> {
-  public static fromCbor(rawData: Uint8Array): AddFeeCreditTransactionRecordWithProof {
+export class SplitBillTransactionRecordWithProof extends TransactionRecordWithProof<SplitBillTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): SplitBillTransactionRecordWithProof {
     const data = CborDecoder.readArray(rawData);
-    return new AddFeeCreditTransactionRecordWithProof(
-      TransactionRecord.fromCbor(data[0], AddFeeCreditTransactionOrder),
+    return new SplitBillTransactionRecordWithProof(
+      TransactionRecord.fromCbor(data[0], SplitBillTransactionOrder),
       TransactionProof.fromCbor(data[1]),
     );
   }

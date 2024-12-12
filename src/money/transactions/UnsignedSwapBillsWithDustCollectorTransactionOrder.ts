@@ -8,8 +8,8 @@ import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProo
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { SwapBillsWithDustCollectorAttributes } from '../attributes/SwapBillsWithDustCollectorAttributes.js';
 import { MoneyPartitionTransactionType } from '../MoneyPartitionTransactionType.js';
+import { TransferBillToDustCollectorTransactionRecordWithProof } from './records/TransferBillToDustCollectorTransactionRecordWithProof.js';
 import { SwapBillsWithDustCollectorTransactionOrder } from './SwapBillsWithDustCollectorTransactionOrder.js';
-import { TransferBillToDustCollectorTransactionRecordWithProof } from './TransferBillToDustCollectorTransactionRecordWithProof.js';
 
 export interface ISwapBillsWithDustCollectorTransactionData extends ITransactionData {
   proofs: TransferBillToDustCollectorTransactionRecordWithProof[];
