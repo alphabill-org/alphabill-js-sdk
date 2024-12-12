@@ -1,10 +1,9 @@
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../codec/cbor/CborEncoder.js';
-import { IStateLock } from './IStateLock.js';
 import { IPredicate } from './predicates/IPredicate.js';
 import { PredicateBytes } from './predicates/PredicateBytes.js';
 
-export class StateLock implements IStateLock {
+export class StateLock {
   public constructor(
     public readonly executionPredicate: IPredicate,
     public readonly rollbackPredicate: IPredicate,
