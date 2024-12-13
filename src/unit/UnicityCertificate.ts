@@ -1,3 +1,4 @@
+import { BitString } from '../BitString.js';
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import { CborTag } from '../codec/cbor/CborTag.js';
@@ -211,7 +212,7 @@ export class InputRecord {
  */
 export class ShardTreeCertificate {
   public constructor(
-    public readonly shard: ShardId,
+    public readonly shard: BitString,
     private readonly _siblingHashes: Uint8Array[],
   ) {
     this._siblingHashes = this._siblingHashes.map((siblingHash: Uint8Array) => new Uint8Array(siblingHash));
@@ -228,7 +229,7 @@ export class ShardTreeCertificate {
    */
   public static fromCbor(rawData: Uint8Array): ShardTreeCertificate {
     const data = CborDecoder.readArray(rawData);
-    return new ShardTreeCertificate(ShardId.fromCbor(data[0]), CborDecoder.readArray(data[1]));
+    return new ShardTreeCertificate(BitString.create(data[0]), CborDecoder.readArray(data[1]));
   }
 
   /**
@@ -306,51 +307,6 @@ export class HashStep {
       Hash Step
         Key: ${this.key}
         Hash: ${Base16Converter.encode(this._hash)}`;
-  }
-}
-
-/**
- * Shard ID.
- */
-export class ShardId implements ShardId {
-  public constructor(
-    private readonly _bits: Uint8Array,
-    public readonly length: number,
-  ) {
-    this._bits = new Uint8Array(this._bits);
-  }
-
-  public get bits(): Uint8Array {
-    return new Uint8Array(this._bits);
-  }
-
-  /**
-   * Create Shard ID from raw CBOR.
-   * @param {Uint8Array} rawData - Shard ID as raw CBOR.
-   * @returns {ShardId} Shard ID.
-   */
-  public static fromCbor(rawData: Uint8Array): ShardId {
-    const decodedShardId = CborDecoder.readBitString(rawData);
-    return new ShardId(decodedShardId.data, decodedShardId.length);
-  }
-
-  /**
-   * Convert to raw CBOR.
-   * @returns {Uint8Array} Shard ID as raw CBOR.
-   */
-  public encode(): Uint8Array {
-    return CborEncoder.encodeBitString(this.bits, this.length);
-  }
-
-  /**
-   * Convert to string.
-   * @returns {string} String representation.
-   */
-  public toString(): string {
-    return dedent`
-      Shard ID
-        Bits: ${Base16Converter.encode(this.bits)}
-        Length: ${this.length}`;
   }
 }
 
