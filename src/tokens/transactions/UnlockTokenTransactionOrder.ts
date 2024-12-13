@@ -1,49 +1,42 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
-import { TransactionOrder, TransactionOrderArray } from '../../transaction/order/TransactionOrder.js';
+import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
-import { OwnerProofAuthProof, OwnerProofAuthProofArray } from '../../transaction/proofs/OwnerProofAuthProof.js';
+import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { StateLock } from '../../transaction/StateLock.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { UnitId } from '../../UnitId.js';
-import { UnlockTokenAttributes, UnlockTokenAttributesArray } from '../attributes/UnlockTokenAttributes.js';
+import { UnlockTokenAttributes } from '../attributes/UnlockTokenAttributes.js';
 import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
 
 export class UnlockTokenTransactionOrder extends TransactionOrder<UnlockTokenAttributes, OwnerProofAuthProof> {
   public constructor(
+    version: bigint,
     payload: TransactionPayload<UnlockTokenAttributes>,
+    stateUnlock: IPredicate | null,
     authProof: OwnerProofAuthProof,
     feeProof: Uint8Array | null,
-    stateUnlock: IPredicate | null,
   ) {
-    super(payload, authProof, feeProof, stateUnlock);
+    super(version, payload, stateUnlock, authProof, feeProof);
   }
 
-  public static async fromArray([
-    networkIdentifier,
-    systemIdentifier,
-    unitId,
-    ,
-    attributes,
-    stateLock,
-    clientMetadata,
-    stateUnlock,
-    authProof,
-    feeProof,
-  ]: TransactionOrderArray): Promise<UnlockTokenTransactionOrder> {
+  public static fromCbor(rawData: Uint8Array): UnlockTokenTransactionOrder {
+    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new UnlockTokenTransactionOrder(
+      CborDecoder.readUnsignedInteger(data[0]),
       new TransactionPayload(
-        networkIdentifier,
-        systemIdentifier,
-        UnitId.fromBytes(unitId),
+        Number(CborDecoder.readUnsignedInteger(data[1])),
+        Number(CborDecoder.readUnsignedInteger(data[2])),
+        UnitId.fromBytes(CborDecoder.readByteString(data[3])),
         TokenPartitionTransactionType.UnlockToken,
-        UnlockTokenAttributes.fromArray(attributes as UnlockTokenAttributesArray),
-        stateLock ? StateLock.fromArray(stateLock) : null,
-        ClientMetadata.fromArray(clientMetadata),
+        UnlockTokenAttributes.fromCbor(data[5]),
+        CborDecoder.readOptional(data[6], StateLock.fromCbor),
+        ClientMetadata.fromCbor(data[7]),
       ),
-      await OwnerProofAuthProof.decode(authProof as OwnerProofAuthProofArray),
-      feeProof,
-      stateUnlock ? new PredicateBytes(stateUnlock) : null,
+      CborDecoder.readOptional(data[8], PredicateBytes.fromCbor),
+      OwnerProofAuthProof.fromCbor(data[9]),
+      CborDecoder.readOptional(data[10], CborDecoder.readByteString),
     );
   }
 }

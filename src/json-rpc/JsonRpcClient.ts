@@ -1,33 +1,46 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { ICborCodec } from '../codec/cbor/ICborCodec.js';
+import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../transaction/order/TransactionOrder.js';
 import { ITransactionOrderProof } from '../transaction/proofs/ITransactionOrderProof.js';
-import { TransactionRecordWithProofArray } from '../transaction/record/TransactionRecordWithProof.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { IJsonRpcService } from './IJsonRpcService.js';
+import { IRootTrustBaseDto } from './IRootTrustBaseDto.js';
+import { IStateProofDto } from './IUnitDto.js';
 import { JsonRpcError } from './JsonRpcError.js';
+import { RootTrustBase } from './RootTrustBase.js';
+import { createStateProof } from './StateProofFactory.js';
 import { TransactionProofDto } from './TransactionProofDto.js';
 
 export type CreateUnit<T, U> = {
-  create: (data: U) => T;
+  create: (
+    unitId: IUnitId,
+    networkIdentifier: number,
+    partitionIdentifier: number,
+    stateProof: IStateProof | null,
+    data: U,
+  ) => T;
 };
 
 export type CreateTransactionRecordWithProof<T> = {
-  // TODO: Rename fromArray
-  fromArray: (transactionRecordWithProof: TransactionRecordWithProofArray, cborCodec: ICborCodec) => Promise<T>;
+  fromCbor: (rawData: Uint8Array) => T;
+};
+
+type GetUnitResponseDto<T> = {
+  unitId: string;
+  networkId: string;
+  partitionId: string;
+  data: T;
+  stateProof: IStateProofDto;
 };
 
 /**
  * State API JSON-RPC service.
  */
 export class JsonRpcClient {
-  public constructor(
-    private readonly service: IJsonRpcService,
-    public readonly cborCodec: ICborCodec,
-  ) {}
+  public constructor(private readonly service: IJsonRpcService) {}
 
   /**
    * Get round number.
@@ -79,14 +92,20 @@ export class JsonRpcClient {
     includeStateProof: boolean,
     factory: CreateUnit<T, U>,
   ): Promise<T | null> {
-    const response = await this.request<U>('state_getUnit', Base16Converter.encode(unitId.bytes), includeStateProof);
+    const response = await this.request<GetUnitResponseDto<U>>(
+      'state_getUnit',
+      Base16Converter.encode(unitId.bytes),
+      includeStateProof,
+    );
 
     if (response) {
-      try {
-        return factory.create(response);
-      } catch (error) {
-        throw new Error(`Invalid unit for given factory: ${error}`);
-      }
+      return factory.create(
+        UnitId.fromBytes(Base16Converter.decode(response.unitId)),
+        Number(response.networkId),
+        Number(response.partitionId),
+        response.stateProof ? createStateProof(response.stateProof) : null,
+        response.data,
+      );
     }
 
     return null;
@@ -112,17 +131,7 @@ export class JsonRpcClient {
       return null;
     }
 
-    const transactionRecordWithProof = (await this.cborCodec.decode(
-      Base16Converter.decode(response.txRecordProof),
-    )) as TransactionRecordWithProofArray;
-
-    try {
-      return transactionRecordWithProofFactory.fromArray(transactionRecordWithProof, this.cborCodec);
-    } catch (error) {
-      throw new Error(
-        `Invalid transaction proof for given factory: ${JSON.stringify(transactionRecordWithProof)} [error: ${error}]`,
-      );
-    }
+    return transactionRecordWithProofFactory.fromCbor(Base16Converter.decode(response.txRecordProof));
   }
 
   /**
@@ -133,12 +142,19 @@ export class JsonRpcClient {
   public async sendTransaction(
     transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>,
   ): Promise<Uint8Array> {
-    const response = (await this.request(
-      'state_sendTransaction',
-      Base16Converter.encode(await this.cborCodec.encode(await transaction.encode(this.cborCodec))),
-    )) as string;
-
+    const hex = Base16Converter.encode(transaction.encode());
+    const response = (await this.request('state_sendTransaction', hex)) as string;
     return Base16Converter.decode(response);
+  }
+
+  /**
+   * Get trust base.
+   * @param {bigint} epochNumber Epoch number.
+   * @returns {Promise<RootTrustBase>} Trust base.
+   */
+  public async getTrustBase(epochNumber: bigint): Promise<RootTrustBase> {
+    const response = (await this.request('state_getTrustBase', String(epochNumber))) as IRootTrustBaseDto;
+    return RootTrustBase.create(response);
   }
 
   /**

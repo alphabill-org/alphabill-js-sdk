@@ -1,6 +1,5 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -12,7 +11,7 @@ import { AddFeeCreditTransactionOrder } from './AddFeeCreditTransactionOrder.js'
 import { TransferFeeCreditTransactionRecordWithProof } from './records/TransferFeeCreditTransactionRecordWithProof.js';
 
 interface IAddFeeCreditTransactionData extends ITransactionData {
-  targetSystemIdentifier: SystemIdentifier;
+  targetPartitionIdentifier: number;
   ownerPredicate: IPredicate;
   proof: TransferFeeCreditTransactionRecordWithProof;
   feeCreditRecord: { unitId: IUnitId };
@@ -20,16 +19,17 @@ interface IAddFeeCreditTransactionData extends ITransactionData {
 
 export class UnsignedAddFeeCreditTransactionOrder {
   private constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<AddFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: IAddFeeCreditTransactionData, codec: ICborCodec): UnsignedAddFeeCreditTransactionOrder {
+  public static create(data: IAddFeeCreditTransactionData): UnsignedAddFeeCreditTransactionOrder {
     return new UnsignedAddFeeCreditTransactionOrder(
+      data.version,
       new TransactionPayload<AddFeeCreditAttributes>(
         data.networkIdentifier,
-        data.targetSystemIdentifier,
+        data.targetPartitionIdentifier,
         data.feeCreditRecord.unitId,
         FeeCreditTransactionType.AddFeeCredit,
         new AddFeeCreditAttributes(data.ownerPredicate, data.proof),
@@ -37,14 +37,17 @@ export class UnsignedAddFeeCreditTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(ownerProofFactory: IProofFactory): Promise<AddFeeCreditTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+  public sign(ownerProofFactory: IProofFactory): AddFeeCreditTransactionOrder {
+    const authProofBytes = [
+      CborEncoder.encodeUnsignedInteger(this.version),
+      ...this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ];
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
     const feeProof = null;
-    return new AddFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new AddFeeCreditTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

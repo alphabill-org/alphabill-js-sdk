@@ -1,13 +1,10 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { UnitId } from '../../UnitId.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { TransactionStatus } from './TransactionStatus.js';
-
-/**
- * Server metadata array.
- */
-export type ServerMetadataArray = readonly [bigint, Uint8Array[], TransactionStatus, Uint8Array | null];
 
 /**
  * Server metadata.
@@ -44,21 +41,19 @@ export class ServerMetadata {
   }
 
   /**
-   * Create server metadata from array.
-   * @param {ServerMetadataArray} data Server metadata array.
+   * Create server metadata from raw CBOR.
+   * @param {Uint8Array} rawData Server metadata as raw CBOR.
    * @returns {ServerMetadata} Server metadata.
    */
-  public static fromArray([
-    actualFee,
-    targetUnits,
-    successIndicator,
-    processingDetails,
-  ]: ServerMetadataArray): ServerMetadata {
+  public static fromCbor(rawData: Uint8Array): ServerMetadata {
+    const data = CborDecoder.readArray(rawData);
     return new ServerMetadata(
-      actualFee,
-      targetUnits.map((unitId) => UnitId.fromBytes(unitId)),
-      successIndicator,
-      processingDetails,
+      CborDecoder.readUnsignedInteger(data[0]),
+      CborDecoder.readArray(data[1]).map((rawUnitId: Uint8Array) =>
+        UnitId.fromBytes(CborDecoder.readByteString(rawUnitId)),
+      ),
+      Number(CborDecoder.readUnsignedInteger(data[2])),
+      CborDecoder.readOptional(data[3], CborDecoder.readByteString),
     );
   }
 
@@ -76,15 +71,15 @@ export class ServerMetadata {
   }
 
   /**
-   * Convert to array.
-   * @returns {ServerMetadataArray} Server metadata array.
+   * Convert to raw CBOR.
+   * @returns {Uint8Array} Server metadata as raw CBOR.
    */
-  public encode(): ServerMetadataArray {
-    return [
-      this.actualFee,
-      this._targetUnitIds.map((unit) => unit.bytes),
-      this.successIndicator,
-      this.processingDetails,
-    ];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.actualFee),
+      CborEncoder.encodeArray(this._targetUnitIds.map((unit) => CborEncoder.encodeByteString(unit.bytes))),
+      CborEncoder.encodeUnsignedInteger(this.successIndicator),
+      this.processingDetails ? CborEncoder.encodeByteString(this.processingDetails) : CborEncoder.encodeNull(),
+    ]);
   }
 }

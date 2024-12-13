@@ -1,35 +1,38 @@
-import { IStateProof, IUnit } from '../IUnit.js';
+import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { IBillDataDto } from '../json-rpc/IBillDataDto.js';
-import { createStateProof } from '../json-rpc/StateProofFactory.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
-import { UnitId } from '../UnitId.js';
+import { Unit } from '../Unit.js';
 import { Base16Converter } from '../util/Base16Converter.js';
-import { Base64Converter } from '../util/Base64Converter.js';
 import { dedent } from '../util/StringUtils.js';
 
 /**
  * Bill.
  */
-export class Bill implements IUnit {
+export class Bill extends Unit {
   /**
    * Bill constructor.
    * @param {IUnitId} unitId Unit ID.
+   * @param {number} networkIdentifier Network ID.
+   * @param {number} partitionIdentifier Partition ID.
+   * @param {IStateProof | null} stateProof State proof.
    * @param {bigint} value Bill value.
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {boolean} locked Is locked.
    * @param {bigint} counter Counter.
-   * @param {IStateProof | null} stateProof State proof.
    */
   public constructor(
-    public readonly unitId: IUnitId,
+    unitId: IUnitId,
+    networkIdentifier: number,
+    partitionIdentifier: number,
+    stateProof: IStateProof | null,
     public readonly value: bigint,
     public readonly ownerPredicate: IPredicate,
     public readonly locked: bigint,
     public readonly counter: bigint,
-    public readonly stateProof: IStateProof | null,
   ) {
+    super(unitId, networkIdentifier, partitionIdentifier, stateProof);
     this.value = BigInt(this.value);
     this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
@@ -37,17 +40,29 @@ export class Bill implements IUnit {
 
   /**
    * Create bill from DTO.
-   * @param {IBillDataDto} input Data.
+   * @param {IUnitId} unitId Unit ID.
+   * @param {number} networkIdentifier Network identifier.
+   * @param {number} partitionIdentifier Partition identifier.
+   * @param {IStateProof | null} stateProof State proof.
+   * @param {IBillDataDto} data Bill DTO.
    * @returns {Bill} Bill.
    */
-  public static create({ unitId, data, stateProof }: IBillDataDto): Bill {
+  public static create(
+    unitId: IUnitId,
+    networkIdentifier: number,
+    partitionIdentifier: number,
+    stateProof: IStateProof | null,
+    data: IBillDataDto,
+  ): Bill {
     return new Bill(
-      UnitId.fromBytes(Base16Converter.decode(unitId)),
+      unitId,
+      networkIdentifier,
+      partitionIdentifier,
+      stateProof,
       BigInt(data.value),
-      new PredicateBytes(Base64Converter.decode(data.ownerPredicate)),
+      new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
       BigInt(data.counter),
-      stateProof ? createStateProof(stateProof) : null,
     );
   }
 
@@ -58,7 +73,9 @@ export class Bill implements IUnit {
   public toString(): string {
     return dedent`
       Bill
-        UnitId: ${this.unitId.toString()}
+        Unit ID: ${this.unitId.toString()} 
+        Network ID: ${this.networkIdentifier} 
+        Partition ID: ${this.partitionIdentifier} 
         Owner Predicate: ${this.ownerPredicate.toString()}
         Value: ${this.value}
         Locked: ${this.locked}

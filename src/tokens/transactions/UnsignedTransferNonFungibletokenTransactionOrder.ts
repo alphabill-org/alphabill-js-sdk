@@ -1,6 +1,6 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
+import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -20,43 +20,51 @@ interface ITransferNonFungibleTokenTransactionData extends ITransactionData {
 
 export class UnsignedTransferNonFungibletokenTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<TransferNonFungibleTokenAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
   public static create(
     data: ITransferNonFungibleTokenTransactionData,
-    codec: ICborCodec,
   ): UnsignedTransferNonFungibletokenTransactionOrder {
     return new UnsignedTransferNonFungibletokenTransactionOrder(
+      data.version,
       new TransactionPayload(
         data.networkIdentifier,
-        SystemIdentifier.TOKEN_PARTITION,
+        PartitionIdentifier.TOKEN,
         data.token.unitId,
         TokenPartitionTransactionType.TransferNonFungibleToken,
-        new TransferNonFungibleTokenAttributes(data.ownerPredicate, data.token.counter, data.type.unitId),
+        new TransferNonFungibleTokenAttributes(data.type.unitId, data.ownerPredicate, data.token.counter),
         data.stateLock,
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(
+  public sign(
     ownerProofFactory: IProofFactory,
     feeProofFactory: IProofFactory | null,
     tokenTypeOwnerProofs: IProofFactory[],
-  ): Promise<TransferNonFungibleTokenTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const authProofBytes = await this.codec.encode(authProof);
+  ): TransferNonFungibleTokenTransactionOrder {
+    const authProofBytes: Uint8Array[] = [
+      CborEncoder.encodeUnsignedInteger(this.version),
+      ...this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ];
+    const authProof = CborEncoder.encodeArray(authProofBytes);
     const ownerProof = new TypeOwnerProofsAuthProof(
-      await ownerProofFactory.create(authProofBytes),
-      await Promise.all(tokenTypeOwnerProofs.map((factory) => factory.create(authProofBytes))),
+      ownerProofFactory.create(authProof),
+      tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
     );
-    const feeProof =
-      (await feeProofFactory?.create(await this.codec.encode([...authProof, ownerProof.encode()]))) ?? null;
-    return new TransferNonFungibleTokenTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()])) ?? null;
+    return new TransferNonFungibleTokenTransactionOrder(
+      this.version,
+      this.payload,
+      this.stateUnlock,
+      ownerProof,
+      feeProof,
+    );
   }
 }

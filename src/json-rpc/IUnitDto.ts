@@ -2,36 +2,38 @@
  * Unit state proof from getUnit.
  */
 export interface IStateProofDto {
+  readonly version: bigint;
   readonly unitId: string;
   readonly unitValue: bigint;
   readonly unitLedgerHash: string;
-  readonly unitTreeCert: IUnitTreeCertDto;
-  readonly stateTreeCert: IStateTreeCertDto;
-  // TODO: Unicity certificate has data inconsistent with other data formats, keeping it as is for now
-  readonly unicityCert: unknown;
+  readonly unitTreeCert: IUnitTreeCertificateDto;
+  readonly stateTreeCert: IStateTreeCertificateDto;
+  readonly unicityCert: string;
 }
 
-export interface IUnitTreeCertDto {
+export interface IUnitTreeCertificateDto {
   readonly txrHash: string;
   readonly dataHash: string;
-  readonly path: IPathItem[] | null;
+  readonly path: IPathItemDto[] | null;
 }
 
-export interface IStateTreeCertDto {
+export interface IPathItemDto {
+  readonly directionLeft: boolean;
+  readonly hash: string;
+}
+
+export interface IStateTreeCertificateDto {
   readonly leftSummaryHash: string;
   readonly leftSummaryValue: bigint;
   readonly rightSummaryHash: string;
   readonly rightSummaryValue: bigint;
-  readonly path: {
-    readonly unitId: string;
-    readonly logsHash: string;
-    readonly value: bigint;
-    readonly siblingSummaryHash: string;
-    readonly siblingSummaryValue: bigint;
-  }[];
+  readonly path: IStateTreePathItemDto[];
 }
 
-interface IPathItem {
-  readonly Hash: string;
-  readonly DirectionLeft: boolean;
+export interface IStateTreePathItemDto {
+  readonly unitId: string;
+  readonly logsHash: string;
+  readonly value: bigint;
+  readonly siblingSummaryHash: string;
+  readonly siblingSummaryValue: bigint;
 }

@@ -1,16 +1,11 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
+import { CborTag } from '../../codec/cbor/CborTag.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { IPredicate } from '../predicates/IPredicate.js';
 import { ITransactionOrderProof } from '../proofs/ITransactionOrderProof.js';
-import { PayloadArray, TransactionPayload } from '../TransactionPayload.js';
-
-type StateUnlockType = Uint8Array | null;
-type AuthProofType = unknown;
-type FeeProofType = Uint8Array | null;
-
-export type TransactionOrderArray = readonly [...PayloadArray, StateUnlockType, AuthProofType, FeeProofType];
+import { TransactionPayload } from '../TransactionPayload.js';
 
 /**
  * Transaction order.
@@ -23,17 +18,20 @@ export abstract class TransactionOrder<
   /**
    * Transaction order constructor.
    * @template Attributes Attributes type.
+   * @param {bigint} version - version.
    * @param {TransactionPayload<Attributes>} payload Payload.
    * @param {ITransactionOrderProof} authProof Transaction proof.
    * @param {Uint8Array} _feeProof Fee proof.
    * @param {Uint8Array | null} stateUnlock State unlock.
    */
   protected constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<Attributes>,
+    public readonly stateUnlock: IPredicate | null,
     public readonly authProof: AuthProof,
     private readonly _feeProof: Uint8Array | null,
-    public readonly stateUnlock: IPredicate | null,
   ) {
+    this.version = BigInt(version);
     this._feeProof = _feeProof ? new Uint8Array(_feeProof) : null;
   }
 
@@ -49,18 +47,23 @@ export abstract class TransactionOrder<
   public toString(): string {
     return dedent`
       TransactionOrder
+        Version: ${this.version}
         ${this.payload.toString()}
+        State Unlock: ${this.stateUnlock?.toString() ?? null}
         Auth Proof: ${this.authProof?.toString() ?? null}
-        Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}
-        State Unlock: ${this.stateUnlock?.toString() ?? null}`;
+        Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}`;
   }
 
-  public async encode(cborCodec: ICborCodec): Promise<TransactionOrderArray> {
-    return [
-      ...(await this.payload.encode(cborCodec)),
-      this.stateUnlock?.bytes ?? null,
-      await this.authProof.encode(),
-      this.feeProof,
-    ];
+  public encode(): Uint8Array {
+    return CborEncoder.encodeTag(
+      CborTag.TRANSACTION_ORDER,
+      CborEncoder.encodeArray([
+        CborEncoder.encodeUnsignedInteger(this.version),
+        ...this.payload.encode(),
+        this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+        this.authProof.encode(),
+        this.feeProof ? CborEncoder.encodeByteString(this.feeProof) : CborEncoder.encodeNull(),
+      ]),
+    );
   }
 }

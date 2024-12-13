@@ -29,16 +29,13 @@ export class DefaultSigningService implements ISigningService {
   /**
    * @see {ISigningService.sign}
    */
-  // eslint-disable-next-line require-await
-  public async sign(bytes: Uint8Array): Promise<Uint8Array> {
+  public sign(bytes: Uint8Array): Uint8Array {
     const hash: Uint8Array = sha256(bytes);
-
     const signature = secp256k1.sign(hash, this.privateKey);
     return new Uint8Array([...signature.toCompactRawBytes(), signature.recovery]);
   }
 
-  // eslint-disable-next-line require-await
-  public async verify(bytes: Uint8Array, signature: Uint8Array): Promise<boolean> {
+  public verify(bytes: Uint8Array, signature: Uint8Array): boolean {
     const hash: Uint8Array = sha256(bytes);
     return secp256k1.verify(signature, hash, this.publicKey);
   }

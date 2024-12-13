@@ -1,15 +1,9 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
 import { INonFungibleTokenData } from '../INonFungibleTokenData.js';
 import { NonFungibleTokenData } from '../NonFungibleTokenData.js';
-
-/**
- * Update non-fungible token attributes array.
- */
-export type UpdateNonFungibleTokenAttributesArray = readonly [
-  Uint8Array, // Data
-  bigint, // Counter
-];
 
 /**
  * Update non-fungible token payload attributes.
@@ -28,12 +22,16 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   }
 
   /**
-   * Create UpdateNonFungibleTokenAttributes from array.
-   * @param {UpdateNonFungibleTokenAttributesArray} input - Update non-fungible token attributes array.
+   * Create UpdateNonFungibleTokenAttributes from raw CBOR.
+   * @param {Uint8Array} rawData - Update non-fungible token attributes as raw CBOR.
    * @returns {UpdateNonFungibleTokenAttributes} Update non-fungible token attributes instance.
    */
-  public static fromArray([data, counter]: UpdateNonFungibleTokenAttributesArray): UpdateNonFungibleTokenAttributes {
-    return new UpdateNonFungibleTokenAttributes(NonFungibleTokenData.createFromBytes(data), counter);
+  public static fromCbor(rawData: Uint8Array): UpdateNonFungibleTokenAttributes {
+    const data = CborDecoder.readArray(rawData);
+    return new UpdateNonFungibleTokenAttributes(
+      NonFungibleTokenData.createFromBytes(CborDecoder.readByteString(data[0])),
+      CborDecoder.readUnsignedInteger(data[1]),
+    );
   }
 
   /**
@@ -50,7 +48,10 @@ export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<UpdateNonFungibleTokenAttributesArray> {
-    return Promise.resolve([this.data.bytes, this.counter]);
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.data.bytes),
+      CborEncoder.encodeUnsignedInteger(this.counter),
+    ]);
   }
 }

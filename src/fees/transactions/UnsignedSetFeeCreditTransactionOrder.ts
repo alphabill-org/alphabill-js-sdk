@@ -1,8 +1,6 @@
-import { numberToBytesBE } from '@noble/curves/abstract/utils';
 import { sha256 } from '@noble/hashes/sha256';
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -15,7 +13,7 @@ import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 import { SetFeeCreditTransactionOrder } from './SetFeeCreditTransactionOrder.js';
 
 interface ISetFeeCreditTransactionData extends ITransactionData {
-  targetSystemIdentifier: SystemIdentifier;
+  targetPartitionIdentifier: number;
   ownerPredicate: IPredicate;
   amount: bigint;
   feeCreditRecord: { unitId: IUnitId | null; counter: bigint | null };
@@ -23,27 +21,28 @@ interface ISetFeeCreditTransactionData extends ITransactionData {
 
 export class UnsignedSetFeeCreditTransactionOrder {
   private constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<SetFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: ISetFeeCreditTransactionData, codec: ICborCodec): UnsignedSetFeeCreditTransactionOrder {
+  public static create(data: ISetFeeCreditTransactionData): UnsignedSetFeeCreditTransactionOrder {
     let feeCreditRecordId: IUnitId;
     if (data.feeCreditRecord.unitId == null) {
       const unitBytes = sha256
         .create()
-        .update(data.ownerPredicate.bytes)
-        .update(numberToBytesBE(data.metadata.timeout, 8))
+        .update(CborEncoder.encodeByteString(data.ownerPredicate.bytes))
+        .update(CborEncoder.encodeUnsignedInteger(data.metadata.timeout))
         .digest();
       feeCreditRecordId = new UnitIdWithType(unitBytes, FeeCreditUnitType.FEE_CREDIT_RECORD);
     } else {
       feeCreditRecordId = data.feeCreditRecord.unitId;
     }
     return new UnsignedSetFeeCreditTransactionOrder(
+      data.version,
       new TransactionPayload<SetFeeCreditAttributes>(
         data.networkIdentifier,
-        data.targetSystemIdentifier,
+        data.targetPartitionIdentifier,
         feeCreditRecordId,
         FeeCreditTransactionType.SetFeeCredit,
         new SetFeeCreditAttributes(data.ownerPredicate, data.amount, data.feeCreditRecord.counter),
@@ -51,14 +50,17 @@ export class UnsignedSetFeeCreditTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(ownerProofFactory: IProofFactory): Promise<SetFeeCreditTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+  public sign(ownerProofFactory: IProofFactory): SetFeeCreditTransactionOrder {
+    const authProofBytes = [
+      CborEncoder.encodeUnsignedInteger(this.version),
+      ...this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ];
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
     const feeProof = null;
-    return new SetFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new SetFeeCreditTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

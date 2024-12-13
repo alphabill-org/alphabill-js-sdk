@@ -1,11 +1,10 @@
-import { CborCodecNode } from '../../../src/codec/cbor/CborCodecNode.js';
 import { DeleteFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/DeleteFeeCreditTransactionRecordWithProof.js';
 import { SetFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/SetFeeCreditTransactionRecordWithProof.js';
 import { UnsignedDeleteFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedDeleteFeeCreditTransactionOrder.js';
 import { UnsignedSetFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedSetFeeCreditTransactionOrder.js';
+import { PartitionIdentifier } from '../../../src/PartitionIdentifier.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createTokenClient, http } from '../../../src/StateApiClientFactory.js';
-import { SystemIdentifier } from '../../../src/SystemIdentifier.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
@@ -14,29 +13,26 @@ import config from '../config/config.js';
 import { createTransactionData } from '../utils/TestUtils.js';
 
 describe('Permissioned Fee Credit Integration Tests', () => {
-  const cborCodec = new CborCodecNode();
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
-  const proofFactory = new PayToPublicKeyHashProofFactory(signingService, cborCodec);
+  const proofFactory = new PayToPublicKeyHashProofFactory(signingService);
 
   const tokenClient = createTokenClient({
-    transport: http(config.tokenPartitionUrl, new CborCodecNode()),
+    transport: http(config.tokenPartitionUrl),
   });
 
-  it('Set and delete fee credit', async () => {
+  // Uncomment skip to run this test. Backend needs to be started in permissioned mode for this to succeed.
+  it.skip('Set and delete fee credit', async () => {
     const round = await tokenClient.getRoundNumber();
-    const ownerPredicate = await PayToPublicKeyHashPredicate.create(cborCodec, signingService.publicKey);
+    const ownerPredicate = PayToPublicKeyHashPredicate.create(signingService.publicKey);
 
     console.log('Setting fee credit...');
-    const setFeeCreditTransactionOrder = await UnsignedSetFeeCreditTransactionOrder.create(
-      {
-        targetSystemIdentifier: SystemIdentifier.TOKEN_PARTITION,
-        ownerPredicate: ownerPredicate,
-        amount: 100n,
-        feeCreditRecord: { unitId: null, counter: null },
-        ...createTransactionData(round),
-      },
-      cborCodec,
-    ).sign(proofFactory);
+    const setFeeCreditTransactionOrder = UnsignedSetFeeCreditTransactionOrder.create({
+      targetPartitionIdentifier: PartitionIdentifier.TOKEN,
+      ownerPredicate: ownerPredicate,
+      amount: 100n,
+      feeCreditRecord: { unitId: null, counter: null },
+      ...createTransactionData(round),
+    }).sign(proofFactory);
 
     const setFeeCreditHash = await tokenClient.sendTransaction(setFeeCreditTransactionOrder);
     const setFeeCreditProof = await tokenClient.waitTransactionProof(
@@ -48,13 +44,10 @@ describe('Permissioned Fee Credit Integration Tests', () => {
     console.log('Setting fee credit successful');
 
     console.log('Deleting fee credit...');
-    const deleteFeeCreditTransactionOrder = await UnsignedDeleteFeeCreditTransactionOrder.create(
-      {
-        feeCredit: { unitId: feeCreditRecordId, counter: 0n },
-        ...createTransactionData(round),
-      },
-      cborCodec,
-    ).sign(proofFactory);
+    const deleteFeeCreditTransactionOrder = UnsignedDeleteFeeCreditTransactionOrder.create({
+      feeCredit: { unitId: feeCreditRecordId, counter: 0n },
+      ...createTransactionData(round),
+    }).sign(proofFactory);
 
     const deleteFeeCreditHash = await tokenClient.sendTransaction(deleteFeeCreditTransactionOrder);
 

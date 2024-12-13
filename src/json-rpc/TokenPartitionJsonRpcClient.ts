@@ -46,6 +46,7 @@ import { IFungibleTokenTypeDto } from './IFungibleTokenTypeDto.js';
 import { INonFungibleTokenDto } from './INonFungibleTokenDto.js';
 import { INonFungibleTokenTypeDto } from './INonFungibleTokenTypeDto.js';
 import { CreateTransactionRecordWithProof, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
+import { RootTrustBase } from './RootTrustBase.js';
 import { TokenPartitionUnitIdResponse } from './TokenPartitionUnitIdResponse.js';
 
 type TokenPartitionUnitTypes =
@@ -170,5 +171,12 @@ export class TokenPartitionJsonRpcClient {
    */
   public sendTransaction(transaction: TokenPartitionTransactionOrderTypes): Promise<Uint8Array> {
     return this.client.sendTransaction(transaction);
+  }
+
+  /**
+   * @see {JsonRpcClient.getTrustBase}
+   */
+  public getTrustBase(epochNumber: bigint): Promise<RootTrustBase> {
+    return this.client.getTrustBase(epochNumber);
   }
 }

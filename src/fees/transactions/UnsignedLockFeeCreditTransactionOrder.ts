@@ -1,6 +1,6 @@
-import { ICborCodec } from '../../codec/cbor/ICborCodec.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-import { SystemIdentifier } from '../../SystemIdentifier.js';
+import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { IProofFactory } from '../../transaction/proofs/IProofFactory.js';
@@ -20,16 +20,17 @@ interface ILockFeeCreditTransactionData extends ITransactionData {
 
 export class UnsignedLockFeeCreditTransactionOrder {
   public constructor(
+    public readonly version: bigint,
     public readonly payload: TransactionPayload<LockFeeCreditAttributes>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly codec: ICborCodec,
   ) {}
 
-  public static create(data: ILockFeeCreditTransactionData, codec: ICborCodec): UnsignedLockFeeCreditTransactionOrder {
+  public static create(data: ILockFeeCreditTransactionData): UnsignedLockFeeCreditTransactionOrder {
     return new UnsignedLockFeeCreditTransactionOrder(
+      data.version,
       new TransactionPayload<LockFeeCreditAttributes>(
         data.networkIdentifier,
-        SystemIdentifier.MONEY_PARTITION,
+        PartitionIdentifier.MONEY,
         data.feeCredit.unitId,
         FeeCreditTransactionType.LockFeeCredit,
         new LockFeeCreditAttributes(data.status, data.feeCredit.counter),
@@ -37,14 +38,17 @@ export class UnsignedLockFeeCreditTransactionOrder {
         data.metadata,
       ),
       data.stateUnlock,
-      codec,
     );
   }
 
-  public async sign(ownerProofFactory: IProofFactory): Promise<LockFeeCreditTransactionOrder> {
-    const authProof = [...(await this.payload.encode(this.codec)), this.stateUnlock?.bytes ?? null];
-    const ownerProof = new OwnerProofAuthProof(await ownerProofFactory.create(await this.codec.encode(authProof)));
+  public sign(ownerProofFactory: IProofFactory): LockFeeCreditTransactionOrder {
+    const authProofBytes = [
+      CborEncoder.encodeUnsignedInteger(this.version),
+      ...this.payload.encode(),
+      this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
+    ];
+    const ownerProof = new OwnerProofAuthProof(ownerProofFactory.create(CborEncoder.encodeArray(authProofBytes)));
     const feeProof = null;
-    return new LockFeeCreditTransactionOrder(this.payload, ownerProof, feeProof, this.stateUnlock);
+    return new LockFeeCreditTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

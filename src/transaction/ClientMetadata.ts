@@ -1,49 +1,45 @@
+import { CborDecoder } from '../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../IUnitId.js';
 import { UnitId } from '../UnitId.js';
 import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
 
-export type TransactionClientMetadataArray = [bigint, bigint, Uint8Array | null, Uint8Array | null];
-
-export class ClientMetadata {
-  public static create(
-    timeout: bigint,
-    maxTransactionFee: bigint,
-    feeCreditRecordId: IUnitId | null,
-    referenceNumber: Uint8Array | null,
-  ): ITransactionClientMetadata {
-    return {
-      timeout: BigInt(timeout),
-      maxTransactionFee: BigInt(maxTransactionFee),
-      feeCreditRecordId,
-      referenceNumber: referenceNumber ? new Uint8Array(referenceNumber) : null,
-    };
+export class ClientMetadata implements ITransactionClientMetadata {
+  public constructor(
+    public readonly timeout: bigint,
+    public readonly maxTransactionFee: bigint,
+    public readonly feeCreditRecordId: IUnitId | null,
+    private readonly _referenceNumber: Uint8Array | null,
+  ) {
+    this.timeout = BigInt(this.timeout);
+    this.maxTransactionFee = BigInt(this.maxTransactionFee);
+    this._referenceNumber = this._referenceNumber ? new Uint8Array(this._referenceNumber) : null;
   }
 
-  public static encode({
-    timeout,
-    maxTransactionFee,
-    feeCreditRecordId,
-    referenceNumber,
-  }: ITransactionClientMetadata): TransactionClientMetadataArray {
-    return [
-      timeout,
-      maxTransactionFee,
-      feeCreditRecordId?.bytes ?? null,
-      referenceNumber ? new Uint8Array(referenceNumber) : null,
-    ];
+  /**
+   * Get reference number.
+   * @returns {Uint8Array} Reference number.
+   */
+  public get referenceNumber(): Uint8Array | null {
+    return this._referenceNumber ? new Uint8Array(this._referenceNumber) : null;
   }
 
-  public static fromArray([
-    timeout,
-    maxTransactionFee,
-    feeCreditRecordId,
-    referenceNumber,
-  ]: TransactionClientMetadataArray): ITransactionClientMetadata {
-    return ClientMetadata.create(
-      timeout,
-      maxTransactionFee,
-      feeCreditRecordId ? UnitId.fromBytes(feeCreditRecordId) : null,
-      referenceNumber,
+  public static fromCbor(rawData: Uint8Array): ITransactionClientMetadata {
+    const data = CborDecoder.readArray(rawData);
+    return new ClientMetadata(
+      CborDecoder.readUnsignedInteger(data[0]),
+      CborDecoder.readUnsignedInteger(data[1]),
+      CborDecoder.readOptional(data[2], UnitId.fromCbor),
+      CborDecoder.readOptional(data[3], CborDecoder.readByteString),
     );
+  }
+
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeUnsignedInteger(this.timeout),
+      CborEncoder.encodeUnsignedInteger(this.maxTransactionFee),
+      this.feeCreditRecordId ? CborEncoder.encodeByteString(this.feeCreditRecordId.bytes) : CborEncoder.encodeNull(),
+      this._referenceNumber ? CborEncoder.encodeByteString(this._referenceNumber) : CborEncoder.encodeNull(),
+    ]);
   }
 }

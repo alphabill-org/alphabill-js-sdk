@@ -1,18 +1,9 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { UnitId } from '../../UnitId.js';
 import { dedent } from '../../util/StringUtils.js';
-
-/**
- * Burn fungible token attributes array.
- */
-export type BurnFungibleTokenAttributesArray = readonly [
-  Uint8Array, // Type ID
-  bigint, // Value
-  Uint8Array, // Target token id
-  bigint, // Target token counter
-  bigint, // Counter
-];
 
 /**
  * Burn fungible token payload attributes.
@@ -39,23 +30,18 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
   }
 
   /**
-   * Create BurnFungibleTokenAttributes from array.
-   * @param {BurnFungibleTokenAttributesArray} data Burn fungible token attributes array.
+   * Create BurnFungibleTokenAttributes from raw CBOR.
+   * @param {Uint8Array} rawData Burn fungible token attributes as raw CBOR.
    * @returns {BurnFungibleTokenAttributes} Burn fungible token attributes.
    */
-  public static fromArray([
-    typeId,
-    value,
-    targetTokenId,
-    targetTokenCounter,
-    counter,
-  ]: BurnFungibleTokenAttributesArray): BurnFungibleTokenAttributes {
+  public static fromCbor(rawData: Uint8Array): BurnFungibleTokenAttributes {
+    const data = CborDecoder.readArray(rawData);
     return new BurnFungibleTokenAttributes(
-      UnitId.fromBytes(typeId),
-      value,
-      UnitId.fromBytes(targetTokenId),
-      targetTokenCounter,
-      counter,
+      UnitId.fromBytes(CborDecoder.readByteString(data[0])),
+      CborDecoder.readUnsignedInteger(data[1]),
+      UnitId.fromBytes(CborDecoder.readByteString(data[2])),
+      CborDecoder.readUnsignedInteger(data[3]),
+      CborDecoder.readUnsignedInteger(data[4]),
     );
   }
 
@@ -77,13 +63,13 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
   /**
    * @see {ITransactionPayloadAttributes.encode}
    */
-  public encode(): Promise<BurnFungibleTokenAttributesArray> {
-    return Promise.resolve([
-      this.typeId.bytes,
-      this.value,
-      this.targetTokenId.bytes,
-      this.targetTokenCounter,
-      this.counter,
+  public encode(): Uint8Array {
+    return CborEncoder.encodeArray([
+      CborEncoder.encodeByteString(this.typeId.bytes),
+      CborEncoder.encodeUnsignedInteger(this.value),
+      CborEncoder.encodeByteString(this.targetTokenId.bytes),
+      CborEncoder.encodeUnsignedInteger(this.targetTokenCounter),
+      CborEncoder.encodeUnsignedInteger(this.counter),
     ]);
   }
 }
