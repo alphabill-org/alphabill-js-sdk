@@ -80,7 +80,7 @@ describe('Money Client Integration Tests', () => {
     expect(bill).not.toBeNull();
 
     console.log('Locking bill...');
-    const lockBillTransactionOrder = UnsignedLockBillTransactionOrder.create({
+    const lockBillTransactionOrder = await UnsignedLockBillTransactionOrder.create({
       status: 5n,
       bill: bill,
       ...createTransactionData(round, feeCreditRecordId),
@@ -95,7 +95,7 @@ describe('Money Client Integration Tests', () => {
     const lockedBill = (await moneyClient.getUnit(bill.unitId, false, Bill))!;
     expect(lockedBill).not.toBeNull();
     expect(lockedBill.counter).not.toEqual(bill.counter);
-    const unlockBillTransactionOrder = UnsignedUnlockBillTransactionOrder.create({
+    const unlockBillTransactionOrder = await UnsignedUnlockBillTransactionOrder.create({
       bill: lockedBill,
       ...createTransactionData(round, feeCreditRecordId),
     }).sign(proofFactory, proofFactory);
@@ -117,7 +117,7 @@ describe('Money Client Integration Tests', () => {
     expect(bill).not.toBeNull();
 
     console.log('Splitting bill...');
-    const splitBillTransactionOrder = UnsignedSplitBillTransactionOrder.create({
+    const splitBillTransactionOrder = await UnsignedSplitBillTransactionOrder.create({
       splits: [
         {
           value: 10n,
@@ -144,7 +144,7 @@ describe('Money Client Integration Tests', () => {
     const targetBill = await moneyClient.getUnit(targetBillUnitId, false, Bill);
 
     console.log('Transferring bill...');
-    const transferBillTransactionOrder = UnsignedTransferBillTransactionOrder.create({
+    const transferBillTransactionOrder = await UnsignedTransferBillTransactionOrder.create({
       ownerPredicate: PayToPublicKeyHashPredicate.create(signingService.publicKey),
       bill: targetBill!,
       ...createTransactionData(round, feeCreditRecordId),
@@ -169,7 +169,7 @@ describe('Money Client Integration Tests', () => {
     expect(targetBill).not.toBeNull();
 
     console.log('Transferring bill to dust collector...');
-    const transferBillToDcTransactionOrder = UnsignedTransferBillToDustCollectorTransactionOrder.create({
+    const transferBillToDcTransactionOrder = await UnsignedTransferBillToDustCollectorTransactionOrder.create({
       bill: bill!,
       targetBill: targetBill!,
       ...createTransactionData(round, feeCreditRecordId),
@@ -185,7 +185,7 @@ describe('Money Client Integration Tests', () => {
     console.log('Transferring bill to dust collector successful');
 
     console.log('Swapping bill with dust collector...');
-    const swapBillWithDcTransactionOrder = UnsignedSwapBillsWithDustCollectorTransactionOrder.create({
+    const swapBillWithDcTransactionOrder = await UnsignedSwapBillsWithDustCollectorTransactionOrder.create({
       bill: targetBill!,
       proofs: [transferBillToDcProof],
       ...createTransactionData(round, feeCreditRecordId),

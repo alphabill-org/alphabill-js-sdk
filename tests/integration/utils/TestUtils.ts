@@ -50,7 +50,7 @@ export async function addFeeCredit(
   const round = await clientToAddFeesTo.getRoundNumber();
 
   console.log('Transferring to fee credit...');
-  const transferFeeCreditTransactionOrder = UnsignedTransferFeeCreditTransactionOrder.create({
+  const transferFeeCreditTransactionOrder = await UnsignedTransferFeeCreditTransactionOrder.create({
     amount: amountToFeeCredit,
     targetPartitionIdentifier: targetPartitionIdentifier,
     latestAdditionTime: round + 60n,
@@ -74,7 +74,7 @@ export async function addFeeCredit(
   const feeCreditRecordId = transferFeeCreditTransactionOrder.payload.attributes.targetUnitId;
 
   console.log('Adding fee credit');
-  const addFeeCreditTransactionOrder = UnsignedAddFeeCreditTransactionOrder.create({
+  const addFeeCreditTransactionOrder = await UnsignedAddFeeCreditTransactionOrder.create({
     targetPartitionIdentifier: targetPartitionIdentifier,
     ownerPredicate: ownerPredicate,
     proof: transferFeeCreditProof,
