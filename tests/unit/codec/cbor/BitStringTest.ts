@@ -9,43 +9,43 @@ describe('BitString', () => {
     expect(() => BitString.create(new Uint8Array([0xff, 0]))).toThrow(
       'Invalid bit string encoding: last byte doesnt contain end marker',
     );
-    expect(BitString.create(new Uint8Array([0b1000_0000]))).toMatchObject({ length: 0, _data: new Uint8Array() });
-    expect(BitString.create(new Uint8Array([0b0100_0000]))).toMatchObject({ length: 1, _data: new Uint8Array([0]) });
+    expect(BitString.create(new Uint8Array([0b1000_0000]))).toMatchObject({ length: 0, _bits: new Uint8Array(0) });
+    expect(BitString.create(new Uint8Array([0b0100_0000]))).toMatchObject({ length: 1, _bits: new Uint8Array([0]) });
     expect(BitString.create(new Uint8Array([0b1100_0000]))).toMatchObject({
       length: 1,
-      _data: new Uint8Array([128]),
+      _bits: new Uint8Array([128]),
     });
     expect(BitString.create(new Uint8Array([0b1000_0011]))).toMatchObject({
       length: 7,
-      _data: new Uint8Array([0b1000_0010]),
+      _bits: new Uint8Array([0b1000_0010]),
     });
     expect(BitString.create(new Uint8Array([0b0001_0001]))).toMatchObject({
       length: 7,
-      _data: new Uint8Array([0b0001_0000]),
+      _bits: new Uint8Array([0b0001_0000]),
     });
     expect(BitString.create(new Uint8Array([0, 0b1000_0000]))).toMatchObject({
       length: 8,
-      _data: new Uint8Array([0]),
+      _bits: new Uint8Array([0]),
     });
     expect(BitString.create(new Uint8Array([1, 0b1000_0000]))).toMatchObject({
       length: 8,
-      _data: new Uint8Array([1]),
+      _bits: new Uint8Array([1]),
     });
     expect(BitString.create(new Uint8Array([128, 0b1000_0000]))).toMatchObject({
       length: 8,
-      _data: new Uint8Array([128]),
+      _bits: new Uint8Array([128]),
     });
     expect(BitString.create(new Uint8Array([0xff, 0b1000_0000]))).toMatchObject({
       length: 8,
-      _data: new Uint8Array([0xff]),
+      _bits: new Uint8Array([0xff]),
     });
     expect(BitString.create(new Uint8Array([0b0001_0001, 0b1000_0000]))).toMatchObject({
       length: 8,
-      _data: new Uint8Array([0b0001_0001]),
+      _bits: new Uint8Array([0b0001_0001]),
     });
     expect(BitString.create(new Uint8Array([0b0001_0001, 0b1100_0000]))).toMatchObject({
       length: 9,
-      _data: new Uint8Array([0b0001_0001, 128]),
+      _bits: new Uint8Array([0b0001_0001, 128]),
     });
   });
 
