@@ -4,10 +4,10 @@ import { Rule } from './Rule.js';
 
 export class AggregatedRule extends Rule {
   public constructor(
-    message: string,
+    public readonly message: string,
     public readonly firstRule: Rule,
   ) {
-    super(message);
+    super();
   }
 
   public async verify(context: IVerificationContext): Promise<Result> {
@@ -17,9 +17,9 @@ export class AggregatedRule extends Rule {
     while (verificationRule !== null) {
       const result: Result = await verificationRule.verify(context);
       verificationResults.push(result);
-      verificationRule = verificationRule.getNextRule(result.resultCode);
+      verificationRule = result.rule.getNextRule(result.resultCode);
     }
 
-    return Result.createFromResults(this.ruleName, verificationResults);
+    return Result.createFromResults(this, this.message, verificationResults);
   }
 }

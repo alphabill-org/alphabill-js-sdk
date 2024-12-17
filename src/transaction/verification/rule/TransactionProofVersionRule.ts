@@ -1,23 +1,12 @@
+import { ConditionalRule } from '../ConditionalRule.js';
 import { IVerificationContext } from '../IVerificationContext.js';
-import { Result, ResultCode } from '../Result.js';
-import { Rule } from '../Rule.js';
 
-export class TransactionProofVersionRule extends Rule {
-  public constructor(private readonly allowedVersions: bigint[]) {
-    super('TransactionProofVersionRule');
+export class TransactionProofVersionRule extends ConditionalRule {
+  public constructor() {
+    super('Verify transaction proof version');
   }
 
-  public verify(context: IVerificationContext): Promise<Result> {
-    if (this.allowedVersions.includes(context.proof.transactionProof.version)) {
-      return Promise.resolve(new Result(this.ruleName, ResultCode.OK));
-    }
-
-    return Promise.resolve(
-      new Result(
-        this.ruleName,
-        ResultCode.FAIL,
-        `Invalid transaction proof version ${context.proof.transactionProof.version}`,
-      ),
-    );
+  public getCondition(context: IVerificationContext): string {
+    return String(context.proof.transactionProof.version);
   }
 }

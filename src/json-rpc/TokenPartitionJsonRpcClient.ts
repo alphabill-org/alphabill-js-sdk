@@ -12,6 +12,7 @@ import { UnlockFeeCreditTransactionRecordWithProof } from '../fees/transactions/
 import { SetFeeCreditTransactionOrder } from '../fees/transactions/SetFeeCreditTransactionOrder.js';
 import { UnlockFeeCreditTransactionOrder } from '../fees/transactions/UnlockFeeCreditTransactionOrder.js';
 import { IUnitId } from '../IUnitId.js';
+import { RootTrustBase } from '../RootTrustBase.js';
 import { FungibleToken } from '../tokens/FungibleToken.js';
 import { FungibleTokenType } from '../tokens/FungibleTokenType.js';
 import { NonFungibleToken } from '../tokens/NonFungibleToken.js';
@@ -46,7 +47,6 @@ import { IFungibleTokenTypeDto } from './IFungibleTokenTypeDto.js';
 import { INonFungibleTokenDto } from './INonFungibleTokenDto.js';
 import { INonFungibleTokenTypeDto } from './INonFungibleTokenTypeDto.js';
 import { CreateTransactionRecordWithProof, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
-import { RootTrustBase } from './RootTrustBase.js';
 import { TokenPartitionUnitIdResponse } from './TokenPartitionUnitIdResponse.js';
 
 type TokenPartitionUnitTypes =

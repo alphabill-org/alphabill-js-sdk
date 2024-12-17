@@ -9,7 +9,7 @@ export abstract class Rule {
   private onFailureRule: Rule | null = null;
   private onNaRule: Rule | null = null;
 
-  protected constructor(public readonly ruleName: string) {}
+  protected constructor() {}
 
   public onSuccess(rule: Rule): Rule {
     this.onSuccessRule = rule;

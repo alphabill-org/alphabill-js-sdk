@@ -1,5 +1,5 @@
-import { Base16Converter } from '../util/Base16Converter.js';
-import { INodeInfoDto, IRootTrustBaseDto } from './IRootTrustBaseDto.js';
+import { INodeInfoDto, IRootTrustBaseDto } from './json-rpc/IRootTrustBaseDto.js';
+import { Base16Converter } from './util/Base16Converter.js';
 
 export class RootTrustBase {
   public constructor(

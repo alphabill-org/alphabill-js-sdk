@@ -1,5 +1,6 @@
 import { sha256 } from '@noble/hashes/sha256';
 import { IUnitId } from '../IUnitId.js';
+import { RootTrustBase } from '../RootTrustBase.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../transaction/order/TransactionOrder.js';
 import { ITransactionOrderProof } from '../transaction/proofs/ITransactionOrderProof.js';
@@ -11,7 +12,6 @@ import { IRootTrustBaseDto } from './IRootTrustBaseDto.js';
 import { IStateProofDto } from './IStateProofDto.js';
 import { ITransactionProofDto } from './ITransactionProofDto.js';
 import { JsonRpcError } from './JsonRpcError.js';
-import { RootTrustBase } from './RootTrustBase.js';
 
 export type CreateUnit<T, U> = {
   create: (
@@ -135,11 +135,11 @@ export class JsonRpcClient {
 
   /**
    * Send transaction.
-   * @param {TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>} transaction Transaction.
+   * @param {TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof | null>} transaction Transaction.
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async sendTransaction(
-    transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>,
+    transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof | null>,
   ): Promise<Uint8Array> {
     const hex = Base16Converter.encode(transaction.encode());
     const response = (await this.request('state_sendTransaction', hex)) as string;

@@ -427,7 +427,12 @@ export class UnicitySeal {
       CborDecoder.readUnsignedInteger(data[2]),
       CborDecoder.readByteString(data[3]),
       CborDecoder.readByteString(data[4]),
-      CborDecoder.readMap(data[5]),
+      new Map(
+        Array.from(CborDecoder.readMap(data[5]).entries()).map(([id, signature]) => [
+          CborDecoder.readTextString(Base16Converter.decode(id)),
+          CborDecoder.readByteString(signature),
+        ]),
+      ),
     );
   }
 

@@ -25,11 +25,11 @@ import { SwapBillsWithDustCollectorTransactionOrder } from '../money/transaction
 import { TransferBillToDustCollectorTransactionOrder } from '../money/transactions/TransferBillToDustCollectorTransactionOrder.js';
 import { TransferBillTransactionOrder } from '../money/transactions/TransferBillTransactionOrder.js';
 import { UnlockBillTransactionOrder } from '../money/transactions/UnlockBillTransactionOrder.js';
+import { RootTrustBase } from '../RootTrustBase.js';
 import { IBillDataDto } from './IBillDataDto.js';
 import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
 import { CreateTransactionRecordWithProof, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
 import { MoneyPartitionUnitIdResponse } from './MoneyPartitionUnitIdResponse.js';
-import { RootTrustBase } from './RootTrustBase.js';
 
 type MoneyPartitionUnitTypes = Bill | FeeCreditRecord;
 

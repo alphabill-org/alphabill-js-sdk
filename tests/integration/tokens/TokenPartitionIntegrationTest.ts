@@ -273,18 +273,19 @@ describe('Token Client Integration Tests', () => {
     it('Create token type and token', async () => {
       const round = await tokenClient.getRoundNumber();
       console.log('Creating non-fungible token type...');
-      const createNonFungibleTokenTypeTransactionOrder = await UnsignedCreateNonFungibleTokenTypeTransactionOrder.create({
-        type: { unitId: tokenTypeUnitId },
-        symbol: 'E',
-        name: 'Token Name',
-        icon: { type: 'image/png', data: new Uint8Array() },
-        parentTypeId: null,
-        subTypeCreationPredicate: new AlwaysTruePredicate(),
-        tokenMintingPredicate: new AlwaysTruePredicate(),
-        tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
-        dataUpdatePredicate: new AlwaysTruePredicate(),
-        ...createTransactionData(round, feeCreditRecordId),
-      }).sign(proofFactory, []);
+      const createNonFungibleTokenTypeTransactionOrder =
+        await UnsignedCreateNonFungibleTokenTypeTransactionOrder.create({
+          type: { unitId: tokenTypeUnitId },
+          symbol: 'E',
+          name: 'Token Name',
+          icon: { type: 'image/png', data: new Uint8Array() },
+          parentTypeId: null,
+          subTypeCreationPredicate: new AlwaysTruePredicate(),
+          tokenMintingPredicate: new AlwaysTruePredicate(),
+          tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
+          dataUpdatePredicate: new AlwaysTruePredicate(),
+          ...createTransactionData(round, feeCreditRecordId),
+        }).sign(proofFactory, []);
 
       const createNonFungibleTokenTypeHash = await tokenClient.sendTransaction(
         createNonFungibleTokenTypeTransactionOrder,

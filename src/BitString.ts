@@ -34,6 +34,15 @@ export class BitString {
     throw new CborError('Invalid bit string encoding: last byte doesnt contain end marker');
   }
 
+  public getBitFromEnd(index: number): number {
+    const byte = this._bits.at(Math.floor(index / 8));
+    if (!byte) {
+      throw new Error('Index out of bounds');
+    }
+
+    return (byte & (1 << index % 8)) > 0 ? 1 : 0;
+  }
+
   public encode(): Uint8Array {
     const byteCount = Math.floor(this.length / 8);
     const bitCount = this.length % 8;

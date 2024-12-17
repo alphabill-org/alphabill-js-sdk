@@ -11,7 +11,9 @@ import { ServerMetadata } from './ServerMetadata.js';
  * Transaction record.
  * @template T - Transaction payload type.
  */
-export class TransactionRecord<T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>> {
+export class TransactionRecord<
+  T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof | null>,
+> {
   /**
    * Transaction record constructor.
    * @param {bigint} version - version.
@@ -24,7 +26,7 @@ export class TransactionRecord<T extends TransactionOrder<ITransactionPayloadAtt
     public readonly serverMetadata: ServerMetadata,
   ) {}
 
-  public static fromCbor<T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>>(
+  public static fromCbor<T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof | null>>(
     rawData: Uint8Array,
     factory: {
       fromCbor: (rawData: Uint8Array) => T;
