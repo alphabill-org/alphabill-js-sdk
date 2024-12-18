@@ -449,7 +449,14 @@ export class UnicitySeal {
         CborEncoder.encodeUnsignedInteger(this.timestamp),
         CborEncoder.encodeByteString(this._previousHash),
         CborEncoder.encodeByteString(this._hash),
-        CborEncoder.encodeMap(this._signatures),
+        CborEncoder.encodeMap(
+          new Map(
+            Array.from(this._signatures.entries()).map(([id, signature]) => [
+              Base16Converter.encode(CborEncoder.encodeTextString(id)),
+              CborEncoder.encodeByteString(signature),
+            ]),
+          ),
+        ),
       ]),
     );
   }

@@ -5,45 +5,78 @@ import { RootTrustBase } from '../../../RootTrustBase.js';
 import { DefaultSigningService } from '../../../signing/DefaultSigningService.js';
 import { UnicitySeal } from '../../../unit/UnicityCertificate.js';
 import { IVerificationContext } from '../IVerificationContext.js';
-import { Result, ResultCode } from '../Result.js';
-import { Rule } from '../Rule.js';
+import { VerificationResult, VerificationResultCode } from '../VerificationResult.js';
+import { VerificationRule } from '../VerificationRule.js';
 
-export class UnicitySealQuorumSignaturesVerificationRule extends Rule {
+export class UnicitySealQuorumSignaturesVerificationRule extends VerificationRule {
   public static readonly MESSAGE = 'Are unicity seal quorum signatures valid';
 
-  public verify(context: IVerificationContext): Promise<Result> {
+  public verify(context: IVerificationContext): Promise<VerificationResult> {
     const data = this.encodeUnicitySeal(context.proof.transactionProof.unicityCertificate.unicitySeal);
     const hash = sha256.create().update(data).digest();
-    const results: Result[] = [];
+    const results: VerificationResult[] = [];
+    let successful = 0;
     for (const [
       nodeId,
       signature,
     ] of context.proof.transactionProof.unicityCertificate.unicitySeal.signatures.entries()) {
-      results.push(this.verifySignature(context.trustBase, nodeId, signature, hash));
+      const result = this.verifySignature(context.trustBase, nodeId, signature, hash);
+      if (result.resultCode === VerificationResultCode.OK) {
+        successful++;
+      }
+      results.push(result);
+    }
+
+    if (successful >= context.trustBase.quorumThreshold) {
+      return Promise.resolve(
+        new VerificationResult(
+          this,
+          UnicitySealQuorumSignaturesVerificationRule.MESSAGE,
+          VerificationResultCode.OK,
+          null,
+          results,
+        ),
+      );
     }
 
     return Promise.resolve(
-      Result.createFromResults(this, UnicitySealQuorumSignaturesVerificationRule.MESSAGE, results),
+      new VerificationResult(
+        this,
+        UnicitySealQuorumSignaturesVerificationRule.MESSAGE,
+        VerificationResultCode.FAIL,
+        'Quorum treshold not reached',
+        results,
+      ),
     );
   }
 
-  private verifySignature(trustBase: RootTrustBase, nodeId: string, signature: Uint8Array, hash: Uint8Array): Result {
+  private verifySignature(
+    trustBase: RootTrustBase,
+    nodeId: string,
+    signature: Uint8Array,
+    hash: Uint8Array,
+  ): VerificationResult {
     const node = trustBase.rootNodes.get(nodeId);
     if (!node) {
-      return new Result(
+      return new VerificationResult(
         this,
         `Is node '${nodeId}' signature valid`,
-        ResultCode.FAIL,
+        VerificationResultCode.FAIL,
         `No root node '${nodeId}' defined in trustbase.`,
       );
     }
 
     const signatureWORecoveryByte = signature.subarray(0, -1);
     if (!DefaultSigningService.verify(hash, signatureWORecoveryByte, node.publicKey)) {
-      return new Result(this, `Is node '${nodeId}' signature valid`, ResultCode.FAIL, `Signature verification failed.`);
+      return new VerificationResult(
+        this,
+        `Is node '${nodeId}' signature valid`,
+        VerificationResultCode.FAIL,
+        `Signature verification failed.`,
+      );
     }
 
-    return new Result(this, `Is node '${nodeId}' signature valid`, ResultCode.OK);
+    return new VerificationResult(this, `Is node '${nodeId}' signature valid`, VerificationResultCode.OK);
   }
 
   private encodeUnicitySeal(unicitySeal: UnicitySeal) {

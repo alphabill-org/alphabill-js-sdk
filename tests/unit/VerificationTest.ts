@@ -12,7 +12,7 @@ import { TransactionRecordWithProof } from '../../src/transaction/record/Transac
 import { StateLock } from '../../src/transaction/StateLock.js';
 import { TransactionPayload } from '../../src/transaction/TransactionPayload.js';
 import { DefaultVerificationPolicy } from '../../src/transaction/verification/DefaultVerificationPolicy.js';
-import { ResultCode } from '../../src/transaction/verification/Result.js';
+import { VerificationResultCode } from '../../src/transaction/verification/VerificationResult.js';
 import { UnitId } from '../../src/UnitId.js';
 import { Base16Converter } from '../../src/util/Base16Converter.js';
 
@@ -34,7 +34,7 @@ describe('Proof verification', () => {
     });
 
     console.log(result.toString());
-    expect(result.resultCode).toBe(ResultCode.OK);
+    expect(result.resultCode).toBe(VerificationResultCode.OK);
   });
 });
 

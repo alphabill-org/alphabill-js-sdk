@@ -1,7 +1,7 @@
-import { ConditionalRule } from '../ConditionalRule.js';
+import { ConditionalVerificationRule } from '../ConditionalVerificationRule.js';
 import { IVerificationContext } from '../IVerificationContext.js';
 
-export class TransactionProofVersionRule extends ConditionalRule {
+export class TransactionProofVersionRule extends ConditionalVerificationRule {
   public constructor() {
     super('Verify transaction proof version');
   }

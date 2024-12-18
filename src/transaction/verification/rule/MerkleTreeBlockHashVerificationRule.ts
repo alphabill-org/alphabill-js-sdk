@@ -7,13 +7,13 @@ import { ITransactionOrderProof } from '../../proofs/ITransactionOrderProof.js';
 import { TransactionProofChainItem } from '../../record/TransactionProofChainItem.js';
 import { TransactionRecord } from '../../record/TransactionRecord.js';
 import { IVerificationContext } from '../IVerificationContext.js';
-import { Result, ResultCode } from '../Result.js';
-import { Rule } from '../Rule.js';
+import { VerificationResult, VerificationResultCode } from '../VerificationResult.js';
+import { VerificationRule } from '../VerificationRule.js';
 
-export class MerkleTreeBlockHashVerificationRule extends Rule {
+export class MerkleTreeBlockHashVerificationRule extends VerificationRule {
   public static readonly MESSAGE = 'Is merkle tree block hash equal to unicity certificate input record block hash';
 
-  public verify(context: IVerificationContext): Promise<Result> {
+  public verify(context: IVerificationContext): Promise<VerificationResult> {
     const { transactionProof, transactionRecord } = context.proof;
     const rootHash = this.calculateMerkleTreeRootHash(transactionProof.chain, transactionRecord);
 
@@ -26,11 +26,18 @@ export class MerkleTreeBlockHashVerificationRule extends Rule {
       .digest();
 
     if (compareUint8Arrays(blockHash, transactionProof.unicityCertificate.inputRecord.blockHash) === 0) {
-      return Promise.resolve(new Result(this, MerkleTreeBlockHashVerificationRule.MESSAGE, ResultCode.OK));
+      return Promise.resolve(
+        new VerificationResult(this, MerkleTreeBlockHashVerificationRule.MESSAGE, VerificationResultCode.OK),
+      );
     }
 
     return Promise.resolve(
-      new Result(this, MerkleTreeBlockHashVerificationRule.MESSAGE, ResultCode.FAIL, 'Block hashes do not match'),
+      new VerificationResult(
+        this,
+        MerkleTreeBlockHashVerificationRule.MESSAGE,
+        VerificationResultCode.FAIL,
+        'Block hashes do not match',
+      ),
     );
   }
 

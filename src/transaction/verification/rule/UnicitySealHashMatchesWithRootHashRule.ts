@@ -4,22 +4,25 @@ import { CborEncoder } from '../../../codec/cbor/CborEncoder.js';
 import { UnicityCertificate } from '../../../unit/UnicityCertificate.js';
 import { compareUint8Arrays } from '../../../util/ArrayUtils.js';
 import { IVerificationContext } from '../IVerificationContext.js';
-import { Result, ResultCode } from '../Result.js';
-import { Rule } from '../Rule.js';
+import { VerificationResult, VerificationResultCode } from '../VerificationResult.js';
+import { VerificationRule } from '../VerificationRule.js';
 
-export class UnicitySealHashMatchesWithRootHashRule extends Rule {
+export class UnicitySealHashMatchesWithRootHashRule extends VerificationRule {
   public static readonly MESSAGE = 'Is unicity seal hash matching root hash';
+  private static readonly LEAF = new Uint8Array([1]);
+  private static readonly NODE = new Uint8Array([0]);
 
-  public verify(context: IVerificationContext): Promise<Result> {
+  public verify(context: IVerificationContext): Promise<VerificationResult> {
     const shardTreeCertificateRootHash = this.calculateShardTreeCertificateRootHash(
       context.proof.transactionProof.unicityCertificate,
     );
+
     const unicityTreeCertificate = context.proof.transactionProof.unicityCertificate.unicityTreeCertificate;
     const key = numberToBytesBE(unicityTreeCertificate.partitionIdentifier, 4);
 
     let result = sha256
       .create()
-      .update(CborEncoder.encodeByteString(new Uint8Array([1])))
+      .update(CborEncoder.encodeByteString(UnicitySealHashMatchesWithRootHashRule.LEAF))
       .update(CborEncoder.encodeByteString(key))
       .update(
         CborEncoder.encodeByteString(
@@ -34,37 +37,38 @@ export class UnicitySealHashMatchesWithRootHashRule extends Rule {
 
     for (const step of unicityTreeCertificate.hashSteps) {
       const stepKey = numberToBytesBE(step.key, 4);
+      const hasher = sha256
+        .create()
+        .update(CborEncoder.encodeByteString(UnicitySealHashMatchesWithRootHashRule.NODE))
+        .update(CborEncoder.encodeByteString(stepKey));
+
       if (compareUint8Arrays(key, stepKey) > 0) {
-        result = sha256
-          .create()
-          .update(new Uint8Array([0]))
-          .update(stepKey)
-          .update(step.hash)
-          .update(result)
+        result = hasher
+          .update(CborEncoder.encodeByteString(step.hash))
+          .update(CborEncoder.encodeByteString(result))
           .digest();
       } else {
-        result = sha256
-          .create()
-          .update(new Uint8Array([0]))
-          .update(stepKey)
-          .update(result)
-          .update(step.hash)
+        result = hasher
+          .update(CborEncoder.encodeByteString(result))
+          .update(CborEncoder.encodeByteString(step.hash))
           .digest();
       }
     }
 
     if (compareUint8Arrays(context.proof.transactionProof.unicityCertificate.unicitySeal.hash, result) !== 0) {
       return Promise.resolve(
-        new Result(
+        new VerificationResult(
           this,
           UnicitySealHashMatchesWithRootHashRule.MESSAGE,
-          ResultCode.FAIL,
+          VerificationResultCode.FAIL,
           'Unicity seal hash does not match tree root.',
         ),
       );
     }
 
-    return Promise.resolve(new Result(this, UnicitySealHashMatchesWithRootHashRule.MESSAGE, ResultCode.OK));
+    return Promise.resolve(
+      new VerificationResult(this, UnicitySealHashMatchesWithRootHashRule.MESSAGE, VerificationResultCode.OK),
+    );
   }
 
   private calculateShardTreeCertificateRootHash(unicityCertificate: UnicityCertificate): Uint8Array {
