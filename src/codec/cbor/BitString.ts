@@ -1,4 +1,4 @@
-import { CborError } from './codec/cbor/CborError.js';
+import { CborError } from './CborError.js';
 
 export class BitString {
   public constructor(

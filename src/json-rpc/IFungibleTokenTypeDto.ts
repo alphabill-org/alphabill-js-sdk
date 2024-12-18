@@ -5,10 +5,10 @@
 export interface IFungibleTokenTypeDto {
   readonly symbol: string;
   readonly name: string;
-  readonly icon: {
+  readonly icon: Readonly<{
     type: string;
     data: string;
-  };
+  }>;
   readonly parentTypeId: string;
   readonly decimalPlaces: number;
   readonly subTypeCreationPredicate: string;

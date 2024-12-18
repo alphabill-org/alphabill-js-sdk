@@ -1,4 +1,4 @@
-import { BitString } from '../../../../src/BitString.js';
+import { BitString } from '../../../../src/codec/cbor/BitString.js';
 
 describe('BitString', () => {
   it('Decode bitstring', () => {

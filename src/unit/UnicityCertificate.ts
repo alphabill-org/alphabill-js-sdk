@@ -1,4 +1,4 @@
-import { BitString } from '../BitString.js';
+import { BitString } from '../codec/cbor/BitString.js';
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import { CborTag } from '../codec/cbor/CborTag.js';
