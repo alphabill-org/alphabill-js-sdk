@@ -27,16 +27,21 @@ export class DefaultSigningService implements ISigningService {
   }
 
   /**
-   * @see {ISigningService.sign}
+   * Verify secp256k1 signature hash.
+   * @param hash Hash.
+   * @param signature Signature.
+   * @param publicKey Public key.
    */
-  public sign(bytes: Uint8Array): Uint8Array {
-    const hash: Uint8Array = sha256(bytes);
-    const signature = secp256k1.sign(hash, this.privateKey);
-    return new Uint8Array([...signature.toCompactRawBytes(), signature.recovery]);
+  public static verify(hash: Uint8Array, signature: Uint8Array, publicKey: Uint8Array): boolean {
+    return secp256k1.verify(signature, hash, publicKey, { format: 'compact' });
   }
 
-  public verify(bytes: Uint8Array, signature: Uint8Array): boolean {
+  /**
+   * @see {ISigningService.sign}
+   */
+  public sign(bytes: Uint8Array): Promise<Uint8Array> {
     const hash: Uint8Array = sha256(bytes);
-    return secp256k1.verify(signature, hash, this.publicKey);
+    const signature = secp256k1.sign(hash, this.privateKey);
+    return Promise.resolve(new Uint8Array([...signature.toCompactRawBytes(), signature.recovery]));
   }
 }

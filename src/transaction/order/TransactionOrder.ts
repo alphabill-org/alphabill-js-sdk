@@ -13,7 +13,7 @@ import { TransactionPayload } from '../TransactionPayload.js';
  */
 export abstract class TransactionOrder<
   Attributes extends ITransactionPayloadAttributes,
-  AuthProof extends ITransactionOrderProof,
+  AuthProof extends ITransactionOrderProof | null,
 > {
   /**
    * Transaction order constructor.
@@ -61,7 +61,7 @@ export abstract class TransactionOrder<
         CborEncoder.encodeUnsignedInteger(this.version),
         ...this.payload.encode(),
         this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
-        this.authProof.encode(),
+        this.authProof ? this.authProof.encode() : CborEncoder.encodeNull(),
         this.feeProof ? CborEncoder.encodeByteString(this.feeProof) : CborEncoder.encodeNull(),
       ]),
     );

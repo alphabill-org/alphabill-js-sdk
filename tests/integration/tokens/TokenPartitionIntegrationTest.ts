@@ -12,17 +12,18 @@ import { NonFungibleTokenData } from '../../../src/tokens/NonFungibleTokenData.j
 import { NonFungibleTokenType } from '../../../src/tokens/NonFungibleTokenType.js';
 import { TokenIcon } from '../../../src/tokens/TokenIcon.js';
 import { TokenPartitionUnitType } from '../../../src/tokens/TokenPartitionUnitType.js';
-import { BurnFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/BurnFungibleTokenTransactionRecordWithProof.js';
-import { CreateFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/CreateFungibleTokenTransactionRecordWithProof.js';
-import { CreateFungibleTokenTypeTransactionRecordWithProof } from '../../../src/tokens/transactions/CreateFungibleTokenTypeTransactionRecordWithProof.js';
-import { CreateNonFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/CreateNonFungibleTokenTransactionRecordWithProof.js';
-import { CreateNonFungibleTokenTypeTransactionRecordWithProof } from '../../../src/tokens/transactions/CreateNonFungibleTokenTypeTransactionRecordWithProof.js';
-import { JoinFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/JoinFungibleTokenTransactionRecordWithProof.js';
-import { LockTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/LockTokenTransactionRecordWithProof.js';
-import { SplitFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/SplitFungibleTokenTransactionRecordWithProof.js';
-import { TransferFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/TransferFungibleTokenTransactionRecordWithProof.js';
-import { TransferNonFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/TransferNonFungibleTokenTransactionRecordWithProof.js';
-import { UnlockTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/UnlockTokenTransactionRecordWithProof.js';
+import { BurnFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/BurnFungibleTokenTransactionRecordWithProof.js';
+import { CreateFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/CreateFungibleTokenTransactionRecordWithProof.js';
+import { CreateFungibleTokenTypeTransactionRecordWithProof } from '../../../src/tokens/transactions/records/CreateFungibleTokenTypeTransactionRecordWithProof.js';
+import { CreateNonFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/CreateNonFungibleTokenTransactionRecordWithProof.js';
+import { CreateNonFungibleTokenTypeTransactionRecordWithProof } from '../../../src/tokens/transactions/records/CreateNonFungibleTokenTypeTransactionRecordWithProof.js';
+import { JoinFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/JoinFungibleTokenTransactionRecordWithProof.js';
+import { LockTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/LockTokenTransactionRecordWithProof.js';
+import { SplitFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/SplitFungibleTokenTransactionRecordWithProof.js';
+import { TransferFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/TransferFungibleTokenTransactionRecordWithProof.js';
+import { TransferNonFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/TransferNonFungibleTokenTransactionRecordWithProof.js';
+import { UnlockTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/UnlockTokenTransactionRecordWithProof.js';
+import { UpdateNonFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/UpdateNonFungibleTokenTransactionRecordWithProof.js';
 import { UnsignedBurnFungibleTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedBurnFungibleTokenTransactionOrder.js';
 import { UnsignedCreateFungibleTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedCreateFungibleTokenTransactionOrder.js';
 import { UnsignedCreateFungibleTokenTypeTransactionOrder } from '../../../src/tokens/transactions/UnsignedCreateFungibleTokenTypeTransactionOrder.js';
@@ -35,7 +36,6 @@ import { UnsignedTransferFungibleTokenTransactionOrder } from '../../../src/toke
 import { UnsignedTransferNonFungibletokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedTransferNonFungibletokenTransactionOrder.js';
 import { UnsignedUnlockTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedUnlockTokenTransactionOrder.js';
 import { UnsignedUpdateNonFungibleTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedUpdateNonFungibleTokenTransactionOrder.js';
-import { UpdateNonFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/UpdateNonFungibleTokenTransactionRecordWithProof.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { AlwaysTrueProofFactory } from '../../../src/transaction/proofs/AlwaysTrueProofFactory.js';
@@ -86,7 +86,7 @@ describe('Token Client Integration Tests', () => {
       const round = await tokenClient.getRoundNumber();
       console.log('Creating fungible token type...');
 
-      const createFungibleTokenTypeTransactionOrder = UnsignedCreateFungibleTokenTypeTransactionOrder.create({
+      const createFungibleTokenTypeTransactionOrder = await UnsignedCreateFungibleTokenTypeTransactionOrder.create({
         type: { unitId: tokenTypeUnitId },
         symbol: 'E',
         name: 'Big money come',
@@ -114,7 +114,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Creating fungible token type successful');
 
       console.log('Creating fungible token...');
-      const createFungibleTokenTransactionOrder = UnsignedCreateFungibleTokenTransactionOrder.create({
+      const createFungibleTokenTransactionOrder = await UnsignedCreateFungibleTokenTransactionOrder.create({
         ownerPredicate: ownerPredicate,
         type: { unitId: tokenTypeUnitId },
         value: 10n,
@@ -143,7 +143,7 @@ describe('Token Client Integration Tests', () => {
       expect(token).not.toBeNull();
 
       console.log('Splitting fungible token...');
-      const splitFungibleTokenTransactionOrder = UnsignedSplitFungibleTokenTransactionOrder.create({
+      const splitFungibleTokenTransactionOrder = await UnsignedSplitFungibleTokenTransactionOrder.create({
         token: token!,
         ownerPredicate: ownerPredicate,
         amount: 3n,
@@ -170,7 +170,7 @@ describe('Token Client Integration Tests', () => {
 
       console.log('Burning fungible token...');
       const burnFungibleTokenHash = await tokenClient.sendTransaction(
-        UnsignedBurnFungibleTokenTransactionOrder.create({
+        await UnsignedBurnFungibleTokenTransactionOrder.create({
           type: { unitId: tokenTypeUnitId },
           token: splitToken!,
           targetToken: originalTokenAfterSplit!,
@@ -186,7 +186,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Fungible token burn successful');
 
       console.log('Joining fungible token...');
-      const joinFungibleTokenTransactionOrder = UnsignedJoinFungibleTokenTransactionOrder.create({
+      const joinFungibleTokenTransactionOrder = await UnsignedJoinFungibleTokenTransactionOrder.create({
         token: originalTokenAfterSplit!,
         proofs: [burnProof],
         ...createTransactionData(round, feeCreditRecordId),
@@ -208,7 +208,7 @@ describe('Token Client Integration Tests', () => {
       expect(token).not.toBeNull();
 
       console.log('Transferring fungible token...');
-      const transferFungibleTokenTransactionOrder = UnsignedTransferFungibleTokenTransactionOrder.create({
+      const transferFungibleTokenTransactionOrder = await UnsignedTransferFungibleTokenTransactionOrder.create({
         token: token!,
         ownerPredicate: ownerPredicate,
         type: { unitId: tokenTypeUnitId },
@@ -231,7 +231,7 @@ describe('Token Client Integration Tests', () => {
       expect(token).not.toBeNull();
 
       console.log('Locking fungible token...');
-      const lockFungibleTokenTransactionOrder = UnsignedLockTokenTransactionOrder.create({
+      const lockFungibleTokenTransactionOrder = await UnsignedLockTokenTransactionOrder.create({
         status: 5n,
         token: token!,
         ...createTransactionData(round, feeCreditRecordId),
@@ -247,7 +247,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Fungible token lock successful');
 
       console.log('Unlocking fungible token...');
-      const unlockFungibleTokenTransactionOrder = UnsignedUnlockTokenTransactionOrder.create({
+      const unlockFungibleTokenTransactionOrder = await UnsignedUnlockTokenTransactionOrder.create({
         token: {
           unitId: token!.unitId,
           counter: token!.counter + 1n,
@@ -273,18 +273,19 @@ describe('Token Client Integration Tests', () => {
     it('Create token type and token', async () => {
       const round = await tokenClient.getRoundNumber();
       console.log('Creating non-fungible token type...');
-      const createNonFungibleTokenTypeTransactionOrder = UnsignedCreateNonFungibleTokenTypeTransactionOrder.create({
-        type: { unitId: tokenTypeUnitId },
-        symbol: 'E',
-        name: 'Token Name',
-        icon: { type: 'image/png', data: new Uint8Array() },
-        parentTypeId: null,
-        subTypeCreationPredicate: new AlwaysTruePredicate(),
-        tokenMintingPredicate: new AlwaysTruePredicate(),
-        tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
-        dataUpdatePredicate: new AlwaysTruePredicate(),
-        ...createTransactionData(round, feeCreditRecordId),
-      }).sign(proofFactory, []);
+      const createNonFungibleTokenTypeTransactionOrder =
+        await UnsignedCreateNonFungibleTokenTypeTransactionOrder.create({
+          type: { unitId: tokenTypeUnitId },
+          symbol: 'E',
+          name: 'Token Name',
+          icon: { type: 'image/png', data: new Uint8Array() },
+          parentTypeId: null,
+          subTypeCreationPredicate: new AlwaysTruePredicate(),
+          tokenMintingPredicate: new AlwaysTruePredicate(),
+          tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
+          dataUpdatePredicate: new AlwaysTruePredicate(),
+          ...createTransactionData(round, feeCreditRecordId),
+        }).sign(proofFactory, []);
 
       const createNonFungibleTokenTypeHash = await tokenClient.sendTransaction(
         createNonFungibleTokenTypeTransactionOrder,
@@ -302,7 +303,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Creating non-fungible token type successful');
 
       console.log('Creating non-fungible token...');
-      const createNonFungibleTokenTransactionOrder = UnsignedCreateNonFungibleTokenTransactionOrder.create({
+      const createNonFungibleTokenTransactionOrder = await UnsignedCreateNonFungibleTokenTransactionOrder.create({
         ownerPredicate: ownerPredicate,
         type: { unitId: tokenTypeUnitId },
         name: 'My token',
@@ -332,7 +333,7 @@ describe('Token Client Integration Tests', () => {
       expect(token).not.toBeNull();
 
       console.log('Updating non-fungible token...');
-      const updateNonFungibleTokenTransactionOrder = UnsignedUpdateNonFungibleTokenTransactionOrder.create({
+      const updateNonFungibleTokenTransactionOrder = await UnsignedUpdateNonFungibleTokenTransactionOrder.create({
         token: token!,
         data: NonFungibleTokenData.create(new Uint8Array(32)),
         ...createTransactionData(round, feeCreditRecordId),
@@ -357,7 +358,7 @@ describe('Token Client Integration Tests', () => {
       expect(token).not.toBeNull();
 
       console.log('Transferring non-fungible token...');
-      const transferNonFungibleTokenTransactionOrder = UnsignedTransferNonFungibletokenTransactionOrder.create({
+      const transferNonFungibleTokenTransactionOrder = await UnsignedTransferNonFungibletokenTransactionOrder.create({
         token: token!,
         counter: token!.counter,
         ownerPredicate: ownerPredicate,

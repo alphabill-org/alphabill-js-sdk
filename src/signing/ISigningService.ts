@@ -14,5 +14,5 @@ export interface ISigningService {
    * @param {Uint8Array} bytes data bytes to sign.
    * @returns {Uint8Array} signature bytes.
    */
-  sign(bytes: Uint8Array): Uint8Array;
+  sign(bytes: Uint8Array): Promise<Uint8Array>;
 }

@@ -2,7 +2,7 @@ import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { dedent } from '../../util/StringUtils.js';
-import { TransferBillToDustCollectorTransactionRecordWithProof } from '../transactions/TransferBillToDustCollectorTransactionRecordWithProof.js';
+import { TransferBillToDustCollectorTransactionRecordWithProof } from '../transactions/records/TransferBillToDustCollectorTransactionRecordWithProof.js';
 
 /**
  * Swap bills with dust collector payload attributes.

@@ -26,7 +26,7 @@ describe('Permissioned Fee Credit Integration Tests', () => {
     const ownerPredicate = PayToPublicKeyHashPredicate.create(signingService.publicKey);
 
     console.log('Setting fee credit...');
-    const setFeeCreditTransactionOrder = UnsignedSetFeeCreditTransactionOrder.create({
+    const setFeeCreditTransactionOrder = await UnsignedSetFeeCreditTransactionOrder.create({
       targetPartitionIdentifier: PartitionIdentifier.TOKEN,
       ownerPredicate: ownerPredicate,
       amount: 100n,
@@ -44,7 +44,7 @@ describe('Permissioned Fee Credit Integration Tests', () => {
     console.log('Setting fee credit successful');
 
     console.log('Deleting fee credit...');
-    const deleteFeeCreditTransactionOrder = UnsignedDeleteFeeCreditTransactionOrder.create({
+    const deleteFeeCreditTransactionOrder = await UnsignedDeleteFeeCreditTransactionOrder.create({
       feeCredit: { unitId: feeCreditRecordId, counter: 0n },
       ...createTransactionData(round),
     }).sign(proofFactory);

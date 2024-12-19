@@ -11,7 +11,7 @@ import { TransactionRecord } from './TransactionRecord.js';
  * @template T - Transaction payload type.
  */
 export class TransactionRecordWithProof<
-  T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>,
+  T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof | null>,
 > {
   /**
    * Transaction record with proof constructor.

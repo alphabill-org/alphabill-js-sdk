@@ -1,25 +1,24 @@
 import { sha256 } from '@noble/hashes/sha256';
-import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
+import { RootTrustBase } from '../RootTrustBase.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { TransactionOrder } from '../transaction/order/TransactionOrder.js';
 import { ITransactionOrderProof } from '../transaction/proofs/ITransactionOrderProof.js';
+import { StateProof } from '../unit/StateProof.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { IJsonRpcService } from './IJsonRpcService.js';
 import { IRootTrustBaseDto } from './IRootTrustBaseDto.js';
-import { IStateProofDto } from './IUnitDto.js';
+import { IStateProofDto } from './IStateProofDto.js';
+import { ITransactionProofDto } from './ITransactionProofDto.js';
 import { JsonRpcError } from './JsonRpcError.js';
-import { RootTrustBase } from './RootTrustBase.js';
-import { createStateProof } from './StateProofFactory.js';
-import { TransactionProofDto } from './TransactionProofDto.js';
 
 export type CreateUnit<T, U> = {
   create: (
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    stateProof: IStateProof | null,
+    stateProof: StateProof | null,
     data: U,
   ) => T;
 };
@@ -103,7 +102,7 @@ export class JsonRpcClient {
         UnitId.fromBytes(Base16Converter.decode(response.unitId)),
         Number(response.networkId),
         Number(response.partitionId),
-        response.stateProof ? createStateProof(response.stateProof) : null,
+        response.stateProof ? StateProof.create(response.stateProof) : null,
         response.data,
       );
     }
@@ -125,7 +124,7 @@ export class JsonRpcClient {
     const response = (await this.request(
       'state_getTransactionProof',
       Base16Converter.encode(transactionHash),
-    )) as TransactionProofDto | null;
+    )) as ITransactionProofDto | null;
 
     if (!response) {
       return null;
@@ -136,11 +135,11 @@ export class JsonRpcClient {
 
   /**
    * Send transaction.
-   * @param {TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>} transaction Transaction.
+   * @param {TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof | null>} transaction Transaction.
    * @returns {Promise<Uint8Array>} Transaction hash.
    */
   public async sendTransaction(
-    transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof>,
+    transaction: TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof | null>,
   ): Promise<Uint8Array> {
     const hex = Base16Converter.encode(transaction.encode());
     const response = (await this.request('state_sendTransaction', hex)) as string;

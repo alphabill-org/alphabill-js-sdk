@@ -3,10 +3,10 @@
  * @interface IFungibleTokenDto
  */
 export interface IFungibleTokenDto {
-  typeId: string;
-  value: string;
-  locked: string;
-  ownerPredicate: string;
-  counter: string;
-  minLifetime: string;
+  readonly typeId: string;
+  readonly value: string;
+  readonly locked: string;
+  readonly ownerPredicate: string;
+  readonly counter: string;
+  readonly minLifetime: string;
 }

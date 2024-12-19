@@ -1,8 +1,8 @@
-import { IStateProof } from '../IStateProof.js';
 import { IUnitId } from '../IUnitId.js';
 import { IFeeCreditRecordDto } from '../json-rpc/IFeeCreditRecordDto.js';
 import { IPredicate } from '../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../transaction/predicates/PredicateBytes.js';
+import { StateProof } from '../unit/StateProof.js';
 import { Unit } from '../Unit.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
@@ -16,7 +16,7 @@ export class FeeCreditRecord extends Unit {
    * @param {IUnitId} unitId Unit ID.
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {StateProof | null} stateProof State proof.
    * @param {bigint} balance Fee credit balance.
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {bigint} locked Is fee credit locked.
@@ -27,7 +27,7 @@ export class FeeCreditRecord extends Unit {
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    stateProof: IStateProof | null,
+    stateProof: StateProof | null,
     public readonly balance: bigint,
     public readonly ownerPredicate: IPredicate,
     public readonly locked: bigint,
@@ -47,7 +47,7 @@ export class FeeCreditRecord extends Unit {
    * @param {IUnitId} unitId Unit id.
    * @param {number} networkIdentifier Network identifier.
    * @param {number} partitionIdentifier Partition identifier.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {StateProof | null} stateProof State proof.
    * @param {IFeeCreditRecordDto} data Fee credit DTO.
    * @returns {FeeCreditRecord} Fee credit record.
    */
@@ -55,7 +55,7 @@ export class FeeCreditRecord extends Unit {
     unitId: IUnitId,
     networkIdentifier: number,
     partitionIdentifier: number,
-    stateProof: IStateProof | null,
+    stateProof: StateProof | null,
     data: IFeeCreditRecordDto,
   ): FeeCreditRecord {
     return new FeeCreditRecord(

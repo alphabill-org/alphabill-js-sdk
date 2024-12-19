@@ -88,33 +88,14 @@ export class CborDecoder {
   }
 
   public static readBoolean(data: Uint8Array): boolean {
-    if (!data || data.length === 0) {
-      throw new CborError('Encoded item is not well-formed.');
-    }
-    if (data[0] === 0xf5) {
+    const byte = CborDecoder.readByte(data, 0);
+    if (byte === 0xf5) {
       return true;
     }
-    if (data[0] === 0xf4) {
+    if (byte === 0xf4) {
       return false;
     }
     throw new CborError('Type mismatch, expected boolean.');
-  }
-
-  public static readBitString(data: Uint8Array): { length: number; data: Uint8Array } {
-    const byteCount = data.length - 1;
-    if (byteCount < 0) {
-      throw new CborError('Invalid bit string encoding: empty input');
-    }
-    const zc = CborDecoder.trailingZeros8(data[byteCount]);
-    switch (zc) {
-      case 8:
-        throw new CborError('Invalid bit string encoding: last byte doesnt contain end marker');
-      case 7:
-        return { length: byteCount * 8, data: data.subarray(0, byteCount) };
-      default:
-        data[byteCount] ^= 1 << zc; // clear end marker
-        return { length: byteCount * 8 + 7 - zc, data: data };
-    }
   }
 
   private static readLength(majorType: number, data: Uint8Array, offset: number): { length: bigint; position: number } {
@@ -198,21 +179,5 @@ export class CborDecoder {
     }
 
     return data.subarray(offset, offset + length);
-  }
-
-  private static trailingZeros8(x: number): number {
-    // Ensure x is within 8-bit range
-    x &= 0xff;
-
-    if (x === 0) {
-      return 8; // Special case for zero
-    }
-
-    let count = 0;
-    while ((x & 1) === 0) {
-      count++;
-      x >>= 1;
-    }
-    return count;
   }
 }

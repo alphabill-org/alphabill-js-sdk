@@ -45,11 +45,11 @@ export class UnsignedBurnFungibleTokenTransactionOrder {
     );
   }
 
-  public sign(
+  public async sign(
     ownerProofFactory: IProofFactory,
     feeProofFactory: IProofFactory | null,
     tokenTypeOwnerProofs: IProofFactory[],
-  ): BurnFungibleTokenTransactionOrder {
+  ): Promise<BurnFungibleTokenTransactionOrder> {
     const authProofBytes: Uint8Array[] = [
       CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
@@ -57,10 +57,11 @@ export class UnsignedBurnFungibleTokenTransactionOrder {
     ];
     const authProof = CborEncoder.encodeArray(authProofBytes);
     const ownerProof = new TypeOwnerProofsAuthProof(
-      ownerProofFactory.create(authProof),
-      tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
+      await ownerProofFactory.create(authProof),
+      await Promise.all(tokenTypeOwnerProofs.map((factory) => factory.create(authProof))),
     );
-    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()])) ?? null;
+    const feeProof =
+      (await feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()]))) ?? null;
     return new BurnFungibleTokenTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }

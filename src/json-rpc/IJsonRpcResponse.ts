@@ -14,10 +14,10 @@ export interface IJsonRpcResponse {
   /**
    * Error data.
    */
-  readonly error?: {
-    readonly code: number;
-    readonly message: string;
-  };
+  readonly error?: Readonly<{
+    code: number;
+    message: string;
+  }>;
   /**
    * Request ID.
    */

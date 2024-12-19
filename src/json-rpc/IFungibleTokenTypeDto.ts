@@ -3,15 +3,15 @@
  * @interface IFungibleTokenTypeDto
  */
 export interface IFungibleTokenTypeDto {
-  symbol: string;
-  name: string;
-  icon: {
+  readonly symbol: string;
+  readonly name: string;
+  readonly icon: Readonly<{
     type: string;
     data: string;
-  };
-  parentTypeId: string;
-  decimalPlaces: number;
-  subTypeCreationPredicate: string;
-  tokenMintingPredicate: string;
-  tokenTypeOwnerPredicate: string;
+  }>;
+  readonly parentTypeId: string;
+  readonly decimalPlaces: number;
+  readonly subTypeCreationPredicate: string;
+  readonly tokenMintingPredicate: string;
+  readonly tokenTypeOwnerPredicate: string;
 }

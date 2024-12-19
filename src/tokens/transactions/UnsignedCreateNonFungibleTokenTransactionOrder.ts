@@ -56,19 +56,20 @@ export class UnsignedCreateNonFungibleTokenTransactionOrder {
     );
   }
 
-  public sign(
+  public async sign(
     tokenMintingProofFactory: IProofFactory,
     feeProofFactory: IProofFactory | null,
-  ): CreateNonFungibleTokenTransactionOrder {
+  ): Promise<CreateNonFungibleTokenTransactionOrder> {
     const authProofBytes: Uint8Array[] = [
       CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
       this.stateUnlock ? CborEncoder.encodeByteString(this.stateUnlock.bytes) : CborEncoder.encodeNull(),
     ];
     const ownerProof = new OwnerProofAuthProof(
-      tokenMintingProofFactory.create(CborEncoder.encodeArray(authProofBytes)),
+      await tokenMintingProofFactory.create(CborEncoder.encodeArray(authProofBytes)),
     );
-    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()])) ?? null;
+    const feeProof =
+      (await feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()]))) ?? null;
     return new CreateNonFungibleTokenTransactionOrder(
       this.version,
       this.payload,

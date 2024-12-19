@@ -23,7 +23,7 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
   /**
    * Create AddFeeCreditAttributes from raw CBOR.
    * @param {Uint8Array} rawData Add fee credit attributes as raw CBOR.
-   * @returns {Promise<AddFeeCreditAttributes>} Add fee credit attributes.
+   * @returns {AddFeeCreditAttributes} Add fee credit attributes.
    */
   public static fromCbor(rawData: Uint8Array): AddFeeCreditAttributes {
     const data = CborDecoder.readArray(rawData);

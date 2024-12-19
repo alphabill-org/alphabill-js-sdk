@@ -8,8 +8,8 @@ import { TypeOwnerProofsAuthProof } from '../../transaction/proofs/TypeOwnerProo
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { JoinFungibleTokenAttributes } from '../attributes/JoinFungibleTokenAttributes.js';
 import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
-import { BurnFungibleTokenTransactionRecordWithProof } from './BurnFungibleTokenTransactionRecordWithProof.js';
 import { JoinFungibleTokenTransactionOrder } from './JoinFungibleTokenTransactionOrder.js';
+import { BurnFungibleTokenTransactionRecordWithProof } from './records/BurnFungibleTokenTransactionRecordWithProof.js';
 
 interface IJoinFungibleTokensTransactionData extends ITransactionData {
   token: { unitId: IUnitId };
@@ -39,11 +39,11 @@ export class UnsignedJoinFungibleTokenTransactionOrder {
     );
   }
 
-  public sign(
+  public async sign(
     ownerProofFactory: IProofFactory,
     feeProofFactory: IProofFactory,
     tokenTypeOwnerProofs: IProofFactory[],
-  ): JoinFungibleTokenTransactionOrder {
+  ): Promise<JoinFungibleTokenTransactionOrder> {
     const authProofBytes: Uint8Array[] = [
       CborEncoder.encodeUnsignedInteger(this.version),
       ...this.payload.encode(),
@@ -51,10 +51,11 @@ export class UnsignedJoinFungibleTokenTransactionOrder {
     ];
     const authProof = CborEncoder.encodeArray(authProofBytes);
     const ownerProof = new TypeOwnerProofsAuthProof(
-      ownerProofFactory.create(authProof),
-      tokenTypeOwnerProofs.map((factory) => factory.create(authProof)),
+      await ownerProofFactory.create(authProof),
+      await Promise.all(tokenTypeOwnerProofs.map((factory) => factory.create(authProof))),
     );
-    const feeProof = feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()])) ?? null;
+    const feeProof =
+      (await feeProofFactory?.create(CborEncoder.encodeArray([...authProofBytes, ownerProof.encode()]))) ?? null;
     return new JoinFungibleTokenTransactionOrder(this.version, this.payload, this.stateUnlock, ownerProof, feeProof);
   }
 }
