@@ -10,7 +10,7 @@ import { dedent } from '../util/StringUtils.js';
  */
 export class UnicityCertificate {
   /**
-   * State proof constructor.
+   * Unicity certificate constructor.
    * @param {bigint} version - version.
    * @param {InputRecord} inputRecord - unit identifier.
    * @param {Uint8Array} _trHash - hash of the technical record.
@@ -250,7 +250,7 @@ export class ShardTreeCertificate {
   public toString(): string {
     return dedent`
       Shard Tree Certificate
-        ${this.shard.toString()}
+        Shard ID: ${this.shard.toString()}
         Sibling Hashes: [${
           this._siblingHashes.length
             ? `\n${this._siblingHashes.map((unit) => Base16Converter.encode(unit)).join('\n')}\n`

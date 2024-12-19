@@ -44,7 +44,7 @@ export class UnicitySealQuorumSignaturesVerificationRule extends VerificationRul
         this,
         UnicitySealQuorumSignaturesVerificationRule.MESSAGE,
         VerificationResultCode.FAIL,
-        'Quorum treshold not reached',
+        'Quorum threshold not reached',
         results,
       ),
     );

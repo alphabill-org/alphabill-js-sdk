@@ -59,7 +59,7 @@ export class BitString {
     return result;
   }
 
-  public toString() {
+  public toString(): string {
     let result = '';
     for (let i = 0; i < this._bits.length; i++) {
       result += this._bits[i].toString(2);

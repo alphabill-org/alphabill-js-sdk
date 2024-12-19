@@ -50,7 +50,7 @@ export class FungibleTokenType extends Unit {
    * @param {IUnitId} unitId Unit id.
    * @param {number} networkIdentifier Network identifier.
    * @param {number} partitionIdentifier Partition identifier.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {StateProof | null} stateProof State proof.
    * @param {IFungibleTokenTypeDto} data Fungible token type data.
    * @returns {FungibleTokenType} Fungible token type.
    */

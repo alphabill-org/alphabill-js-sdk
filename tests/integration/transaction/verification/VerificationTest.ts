@@ -1,13 +1,13 @@
-import { AddFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/AddFeeCreditTransactionRecordWithProof.js';
-import { PartitionIdentifier } from '../../../src/PartitionIdentifier.js';
-import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
-import { createMoneyClient, http } from '../../../src/StateApiClientFactory.js';
-import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
-import { DefaultVerificationPolicy } from '../../../src/transaction/verification/DefaultVerificationPolicy.js';
-import { VerificationResultCode } from '../../../src/transaction/verification/VerificationResult.js';
-import { Base16Converter } from '../../../src/util/Base16Converter.js';
-import config from '../config/config.js';
-import { addFeeCredit } from '../utils/TestUtils.js';
+import { AddFeeCreditTransactionRecordWithProof } from '../../../../src/fees/transactions/records/AddFeeCreditTransactionRecordWithProof.js';
+import { PartitionIdentifier } from '../../../../src/PartitionIdentifier.js';
+import { DefaultSigningService } from '../../../../src/signing/DefaultSigningService.js';
+import { createMoneyClient, http } from '../../../../src/StateApiClientFactory.js';
+import { PayToPublicKeyHashProofFactory } from '../../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
+import { DefaultVerificationPolicy } from '../../../../src/transaction/verification/DefaultVerificationPolicy.js';
+import { VerificationResultCode } from '../../../../src/transaction/verification/VerificationResult.js';
+import { Base16Converter } from '../../../../src/util/Base16Converter.js';
+import config from '../../config/config.js';
+import { addFeeCredit } from '../../utils/TestUtils.js';
 
 describe('Proof verification', () => {
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));

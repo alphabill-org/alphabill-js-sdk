@@ -43,7 +43,7 @@ export class Bill extends Unit {
    * @param {IUnitId} unitId Unit ID.
    * @param {number} networkIdentifier Network identifier.
    * @param {number} partitionIdentifier Partition identifier.
-   * @param {IStateProof | null} stateProof State proof.
+   * @param {StateProof | null} stateProof State proof.
    * @param {IBillDataDto} data Bill DTO.
    * @returns {Bill} Bill.
    */

@@ -1,20 +1,20 @@
-import { CborDecoder } from '../../src/codec/cbor/CborDecoder.js';
-import { CborEncoder } from '../../src/codec/cbor/CborEncoder.js';
-import { RootTrustBase } from '../../src/RootTrustBase.js';
-import { ClientMetadata } from '../../src/transaction/ClientMetadata.js';
-import { ITransactionPayloadAttributes } from '../../src/transaction/ITransactionPayloadAttributes.js';
-import { TransactionOrder } from '../../src/transaction/order/TransactionOrder.js';
-import { IPredicate } from '../../src/transaction/predicates/IPredicate.js';
-import { PredicateBytes } from '../../src/transaction/predicates/PredicateBytes.js';
-import { TransactionProof } from '../../src/transaction/record/TransactionProof.js';
-import { TransactionRecord } from '../../src/transaction/record/TransactionRecord.js';
-import { TransactionRecordWithProof } from '../../src/transaction/record/TransactionRecordWithProof.js';
-import { StateLock } from '../../src/transaction/StateLock.js';
-import { TransactionPayload } from '../../src/transaction/TransactionPayload.js';
-import { DefaultVerificationPolicy } from '../../src/transaction/verification/DefaultVerificationPolicy.js';
-import { VerificationResultCode } from '../../src/transaction/verification/VerificationResult.js';
-import { UnitId } from '../../src/UnitId.js';
-import { Base16Converter } from '../../src/util/Base16Converter.js';
+import { CborDecoder } from '../../../../src/codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../../../../src/codec/cbor/CborEncoder.js';
+import { RootTrustBase } from '../../../../src/RootTrustBase.js';
+import { ClientMetadata } from '../../../../src/transaction/ClientMetadata.js';
+import { ITransactionPayloadAttributes } from '../../../../src/transaction/ITransactionPayloadAttributes.js';
+import { TransactionOrder } from '../../../../src/transaction/order/TransactionOrder.js';
+import { IPredicate } from '../../../../src/transaction/predicates/IPredicate.js';
+import { PredicateBytes } from '../../../../src/transaction/predicates/PredicateBytes.js';
+import { TransactionProof } from '../../../../src/transaction/record/TransactionProof.js';
+import { TransactionRecord } from '../../../../src/transaction/record/TransactionRecord.js';
+import { TransactionRecordWithProof } from '../../../../src/transaction/record/TransactionRecordWithProof.js';
+import { StateLock } from '../../../../src/transaction/StateLock.js';
+import { TransactionPayload } from '../../../../src/transaction/TransactionPayload.js';
+import { DefaultVerificationPolicy } from '../../../../src/transaction/verification/DefaultVerificationPolicy.js';
+import { VerificationResultCode } from '../../../../src/transaction/verification/VerificationResult.js';
+import { UnitId } from '../../../../src/UnitId.js';
+import { Base16Converter } from '../../../../src/util/Base16Converter.js';
 
 describe('Proof verification', () => {
   it('Verify proof', async () => {
