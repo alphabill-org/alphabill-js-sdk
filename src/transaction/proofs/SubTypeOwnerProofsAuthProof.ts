@@ -1,5 +1,7 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
+import { Base16Converter } from '../../util/Base16Converter.js';
+import { dedent } from '../../util/StringUtils.js';
 import { ITransactionOrderProof } from './ITransactionOrderProof.js';
 
 export class SubTypeOwnerProofsAuthProof implements ITransactionOrderProof {
@@ -24,5 +26,11 @@ export class SubTypeOwnerProofsAuthProof implements ITransactionOrderProof {
         this.subTypeCreationProofs.map((proof: Uint8Array) => CborEncoder.encodeByteString(proof)),
       ),
     ]);
+  }
+
+  public toString(): string {
+    return dedent`
+      Auth Proof:
+        Subtype Creation Proofs: [\n${this._subTypeCreationProofs.map((proof) => Base16Converter.encode(proof)).join('\n')}}]`;
   }
 }

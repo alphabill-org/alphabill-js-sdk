@@ -1,5 +1,7 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
+import { Base16Converter } from '../../util/Base16Converter.js';
+import { dedent } from '../../util/StringUtils.js';
 import { ITransactionOrderProof } from './ITransactionOrderProof.js';
 
 export class OwnerProofAuthProof implements ITransactionOrderProof {
@@ -18,5 +20,11 @@ export class OwnerProofAuthProof implements ITransactionOrderProof {
 
   public encode(): Uint8Array {
     return CborEncoder.encodeArray([CborEncoder.encodeByteString(this._ownerProof)]);
+  }
+
+  public toString(): string {
+    return dedent`
+      Auth Proof:
+        Owner Proof: ${Base16Converter.encode(this._ownerProof)}`;
   }
 }
