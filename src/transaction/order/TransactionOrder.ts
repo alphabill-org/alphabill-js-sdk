@@ -39,7 +39,6 @@ export abstract class TransactionOrder<
     return this._feeProof ? new Uint8Array(this._feeProof) : null;
   }
 
-  // TODO: Fix authproof logging
   /**
    * Convert to string.
    * @returns {string} String representation.
@@ -50,7 +49,7 @@ export abstract class TransactionOrder<
         Version: ${this.version}
         ${this.payload.toString()}
         State Unlock: ${this.stateUnlock?.toString() ?? null}
-        Auth Proof: ${this.authProof?.toString() ?? null}
+        ${this.authProof?.toString() ?? `Auth Proof: null`}
         Fee Proof: ${this._feeProof ? Base16Converter.encode(this._feeProof) : null}`;
   }
 
