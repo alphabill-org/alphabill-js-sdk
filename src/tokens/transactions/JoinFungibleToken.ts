@@ -1,5 +1,6 @@
 import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
+import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { TypeOwnerProofsAuthProof } from '../../transaction/proofs/TypeOwnerProofsAuthProof.js';
@@ -29,7 +30,7 @@ export class JoinFungibleToken {
         TokenPartitionTransactionType.JoinFungibleToken,
         new JoinFungibleTokenAttributes(data.proofs),
         data.stateLock,
-        data.metadata,
+        ClientMetadata.create(data.metadata),
       ),
       data.stateUnlock,
     );

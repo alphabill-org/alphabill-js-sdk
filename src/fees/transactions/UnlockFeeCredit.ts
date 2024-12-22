@@ -1,11 +1,12 @@
 import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
+import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
-import { OwnerProofWithoutFeeUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofWithoutFeeUnsignedTransactionOrder.js';
+import { FeelessOwnerProofUnsignedTransactionOrder } from '../../transaction/unsigned/FeelessOwnerProofUnsignedTransactionOrder.js';
 import { UnlockFeeCreditAttributes } from '../attributes/UnlockFeeCreditAttributes.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 
@@ -20,8 +21,8 @@ interface IUnlockFeeCreditTransactionData extends ITransactionData {
 export class UnlockFeeCredit {
   public static create(
     data: IUnlockFeeCreditTransactionData,
-  ): OwnerProofWithoutFeeUnsignedTransactionOrder<UnlockFeeCreditAttributes> {
-    return new OwnerProofWithoutFeeUnsignedTransactionOrder(
+  ): FeelessOwnerProofUnsignedTransactionOrder<UnlockFeeCreditAttributes> {
+    return new FeelessOwnerProofUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<UnlockFeeCreditAttributes>(
         data.networkIdentifier,
@@ -30,7 +31,7 @@ export class UnlockFeeCredit {
         FeeCreditTransactionType.UnlockFeeCredit,
         new UnlockFeeCreditAttributes(data.feeCredit.counter),
         data.stateLock,
-        data.metadata,
+        ClientMetadata.create(data.metadata),
       ),
       data.stateUnlock,
     );

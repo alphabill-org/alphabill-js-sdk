@@ -1,5 +1,6 @@
 import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
+import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -25,7 +26,8 @@ export class CreateFungibleToken {
     data: ICreateFungibleTokenTransactionData,
   ): OwnerProofUnsignedTransactionOrder<CreateFungibleTokenAttributes> {
     const attributes = new CreateFungibleTokenAttributes(data.type.unitId, data.value, data.ownerPredicate, data.nonce);
-    const tokenUnitId = TokenUnitId.create(attributes, data.metadata, TokenPartitionUnitType.FUNGIBLE_TOKEN);
+    const metadata = ClientMetadata.create(data.metadata);
+    const tokenUnitId = TokenUnitId.create(attributes, metadata, TokenPartitionUnitType.FUNGIBLE_TOKEN);
     return new OwnerProofUnsignedTransactionOrder(
       data.version,
       new TransactionPayload(
@@ -35,7 +37,7 @@ export class CreateFungibleToken {
         TokenPartitionTransactionType.CreateFungibleToken,
         attributes,
         data.stateLock,
-        data.metadata,
+        metadata,
       ),
       data.stateUnlock,
     );

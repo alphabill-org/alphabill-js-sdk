@@ -1,11 +1,12 @@
 import { IUnitId } from '../../IUnitId.js';
+import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
-import { OwnerProofWithoutFeeUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofWithoutFeeUnsignedTransactionOrder.js';
+import { FeelessOwnerProofUnsignedTransactionOrder } from '../../transaction/unsigned/FeelessOwnerProofUnsignedTransactionOrder.js';
 import { AddFeeCreditAttributes } from '../attributes/AddFeeCreditAttributes.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 import { TransferFeeCreditTransactionOrder } from './TransferFeeCredit.js';
@@ -21,8 +22,8 @@ interface IAddFeeCreditTransactionData extends ITransactionData {
 export class AddFeeCredit {
   public static create(
     data: IAddFeeCreditTransactionData,
-  ): OwnerProofWithoutFeeUnsignedTransactionOrder<AddFeeCreditAttributes> {
-    return new OwnerProofWithoutFeeUnsignedTransactionOrder(
+  ): FeelessOwnerProofUnsignedTransactionOrder<AddFeeCreditAttributes> {
+    return new FeelessOwnerProofUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<AddFeeCreditAttributes>(
         data.networkIdentifier,
@@ -31,7 +32,7 @@ export class AddFeeCredit {
         FeeCreditTransactionType.AddFeeCredit,
         new AddFeeCreditAttributes(data.ownerPredicate, data.proof),
         data.stateLock,
-        data.metadata,
+        ClientMetadata.create(data.metadata),
       ),
       data.stateUnlock,
     );

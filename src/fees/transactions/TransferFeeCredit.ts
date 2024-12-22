@@ -2,6 +2,7 @@ import { sha256 } from '@noble/hashes/sha256';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
+import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -9,7 +10,7 @@ import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProo
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { UnitIdWithType } from '../../transaction/UnitIdWithType.js';
-import { OwnerProofWithoutFeeUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofWithoutFeeUnsignedTransactionOrder.js';
+import { FeelessOwnerProofUnsignedTransactionOrder } from '../../transaction/unsigned/FeelessOwnerProofUnsignedTransactionOrder.js';
 import { TransferFeeCreditAttributes } from '../attributes/TransferFeeCreditAttributes.js';
 import { FeeCreditUnitType } from '../FeeCreditRecordUnitType.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
@@ -33,7 +34,7 @@ interface ITransferFeeCreditTransactionData extends ITransactionData {
 export class TransferFeeCredit {
   public static create(
     data: ITransferFeeCreditTransactionData,
-  ): OwnerProofWithoutFeeUnsignedTransactionOrder<TransferFeeCreditAttributes> {
+  ): FeelessOwnerProofUnsignedTransactionOrder<TransferFeeCreditAttributes> {
     let feeCreditRecordId = data.feeCreditRecord.unitId;
     if (feeCreditRecordId == null) {
       const unitBytes = sha256
@@ -43,7 +44,7 @@ export class TransferFeeCredit {
         .digest();
       feeCreditRecordId = new UnitIdWithType(unitBytes, FeeCreditUnitType.FEE_CREDIT_RECORD);
     }
-    return new OwnerProofWithoutFeeUnsignedTransactionOrder(
+    return new FeelessOwnerProofUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<TransferFeeCreditAttributes>(
         data.networkIdentifier,
@@ -59,7 +60,7 @@ export class TransferFeeCredit {
           data.bill.counter,
         ),
         data.stateLock,
-        data.metadata,
+        ClientMetadata.create(data.metadata),
       ),
       data.stateUnlock,
     );

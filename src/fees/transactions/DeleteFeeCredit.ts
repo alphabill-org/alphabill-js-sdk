@@ -1,11 +1,12 @@
 import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
+import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
-import { OwnerProofWithoutFeeUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofWithoutFeeUnsignedTransactionOrder.js';
+import { FeelessOwnerProofUnsignedTransactionOrder } from '../../transaction/unsigned/FeelessOwnerProofUnsignedTransactionOrder.js';
 import { DeleteFeeCreditAttributes } from '../attributes/DeleteFeeCreditAttributes.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 
@@ -17,8 +18,8 @@ interface IDeleteFeeCreditTransactionData extends ITransactionData {
 export class DeleteFeeCredit {
   public static create(
     data: IDeleteFeeCreditTransactionData,
-  ): OwnerProofWithoutFeeUnsignedTransactionOrder<DeleteFeeCreditAttributes> {
-    return new OwnerProofWithoutFeeUnsignedTransactionOrder(
+  ): FeelessOwnerProofUnsignedTransactionOrder<DeleteFeeCreditAttributes> {
+    return new FeelessOwnerProofUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<DeleteFeeCreditAttributes>(
         data.networkIdentifier,
@@ -27,7 +28,7 @@ export class DeleteFeeCredit {
         FeeCreditTransactionType.DeleteFeeCredit,
         new DeleteFeeCreditAttributes(data.feeCredit.counter),
         data.stateLock,
-        data.metadata,
+        ClientMetadata.create(data.metadata),
       ),
       data.stateUnlock,
     );

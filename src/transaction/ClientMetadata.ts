@@ -24,7 +24,11 @@ export class ClientMetadata implements ITransactionClientMetadata {
     return this._referenceNumber ? new Uint8Array(this._referenceNumber) : null;
   }
 
-  public static fromCbor(rawData: Uint8Array): ITransactionClientMetadata {
+  public static create(data: ITransactionClientMetadata): ClientMetadata {
+    return new ClientMetadata(data.timeout, data.maxTransactionFee, data.feeCreditRecordId, data.referenceNumber);
+  }
+
+  public static fromCbor(rawData: Uint8Array): ClientMetadata {
     const data = CborDecoder.readArray(rawData);
     return new ClientMetadata(
       CborDecoder.readUnsignedInteger(data[0]),

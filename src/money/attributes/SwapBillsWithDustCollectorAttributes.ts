@@ -26,7 +26,7 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
 
   /**
    * Get transaction proofs.
-   * @returns {readonly TransferBillToDustCollectorTransactionRecordWithProof[]} Transaction proofs.
+   * @returns {readonly TransactionRecordWithProof<TransferBillToDustCollectorTransactionOrder>[]} Transaction proofs.
    */
   public get proofs(): readonly TransactionRecordWithProof<TransferBillToDustCollectorTransactionOrder>[] {
     return Array.from(this._proofs);

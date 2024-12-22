@@ -2,7 +2,7 @@ import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../IUnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { dedent } from '../util/StringUtils.js';
-import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
+import { ClientMetadata } from './ClientMetadata.js';
 import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
 import { StateLock } from './StateLock.js';
 
@@ -17,7 +17,7 @@ export class TransactionPayload<T extends ITransactionPayloadAttributes> {
     public readonly type: number,
     public readonly attributes: T,
     public readonly stateLock: StateLock | null,
-    public readonly clientMetadata: ITransactionClientMetadata,
+    public readonly clientMetadata: ClientMetadata,
   ) {}
 
   /**

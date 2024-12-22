@@ -1,6 +1,7 @@
 import { sha256 } from '@noble/hashes/sha256';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
+import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -8,7 +9,7 @@ import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProo
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { UnitIdWithType } from '../../transaction/UnitIdWithType.js';
-import { OwnerProofWithoutFeeUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofWithoutFeeUnsignedTransactionOrder.js';
+import { FeelessOwnerProofUnsignedTransactionOrder } from '../../transaction/unsigned/FeelessOwnerProofUnsignedTransactionOrder.js';
 import { SetFeeCreditAttributes } from '../attributes/SetFeeCreditAttributes.js';
 import { FeeCreditUnitType } from '../FeeCreditRecordUnitType.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
@@ -24,7 +25,7 @@ interface ISetFeeCreditTransactionData extends ITransactionData {
 export class SetFeeCredit {
   public static create(
     data: ISetFeeCreditTransactionData,
-  ): OwnerProofWithoutFeeUnsignedTransactionOrder<SetFeeCreditAttributes> {
+  ): FeelessOwnerProofUnsignedTransactionOrder<SetFeeCreditAttributes> {
     let feeCreditRecordId: IUnitId;
     if (data.feeCreditRecord.unitId == null) {
       const unitBytes = sha256
@@ -36,7 +37,7 @@ export class SetFeeCredit {
     } else {
       feeCreditRecordId = data.feeCreditRecord.unitId;
     }
-    return new OwnerProofWithoutFeeUnsignedTransactionOrder(
+    return new FeelessOwnerProofUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<SetFeeCreditAttributes>(
         data.networkIdentifier,
@@ -45,7 +46,7 @@ export class SetFeeCredit {
         FeeCreditTransactionType.SetFeeCredit,
         new SetFeeCreditAttributes(data.ownerPredicate, data.amount, data.feeCreditRecord.counter),
         data.stateLock,
-        data.metadata,
+        ClientMetadata.create(data.metadata),
       ),
       data.stateUnlock,
     );

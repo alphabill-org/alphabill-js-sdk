@@ -7,7 +7,6 @@ import { TokenPartitionJsonRpcClient } from '../../../src/json-rpc/TokenPartitio
 import { Bill } from '../../../src/money/Bill.js';
 import { NetworkIdentifier } from '../../../src/NetworkIdentifier.js';
 import { ClientMetadata } from '../../../src/transaction/ClientMetadata.js';
-import { ITransactionClientMetadata } from '../../../src/transaction/ITransactionClientMetadata.js';
 import { ITransactionData } from '../../../src/transaction/order/ITransactionData.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
@@ -24,7 +23,7 @@ export function createTransactionData(round: bigint, feeCreditRecordId?: IUnitId
   };
 }
 
-export function createMetadata(round: bigint, feeCreditRecordId?: IUnitId): ITransactionClientMetadata {
+export function createMetadata(round: bigint, feeCreditRecordId?: IUnitId): ClientMetadata {
   return new ClientMetadata(round + 60n, 10n, feeCreditRecordId ?? null, new Uint8Array());
 }
 
