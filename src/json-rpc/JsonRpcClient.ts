@@ -24,7 +24,7 @@ export type CreateUnit<T, U> = {
 };
 
 export type CreateTransactionRecordWithProof<T> = {
-  fromCbor: (rawData: Uint8Array) => T;
+  createTransactionRecordWithProof: (bytes: Uint8Array) => T;
 };
 
 type GetUnitResponseDto<T> = {
@@ -130,7 +130,9 @@ export class JsonRpcClient {
       return null;
     }
 
-    return transactionRecordWithProofFactory.fromCbor(Base16Converter.decode(response.txRecordProof));
+    return transactionRecordWithProofFactory.createTransactionRecordWithProof(
+      Base16Converter.decode(response.txRecordProof),
+    );
   }
 
   /**
@@ -170,7 +172,7 @@ export class JsonRpcClient {
     transactionHash: Uint8Array,
     transactionRecordWithProofFactory: CreateTransactionRecordWithProof<TRP>,
     signal: AbortSignal = AbortSignal.timeout(10000),
-    interval = 1000,
+    interval: number = 1000,
   ): Promise<TRP> {
     return new Promise((resolve, reject) => {
       const abortListener = () => {

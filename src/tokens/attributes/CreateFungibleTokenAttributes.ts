@@ -11,6 +11,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Create fungible token payload attributes.
  */
 export class CreateFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'CreateFungibleTokenAttributes';
+
   /**
    * Create fungible token payload attributes constructor.
    * @param {IPredicate} ownerPredicate Initial owner predicate of the new token.

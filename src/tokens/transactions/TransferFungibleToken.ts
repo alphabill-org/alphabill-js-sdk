@@ -1,0 +1,52 @@
+import { IUnitId } from '../../IUnitId.js';
+import { PartitionIdentifier } from '../../PartitionIdentifier.js';
+import { ITransactionData } from '../../transaction/order/ITransactionData.js';
+import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
+import { IPredicate } from '../../transaction/predicates/IPredicate.js';
+import { TypeOwnerProofsAuthProof } from '../../transaction/proofs/TypeOwnerProofsAuthProof.js';
+import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
+import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { TypeOwnerProofsTransactionOrder } from '../../transaction/TypeOwnerProofsTransactionOrder.js';
+import { TransferFungibleTokenAttributes } from '../attributes/TransferFungibleTokenAttributes.js';
+import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
+
+export type TransferFungibleTokenTransactionOrder = TransactionOrder<
+  TransferFungibleTokenAttributes,
+  TypeOwnerProofsAuthProof
+>;
+interface ITransferFungibleTokenTransactionData extends ITransactionData {
+  token: { unitId: IUnitId; counter: bigint; value: bigint };
+  ownerPredicate: IPredicate;
+  type: { unitId: IUnitId };
+}
+
+export class TransferFungibleToken {
+  public static create(
+    data: ITransferFungibleTokenTransactionData,
+  ): TypeOwnerProofsTransactionOrder<TransferFungibleTokenAttributes> {
+    return new TypeOwnerProofsTransactionOrder(
+      data.version,
+      new TransactionPayload(
+        data.networkIdentifier,
+        PartitionIdentifier.TOKEN,
+        data.token.unitId,
+        TokenPartitionTransactionType.TransferFungibleToken,
+        new TransferFungibleTokenAttributes(
+          data.type.unitId,
+          data.token.value,
+          data.ownerPredicate,
+          data.token.counter,
+        ),
+        data.stateLock,
+        data.metadata,
+      ),
+      data.stateUnlock,
+    );
+  }
+
+  public static createTransactionRecordWithProof(
+    bytes: Uint8Array,
+  ): TransactionRecordWithProof<TransferFungibleTokenTransactionOrder> {
+    return TransactionRecordWithProof.fromCbor(bytes, TransferFungibleTokenAttributes, TypeOwnerProofsAuthProof);
+  }
+}

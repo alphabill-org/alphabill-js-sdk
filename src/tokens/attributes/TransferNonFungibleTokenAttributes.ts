@@ -11,6 +11,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Transfer non-fungible token payload attributes.
  */
 export class TransferNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'TransferNonFungibleTokenAttributes';
+
   /**
    * Transfer non-fungible token attributes constructor.
    * @param {IUnitId} typeId - Type ID.

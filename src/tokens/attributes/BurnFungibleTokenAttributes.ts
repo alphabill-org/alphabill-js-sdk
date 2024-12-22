@@ -9,6 +9,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Burn fungible token payload attributes.
  */
 export class BurnFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'BurnFungibleTokenAttributes';
+
   /**
    * Burn fungible token payload attributes constructor.
    * @param {IUnitId} typeId Token type ID.

@@ -1,46 +1,49 @@
 import { FeeCreditRecord } from '../fees/FeeCreditRecord.js';
-import { AddFeeCreditTransactionOrder } from '../fees/transactions/AddFeeCreditTransactionOrder.js';
-import { CloseFeeCreditTransactionOrder } from '../fees/transactions/CloseFeeCreditTransactionOrder.js';
-import { DeleteFeeCreditTransactionOrder } from '../fees/transactions/DeleteFeeCreditTransactionOrder.js';
-import { LockFeeCreditTransactionOrder } from '../fees/transactions/LockFeeCreditTransactionOrder.js';
-import { AddFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/AddFeeCreditTransactionRecordWithProof.js';
-import { CloseFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/CloseFeeCreditTransactionRecordWithProof.js';
-import { DeleteFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/DeleteFeeCreditTransactionRecordWithProof.js';
-import { LockFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/LockFeeCreditTransactionRecordWithProof.js';
-import { SetFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/SetFeeCreditTransactionRecordWithProof.js';
-import { UnlockFeeCreditTransactionRecordWithProof } from '../fees/transactions/records/UnlockFeeCreditTransactionRecordWithProof.js';
-import { SetFeeCreditTransactionOrder } from '../fees/transactions/SetFeeCreditTransactionOrder.js';
-import { UnlockFeeCreditTransactionOrder } from '../fees/transactions/UnlockFeeCreditTransactionOrder.js';
+import { AddFeeCredit, AddFeeCreditTransactionOrder } from '../fees/transactions/AddFeeCredit.js';
+import { CloseFeeCredit, CloseFeeCreditTransactionOrder } from '../fees/transactions/CloseFeeCredit.js';
+import { DeleteFeeCredit, DeleteFeeCreditTransactionOrder } from '../fees/transactions/DeleteFeeCredit.js';
+import { LockFeeCredit, LockFeeCreditTransactionOrder } from '../fees/transactions/LockFeeCredit.js';
+import { SetFeeCredit, SetFeeCreditTransactionOrder } from '../fees/transactions/SetFeeCredit.js';
+import { UnlockFeeCredit, UnlockFeeCreditTransactionOrder } from '../fees/transactions/UnlockFeeCredit.js';
 import { IUnitId } from '../IUnitId.js';
 import { RootTrustBase } from '../RootTrustBase.js';
 import { FungibleToken } from '../tokens/FungibleToken.js';
 import { FungibleTokenType } from '../tokens/FungibleTokenType.js';
 import { NonFungibleToken } from '../tokens/NonFungibleToken.js';
 import { NonFungibleTokenType } from '../tokens/NonFungibleTokenType.js';
-import { BurnFungibleTokenTransactionOrder } from '../tokens/transactions/BurnFungibleTokenTransactionOrder.js';
-import { CreateFungibleTokenTransactionOrder } from '../tokens/transactions/CreateFungibleTokenTransactionOrder.js';
-import { CreateFungibleTokenTypeTransactionOrder } from '../tokens/transactions/CreateFungibleTokenTypeTransactionOrder.js';
-import { CreateNonFungibleTokenTransactionOrder } from '../tokens/transactions/CreateNonFungibleTokenTransactionOrder.js';
-import { CreateNonFungibleTokenTypeTransactionOrder } from '../tokens/transactions/CreateNonFungibleTokenTypeTransactionOrder.js';
-import { JoinFungibleTokenTransactionOrder } from '../tokens/transactions/JoinFungibleTokenTransactionOrder.js';
-import { LockTokenTransactionOrder } from '../tokens/transactions/LockTokenTransactionOrder.js';
-import { BurnFungibleTokenTransactionRecordWithProof } from '../tokens/transactions/records/BurnFungibleTokenTransactionRecordWithProof.js';
-import { CreateFungibleTokenTransactionRecordWithProof } from '../tokens/transactions/records/CreateFungibleTokenTransactionRecordWithProof.js';
-import { CreateFungibleTokenTypeTransactionRecordWithProof } from '../tokens/transactions/records/CreateFungibleTokenTypeTransactionRecordWithProof.js';
-import { CreateNonFungibleTokenTransactionRecordWithProof } from '../tokens/transactions/records/CreateNonFungibleTokenTransactionRecordWithProof.js';
-import { CreateNonFungibleTokenTypeTransactionRecordWithProof } from '../tokens/transactions/records/CreateNonFungibleTokenTypeTransactionRecordWithProof.js';
-import { JoinFungibleTokenTransactionRecordWithProof } from '../tokens/transactions/records/JoinFungibleTokenTransactionRecordWithProof.js';
-import { LockTokenTransactionRecordWithProof } from '../tokens/transactions/records/LockTokenTransactionRecordWithProof.js';
-import { SplitFungibleTokenTransactionRecordWithProof } from '../tokens/transactions/records/SplitFungibleTokenTransactionRecordWithProof.js';
-import { TransferFungibleTokenTransactionRecordWithProof } from '../tokens/transactions/records/TransferFungibleTokenTransactionRecordWithProof.js';
-import { TransferNonFungibleTokenTransactionRecordWithProof } from '../tokens/transactions/records/TransferNonFungibleTokenTransactionRecordWithProof.js';
-import { UnlockTokenTransactionRecordWithProof } from '../tokens/transactions/records/UnlockTokenTransactionRecordWithProof.js';
-import { UpdateNonFungibleTokenTransactionRecordWithProof } from '../tokens/transactions/records/UpdateNonFungibleTokenTransactionRecordWithProof.js';
-import { SplitFungibleTokenTransactionOrder } from '../tokens/transactions/SplitFungibleTokenTransactionOrder.js';
-import { TransferFungibleTokenTransactionOrder } from '../tokens/transactions/TransferFungibleTokenTransactionOrder.js';
-import { TransferNonFungibleTokenTransactionOrder } from '../tokens/transactions/TransferNonFungibleTokenTransactionOrder.js';
-import { UnlockTokenTransactionOrder } from '../tokens/transactions/UnlockTokenTransactionOrder.js';
-import { UpdateNonFungibleTokenTransactionOrder } from '../tokens/transactions/UpdateNonFungibleTokenTransactionOrder.js';
+import { BurnFungibleToken, BurnFungibleTokenTransactionOrder } from '../tokens/transactions/BurnFungibleToken.js';
+import {
+  CreateFungibleToken,
+  CreateFungibleTokenTransactionOrder,
+} from '../tokens/transactions/CreateFungibleToken.js';
+import {
+  CreateFungibleTokenType,
+  CreateFungibleTokenTypeTransactionOrder,
+} from '../tokens/transactions/CreateFungibleTokenType.js';
+import {
+  CreateNonFungibleToken,
+  CreateNonFungibleTokenTransactionOrder,
+} from '../tokens/transactions/CreateNonFungibleToken.js';
+import {
+  CreateNonFungibleTokenType,
+  CreateNonFungibleTokenTypeTransactionOrder,
+} from '../tokens/transactions/CreateNonFungibleTokenType.js';
+import { JoinFungibleToken, JoinFungibleTokenTransactionOrder } from '../tokens/transactions/JoinFungibleToken.js';
+import { LockToken, LockTokenTransactionOrder } from '../tokens/transactions/LockToken.js';
+import { SplitFungibleToken, SplitFungibleTokenTransactionOrder } from '../tokens/transactions/SplitFungibleToken.js';
+import {
+  TransferFungibleToken,
+  TransferFungibleTokenTransactionOrder,
+} from '../tokens/transactions/TransferFungibleToken.js';
+import {
+  TransferNonFungibleToken,
+  TransferNonFungibleTokenTransactionOrder,
+} from '../tokens/transactions/TransferNonFungibleToken.js';
+import { UnlockToken, UnlockTokenTransactionOrder } from '../tokens/transactions/UnlockToken.js';
+import {
+  UpdateNonFungibleToken,
+  UpdateNonFungibleTokenTransactionOrder,
+} from '../tokens/transactions/UpdateNonFungibleToken.js';
 import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
 import { IFungibleTokenDto } from './IFungibleTokenDto.js';
 import { IFungibleTokenTypeDto } from './IFungibleTokenTypeDto.js';
@@ -69,24 +72,24 @@ type UnitDto<T extends TokenPartitionUnitTypes> = T extends FungibleToken
           : never;
 
 export type TokenPartitionTransactionRecordWithProofTypes =
-  | AddFeeCreditTransactionRecordWithProof
-  | BurnFungibleTokenTransactionRecordWithProof
-  | CloseFeeCreditTransactionRecordWithProof
-  | CreateFungibleTokenTransactionRecordWithProof
-  | CreateFungibleTokenTypeTransactionRecordWithProof
-  | CreateNonFungibleTokenTransactionRecordWithProof
-  | CreateNonFungibleTokenTypeTransactionRecordWithProof
-  | DeleteFeeCreditTransactionRecordWithProof
-  | JoinFungibleTokenTransactionRecordWithProof
-  | LockFeeCreditTransactionRecordWithProof
-  | LockTokenTransactionRecordWithProof
-  | SetFeeCreditTransactionRecordWithProof
-  | SplitFungibleTokenTransactionRecordWithProof
-  | TransferFungibleTokenTransactionRecordWithProof
-  | TransferNonFungibleTokenTransactionRecordWithProof
-  | UnlockFeeCreditTransactionRecordWithProof
-  | UnlockTokenTransactionRecordWithProof
-  | UpdateNonFungibleTokenTransactionRecordWithProof;
+  | AddFeeCredit
+  | BurnFungibleToken
+  | CloseFeeCredit
+  | CreateFungibleToken
+  | CreateFungibleTokenType
+  | CreateNonFungibleToken
+  | CreateNonFungibleTokenType
+  | DeleteFeeCredit
+  | JoinFungibleToken
+  | LockFeeCredit
+  | LockToken
+  | SetFeeCredit
+  | SplitFungibleToken
+  | TransferFungibleToken
+  | TransferNonFungibleToken
+  | UnlockFeeCredit
+  | UnlockToken
+  | UpdateNonFungibleToken;
 
 type TokenPartitionTransactionOrderTypes =
   | AddFeeCreditTransactionOrder

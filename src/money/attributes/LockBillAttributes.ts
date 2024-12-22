@@ -7,6 +7,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Lock bill payload attributes.
  */
 export class LockBillAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'LockBillAttributes';
+
   /**
    * Lock bill attributes constructor.
    * @param {bigint} lockStatus - Lock status.

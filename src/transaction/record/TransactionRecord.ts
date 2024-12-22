@@ -26,16 +26,18 @@ export class TransactionRecord<
     public readonly serverMetadata: ServerMetadata,
   ) {}
 
-  public static fromCbor<T extends TransactionOrder<ITransactionPayloadAttributes, ITransactionOrderProof | null>>(
+  public static fromCbor<
+    Attributes extends ITransactionPayloadAttributes,
+    AuthProof extends ITransactionOrderProof | null,
+  >(
     rawData: Uint8Array,
-    factory: {
-      fromCbor: (rawData: Uint8Array) => T;
-    },
-  ): TransactionRecord<T> {
+    attributesFactory: { fromCbor: (bytes: Uint8Array) => Attributes },
+    authProofFactory: { fromCbor: (bytes: Uint8Array) => AuthProof },
+  ): TransactionRecord<TransactionOrder<Attributes, AuthProof>> {
     const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
     return new TransactionRecord(
       CborDecoder.readUnsignedInteger(data[0]),
-      factory.fromCbor(data[1]),
+      TransactionOrder.fromCbor(data[1], attributesFactory, authProofFactory),
       ServerMetadata.fromCbor(data[2]),
     );
   }

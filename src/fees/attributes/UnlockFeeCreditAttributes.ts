@@ -7,6 +7,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Unlock fee credit payload attributes.
  */
 export class UnlockFeeCreditAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'UnlockFeeCreditAttributes';
+
   /**
    * Unlock fee credit attributes constructor.
    * @param {bigint} counter - Counter.

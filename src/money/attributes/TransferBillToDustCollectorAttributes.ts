@@ -9,6 +9,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Transfer bill to dust collector payload attributes.
  */
 export class TransferBillToDustCollectorAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'TransferBillToDustCollectorAttributes';
+
   /**
    * Transfer bill to dust collector attributes constructor.
    * @param {bigint} value - Value.

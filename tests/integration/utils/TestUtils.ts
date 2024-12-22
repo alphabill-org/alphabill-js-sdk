@@ -1,7 +1,6 @@
 import assert from 'node:assert';
-import { TransferFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/TransferFeeCreditTransactionRecordWithProof.js';
-import { UnsignedAddFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedAddFeeCreditTransactionOrder.js';
-import { UnsignedTransferFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedTransferFeeCreditTransactionOrder.js';
+import { AddFeeCredit } from '../../../src/fees/transactions/AddFeeCredit.js';
+import { TransferFeeCredit } from '../../../src/fees/transactions/TransferFeeCredit.js';
 import { IUnitId } from '../../../src/IUnitId.js';
 import { MoneyPartitionJsonRpcClient } from '../../../src/json-rpc/MoneyPartitionJsonRpcClient.js';
 import { TokenPartitionJsonRpcClient } from '../../../src/json-rpc/TokenPartitionJsonRpcClient.js';
@@ -50,7 +49,7 @@ export async function addFeeCredit(
   const round = await clientToAddFeesTo.getRoundNumber();
 
   console.log('Transferring to fee credit...');
-  const transferFeeCreditTransactionOrder = await UnsignedTransferFeeCreditTransactionOrder.create({
+  const transferFeeCreditTransactionOrder = await TransferFeeCredit.create({
     amount: amountToFeeCredit,
     targetPartitionIdentifier: targetPartitionIdentifier,
     latestAdditionTime: round + 60n,
@@ -63,10 +62,7 @@ export async function addFeeCredit(
 
   const transferFeeCreditHash = await moneyClient.sendTransaction(transferFeeCreditTransactionOrder);
 
-  const transferFeeCreditProof = await moneyClient.waitTransactionProof(
-    transferFeeCreditHash,
-    TransferFeeCreditTransactionRecordWithProof,
-  );
+  const transferFeeCreditProof = await moneyClient.waitTransactionProof(transferFeeCreditHash, TransferFeeCredit);
   expect(transferFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(
     TransactionStatus.Successful,
   );
@@ -74,7 +70,7 @@ export async function addFeeCredit(
   const feeCreditRecordId = transferFeeCreditTransactionOrder.payload.attributes.targetUnitId;
 
   console.log('Adding fee credit');
-  const addFeeCreditTransactionOrder = await UnsignedAddFeeCreditTransactionOrder.create({
+  const addFeeCreditTransactionOrder = await AddFeeCredit.create({
     targetPartitionIdentifier: targetPartitionIdentifier,
     ownerPredicate: ownerPredicate,
     proof: transferFeeCreditProof,

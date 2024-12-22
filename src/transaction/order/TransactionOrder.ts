@@ -1,17 +1,22 @@
+import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { CborTag } from '../../codec/cbor/CborTag.js';
+import { UnitId } from '../../UnitId.js';
 import { Base16Converter } from '../../util/Base16Converter.js';
 import { dedent } from '../../util/StringUtils.js';
+import { ClientMetadata } from '../ClientMetadata.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
 import { IPredicate } from '../predicates/IPredicate.js';
+import { PredicateBytes } from '../predicates/PredicateBytes.js';
 import { ITransactionOrderProof } from '../proofs/ITransactionOrderProof.js';
+import { StateLock } from '../StateLock.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 
 /**
  * Transaction order.
  * @template T - Transaction payload type.
  */
-export abstract class TransactionOrder<
+export class TransactionOrder<
   Attributes extends ITransactionPayloadAttributes,
   AuthProof extends ITransactionOrderProof | null,
 > {
@@ -24,11 +29,11 @@ export abstract class TransactionOrder<
    * @param {Uint8Array} _feeProof Fee proof.
    * @param {Uint8Array | null} stateUnlock State unlock.
    */
-  protected constructor(
+  public constructor(
     public readonly version: bigint,
-    public readonly payload: TransactionPayload<Attributes>,
+    public readonly payload: NoInfer<TransactionPayload<Attributes>>,
     public readonly stateUnlock: IPredicate | null,
-    public readonly authProof: AuthProof,
+    public readonly authProof: NoInfer<AuthProof>,
     private readonly _feeProof: Uint8Array | null,
   ) {
     this.version = BigInt(version);
@@ -37,6 +42,33 @@ export abstract class TransactionOrder<
 
   public get feeProof(): Uint8Array | null {
     return this._feeProof ? new Uint8Array(this._feeProof) : null;
+  }
+
+  public static fromCbor<
+    Attributes extends ITransactionPayloadAttributes,
+    AuthProof extends ITransactionOrderProof | null,
+  >(
+    bytes: Uint8Array,
+    attributesFactory: { fromCbor: (bytes: Uint8Array) => Attributes },
+    authProofFactory: { fromCbor: (bytes: Uint8Array) => AuthProof },
+  ): TransactionOrder<Attributes, AuthProof> {
+    const tag = CborDecoder.readTag(bytes);
+    const data = CborDecoder.readArray(tag.data);
+    return new TransactionOrder(
+      CborDecoder.readUnsignedInteger(data[0]),
+      new TransactionPayload(
+        Number(CborDecoder.readUnsignedInteger(data[1])),
+        Number(CborDecoder.readUnsignedInteger(data[2])),
+        UnitId.fromBytes(CborDecoder.readByteString(data[3])),
+        Number(CborDecoder.readUnsignedInteger(data[4])),
+        attributesFactory.fromCbor(data[5]),
+        CborDecoder.readOptional(data[6], StateLock.fromCbor),
+        ClientMetadata.fromCbor(data[7]),
+      ),
+      CborDecoder.readOptional(data[8], PredicateBytes.fromCbor),
+      authProofFactory.fromCbor(data[9]),
+      CborDecoder.readOptional(data[10], CborDecoder.readByteString),
+    );
   }
 
   /**

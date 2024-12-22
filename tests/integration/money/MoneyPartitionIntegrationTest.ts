@@ -1,18 +1,12 @@
-import { AddFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/AddFeeCreditTransactionRecordWithProof.js';
+import { AddFeeCredit } from '../../../src/fees/transactions/AddFeeCredit.js';
 import { IUnitId } from '../../../src/IUnitId.js';
 import { Bill } from '../../../src/money/Bill.js';
-import { LockBillTransactionRecordWithProof } from '../../../src/money/transactions/records/LockBillTransactionRecordWithProof.js';
-import { SplitBillTransactionRecordWithProof } from '../../../src/money/transactions/records/SplitBillTransactionRecordWithProof.js';
-import { SwapBillsWithDustCollectorTransactionRecordWithProof } from '../../../src/money/transactions/records/SwapBillsWithDustCollectorTransactionRecordWithProof.js';
-import { TransferBillToDustCollectorTransactionRecordWithProof } from '../../../src/money/transactions/records/TransferBillToDustCollectorTransactionRecordWithProof.js';
-import { TransferBillTransactionRecordWithProof } from '../../../src/money/transactions/records/TransferBillTransactionRecordWithProof.js';
-import { UnlockBillTransactionRecordWithProof } from '../../../src/money/transactions/records/UnlockBillTransactionRecordWithProof.js';
-import { UnsignedLockBillTransactionOrder } from '../../../src/money/transactions/UnsignedLockBillTransactionOrder.js';
-import { UnsignedSplitBillTransactionOrder } from '../../../src/money/transactions/UnsignedSplitBillTransactionOrder.js';
-import { UnsignedSwapBillsWithDustCollectorTransactionOrder } from '../../../src/money/transactions/UnsignedSwapBillsWithDustCollectorTransactionOrder.js';
-import { UnsignedTransferBillToDustCollectorTransactionOrder } from '../../../src/money/transactions/UnsignedTransferBillToDustCollectorTransactionOrder.js';
-import { UnsignedTransferBillTransactionOrder } from '../../../src/money/transactions/UnsignedTransferBillTransactionOrder.js';
-import { UnsignedUnlockBillTransactionOrder } from '../../../src/money/transactions/UnsignedUnlockBillTransactionOrder.js';
+import { LockBill } from '../../../src/money/transactions/LockBill.js';
+import { SplitBill } from '../../../src/money/transactions/SplitBill.js';
+import { SwapBillsWithDustCollector } from '../../../src/money/transactions/SwapBillsWithDustCollector.js';
+import { TransferBill } from '../../../src/money/transactions/TransferBill.js';
+import { TransferBillToDustCollector } from '../../../src/money/transactions/TransferBillToDustCollector.js';
+import { UnlockBill } from '../../../src/money/transactions/UnlockBill.js';
 import { PartitionIdentifier } from '../../../src/PartitionIdentifier.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, http } from '../../../src/StateApiClientFactory.js';
@@ -62,10 +56,7 @@ describe('Money Client Integration Tests', () => {
       proofFactory,
     );
 
-    const addFeeCreditProof = await moneyClient.waitTransactionProof(
-      addFeeCreditHash,
-      AddFeeCreditTransactionRecordWithProof,
-    );
+    const addFeeCreditProof = await moneyClient.waitTransactionProof(addFeeCreditHash, AddFeeCredit);
     expect(addFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Adding fee credit successful');
     feeCreditRecordId = addFeeCreditProof.transactionRecord.transactionOrder.payload.unitId;
@@ -80,14 +71,14 @@ describe('Money Client Integration Tests', () => {
     expect(bill).not.toBeNull();
 
     console.log('Locking bill...');
-    const lockBillTransactionOrder = await UnsignedLockBillTransactionOrder.create({
+    const lockBillTransactionOrder = await LockBill.create({
       status: 5n,
       bill: bill,
       ...createTransactionData(round, feeCreditRecordId),
     }).sign(proofFactory, proofFactory);
 
     const lockBillHash = await moneyClient.sendTransaction(lockBillTransactionOrder);
-    const lockBillProof = await moneyClient.waitTransactionProof(lockBillHash, LockBillTransactionRecordWithProof);
+    const lockBillProof = await moneyClient.waitTransactionProof(lockBillHash, LockBill);
     expect(lockBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Locking bill successful');
 
@@ -95,15 +86,12 @@ describe('Money Client Integration Tests', () => {
     const lockedBill = (await moneyClient.getUnit(bill.unitId, false, Bill))!;
     expect(lockedBill).not.toBeNull();
     expect(lockedBill.counter).not.toEqual(bill.counter);
-    const unlockBillTransactionOrder = await UnsignedUnlockBillTransactionOrder.create({
+    const unlockBillTransactionOrder = await UnlockBill.create({
       bill: lockedBill,
       ...createTransactionData(round, feeCreditRecordId),
     }).sign(proofFactory, proofFactory);
     const unlockBillHash = await moneyClient.sendTransaction(unlockBillTransactionOrder);
-    const unlockBillProof = await moneyClient.waitTransactionProof(
-      unlockBillHash,
-      UnlockBillTransactionRecordWithProof,
-    );
+    const unlockBillProof = await moneyClient.waitTransactionProof(unlockBillHash, UnlockBill);
     expect(unlockBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Unlocking bill successful');
   }, 20000);
@@ -117,7 +105,7 @@ describe('Money Client Integration Tests', () => {
     expect(bill).not.toBeNull();
 
     console.log('Splitting bill...');
-    const splitBillTransactionOrder = await UnsignedSplitBillTransactionOrder.create({
+    const splitBillTransactionOrder = await SplitBill.create({
       splits: [
         {
           value: 10n,
@@ -128,7 +116,7 @@ describe('Money Client Integration Tests', () => {
       ...createTransactionData(round, feeCreditRecordId),
     }).sign(proofFactory, proofFactory);
     const splitBillHash = await moneyClient.sendTransaction(splitBillTransactionOrder);
-    const splitBillProof = await moneyClient.waitTransactionProof(splitBillHash, SplitBillTransactionRecordWithProof);
+    const splitBillProof = await moneyClient.waitTransactionProof(splitBillHash, SplitBill);
     expect(splitBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Splitting bill successful');
 
@@ -144,16 +132,13 @@ describe('Money Client Integration Tests', () => {
     const targetBill = await moneyClient.getUnit(targetBillUnitId, false, Bill);
 
     console.log('Transferring bill...');
-    const transferBillTransactionOrder = await UnsignedTransferBillTransactionOrder.create({
+    const transferBillTransactionOrder = await TransferBill.create({
       ownerPredicate: PayToPublicKeyHashPredicate.create(signingService.publicKey),
       bill: targetBill!,
       ...createTransactionData(round, feeCreditRecordId),
     }).sign(proofFactory, proofFactory);
     const transferBillHash = await moneyClient.sendTransaction(transferBillTransactionOrder);
-    const transferBillProof = await moneyClient.waitTransactionProof(
-      transferBillHash,
-      TransferBillTransactionRecordWithProof,
-    );
+    const transferBillProof = await moneyClient.waitTransactionProof(transferBillHash, TransferBill);
     expect(transferBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Transferring bill successful');
   }, 20000);
@@ -169,7 +154,7 @@ describe('Money Client Integration Tests', () => {
     expect(targetBill).not.toBeNull();
 
     console.log('Transferring bill to dust collector...');
-    const transferBillToDcTransactionOrder = await UnsignedTransferBillToDustCollectorTransactionOrder.create({
+    const transferBillToDcTransactionOrder = await TransferBillToDustCollector.create({
       bill: bill!,
       targetBill: targetBill!,
       ...createTransactionData(round, feeCreditRecordId),
@@ -177,7 +162,7 @@ describe('Money Client Integration Tests', () => {
     const transferBillToDcHash = await moneyClient.sendTransaction(transferBillToDcTransactionOrder);
     const transferBillToDcProof = await moneyClient.waitTransactionProof(
       transferBillToDcHash,
-      TransferBillToDustCollectorTransactionRecordWithProof,
+      TransferBillToDustCollector,
     );
     expect(transferBillToDcProof.transactionRecord.serverMetadata.successIndicator).toEqual(
       TransactionStatus.Successful,
@@ -185,7 +170,7 @@ describe('Money Client Integration Tests', () => {
     console.log('Transferring bill to dust collector successful');
 
     console.log('Swapping bill with dust collector...');
-    const swapBillWithDcTransactionOrder = await UnsignedSwapBillsWithDustCollectorTransactionOrder.create({
+    const swapBillWithDcTransactionOrder = await SwapBillsWithDustCollector.create({
       bill: targetBill!,
       proofs: [transferBillToDcProof],
       ...createTransactionData(round, feeCreditRecordId),
@@ -193,7 +178,7 @@ describe('Money Client Integration Tests', () => {
     const swapBillsWithDcHash = await moneyClient.sendTransaction(swapBillWithDcTransactionOrder);
     const swapBillsWithDcProof = await moneyClient.waitTransactionProof(
       swapBillsWithDcHash,
-      SwapBillsWithDustCollectorTransactionRecordWithProof,
+      SwapBillsWithDustCollector,
     );
     expect(swapBillsWithDcProof.transactionRecord.serverMetadata.successIndicator).toEqual(
       TransactionStatus.Successful,
