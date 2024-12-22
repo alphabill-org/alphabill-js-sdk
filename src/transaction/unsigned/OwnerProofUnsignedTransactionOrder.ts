@@ -1,13 +1,12 @@
-import { CborEncoder } from '../codec/cbor/CborEncoder.js';
-import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
-import { TransactionOrder } from './order/TransactionOrder.js';
-import { IPredicate } from './predicates/IPredicate.js';
-import { IProofFactory } from './proofs/IProofFactory.js';
-import { OwnerProofAuthProof } from './proofs/OwnerProofAuthProof.js';
-import { TransactionPayload } from './TransactionPayload.js';
-import { LockBillTransactionOrder } from '../money/transactions/LockBill';
+import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
+import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
+import { TransactionOrder } from '../order/TransactionOrder.js';
+import { IPredicate } from '../predicates/IPredicate.js';
+import { IProofFactory } from '../proofs/IProofFactory.js';
+import { OwnerProofAuthProof } from '../proofs/OwnerProofAuthProof.js';
+import { TransactionPayload } from '../TransactionPayload.js';
 
-export class OwnerProofTransactionOrder<Attributes extends ITransactionPayloadAttributes> {
+export class OwnerProofUnsignedTransactionOrder<Attributes extends ITransactionPayloadAttributes> {
   public constructor(
     public readonly version: bigint,
     public readonly payload: TransactionPayload<Attributes>,

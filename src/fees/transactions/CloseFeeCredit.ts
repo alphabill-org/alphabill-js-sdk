@@ -2,10 +2,10 @@ import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
-import { OwnerProofWithoutFeeTransactionOrder } from '../../transaction/OwnerProofWithoutFeeTransactionOrder.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { OwnerProofWithoutFeeUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofWithoutFeeUnsignedTransactionOrder.js';
 import { CloseFeeCreditAttributes } from '../attributes/CloseFeeCreditAttributes.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 
@@ -16,8 +16,10 @@ interface ICloseFeeCreditTransactionData extends ITransactionData {
 }
 
 export class CloseFeeCredit {
-  public static create(data: ICloseFeeCreditTransactionData): OwnerProofWithoutFeeTransactionOrder<CloseFeeCreditAttributes> {
-    return new OwnerProofWithoutFeeTransactionOrder(
+  public static create(
+    data: ICloseFeeCreditTransactionData,
+  ): OwnerProofWithoutFeeUnsignedTransactionOrder<CloseFeeCreditAttributes> {
+    return new OwnerProofWithoutFeeUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<CloseFeeCreditAttributes>(
         data.networkIdentifier,

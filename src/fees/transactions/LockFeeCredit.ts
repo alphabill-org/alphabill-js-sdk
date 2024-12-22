@@ -2,10 +2,10 @@ import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
-import { OwnerProofWithoutFeeTransactionOrder } from '../../transaction/OwnerProofWithoutFeeTransactionOrder.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { OwnerProofWithoutFeeUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofWithoutFeeUnsignedTransactionOrder.js';
 import { LockFeeCreditAttributes } from '../attributes/LockFeeCreditAttributes.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 
@@ -21,8 +21,8 @@ interface ILockFeeCreditTransactionData extends ITransactionData {
 export class LockFeeCredit {
   public static create(
     data: ILockFeeCreditTransactionData,
-  ): OwnerProofWithoutFeeTransactionOrder<LockFeeCreditAttributes> {
-    return new OwnerProofWithoutFeeTransactionOrder(
+  ): OwnerProofWithoutFeeUnsignedTransactionOrder<LockFeeCreditAttributes> {
+    return new OwnerProofWithoutFeeUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<LockFeeCreditAttributes>(
         data.networkIdentifier,

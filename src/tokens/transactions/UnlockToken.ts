@@ -2,10 +2,10 @@ import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
-import { OwnerProofTransactionOrder } from '../../transaction/OwnerProofTransactionOrder.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { OwnerProofUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofUnsignedTransactionOrder.js';
 import { UnlockTokenAttributes } from '../attributes/UnlockTokenAttributes.js';
 import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
 
@@ -15,8 +15,8 @@ export interface IUnlockTokenTransactionData extends ITransactionData {
 }
 
 export class UnlockToken {
-  public static create(data: IUnlockTokenTransactionData): OwnerProofTransactionOrder<UnlockTokenAttributes> {
-    return new OwnerProofTransactionOrder(
+  public static create(data: IUnlockTokenTransactionData): OwnerProofUnsignedTransactionOrder<UnlockTokenAttributes> {
+    return new OwnerProofUnsignedTransactionOrder(
       data.version,
       new TransactionPayload(
         data.networkIdentifier,

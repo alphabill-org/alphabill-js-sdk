@@ -5,7 +5,7 @@ import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { TypeOwnerProofsAuthProof } from '../../transaction/proofs/TypeOwnerProofsAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
-import { TypeOwnerProofsTransactionOrder } from '../../transaction/TypeOwnerProofsTransactionOrder.js';
+import { TypeOwnerProofsUnsignedTransactionOrder } from '../../transaction/unsigned/TypeOwnerProofsUnsignedTransactionOrder.js';
 import { BurnFungibleTokenAttributes } from '../attributes/BurnFungibleTokenAttributes.js';
 import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
 
@@ -19,8 +19,8 @@ interface IBurnFungibleTokenTransactionData extends ITransactionData {
 export class BurnFungibleToken {
   public static create(
     data: IBurnFungibleTokenTransactionData,
-  ): TypeOwnerProofsTransactionOrder<BurnFungibleTokenAttributes> {
-    return new TypeOwnerProofsTransactionOrder(
+  ): TypeOwnerProofsUnsignedTransactionOrder<BurnFungibleTokenAttributes> {
+    return new TypeOwnerProofsUnsignedTransactionOrder(
       data.version,
       new TransactionPayload(
         data.networkIdentifier,

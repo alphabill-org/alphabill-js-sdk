@@ -5,8 +5,8 @@ import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { SubTypeOwnerProofsAuthProof } from '../../transaction/proofs/SubTypeOwnerProofsAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
-import { SubTypeOwnerProofsTransactionOrder } from '../../transaction/SubTypeOwnerProofsTransactionOrder.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { SubTypeOwnerProofsUnsignedTransactionOrder } from '../../transaction/unsigned/SubTypeOwnerProofsUnsignedTransactionOrder.js';
 import { CreateNonFungibleTokenTypeAttributes } from '../attributes/CreateNonFungibleTokenTypeAttributes.js';
 import { TokenIcon } from '../TokenIcon.js';
 import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
@@ -30,8 +30,8 @@ interface ICreateNonFungibleTokenTypeTransactionData extends ITransactionData {
 export class CreateNonFungibleTokenType {
   public static create(
     data: ICreateNonFungibleTokenTypeTransactionData,
-  ): SubTypeOwnerProofsTransactionOrder<CreateNonFungibleTokenTypeAttributes> {
-    return new SubTypeOwnerProofsTransactionOrder(
+  ): SubTypeOwnerProofsUnsignedTransactionOrder<CreateNonFungibleTokenTypeAttributes> {
+    return new SubTypeOwnerProofsUnsignedTransactionOrder(
       data.version,
       new TransactionPayload(
         data.networkIdentifier,

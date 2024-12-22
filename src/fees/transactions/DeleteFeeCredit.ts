@@ -2,10 +2,10 @@ import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
-import { OwnerProofWithoutFeeTransactionOrder } from '../../transaction/OwnerProofWithoutFeeTransactionOrder.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { OwnerProofWithoutFeeUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofWithoutFeeUnsignedTransactionOrder.js';
 import { DeleteFeeCreditAttributes } from '../attributes/DeleteFeeCreditAttributes.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 
@@ -17,8 +17,8 @@ interface IDeleteFeeCreditTransactionData extends ITransactionData {
 export class DeleteFeeCredit {
   public static create(
     data: IDeleteFeeCreditTransactionData,
-  ): OwnerProofWithoutFeeTransactionOrder<DeleteFeeCreditAttributes> {
-    return new OwnerProofWithoutFeeTransactionOrder(
+  ): OwnerProofWithoutFeeUnsignedTransactionOrder<DeleteFeeCreditAttributes> {
+    return new OwnerProofWithoutFeeUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<DeleteFeeCreditAttributes>(
         data.networkIdentifier,

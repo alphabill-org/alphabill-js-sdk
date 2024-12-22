@@ -2,10 +2,10 @@ import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
-import { OwnerProofTransactionOrder } from '../../transaction/OwnerProofTransactionOrder.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { OwnerProofUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofUnsignedTransactionOrder.js';
 import { TransferBillToDustCollectorAttributes } from '../attributes/TransferBillToDustCollectorAttributes.js';
 import { MoneyPartitionTransactionType } from '../MoneyPartitionTransactionType.js';
 
@@ -29,8 +29,8 @@ export interface ITransferBillToDustCollectorTransactionData extends ITransactio
 export class TransferBillToDustCollector {
   public static create(
     data: ITransferBillToDustCollectorTransactionData,
-  ): OwnerProofTransactionOrder<TransferBillToDustCollectorAttributes> {
-    return new OwnerProofTransactionOrder(
+  ): OwnerProofUnsignedTransactionOrder<TransferBillToDustCollectorAttributes> {
+    return new OwnerProofUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<TransferBillToDustCollectorAttributes>(
         data.networkIdentifier,

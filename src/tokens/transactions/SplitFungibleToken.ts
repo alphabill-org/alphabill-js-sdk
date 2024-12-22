@@ -6,7 +6,7 @@ import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { TypeOwnerProofsAuthProof } from '../../transaction/proofs/TypeOwnerProofsAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
-import { TypeOwnerProofsTransactionOrder } from '../../transaction/TypeOwnerProofsTransactionOrder.js';
+import { TypeOwnerProofsUnsignedTransactionOrder } from '../../transaction/unsigned/TypeOwnerProofsUnsignedTransactionOrder.js';
 import { SplitFungibleTokenAttributes } from '../attributes/SplitFungibleTokenAttributes.js';
 import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
 
@@ -24,8 +24,8 @@ interface ISplitFungibleTokenTransactionData extends ITransactionData {
 export class SplitFungibleToken {
   public static create(
     data: ISplitFungibleTokenTransactionData,
-  ): TypeOwnerProofsTransactionOrder<SplitFungibleTokenAttributes> {
-    return new TypeOwnerProofsTransactionOrder(
+  ): TypeOwnerProofsUnsignedTransactionOrder<SplitFungibleTokenAttributes> {
+    return new TypeOwnerProofsUnsignedTransactionOrder(
       data.version,
       new TransactionPayload(
         data.networkIdentifier,

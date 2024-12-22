@@ -2,10 +2,10 @@ import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
-import { OwnerProofTransactionOrder } from '../../transaction/OwnerProofTransactionOrder.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { OwnerProofUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofUnsignedTransactionOrder.js';
 import { LockBillAttributes } from '../attributes/LockBillAttributes.js';
 import { MoneyPartitionTransactionType } from '../MoneyPartitionTransactionType.js';
 
@@ -19,8 +19,8 @@ export interface ILockBillTransactionData extends ITransactionData {
 }
 
 export class LockBill {
-  public static create(data: ILockBillTransactionData): OwnerProofTransactionOrder<LockBillAttributes> {
-    return new OwnerProofTransactionOrder(
+  public static create(data: ILockBillTransactionData): OwnerProofUnsignedTransactionOrder<LockBillAttributes> {
+    return new OwnerProofUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<LockBillAttributes>(
         data.networkIdentifier,

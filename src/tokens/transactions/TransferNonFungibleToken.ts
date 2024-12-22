@@ -6,7 +6,7 @@ import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { TypeOwnerProofsAuthProof } from '../../transaction/proofs/TypeOwnerProofsAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
-import { TypeOwnerProofsTransactionOrder } from '../../transaction/TypeOwnerProofsTransactionOrder.js';
+import { TypeOwnerProofsUnsignedTransactionOrder } from '../../transaction/unsigned/TypeOwnerProofsUnsignedTransactionOrder.js';
 import { TransferNonFungibleTokenAttributes } from '../attributes/TransferNonFungibleTokenAttributes.js';
 import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
 
@@ -25,8 +25,8 @@ interface ITransferNonFungibleTokenTransactionData extends ITransactionData {
 export class TransferNonFungibleToken {
   public static create(
     data: ITransferNonFungibleTokenTransactionData,
-  ): TypeOwnerProofsTransactionOrder<TransferNonFungibleTokenAttributes> {
-    return new TypeOwnerProofsTransactionOrder(
+  ): TypeOwnerProofsUnsignedTransactionOrder<TransferNonFungibleTokenAttributes> {
+    return new TypeOwnerProofsUnsignedTransactionOrder(
       data.version,
       new TransactionPayload(
         data.networkIdentifier,

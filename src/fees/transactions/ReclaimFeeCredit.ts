@@ -2,10 +2,10 @@ import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
-import { OwnerProofWithoutFeeTransactionOrder } from '../../transaction/OwnerProofWithoutFeeTransactionOrder.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { OwnerProofWithoutFeeUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofWithoutFeeUnsignedTransactionOrder.js';
 import { ReclaimFeeCreditAttributes } from '../attributes/ReclaimFeeCreditAttributes.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
 import { CloseFeeCreditTransactionOrder } from './CloseFeeCredit.js';
@@ -22,8 +22,8 @@ interface IReclaimFeeCreditTransactionData extends ITransactionData {
 export class ReclaimFeeCredit {
   public static create(
     data: IReclaimFeeCreditTransactionData,
-  ): OwnerProofWithoutFeeTransactionOrder<ReclaimFeeCreditAttributes> {
-    return new OwnerProofWithoutFeeTransactionOrder(
+  ): OwnerProofWithoutFeeUnsignedTransactionOrder<ReclaimFeeCreditAttributes> {
+    return new OwnerProofWithoutFeeUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<ReclaimFeeCreditAttributes>(
         data.networkIdentifier,

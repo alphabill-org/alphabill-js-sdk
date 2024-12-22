@@ -5,7 +5,7 @@ import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
 import { TypeDataUpdateProofsAuthProof } from '../../transaction/proofs/TypeDataUpdateProofsAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
-import { TypeDataUpdateProofsTransactionOrder } from '../../transaction/TypeDataUpdateProofsTransactionOrder.js';
+import { TypeDataUpdateProofsUnsignedTransactionOrder } from '../../transaction/unsigned/TypeDataUpdateProofsUnsignedTransactionOrder.js';
 import { UpdateNonFungibleTokenAttributes } from '../attributes/UpdateNonFungibleTokenAttributes.js';
 import { INonFungibleTokenData } from '../INonFungibleTokenData.js';
 import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
@@ -22,8 +22,8 @@ interface IUpdateNonFungibleTokenTransactionData extends ITransactionData {
 export class UpdateNonFungibleToken {
   public static create(
     data: IUpdateNonFungibleTokenTransactionData,
-  ): TypeDataUpdateProofsTransactionOrder<UpdateNonFungibleTokenAttributes> {
-    return new TypeDataUpdateProofsTransactionOrder(
+  ): TypeDataUpdateProofsUnsignedTransactionOrder<UpdateNonFungibleTokenAttributes> {
+    return new TypeDataUpdateProofsUnsignedTransactionOrder(
       data.version,
       new TransactionPayload(
         data.networkIdentifier,

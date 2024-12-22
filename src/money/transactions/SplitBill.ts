@@ -2,11 +2,11 @@ import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
-import { OwnerProofTransactionOrder } from '../../transaction/OwnerProofTransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { OwnerProofUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofUnsignedTransactionOrder.js';
 import { SplitBillAttributes } from '../attributes/SplitBillAttributes.js';
 import { MoneyPartitionTransactionType } from '../MoneyPartitionTransactionType.js';
 import { SplitBillUnit } from '../SplitBillUnit.js';
@@ -24,8 +24,8 @@ export interface ISplitBillTransactionData extends ITransactionData {
 }
 
 export class SplitBill {
-  public static create(data: ISplitBillTransactionData): OwnerProofTransactionOrder<SplitBillAttributes> {
-    return new OwnerProofTransactionOrder(
+  public static create(data: ISplitBillTransactionData): OwnerProofUnsignedTransactionOrder<SplitBillAttributes> {
+    return new OwnerProofUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<SplitBillAttributes>(
         data.networkIdentifier,

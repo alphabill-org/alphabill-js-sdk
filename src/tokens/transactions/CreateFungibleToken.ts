@@ -2,11 +2,11 @@ import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
-import { OwnerProofTransactionOrder } from '../../transaction/OwnerProofTransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
+import { OwnerProofUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofUnsignedTransactionOrder.js';
 import { CreateFungibleTokenAttributes } from '../attributes/CreateFungibleTokenAttributes.js';
 import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.js';
 import { TokenPartitionUnitType } from '../TokenPartitionUnitType.js';
@@ -23,10 +23,10 @@ interface ICreateFungibleTokenTransactionData extends ITransactionData {
 export class CreateFungibleToken {
   public static create(
     data: ICreateFungibleTokenTransactionData,
-  ): OwnerProofTransactionOrder<CreateFungibleTokenAttributes> {
+  ): OwnerProofUnsignedTransactionOrder<CreateFungibleTokenAttributes> {
     const attributes = new CreateFungibleTokenAttributes(data.type.unitId, data.value, data.ownerPredicate, data.nonce);
     const tokenUnitId = TokenUnitId.create(attributes, data.metadata, TokenPartitionUnitType.FUNGIBLE_TOKEN);
-    return new OwnerProofTransactionOrder(
+    return new OwnerProofUnsignedTransactionOrder(
       data.version,
       new TransactionPayload(
         data.networkIdentifier,

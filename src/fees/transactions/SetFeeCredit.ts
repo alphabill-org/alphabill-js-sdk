@@ -3,12 +3,12 @@ import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
 import { ITransactionData } from '../../transaction/order/ITransactionData.js';
 import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
-import { OwnerProofWithoutFeeTransactionOrder } from '../../transaction/OwnerProofWithoutFeeTransactionOrder.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { UnitIdWithType } from '../../transaction/UnitIdWithType.js';
+import { OwnerProofWithoutFeeUnsignedTransactionOrder } from '../../transaction/unsigned/OwnerProofWithoutFeeUnsignedTransactionOrder.js';
 import { SetFeeCreditAttributes } from '../attributes/SetFeeCreditAttributes.js';
 import { FeeCreditUnitType } from '../FeeCreditRecordUnitType.js';
 import { FeeCreditTransactionType } from '../FeeCreditTransactionType.js';
@@ -24,7 +24,7 @@ interface ISetFeeCreditTransactionData extends ITransactionData {
 export class SetFeeCredit {
   public static create(
     data: ISetFeeCreditTransactionData,
-  ): OwnerProofWithoutFeeTransactionOrder<SetFeeCreditAttributes> {
+  ): OwnerProofWithoutFeeUnsignedTransactionOrder<SetFeeCreditAttributes> {
     let feeCreditRecordId: IUnitId;
     if (data.feeCreditRecord.unitId == null) {
       const unitBytes = sha256
@@ -36,7 +36,7 @@ export class SetFeeCredit {
     } else {
       feeCreditRecordId = data.feeCreditRecord.unitId;
     }
-    return new OwnerProofWithoutFeeTransactionOrder(
+    return new OwnerProofWithoutFeeUnsignedTransactionOrder(
       data.version,
       new TransactionPayload<SetFeeCreditAttributes>(
         data.networkIdentifier,
