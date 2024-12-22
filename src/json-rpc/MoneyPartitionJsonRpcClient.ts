@@ -22,7 +22,7 @@ import { UnlockBill, UnlockBillTransactionOrder } from '../money/transactions/Un
 import { RootTrustBase } from '../RootTrustBase.js';
 import { IBillDataDto } from './IBillDataDto.js';
 import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
-import { CreateTransactionRecordWithProof, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
+import { TransactionFactory, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
 import { MoneyPartitionUnitIdResponse } from './MoneyPartitionUnitIdResponse.js';
 
 type MoneyPartitionUnitTypes = Bill | FeeCreditRecord;
@@ -104,7 +104,7 @@ export class MoneyPartitionJsonRpcClient {
    */
   public getTransactionProof<TRP extends MoneyPartitionTransactionRecordWithProofTypes>(
     transactionHash: Uint8Array,
-    factory: CreateTransactionRecordWithProof<TRP>,
+    factory: TransactionFactory<TRP>,
   ): Promise<TRP | null> {
     return this.client.getTransactionProof(transactionHash, factory);
   }
@@ -114,7 +114,7 @@ export class MoneyPartitionJsonRpcClient {
    */
   public waitTransactionProof<TRP extends MoneyPartitionTransactionRecordWithProofTypes>(
     transactionHash: Uint8Array,
-    factory: CreateTransactionRecordWithProof<TRP>,
+    factory: TransactionFactory<TRP>,
   ): Promise<TRP> {
     return this.client.waitTransactionProof(transactionHash, factory);
   }

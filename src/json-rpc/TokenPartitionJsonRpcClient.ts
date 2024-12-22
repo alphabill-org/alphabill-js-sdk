@@ -49,7 +49,7 @@ import { IFungibleTokenDto } from './IFungibleTokenDto.js';
 import { IFungibleTokenTypeDto } from './IFungibleTokenTypeDto.js';
 import { INonFungibleTokenDto } from './INonFungibleTokenDto.js';
 import { INonFungibleTokenTypeDto } from './INonFungibleTokenTypeDto.js';
-import { CreateTransactionRecordWithProof, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
+import { TransactionFactory, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
 import { TokenPartitionUnitIdResponse } from './TokenPartitionUnitIdResponse.js';
 
 type TokenPartitionUnitTypes =
@@ -154,7 +154,7 @@ export class TokenPartitionJsonRpcClient {
    */
   public getTransactionProof<TRP extends TokenPartitionTransactionRecordWithProofTypes>(
     transactionHash: Uint8Array,
-    factory: CreateTransactionRecordWithProof<TRP>,
+    factory: TransactionFactory<TRP>,
   ): Promise<TRP | null> {
     return this.client.getTransactionProof(transactionHash, factory);
   }
@@ -164,7 +164,7 @@ export class TokenPartitionJsonRpcClient {
    */
   public waitTransactionProof<TRP extends TokenPartitionTransactionRecordWithProofTypes>(
     transactionHash: Uint8Array,
-    factory: CreateTransactionRecordWithProof<TRP>,
+    factory: TransactionFactory<TRP>,
   ): Promise<TRP> {
     return this.client.waitTransactionProof(transactionHash, factory);
   }
