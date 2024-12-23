@@ -42,6 +42,6 @@ export class PredicateBytes implements IPredicate {
    * @returns {string} String representation.
    */
   public toString(): string {
-    return `PredicateBytes[${Base16Converter.encode(this._bytes)}]`;
+    return `PredicateBytes: ${Base16Converter.encode(this._bytes)}`;
   }
 }

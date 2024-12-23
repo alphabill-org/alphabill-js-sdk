@@ -58,8 +58,7 @@ export class BurnFungibleTokenAttributes implements ITransactionPayloadAttribute
         Value: ${this.value}
         Target Token ID: ${this.targetTokenId.toString()}
         Target Token Counter: ${this.targetTokenCounter}
-        Counter: ${this.counter}
-        `;
+        Counter: ${this.counter}`;
   }
 
   /**
