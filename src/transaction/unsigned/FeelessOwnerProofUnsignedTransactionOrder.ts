@@ -1,7 +1,7 @@
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { TransactionOrder } from '../order/TransactionOrder.js';
 import { IProofFactory } from '../proofs/IProofFactory.js';
 import { OwnerProofAuthProof } from '../proofs/OwnerProofAuthProof.js';
+import { TransactionOrder } from '../TransactionOrder.js';
 import { OwnerProofUnsignedTransactionOrder } from './OwnerProofUnsignedTransactionOrder.js';
 
 export class FeelessOwnerProofUnsignedTransactionOrder<

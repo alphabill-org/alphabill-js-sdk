@@ -1,9 +1,9 @@
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { TransactionOrder } from '../order/TransactionOrder.js';
 import { IPredicate } from '../predicates/IPredicate.js';
 import { IProofFactory } from '../proofs/IProofFactory.js';
 import { TypeDataUpdateProofsAuthProof } from '../proofs/TypeDataUpdateProofsAuthProof.js';
+import { TransactionOrder } from '../TransactionOrder.js';
 import { TransactionPayload } from '../TransactionPayload.js';
 
 export class TypeDataUpdateProofsUnsignedTransactionOrder<Attributes extends ITransactionPayloadAttributes> {

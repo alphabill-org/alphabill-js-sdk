@@ -1,16 +1,16 @@
-import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
-import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
-import { CborTag } from '../../codec/cbor/CborTag.js';
-import { UnitId } from '../../UnitId.js';
-import { Base16Converter } from '../../util/Base16Converter.js';
-import { dedent } from '../../util/StringUtils.js';
-import { ClientMetadata } from '../ClientMetadata.js';
-import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { IPredicate } from '../predicates/IPredicate.js';
-import { PredicateBytes } from '../predicates/PredicateBytes.js';
-import { ITransactionOrderProof } from '../proofs/ITransactionOrderProof.js';
-import { StateLock } from '../StateLock.js';
-import { TransactionPayload } from '../TransactionPayload.js';
+import { CborDecoder } from '../codec/cbor/CborDecoder.js';
+import { CborEncoder } from '../codec/cbor/CborEncoder.js';
+import { CborTag } from '../codec/cbor/CborTag.js';
+import { UnitId } from '../UnitId.js';
+import { Base16Converter } from '../util/Base16Converter.js';
+import { dedent } from '../util/StringUtils.js';
+import { ClientMetadata } from './ClientMetadata.js';
+import { ITransactionPayloadAttributes } from './ITransactionPayloadAttributes.js';
+import { IPredicate } from './predicates/IPredicate.js';
+import { PredicateBytes } from './predicates/PredicateBytes.js';
+import { ITransactionOrderProof } from './proofs/ITransactionOrderProof.js';
+import { StateLock } from './StateLock.js';
+import { TransactionPayload } from './TransactionPayload.js';
 
 /**
  * Transaction order.

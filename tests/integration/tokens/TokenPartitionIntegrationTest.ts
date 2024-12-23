@@ -24,12 +24,12 @@ import { TransferFungibleToken } from '../../../src/tokens/transactions/Transfer
 import { TransferNonFungibleToken } from '../../../src/tokens/transactions/TransferNonFungibleToken.js';
 import { UnlockToken } from '../../../src/tokens/transactions/UnlockToken.js';
 import { UpdateNonFungibleToken } from '../../../src/tokens/transactions/UpdateNonFungibleToken.js';
+import { UnitIdWithType } from '../../../src/tokens/UnitIdWithType.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { AlwaysTrueProofFactory } from '../../../src/transaction/proofs/AlwaysTrueProofFactory.js';
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
-import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
 import { UnitId } from '../../../src/UnitId.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
 import config from '../config/config.js';

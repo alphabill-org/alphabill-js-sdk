@@ -1,10 +1,10 @@
 import { IUnitId } from '../../IUnitId.js';
 import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
-import { ITransactionData } from '../../transaction/order/ITransactionData.js';
-import { TransactionOrder } from '../../transaction/order/TransactionOrder.js';
+import { ITransactionData } from '../../transaction/ITransactionData.js';
 import { TypeDataUpdateProofsAuthProof } from '../../transaction/proofs/TypeDataUpdateProofsAuthProof.js';
 import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
+import { TransactionOrder } from '../../transaction/TransactionOrder.js';
 import { TransactionPayload } from '../../transaction/TransactionPayload.js';
 import { TypeDataUpdateProofsUnsignedTransactionOrder } from '../../transaction/unsigned/TypeDataUpdateProofsUnsignedTransactionOrder.js';
 import { UpdateNonFungibleTokenAttributes } from '../attributes/UpdateNonFungibleTokenAttributes.js';

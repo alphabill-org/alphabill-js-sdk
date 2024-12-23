@@ -7,7 +7,7 @@ import { TokenPartitionJsonRpcClient } from '../../../src/json-rpc/TokenPartitio
 import { Bill } from '../../../src/money/Bill.js';
 import { NetworkIdentifier } from '../../../src/NetworkIdentifier.js';
 import { ClientMetadata } from '../../../src/transaction/ClientMetadata.js';
-import { ITransactionData } from '../../../src/transaction/order/ITransactionData.js';
+import { ITransactionData } from '../../../src/transaction/ITransactionData.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { IProofFactory } from '../../../src/transaction/proofs/IProofFactory.js';

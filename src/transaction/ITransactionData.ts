@@ -1,6 +1,6 @@
-import { ITransactionClientMetadata } from '../ITransactionClientMetadata.js';
-import { IPredicate } from '../predicates/IPredicate.js';
-import { StateLock } from '../StateLock.js';
+import { ITransactionClientMetadata } from './ITransactionClientMetadata.js';
+import { IPredicate } from './predicates/IPredicate.js';
+import { StateLock } from './StateLock.js';
 
 export interface ITransactionData {
   version: bigint;

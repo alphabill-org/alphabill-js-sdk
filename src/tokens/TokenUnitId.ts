@@ -3,7 +3,7 @@ import { CborEncoder } from '../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../IUnitId.js';
 import { ClientMetadata } from '../transaction/ClientMetadata.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
-import { UnitIdWithType } from '../transaction/UnitIdWithType.js';
+import { UnitIdWithType } from './UnitIdWithType.js';
 
 export class TokenUnitId {
   public static create(attributes: ITransactionPayloadAttributes, metadata: ClientMetadata, type: Uint8Array): IUnitId {

@@ -2,8 +2,8 @@ import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { TransactionOrder } from '../order/TransactionOrder.js';
 import { ITransactionOrderProof } from '../proofs/ITransactionOrderProof.js';
+import { TransactionOrder } from '../TransactionOrder.js';
 import { TransactionProof } from './TransactionProof.js';
 import { TransactionRecord } from './TransactionRecord.js';
 

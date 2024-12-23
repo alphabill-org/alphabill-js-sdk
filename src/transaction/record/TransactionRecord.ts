@@ -3,8 +3,8 @@ import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { CborTag } from '../../codec/cbor/CborTag.js';
 import { dedent } from '../../util/StringUtils.js';
 import { ITransactionPayloadAttributes } from '../ITransactionPayloadAttributes.js';
-import { TransactionOrder } from '../order/TransactionOrder.js';
 import { ITransactionOrderProof } from '../proofs/ITransactionOrderProof.js';
+import { TransactionOrder } from '../TransactionOrder.js';
 import { ServerMetadata } from './ServerMetadata.js';
 
 /**
