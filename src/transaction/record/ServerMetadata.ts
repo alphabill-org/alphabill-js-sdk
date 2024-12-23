@@ -66,8 +66,8 @@ export class ServerMetadata {
       ServerMetadata
         Actual Fee: ${this.actualFee}
         Target Unit IDs: [${this._targetUnitIds.length ? `\n${this._targetUnitIds.map((unitId) => unitId.toString()).join('\n')}\n` : ''}]
-        Success indicator: ${TransactionStatus[this.successIndicator]}
-        Processing details: ${this._processingDetails ? Base16Converter.encode(this._processingDetails) : null}`;
+        Success Indicator: ${this.successIndicator}
+        Processing Details: ${this._processingDetails ? Base16Converter.encode(this._processingDetails) : null}`;
   }
 
   /**

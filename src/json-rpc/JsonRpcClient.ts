@@ -2,8 +2,8 @@ import { sha256 } from '@noble/hashes/sha256';
 import { IUnitId } from '../IUnitId.js';
 import { RootTrustBase } from '../RootTrustBase.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
-import { TransactionOrder } from '../transaction/order/TransactionOrder.js';
 import { ITransactionOrderProof } from '../transaction/proofs/ITransactionOrderProof.js';
+import { TransactionOrder } from '../transaction/TransactionOrder.js';
 import { StateProof } from '../unit/StateProof.js';
 import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
@@ -23,8 +23,8 @@ export type CreateUnit<T, U> = {
   ) => T;
 };
 
-export type CreateTransactionRecordWithProof<T> = {
-  fromCbor: (rawData: Uint8Array) => T;
+export type TransactionFactory<T> = {
+  createTransactionRecordWithProof: (bytes: Uint8Array) => T;
 };
 
 type GetUnitResponseDto<T> = {
@@ -114,12 +114,12 @@ export class JsonRpcClient {
    * Get transaction proof.
    * @template TRP Transaction proof type.
    * @param {Uint8Array} transactionHash Transaction hash.
-   * @param {CreateTransactionRecordWithProof<TRP>} transactionRecordWithProofFactory Transaction record with proof factory.
+   * @param {TransactionFactory<TRP>} transactionFactory Transaction record with proof factory.
    * @returns {Promise<TRP | null} Transaction proof.
    */
   public async getTransactionProof<TRP>(
     transactionHash: Uint8Array,
-    transactionRecordWithProofFactory: CreateTransactionRecordWithProof<TRP>,
+    transactionFactory: TransactionFactory<TRP>,
   ): Promise<TRP | null> {
     const response = (await this.request(
       'state_getTransactionProof',
@@ -130,7 +130,7 @@ export class JsonRpcClient {
       return null;
     }
 
-    return transactionRecordWithProofFactory.fromCbor(Base16Converter.decode(response.txRecordProof));
+    return transactionFactory.createTransactionRecordWithProof(Base16Converter.decode(response.txRecordProof));
   }
 
   /**
@@ -160,7 +160,7 @@ export class JsonRpcClient {
    * Wait for a transaction proof to be available.
    * @template TRP
    * @param {Uint8Array} transactionHash Transaction hash.
-   * @param {CreateTransactionRecordWithProof<TRP>} transactionRecordWithProofFactory
+   * @param {TransactionFactory<TRP>} transactionFactory
    * @param {AbortSignal} signal Abort signal to abort action early.
    * @param {number} [interval=1000] Interval in milliseconds for polling.
    * @returns {Promise<TRP>} Transaction proof.
@@ -168,9 +168,9 @@ export class JsonRpcClient {
    */
   public waitTransactionProof<TRP>(
     transactionHash: Uint8Array,
-    transactionRecordWithProofFactory: CreateTransactionRecordWithProof<TRP>,
+    transactionFactory: TransactionFactory<TRP>,
     signal: AbortSignal = AbortSignal.timeout(10000),
-    interval = 1000,
+    interval: number = 1000,
   ): Promise<TRP> {
     return new Promise((resolve, reject) => {
       const abortListener = () => {
@@ -181,7 +181,7 @@ export class JsonRpcClient {
       signal.addEventListener('abort', abortListener);
 
       const fetchTransactionProof = () => {
-        this.getTransactionProof(transactionHash, transactionRecordWithProofFactory).then((proof) => {
+        this.getTransactionProof(transactionHash, transactionFactory).then((proof) => {
           if (proof !== null) {
             signal.removeEventListener('abort', abortListener);
             return resolve(proof);

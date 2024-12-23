@@ -8,6 +8,8 @@ import { SplitBillUnit } from '../SplitBillUnit.js';
  * Split bill attributes.
  */
 export class SplitBillAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'SplitBillAttributes';
+
   /**
    * Split bill attributes constructor.
    * @param {readonly SplitBillUnit[]} _targetUnits - Target units.

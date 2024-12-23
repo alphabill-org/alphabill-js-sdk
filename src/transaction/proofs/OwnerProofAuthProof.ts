@@ -5,6 +5,8 @@ import { dedent } from '../../util/StringUtils.js';
 import { ITransactionOrderProof } from './ITransactionOrderProof.js';
 
 export class OwnerProofAuthProof implements ITransactionOrderProof {
+  private _brand: 'OwnerProofAuthProof';
+
   public constructor(private readonly _ownerProof: Uint8Array) {
     this._ownerProof = new Uint8Array(_ownerProof);
   }

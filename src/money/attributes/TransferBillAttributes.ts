@@ -9,6 +9,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Transfer bill payload attributes.
  */
 export class TransferBillAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'TransferBillAttributes';
+
   /**
    * Transfer bill attributes constructor.
    * @param {bigint} targetValue - Target value.

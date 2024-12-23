@@ -11,6 +11,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Transfer fungible token payload attributes.
  */
 export class TransferFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'TransferFungibleTokenAttributes';
+
   /**
    * Transfer fungible token attributes constructor.
    * @param {IUnitId} typeId - Type ID.

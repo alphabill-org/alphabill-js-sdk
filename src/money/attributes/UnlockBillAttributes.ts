@@ -7,6 +7,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Unlock bill payload attributes.
  */
 export class UnlockBillAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'UnlockBillAttributes';
+
   /**
    * Unlock bill attributes constructor.
    * @param {Uint8Array} counter Counter.

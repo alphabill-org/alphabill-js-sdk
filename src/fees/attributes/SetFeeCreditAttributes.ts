@@ -9,6 +9,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Set fee credit payload attributes.
  */
 export class SetFeeCreditAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'SetFeeCreditAttributes';
+
   /**
    * Set fee credit payload attributes constructor.
    * @param {IPredicate} ownerPredicate Owner predicate to be set to the fee credit record

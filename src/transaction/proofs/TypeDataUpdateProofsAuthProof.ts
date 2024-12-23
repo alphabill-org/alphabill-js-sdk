@@ -5,6 +5,8 @@ import { dedent } from '../../util/StringUtils.js';
 import { ITransactionOrderProof } from './ITransactionOrderProof.js';
 
 export class TypeDataUpdateProofsAuthProof implements ITransactionOrderProof {
+  private _brand: 'TypeDataUpdateProofsAuthProof';
+
   public constructor(
     private readonly _dataUpdateProof: Uint8Array,
     private readonly _typeDataUpdateProofs: Uint8Array[],

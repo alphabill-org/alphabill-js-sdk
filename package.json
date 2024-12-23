@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "name": "@alphabill/alphabill-js-sdk",
   "version": "1.0.0-rc1",
   "type": "module",

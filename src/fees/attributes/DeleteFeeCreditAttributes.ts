@@ -7,6 +7,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Delete fee credit payload attributes.
  */
 export class DeleteFeeCreditAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'DeleteFeeCreditAttributes';
+
   /**
    * Delete fee credit attributes constructor.
    * @param {bigint} counter - Counter.

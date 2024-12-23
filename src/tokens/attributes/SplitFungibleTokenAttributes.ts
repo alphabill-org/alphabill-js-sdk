@@ -11,6 +11,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Split fungible token payload attributes.
  */
 export class SplitFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'SplitFungibleTokenAttributes';
+
   /**
    * Split fungible token attributes constructor.
    * @param {IUnitId} typeId - Type ID.

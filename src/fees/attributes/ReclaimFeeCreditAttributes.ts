@@ -1,18 +1,21 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
+import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { dedent } from '../../util/StringUtils.js';
-import { CloseFeeCreditTransactionRecordWithProof } from '../transactions/records/CloseFeeCreditTransactionRecordWithProof.js';
+import { CloseFeeCredit, CloseFeeCreditTransactionOrder } from '../transactions/CloseFeeCredit.js';
 
 /**
  * Reclaim fee credit payload attributes.
  */
 export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'ReclaimFeeCreditAttributes';
+
   /**
    * Reclaim fee credit attributes constructor.
    * @param {TransactionRecordWithProof<CloseFeeCreditAttributes>} proof - Transaction record with proof.
    */
-  public constructor(public readonly proof: CloseFeeCreditTransactionRecordWithProof) {}
+  public constructor(public readonly proof: TransactionRecordWithProof<CloseFeeCreditTransactionOrder>) {}
 
   /**
    * Create ReclaimFeeCreditAttributes from raw CBOR.
@@ -21,7 +24,7 @@ export class ReclaimFeeCreditAttributes implements ITransactionPayloadAttributes
    */
   public static fromCbor(rawData: Uint8Array): ReclaimFeeCreditAttributes {
     const data = CborDecoder.readArray(rawData);
-    return new ReclaimFeeCreditAttributes(CloseFeeCreditTransactionRecordWithProof.fromCbor(data[0]));
+    return new ReclaimFeeCreditAttributes(CloseFeeCredit.createTransactionRecordWithProof(data[0]));
   }
 
   /**

@@ -1,4 +1,4 @@
-import { AddFeeCreditTransactionRecordWithProof } from '../../../../src/fees/transactions/records/AddFeeCreditTransactionRecordWithProof.js';
+import { AddFeeCredit } from '../../../../src/fees/transactions/AddFeeCredit.js';
 import { PartitionIdentifier } from '../../../../src/PartitionIdentifier.js';
 import { DefaultSigningService } from '../../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, http } from '../../../../src/StateApiClientFactory.js';
@@ -27,7 +27,7 @@ describe('Proof verification', () => {
     );
 
     const context = {
-      proof: await moneyClient.waitTransactionProof(addFeeCreditHash, AddFeeCreditTransactionRecordWithProof),
+      proof: await moneyClient.waitTransactionProof(addFeeCreditHash, AddFeeCredit),
       trustBase: await moneyClient.getTrustBase(await moneyClient.getRoundNumber()),
     };
 

@@ -1,7 +1,5 @@
-import { DeleteFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/DeleteFeeCreditTransactionRecordWithProof.js';
-import { SetFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/SetFeeCreditTransactionRecordWithProof.js';
-import { UnsignedDeleteFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedDeleteFeeCreditTransactionOrder.js';
-import { UnsignedSetFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedSetFeeCreditTransactionOrder.js';
+import { DeleteFeeCredit } from '../../../src/fees/transactions/DeleteFeeCredit.js';
+import { SetFeeCredit } from '../../../src/fees/transactions/SetFeeCredit.js';
 import { PartitionIdentifier } from '../../../src/PartitionIdentifier.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createTokenClient, http } from '../../../src/StateApiClientFactory.js';
@@ -26,7 +24,7 @@ describe('Permissioned Fee Credit Integration Tests', () => {
     const ownerPredicate = PayToPublicKeyHashPredicate.create(signingService.publicKey);
 
     console.log('Setting fee credit...');
-    const setFeeCreditTransactionOrder = await UnsignedSetFeeCreditTransactionOrder.create({
+    const setFeeCreditTransactionOrder = await SetFeeCredit.create({
       targetPartitionIdentifier: PartitionIdentifier.TOKEN,
       ownerPredicate: ownerPredicate,
       amount: 100n,
@@ -35,26 +33,20 @@ describe('Permissioned Fee Credit Integration Tests', () => {
     }).sign(proofFactory);
 
     const setFeeCreditHash = await tokenClient.sendTransaction(setFeeCreditTransactionOrder);
-    const setFeeCreditProof = await tokenClient.waitTransactionProof(
-      setFeeCreditHash,
-      SetFeeCreditTransactionRecordWithProof,
-    );
+    const setFeeCreditProof = await tokenClient.waitTransactionProof(setFeeCreditHash, SetFeeCredit);
     expect(setFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     const feeCreditRecordId = setFeeCreditTransactionOrder.payload.unitId;
     console.log('Setting fee credit successful');
 
     console.log('Deleting fee credit...');
-    const deleteFeeCreditTransactionOrder = await UnsignedDeleteFeeCreditTransactionOrder.create({
+    const deleteFeeCreditTransactionOrder = await DeleteFeeCredit.create({
       feeCredit: { unitId: feeCreditRecordId, counter: 0n },
       ...createTransactionData(round),
     }).sign(proofFactory);
 
     const deleteFeeCreditHash = await tokenClient.sendTransaction(deleteFeeCreditTransactionOrder);
 
-    const deleteFeeCreditProof = await tokenClient.waitTransactionProof(
-      deleteFeeCreditHash,
-      DeleteFeeCreditTransactionRecordWithProof,
-    );
+    const deleteFeeCreditProof = await tokenClient.waitTransactionProof(deleteFeeCreditHash, DeleteFeeCredit);
     expect(deleteFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(
       TransactionStatus.Successful,
     );

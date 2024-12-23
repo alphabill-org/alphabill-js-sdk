@@ -9,6 +9,8 @@ import { NonFungibleTokenData } from '../NonFungibleTokenData.js';
  * Update non-fungible token payload attributes.
  */
 export class UpdateNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'UpdateNonFungibleTokenAttributes';
+
   /**
    * Update non-fungible token attributes constructor.
    * @param {INonFungibleTokenData} data - Non-fungible token data.
