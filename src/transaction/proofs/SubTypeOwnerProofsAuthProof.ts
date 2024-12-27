@@ -5,6 +5,8 @@ import { dedent } from '../../util/StringUtils.js';
 import { ITransactionOrderProof } from './ITransactionOrderProof.js';
 
 export class SubTypeOwnerProofsAuthProof implements ITransactionOrderProof {
+  private _brand: 'SubTypeOwnerProofsAuthProof';
+
   public constructor(private readonly _subTypeCreationProofs: Uint8Array[]) {
     this._subTypeCreationProofs = this._subTypeCreationProofs.map((proof) => new Uint8Array(proof));
   }

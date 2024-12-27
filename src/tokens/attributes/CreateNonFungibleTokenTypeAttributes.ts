@@ -12,6 +12,8 @@ import { TokenIcon } from '../TokenIcon.js';
  * Create non-fungible token type payload attributes.
  */
 export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'CreateNonFungibleTokenTypeAttributes';
+
   /**
    * Create non-fungible token type payload attributes constructor.
    * @param {string} symbol Symbol.

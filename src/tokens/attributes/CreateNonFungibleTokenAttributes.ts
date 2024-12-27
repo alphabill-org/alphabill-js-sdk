@@ -13,6 +13,8 @@ import { NonFungibleTokenData } from '../NonFungibleTokenData.js';
  * Create non-fungible token payload attributes.
  */
 export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'CreateNonFungibleTokenAttributes';
+
   /**
    * Create non-fungible token payload attributes constructor.
    * @param {IPredicate} ownerPredicate Initial owner predicate of the new token.

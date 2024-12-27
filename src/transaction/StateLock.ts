@@ -1,5 +1,6 @@
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../codec/cbor/CborEncoder.js';
+import { dedent } from '../util/StringUtils.js';
 import { IPredicate } from './predicates/IPredicate.js';
 import { PredicateBytes } from './predicates/PredicateBytes.js';
 
@@ -22,5 +23,12 @@ export class StateLock {
       CborEncoder.encodeByteString(this.executionPredicate.bytes),
       CborEncoder.encodeByteString(this.rollbackPredicate.bytes),
     ]);
+  }
+
+  public toString(): string {
+    return dedent`
+      State Lock:
+        Execution Predicate: ${this.executionPredicate.toString()}
+        Rollback Predicate: ${this.rollbackPredicate.toString()}`;
   }
 }

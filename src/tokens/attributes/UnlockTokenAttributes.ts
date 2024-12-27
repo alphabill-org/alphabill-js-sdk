@@ -7,6 +7,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Unlock token payload attributes.
  */
 export class UnlockTokenAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'UnlockTokenAttributes';
+
   /**
    * Unlock token attributes constructor.
    * @param {bigint} counter - Counter.

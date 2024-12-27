@@ -1,26 +1,29 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
+import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { dedent } from '../../util/StringUtils.js';
-import { BurnFungibleTokenTransactionRecordWithProof } from '../transactions/records/BurnFungibleTokenTransactionRecordWithProof.js';
+import { BurnFungibleToken, BurnFungibleTokenTransactionOrder } from '../transactions/BurnFungibleToken.js';
 
 /**
  * Join fungible token payload attributes.
  */
 export class JoinFungibleTokenAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'JoinFungibleTokenAttributes';
+
   /**
    * Join fungible token attributes constructor.
    * @param {TransactionRecordWithProof<BurnFungibleTokenAttributes>[]} _proofs - Proofs.
    */
-  public constructor(private readonly _proofs: BurnFungibleTokenTransactionRecordWithProof[]) {
+  public constructor(private readonly _proofs: TransactionRecordWithProof<BurnFungibleTokenTransactionOrder>[]) {
     this._proofs = Array.from(this._proofs);
   }
 
   /**
    * Get proofs.
-   * @returns {BurnFungibleTokenTransactionRecordWithProof[]} Proofs.
+   * @returns {TransactionRecordWithProof<BurnFungibleTokenTransactionOrder>[]} Proofs.
    */
-  public get proofs(): BurnFungibleTokenTransactionRecordWithProof[] {
+  public get proofs(): TransactionRecordWithProof<BurnFungibleTokenTransactionOrder>[] {
     return Array.from(this._proofs);
   }
 
@@ -33,7 +36,7 @@ export class JoinFungibleTokenAttributes implements ITransactionPayloadAttribute
     const data = CborDecoder.readArray(rawData);
     return new JoinFungibleTokenAttributes(
       CborDecoder.readArray(data[0]).map((rawProof: Uint8Array) =>
-        BurnFungibleTokenTransactionRecordWithProof.fromCbor(rawProof),
+        BurnFungibleToken.createTransactionRecordWithProof(rawProof),
       ),
     );
   }

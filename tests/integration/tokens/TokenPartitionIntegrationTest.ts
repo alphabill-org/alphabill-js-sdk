@@ -1,6 +1,6 @@
 import { randomBytes } from '@noble/hashes/utils';
 import { CborEncoder } from '../../../src/codec/cbor/CborEncoder.js';
-import { AddFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/AddFeeCreditTransactionRecordWithProof.js';
+import { AddFeeCredit } from '../../../src/fees/transactions/AddFeeCredit.js';
 import { IUnitId } from '../../../src/IUnitId.js';
 import { PartitionIdentifier } from '../../../src/PartitionIdentifier.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
@@ -12,36 +12,24 @@ import { NonFungibleTokenData } from '../../../src/tokens/NonFungibleTokenData.j
 import { NonFungibleTokenType } from '../../../src/tokens/NonFungibleTokenType.js';
 import { TokenIcon } from '../../../src/tokens/TokenIcon.js';
 import { TokenPartitionUnitType } from '../../../src/tokens/TokenPartitionUnitType.js';
-import { BurnFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/BurnFungibleTokenTransactionRecordWithProof.js';
-import { CreateFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/CreateFungibleTokenTransactionRecordWithProof.js';
-import { CreateFungibleTokenTypeTransactionRecordWithProof } from '../../../src/tokens/transactions/records/CreateFungibleTokenTypeTransactionRecordWithProof.js';
-import { CreateNonFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/CreateNonFungibleTokenTransactionRecordWithProof.js';
-import { CreateNonFungibleTokenTypeTransactionRecordWithProof } from '../../../src/tokens/transactions/records/CreateNonFungibleTokenTypeTransactionRecordWithProof.js';
-import { JoinFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/JoinFungibleTokenTransactionRecordWithProof.js';
-import { LockTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/LockTokenTransactionRecordWithProof.js';
-import { SplitFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/SplitFungibleTokenTransactionRecordWithProof.js';
-import { TransferFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/TransferFungibleTokenTransactionRecordWithProof.js';
-import { TransferNonFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/TransferNonFungibleTokenTransactionRecordWithProof.js';
-import { UnlockTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/UnlockTokenTransactionRecordWithProof.js';
-import { UpdateNonFungibleTokenTransactionRecordWithProof } from '../../../src/tokens/transactions/records/UpdateNonFungibleTokenTransactionRecordWithProof.js';
-import { UnsignedBurnFungibleTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedBurnFungibleTokenTransactionOrder.js';
-import { UnsignedCreateFungibleTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedCreateFungibleTokenTransactionOrder.js';
-import { UnsignedCreateFungibleTokenTypeTransactionOrder } from '../../../src/tokens/transactions/UnsignedCreateFungibleTokenTypeTransactionOrder.js';
-import { UnsignedCreateNonFungibleTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedCreateNonFungibleTokenTransactionOrder.js';
-import { UnsignedCreateNonFungibleTokenTypeTransactionOrder } from '../../../src/tokens/transactions/UnsignedCreateNonFungibleTokenTypeTransactionOrder.js';
-import { UnsignedJoinFungibleTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedJoinFungibleTokenTransactionOrder.js';
-import { UnsignedLockTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedLockTokenTransactionOrder.js';
-import { UnsignedSplitFungibleTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedSplitFungibleTokenTransactionOrder.js';
-import { UnsignedTransferFungibleTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedTransferFungibleTokenTransactionOrder.js';
-import { UnsignedTransferNonFungibletokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedTransferNonFungibletokenTransactionOrder.js';
-import { UnsignedUnlockTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedUnlockTokenTransactionOrder.js';
-import { UnsignedUpdateNonFungibleTokenTransactionOrder } from '../../../src/tokens/transactions/UnsignedUpdateNonFungibleTokenTransactionOrder.js';
+import { BurnFungibleToken } from '../../../src/tokens/transactions/BurnFungibleToken.js';
+import { CreateFungibleToken } from '../../../src/tokens/transactions/CreateFungibleToken.js';
+import { CreateFungibleTokenType } from '../../../src/tokens/transactions/CreateFungibleTokenType.js';
+import { CreateNonFungibleToken } from '../../../src/tokens/transactions/CreateNonFungibleToken.js';
+import { CreateNonFungibleTokenType } from '../../../src/tokens/transactions/CreateNonFungibleTokenType.js';
+import { JoinFungibleToken } from '../../../src/tokens/transactions/JoinFungibleToken.js';
+import { LockToken } from '../../../src/tokens/transactions/LockToken.js';
+import { SplitFungibleToken } from '../../../src/tokens/transactions/SplitFungibleToken.js';
+import { TransferFungibleToken } from '../../../src/tokens/transactions/TransferFungibleToken.js';
+import { TransferNonFungibleToken } from '../../../src/tokens/transactions/TransferNonFungibleToken.js';
+import { UnlockToken } from '../../../src/tokens/transactions/UnlockToken.js';
+import { UpdateNonFungibleToken } from '../../../src/tokens/transactions/UpdateNonFungibleToken.js';
+import { UnitIdWithType } from '../../../src/tokens/UnitIdWithType.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { AlwaysTrueProofFactory } from '../../../src/transaction/proofs/AlwaysTrueProofFactory.js';
 import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
-import { UnitIdWithType } from '../../../src/transaction/UnitIdWithType.js';
 import { UnitId } from '../../../src/UnitId.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
 import config from '../config/config.js';
@@ -72,7 +60,7 @@ describe('Token Client Integration Tests', () => {
       proofFactory,
     );
 
-    const proof = await tokenClient.waitTransactionProof(addFeeCreditHash, AddFeeCreditTransactionRecordWithProof);
+    const proof = await tokenClient.waitTransactionProof(addFeeCreditHash, AddFeeCredit);
     expect(proof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Adding fee credit successful');
     feeCreditRecordId = proof.transactionRecord.transactionOrder.payload.unitId;
@@ -86,7 +74,7 @@ describe('Token Client Integration Tests', () => {
       const round = await tokenClient.getRoundNumber();
       console.log('Creating fungible token type...');
 
-      const createFungibleTokenTypeTransactionOrder = await UnsignedCreateFungibleTokenTypeTransactionOrder.create({
+      const createFungibleTokenTypeTransactionOrder = await CreateFungibleTokenType.create({
         type: { unitId: tokenTypeUnitId },
         symbol: 'E',
         name: 'Big money come',
@@ -103,7 +91,7 @@ describe('Token Client Integration Tests', () => {
 
       const createFungibleTokenTypeProof = await tokenClient.waitTransactionProof(
         createFungibleTokenTypeHash,
-        CreateFungibleTokenTypeTransactionRecordWithProof,
+        CreateFungibleTokenType,
       );
       expect(createFungibleTokenTypeProof.transactionRecord.serverMetadata.successIndicator).toEqual(
         TransactionStatus.Successful,
@@ -114,7 +102,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Creating fungible token type successful');
 
       console.log('Creating fungible token...');
-      const createFungibleTokenTransactionOrder = await UnsignedCreateFungibleTokenTransactionOrder.create({
+      const createFungibleTokenTransactionOrder = await CreateFungibleToken.create({
         ownerPredicate: ownerPredicate,
         type: { unitId: tokenTypeUnitId },
         value: 10n,
@@ -125,7 +113,7 @@ describe('Token Client Integration Tests', () => {
       const createFungibleTokenHash = await tokenClient.sendTransaction(createFungibleTokenTransactionOrder);
       const createFungibleTokenProof = await tokenClient.waitTransactionProof(
         createFungibleTokenHash,
-        CreateFungibleTokenTransactionRecordWithProof,
+        CreateFungibleToken,
       );
 
       expect(createFungibleTokenProof.transactionRecord.serverMetadata.successIndicator).toEqual(
@@ -143,7 +131,7 @@ describe('Token Client Integration Tests', () => {
       expect(token).not.toBeNull();
 
       console.log('Splitting fungible token...');
-      const splitFungibleTokenTransactionOrder = await UnsignedSplitFungibleTokenTransactionOrder.create({
+      const splitFungibleTokenTransactionOrder = await SplitFungibleToken.create({
         token: token!,
         ownerPredicate: ownerPredicate,
         amount: 3n,
@@ -153,10 +141,7 @@ describe('Token Client Integration Tests', () => {
 
       const splitFungibleTokenHash = await tokenClient.sendTransaction(splitFungibleTokenTransactionOrder);
 
-      const splitBillProof = await tokenClient.waitTransactionProof(
-        splitFungibleTokenHash,
-        SplitFungibleTokenTransactionRecordWithProof,
-      );
+      const splitBillProof = await tokenClient.waitTransactionProof(splitFungibleTokenHash, SplitFungibleToken);
       expect(splitBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token split successful');
 
@@ -170,7 +155,7 @@ describe('Token Client Integration Tests', () => {
 
       console.log('Burning fungible token...');
       const burnFungibleTokenHash = await tokenClient.sendTransaction(
-        await UnsignedBurnFungibleTokenTransactionOrder.create({
+        await BurnFungibleToken.create({
           type: { unitId: tokenTypeUnitId },
           token: splitToken!,
           targetToken: originalTokenAfterSplit!,
@@ -178,15 +163,12 @@ describe('Token Client Integration Tests', () => {
         }).sign(proofFactory, proofFactory, [alwaysTrueProofFactory]),
       );
 
-      const burnProof = await tokenClient.waitTransactionProof(
-        burnFungibleTokenHash,
-        BurnFungibleTokenTransactionRecordWithProof,
-      );
+      const burnProof = await tokenClient.waitTransactionProof(burnFungibleTokenHash, BurnFungibleToken);
       expect(burnProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token burn successful');
 
       console.log('Joining fungible token...');
-      const joinFungibleTokenTransactionOrder = await UnsignedJoinFungibleTokenTransactionOrder.create({
+      const joinFungibleTokenTransactionOrder = await JoinFungibleToken.create({
         token: originalTokenAfterSplit!,
         proofs: [burnProof],
         ...createTransactionData(round, feeCreditRecordId),
@@ -194,10 +176,7 @@ describe('Token Client Integration Tests', () => {
 
       const joinFungibleTokenHash = await tokenClient.sendTransaction(joinFungibleTokenTransactionOrder);
 
-      const joinProof = await tokenClient.waitTransactionProof(
-        joinFungibleTokenHash,
-        JoinFungibleTokenTransactionRecordWithProof,
-      );
+      const joinProof = await tokenClient.waitTransactionProof(joinFungibleTokenHash, JoinFungibleToken);
       expect(joinProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token join successful');
     }, 20000);
@@ -208,7 +187,7 @@ describe('Token Client Integration Tests', () => {
       expect(token).not.toBeNull();
 
       console.log('Transferring fungible token...');
-      const transferFungibleTokenTransactionOrder = await UnsignedTransferFungibleTokenTransactionOrder.create({
+      const transferFungibleTokenTransactionOrder = await TransferFungibleToken.create({
         token: token!,
         ownerPredicate: ownerPredicate,
         type: { unitId: tokenTypeUnitId },
@@ -217,10 +196,7 @@ describe('Token Client Integration Tests', () => {
 
       const transferFungibleTokenHash = await tokenClient.sendTransaction(transferFungibleTokenTransactionOrder);
 
-      const transferProof = await tokenClient.waitTransactionProof(
-        transferFungibleTokenHash,
-        TransferFungibleTokenTransactionRecordWithProof,
-      );
+      const transferProof = await tokenClient.waitTransactionProof(transferFungibleTokenHash, TransferFungibleToken);
       expect(transferProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token transfer successful');
     }, 20000);
@@ -231,7 +207,7 @@ describe('Token Client Integration Tests', () => {
       expect(token).not.toBeNull();
 
       console.log('Locking fungible token...');
-      const lockFungibleTokenTransactionOrder = await UnsignedLockTokenTransactionOrder.create({
+      const lockFungibleTokenTransactionOrder = await LockToken.create({
         status: 5n,
         token: token!,
         ...createTransactionData(round, feeCreditRecordId),
@@ -239,15 +215,12 @@ describe('Token Client Integration Tests', () => {
 
       const lockFungibleTokenHash = await tokenClient.sendTransaction(lockFungibleTokenTransactionOrder);
 
-      const lockProof = await tokenClient.waitTransactionProof(
-        lockFungibleTokenHash,
-        LockTokenTransactionRecordWithProof,
-      );
+      const lockProof = await tokenClient.waitTransactionProof(lockFungibleTokenHash, LockToken);
       expect(lockProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token lock successful');
 
       console.log('Unlocking fungible token...');
-      const unlockFungibleTokenTransactionOrder = await UnsignedUnlockTokenTransactionOrder.create({
+      const unlockFungibleTokenTransactionOrder = await UnlockToken.create({
         token: {
           unitId: token!.unitId,
           counter: token!.counter + 1n,
@@ -257,10 +230,7 @@ describe('Token Client Integration Tests', () => {
 
       const unlockFungibleTokenHash = await tokenClient.sendTransaction(unlockFungibleTokenTransactionOrder);
 
-      const unlockProof = await tokenClient.waitTransactionProof(
-        unlockFungibleTokenHash,
-        UnlockTokenTransactionRecordWithProof,
-      );
+      const unlockProof = await tokenClient.waitTransactionProof(unlockFungibleTokenHash, UnlockToken);
       expect(unlockProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token unlock successful');
     }, 20000);
@@ -273,19 +243,18 @@ describe('Token Client Integration Tests', () => {
     it('Create token type and token', async () => {
       const round = await tokenClient.getRoundNumber();
       console.log('Creating non-fungible token type...');
-      const createNonFungibleTokenTypeTransactionOrder =
-        await UnsignedCreateNonFungibleTokenTypeTransactionOrder.create({
-          type: { unitId: tokenTypeUnitId },
-          symbol: 'E',
-          name: 'Token Name',
-          icon: { type: 'image/png', data: new Uint8Array() },
-          parentTypeId: null,
-          subTypeCreationPredicate: new AlwaysTruePredicate(),
-          tokenMintingPredicate: new AlwaysTruePredicate(),
-          tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
-          dataUpdatePredicate: new AlwaysTruePredicate(),
-          ...createTransactionData(round, feeCreditRecordId),
-        }).sign(proofFactory, []);
+      const createNonFungibleTokenTypeTransactionOrder = await CreateNonFungibleTokenType.create({
+        type: { unitId: tokenTypeUnitId },
+        symbol: 'E',
+        name: 'Token Name',
+        icon: { type: 'image/png', data: new Uint8Array() },
+        parentTypeId: null,
+        subTypeCreationPredicate: new AlwaysTruePredicate(),
+        tokenMintingPredicate: new AlwaysTruePredicate(),
+        tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
+        dataUpdatePredicate: new AlwaysTruePredicate(),
+        ...createTransactionData(round, feeCreditRecordId),
+      }).sign(proofFactory, []);
 
       const createNonFungibleTokenTypeHash = await tokenClient.sendTransaction(
         createNonFungibleTokenTypeTransactionOrder,
@@ -293,7 +262,7 @@ describe('Token Client Integration Tests', () => {
 
       const createNonFungibleTokenTypeProof = await tokenClient.waitTransactionProof(
         createNonFungibleTokenTypeHash,
-        CreateNonFungibleTokenTypeTransactionRecordWithProof,
+        CreateNonFungibleTokenType,
       );
       expect(createNonFungibleTokenTypeProof.transactionRecord.serverMetadata.successIndicator).toEqual(
         TransactionStatus.Successful,
@@ -303,7 +272,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Creating non-fungible token type successful');
 
       console.log('Creating non-fungible token...');
-      const createNonFungibleTokenTransactionOrder = await UnsignedCreateNonFungibleTokenTransactionOrder.create({
+      const createNonFungibleTokenTransactionOrder = await CreateNonFungibleToken.create({
         ownerPredicate: ownerPredicate,
         type: { unitId: tokenTypeUnitId },
         name: 'My token',
@@ -318,7 +287,7 @@ describe('Token Client Integration Tests', () => {
 
       const createNonFungibleTokenProof = await tokenClient.waitTransactionProof(
         createNonFungibleTokenHash,
-        CreateNonFungibleTokenTransactionRecordWithProof,
+        CreateNonFungibleToken,
       );
       expect(createNonFungibleTokenProof.transactionRecord.serverMetadata.successIndicator).toEqual(
         TransactionStatus.Successful,
@@ -333,7 +302,7 @@ describe('Token Client Integration Tests', () => {
       expect(token).not.toBeNull();
 
       console.log('Updating non-fungible token...');
-      const updateNonFungibleTokenTransactionOrder = await UnsignedUpdateNonFungibleTokenTransactionOrder.create({
+      const updateNonFungibleTokenTransactionOrder = await UpdateNonFungibleToken.create({
         token: token!,
         data: NonFungibleTokenData.create(new Uint8Array(32)),
         ...createTransactionData(round, feeCreditRecordId),
@@ -343,7 +312,7 @@ describe('Token Client Integration Tests', () => {
 
       const updateNonFungibleTokenProof = await tokenClient.waitTransactionProof(
         updateNonFungibleTokenHash,
-        UpdateNonFungibleTokenTransactionRecordWithProof,
+        UpdateNonFungibleToken,
       );
 
       expect(updateNonFungibleTokenProof.transactionRecord.serverMetadata.successIndicator).toEqual(
@@ -358,7 +327,7 @@ describe('Token Client Integration Tests', () => {
       expect(token).not.toBeNull();
 
       console.log('Transferring non-fungible token...');
-      const transferNonFungibleTokenTransactionOrder = await UnsignedTransferNonFungibletokenTransactionOrder.create({
+      const transferNonFungibleTokenTransactionOrder = await TransferNonFungibleToken.create({
         token: token!,
         counter: token!.counter,
         ownerPredicate: ownerPredicate,
@@ -371,7 +340,7 @@ describe('Token Client Integration Tests', () => {
 
       const transferNonFungibleTokenProof = await tokenClient.waitTransactionProof(
         transferNonFungibleTokenHash,
-        TransferNonFungibleTokenTransactionRecordWithProof,
+        TransferNonFungibleToken,
       );
       expect(transferNonFungibleTokenProof.transactionRecord.serverMetadata.successIndicator).toEqual(
         TransactionStatus.Successful,

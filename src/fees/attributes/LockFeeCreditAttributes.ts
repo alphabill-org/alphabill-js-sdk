@@ -7,6 +7,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Lock fee credit payload attributes.
  */
 export class LockFeeCreditAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'LockFeeCreditAttributes';
+
   /**
    * Lock fee credit attributes constructor.
    * @param {bigint} lockStatus - Lock status.

@@ -25,5 +25,4 @@ export interface ITransactionClientMetadata {
    * @type {Uint8Array}
    */
   readonly referenceNumber: Uint8Array | null;
-  encode(): Uint8Array;
 }

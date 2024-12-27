@@ -9,6 +9,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Transfer fee credit payload attributes.
  */
 export class TransferFeeCreditAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'TransferFeeCreditAttributes';
+
   /**
    * Transfer fee credit attributes constructor.
    * @param {bigint} amount - Amount.

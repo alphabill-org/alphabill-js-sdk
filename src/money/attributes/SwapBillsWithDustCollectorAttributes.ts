@@ -1,26 +1,34 @@
 import { CborDecoder } from '../../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
+import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { dedent } from '../../util/StringUtils.js';
-import { TransferBillToDustCollectorTransactionRecordWithProof } from '../transactions/records/TransferBillToDustCollectorTransactionRecordWithProof.js';
+import {
+  TransferBillToDustCollector,
+  TransferBillToDustCollectorTransactionOrder,
+} from '../transactions/TransferBillToDustCollector.js';
 
 /**
  * Swap bills with dust collector payload attributes.
  */
 export class SwapBillsWithDustCollectorAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'SwapBillsWithDustCollectorAttributes';
+
   /**
    * Swap bills with dust collector attributes constructor.
-   * @param {TransactionRecordWithProof<TransferBillToDustCollectorAttributes>[]} _proofs - Transaction proofs.
+   * @param {TransactionRecordWithProof<TransferBillToDustCollectorTransactionOrder>[]} _proofs - Transaction proofs.
    */
-  public constructor(private readonly _proofs: readonly TransferBillToDustCollectorTransactionRecordWithProof[]) {
+  public constructor(
+    private readonly _proofs: readonly TransactionRecordWithProof<TransferBillToDustCollectorTransactionOrder>[],
+  ) {
     this._proofs = Array.from(this._proofs);
   }
 
   /**
    * Get transaction proofs.
-   * @returns {readonly TransferBillToDustCollectorTransactionRecordWithProof[]} Transaction proofs.
+   * @returns {readonly TransactionRecordWithProof<TransferBillToDustCollectorTransactionOrder>[]} Transaction proofs.
    */
-  public get proofs(): readonly TransferBillToDustCollectorTransactionRecordWithProof[] {
+  public get proofs(): readonly TransactionRecordWithProof<TransferBillToDustCollectorTransactionOrder>[] {
     return Array.from(this._proofs);
   }
 
@@ -33,7 +41,7 @@ export class SwapBillsWithDustCollectorAttributes implements ITransactionPayload
     const data = CborDecoder.readArray(rawData);
     return new SwapBillsWithDustCollectorAttributes(
       CborDecoder.readArray(data[0]).map((rawProof: Uint8Array) =>
-        TransferBillToDustCollectorTransactionRecordWithProof.fromCbor(rawProof),
+        TransferBillToDustCollector.createTransactionRecordWithProof(rawProof),
       ),
     );
   }

@@ -3,21 +3,24 @@ import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { ITransactionPayloadAttributes } from '../../transaction/ITransactionPayloadAttributes.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
 import { PredicateBytes } from '../../transaction/predicates/PredicateBytes.js';
+import { TransactionRecordWithProof } from '../../transaction/record/TransactionRecordWithProof.js';
 import { dedent } from '../../util/StringUtils.js';
-import { TransferFeeCreditTransactionRecordWithProof } from '../transactions/records/TransferFeeCreditTransactionRecordWithProof.js';
+import { TransferFeeCredit, TransferFeeCreditTransactionOrder } from '../transactions/TransferFeeCredit.js';
 
 /**
  * Add fee credit payload attributes.
  */
 export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'AddFeeCreditAttributes';
+
   /**
    * Add fee credit payload attributes constructor.
    * @param {IPredicate} ownerPredicate Owner predicate.
-   * @param {TransferFeeCreditTransactionRecordWithProof} transactionRecordWithProof Transaction proof.
+   * @param {TransactionRecordWithProof<TransferFeeCreditTransactionOrder>} transactionRecordWithProof Transaction proof.
    */
   public constructor(
     public readonly ownerPredicate: IPredicate,
-    public readonly transactionRecordWithProof: TransferFeeCreditTransactionRecordWithProof,
+    public readonly transactionRecordWithProof: TransactionRecordWithProof<TransferFeeCreditTransactionOrder>,
   ) {}
 
   /**
@@ -29,7 +32,7 @@ export class AddFeeCreditAttributes implements ITransactionPayloadAttributes {
     const data = CborDecoder.readArray(rawData);
     return new AddFeeCreditAttributes(
       new PredicateBytes(CborDecoder.readByteString(data[0])),
-      TransferFeeCreditTransactionRecordWithProof.fromCbor(data[1]),
+      TransferFeeCredit.createTransactionRecordWithProof(data[1]),
     );
   }
 

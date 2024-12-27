@@ -7,6 +7,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Lock token payload attributes.
  */
 export class LockTokenAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'LockTokenAttributes';
+
   /**
    * Lock token attributes constructor.
    * @param {bigint} lockStatus - Lock status.

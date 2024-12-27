@@ -9,6 +9,8 @@ import { dedent } from '../../util/StringUtils.js';
  * Close fee credit payload attributes.
  */
 export class CloseFeeCreditAttributes implements ITransactionPayloadAttributes {
+  private readonly _brand: 'CloseFeeCreditAttributes';
+
   /**
    * Close fee credit payload attributes constructor.
    * @param {bigint} amount Amount is the current balance of the fee credit record.

@@ -1,15 +1,13 @@
 import assert from 'node:assert';
-import { TransferFeeCreditTransactionRecordWithProof } from '../../../src/fees/transactions/records/TransferFeeCreditTransactionRecordWithProof.js';
-import { UnsignedAddFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedAddFeeCreditTransactionOrder.js';
-import { UnsignedTransferFeeCreditTransactionOrder } from '../../../src/fees/transactions/UnsignedTransferFeeCreditTransactionOrder.js';
+import { AddFeeCredit } from '../../../src/fees/transactions/AddFeeCredit.js';
+import { TransferFeeCredit } from '../../../src/fees/transactions/TransferFeeCredit.js';
 import { IUnitId } from '../../../src/IUnitId.js';
 import { MoneyPartitionJsonRpcClient } from '../../../src/json-rpc/MoneyPartitionJsonRpcClient.js';
 import { TokenPartitionJsonRpcClient } from '../../../src/json-rpc/TokenPartitionJsonRpcClient.js';
 import { Bill } from '../../../src/money/Bill.js';
 import { NetworkIdentifier } from '../../../src/NetworkIdentifier.js';
 import { ClientMetadata } from '../../../src/transaction/ClientMetadata.js';
-import { ITransactionClientMetadata } from '../../../src/transaction/ITransactionClientMetadata.js';
-import { ITransactionData } from '../../../src/transaction/order/ITransactionData.js';
+import { ITransactionData } from '../../../src/transaction/ITransactionData.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { IProofFactory } from '../../../src/transaction/proofs/IProofFactory.js';
@@ -25,7 +23,7 @@ export function createTransactionData(round: bigint, feeCreditRecordId?: IUnitId
   };
 }
 
-export function createMetadata(round: bigint, feeCreditRecordId?: IUnitId): ITransactionClientMetadata {
+export function createMetadata(round: bigint, feeCreditRecordId?: IUnitId): ClientMetadata {
   return new ClientMetadata(round + 60n, 10n, feeCreditRecordId ?? null, new Uint8Array());
 }
 
@@ -50,7 +48,7 @@ export async function addFeeCredit(
   const round = await clientToAddFeesTo.getRoundNumber();
 
   console.log('Transferring to fee credit...');
-  const transferFeeCreditTransactionOrder = await UnsignedTransferFeeCreditTransactionOrder.create({
+  const transferFeeCreditTransactionOrder = await TransferFeeCredit.create({
     amount: amountToFeeCredit,
     targetPartitionIdentifier: targetPartitionIdentifier,
     latestAdditionTime: round + 60n,
@@ -63,10 +61,7 @@ export async function addFeeCredit(
 
   const transferFeeCreditHash = await moneyClient.sendTransaction(transferFeeCreditTransactionOrder);
 
-  const transferFeeCreditProof = await moneyClient.waitTransactionProof(
-    transferFeeCreditHash,
-    TransferFeeCreditTransactionRecordWithProof,
-  );
+  const transferFeeCreditProof = await moneyClient.waitTransactionProof(transferFeeCreditHash, TransferFeeCredit);
   expect(transferFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(
     TransactionStatus.Successful,
   );
@@ -74,7 +69,7 @@ export async function addFeeCredit(
   const feeCreditRecordId = transferFeeCreditTransactionOrder.payload.attributes.targetUnitId;
 
   console.log('Adding fee credit');
-  const addFeeCreditTransactionOrder = await UnsignedAddFeeCreditTransactionOrder.create({
+  const addFeeCreditTransactionOrder = await AddFeeCredit.create({
     targetPartitionIdentifier: targetPartitionIdentifier,
     ownerPredicate: ownerPredicate,
     proof: transferFeeCreditProof,
