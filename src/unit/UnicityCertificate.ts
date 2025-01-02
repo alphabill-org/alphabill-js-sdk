@@ -13,7 +13,7 @@ export class UnicityCertificate {
    * Unicity certificate constructor.
    * @param {bigint} version - version.
    * @param {InputRecord} inputRecord - unit identifier.
-   * @param {Uint8Array} _trHash - hash of the technical record.
+   * @param {Uint8Array | null} _trHash - hash of the technical record.
    * @param {ShardTreeCertificate} shardTreeCertificate - shard tree certificate.
    * @param {UnicityTreeCertificate} unicityTreeCertificate - unicity tree certificate.
    * @param {UnicitySeal} unicitySeal - unicity seal.
@@ -21,17 +21,19 @@ export class UnicityCertificate {
   public constructor(
     public readonly version: bigint,
     public readonly inputRecord: InputRecord,
-    private readonly _trHash: Uint8Array,
+    private readonly _trHash: Uint8Array | null,
     public readonly shardTreeCertificate: ShardTreeCertificate,
     public readonly unicityTreeCertificate: UnicityTreeCertificate,
     public readonly unicitySeal: UnicitySeal,
   ) {
     this.version = BigInt(this.version);
-    this._trHash = new Uint8Array(this._trHash);
+    if (this._trHash) {
+      this._trHash = new Uint8Array(this._trHash);
+    }
   }
 
-  public get trHash(): Uint8Array {
-    return new Uint8Array(this._trHash);
+  public get trHash(): Uint8Array | null {
+    return this._trHash ? new Uint8Array(this._trHash) : null;
   }
 
   /**
@@ -48,7 +50,7 @@ export class UnicityCertificate {
     return new UnicityCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
       InputRecord.fromCbor(data[1]),
-      CborDecoder.readByteString(data[2]),
+      CborDecoder.readOptional(data[2], CborDecoder.readByteString),
       ShardTreeCertificate.fromCbor(data[3]),
       UnicityTreeCertificate.fromCbor(data[4]),
       UnicitySeal.fromCbor(data[5]),
@@ -65,7 +67,7 @@ export class UnicityCertificate {
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
         this.inputRecord.encode(),
-        CborEncoder.encodeByteString(this._trHash),
+        this._trHash ? CborEncoder.encodeByteString(this._trHash) : CborEncoder.encodeNull(),
         this.shardTreeCertificate.encode(),
         this.unicityTreeCertificate.encode(),
         this.unicitySeal.encode(),
@@ -82,7 +84,7 @@ export class UnicityCertificate {
       Unicity Certificate
         Version: ${this.version}
         ${this.inputRecord.toString()}}
-        Transaction Record Hash: ${Base16Converter.encode(this.trHash)}
+        Transaction Record Hash: ${this._trHash ? Base16Converter.encode(this._trHash) : 'null'}
         ${this.shardTreeCertificate.toString()}
         ${this.unicityTreeCertificate.toString()}
         ${this.unicitySeal.toString()}`;
@@ -98,49 +100,55 @@ export class InputRecord {
    * @param {bigint} version - version.
    * @param {bigint} roundNumber - shard’s round number.
    * @param {bigint} epoch - shard’s epoch number.
-   * @param {Uint8Array} _previousHash - previously certified state hash.
-   * @param {Uint8Array} _hash - state hash to be certified.
+   * @param {Uint8Array | null} _previousHash - previously certified state hash.
+   * @param {Uint8Array | null} _hash - state hash to be certified.
    * @param {Uint8Array} _summaryValue - summary value to certified.
    * @param {bigint} timestamp - reference time for transaction validation.
-   * @param {Uint8Array} _blockHash - hash of the block.
+   * @param {Uint8Array | null} _blockHash - hash of the block.
    * @param {bigint} sumOfEarnedFees - sum of the actual fees over all transaction records in the block.
    */
   public constructor(
     public readonly version: bigint,
     public readonly roundNumber: bigint,
     public readonly epoch: bigint,
-    private readonly _previousHash: Uint8Array,
-    private readonly _hash: Uint8Array,
+    private readonly _previousHash: Uint8Array | null,
+    private readonly _hash: Uint8Array | null,
     private readonly _summaryValue: Uint8Array,
     public readonly timestamp: bigint,
-    private readonly _blockHash: Uint8Array,
+    private readonly _blockHash: Uint8Array | null,
     public readonly sumOfEarnedFees: bigint,
   ) {
     this.version = BigInt(this.version);
     this.roundNumber = BigInt(this.roundNumber);
     this.epoch = BigInt(this.epoch);
-    this._previousHash = new Uint8Array(this._previousHash);
-    this._hash = new Uint8Array(this._hash);
+    if (this._previousHash) {
+      this._previousHash = new Uint8Array(this._previousHash);
+    }
+    if (this._hash) {
+      this._hash = new Uint8Array(this._hash);
+    }
     this._summaryValue = new Uint8Array(this._summaryValue);
     this.timestamp = BigInt(this.timestamp);
-    this._blockHash = new Uint8Array(this._blockHash);
+    if (this._blockHash) {
+      this._blockHash = new Uint8Array(this._blockHash);
+    }
     this.sumOfEarnedFees = BigInt(this.sumOfEarnedFees);
   }
 
-  public get previousHash(): Uint8Array {
-    return new Uint8Array(this._previousHash);
+  public get previousHash(): Uint8Array | null {
+    return this._previousHash ? new Uint8Array(this._previousHash) : null;
   }
 
-  public get hash(): Uint8Array {
-    return new Uint8Array(this._hash);
+  public get hash(): Uint8Array | null {
+    return this._hash ? new Uint8Array(this._hash) : null;
   }
 
   public get summaryValue(): Uint8Array {
     return new Uint8Array(this._summaryValue);
   }
 
-  public get blockHash(): Uint8Array {
-    return new Uint8Array(this._blockHash);
+  public get blockHash(): Uint8Array | null {
+    return this._blockHash ? new Uint8Array(this._blockHash) : null;
   }
 
   /**
@@ -158,11 +166,11 @@ export class InputRecord {
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
       CborDecoder.readUnsignedInteger(data[2]),
-      CborDecoder.readByteString(data[3]),
-      CborDecoder.readByteString(data[4]),
+      CborDecoder.readOptional(data[3], CborDecoder.readByteString),
+      CborDecoder.readOptional(data[4], CborDecoder.readByteString),
       CborDecoder.readByteString(data[5]),
       CborDecoder.readUnsignedInteger(data[6]),
-      CborDecoder.readByteString(data[7]),
+      CborDecoder.readOptional(data[7], CborDecoder.readByteString),
       CborDecoder.readUnsignedInteger(data[8]),
     );
   }
@@ -178,11 +186,11 @@ export class InputRecord {
         CborEncoder.encodeUnsignedInteger(this.version),
         CborEncoder.encodeUnsignedInteger(this.roundNumber),
         CborEncoder.encodeUnsignedInteger(this.epoch),
-        CborEncoder.encodeByteString(this._previousHash),
-        CborEncoder.encodeByteString(this._hash),
+        this._previousHash ? CborEncoder.encodeByteString(this._previousHash) : CborEncoder.encodeNull(),
+        this._hash ? CborEncoder.encodeByteString(this._hash) : CborEncoder.encodeNull(),
         CborEncoder.encodeByteString(this._summaryValue),
         CborEncoder.encodeUnsignedInteger(this.timestamp),
-        CborEncoder.encodeByteString(this._blockHash),
+        this._blockHash ? CborEncoder.encodeByteString(this._blockHash) : CborEncoder.encodeNull(),
         CborEncoder.encodeUnsignedInteger(this.sumOfEarnedFees),
       ]),
     );
@@ -198,11 +206,11 @@ export class InputRecord {
         Version: ${this.version}
         Round Number: ${this.roundNumber}
         Epoch: ${this.epoch}
-        Previous Hash: ${Base16Converter.encode(this._previousHash)}
-        Hash: ${Base16Converter.encode(this._hash)}
+        Previous Hash: ${this._previousHash ? Base16Converter.encode(this._previousHash) : 'null'}
+        Hash: ${this._hash ? Base16Converter.encode(this._hash) : 'null'}
         Summary Value: ${Base16Converter.encode(this._summaryValue)}
         Timestamp: ${this.timestamp}
-        Block Hash: ${Base16Converter.encode(this._blockHash)}
+        Block Hash: ${this._blockHash ? Base16Converter.encode(this._blockHash) : 'null'}
         Sum Of Earned Fees: ${this.sumOfEarnedFees}`;
   }
 }
@@ -386,24 +394,28 @@ export class UnicitySeal {
     public readonly version: bigint,
     public readonly rootChainRoundNumber: bigint,
     public readonly timestamp: bigint,
-    private readonly _previousHash: Uint8Array,
-    private readonly _hash: Uint8Array,
+    private readonly _previousHash: Uint8Array | null,
+    private readonly _hash: Uint8Array | null,
     private readonly _signatures: Map<string, Uint8Array>,
   ) {
     this.version = BigInt(this.version);
     this.rootChainRoundNumber = BigInt(this.rootChainRoundNumber);
     this.timestamp = BigInt(this.timestamp);
-    this._previousHash = new Uint8Array(this._previousHash);
-    this._hash = new Uint8Array(this._hash);
+    if (this._previousHash) {
+      this._previousHash = new Uint8Array(this._previousHash);
+    }
+    if (this._hash) {
+      this._hash = new Uint8Array(this._hash);
+    }
     this._signatures = new Map(Array.from(this._signatures).map(([id, signature]) => [id, new Uint8Array(signature)]));
   }
 
-  public get previousHash(): Uint8Array {
-    return new Uint8Array(this._previousHash);
+  public get previousHash(): Uint8Array | null {
+    return this._previousHash ? new Uint8Array(this._previousHash) : null;
   }
 
-  public get hash(): Uint8Array {
-    return new Uint8Array(this._hash);
+  public get hash(): Uint8Array | null {
+    return this._hash ? new Uint8Array(this._hash) : null;
   }
 
   public get signatures(): Map<string, Uint8Array> {
@@ -425,8 +437,8 @@ export class UnicitySeal {
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
       CborDecoder.readUnsignedInteger(data[2]),
-      CborDecoder.readByteString(data[3]),
-      CborDecoder.readByteString(data[4]),
+      CborDecoder.readOptional(data[3], CborDecoder.readByteString),
+      CborDecoder.readOptional(data[4], CborDecoder.readByteString),
       new Map(
         Array.from(CborDecoder.readMap(data[5]).entries()).map(([id, signature]) => [
           CborDecoder.readTextString(Base16Converter.decode(id)),
@@ -447,8 +459,8 @@ export class UnicitySeal {
         CborEncoder.encodeUnsignedInteger(this.version),
         CborEncoder.encodeUnsignedInteger(this.rootChainRoundNumber),
         CborEncoder.encodeUnsignedInteger(this.timestamp),
-        CborEncoder.encodeByteString(this._previousHash),
-        CborEncoder.encodeByteString(this._hash),
+        this._previousHash ? CborEncoder.encodeByteString(this._previousHash) : CborEncoder.encodeNull(),
+        this._hash ? CborEncoder.encodeByteString(this._hash) : CborEncoder.encodeNull(),
         CborEncoder.encodeMap(
           new Map(
             Array.from(this._signatures.entries()).map(([id, signature]) => [
@@ -471,8 +483,8 @@ export class UnicitySeal {
         Version: ${this.version}
         Root Chain Round Number: ${this.rootChainRoundNumber}
         Timestamp: ${this.timestamp}
-        Previous Hash: ${Base16Converter.encode(this._previousHash)}
-        Hash: ${Base16Converter.encode(this._hash)}
+        Previous Hash: ${this._previousHash ? Base16Converter.encode(this._previousHash) : 'null'}
+        Hash: ${this._hash ? Base16Converter.encode(this._hash) : 'null'}
         Signatures: [${
           this._signatures.entries()
             ? `\n${Array.from(this._signatures)
