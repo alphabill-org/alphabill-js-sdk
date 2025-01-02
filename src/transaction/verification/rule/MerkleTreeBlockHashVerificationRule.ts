@@ -17,15 +17,20 @@ export class MerkleTreeBlockHashVerificationRule extends VerificationRule {
     const { transactionProof, transactionRecord } = context.proof;
     const rootHash = this.calculateMerkleTreeRootHash(transactionProof.chain, transactionRecord);
 
+    const inputRecordPreviousHash = transactionProof.unicityCertificate.inputRecord.previousHash;
+    const inputRecordHash = transactionProof.unicityCertificate.inputRecord.hash;
     const blockHash = sha256
       .create()
       .update(CborEncoder.encodeByteString(transactionProof.blockHeaderHash))
-      .update(CborEncoder.encodeByteString(transactionProof.unicityCertificate.inputRecord.previousHash))
-      .update(CborEncoder.encodeByteString(transactionProof.unicityCertificate.inputRecord.hash))
+      .update(
+        inputRecordPreviousHash ? CborEncoder.encodeByteString(inputRecordPreviousHash) : CborEncoder.encodeNull(),
+      )
+      .update(inputRecordHash ? CborEncoder.encodeByteString(inputRecordHash) : CborEncoder.encodeNull())
       .update(CborEncoder.encodeByteString(rootHash))
       .digest();
 
-    if (compareUint8Arrays(blockHash, transactionProof.unicityCertificate.inputRecord.blockHash) === 0) {
+    const inputRecordBlockHash = transactionProof.unicityCertificate.inputRecord.blockHash;
+    if (inputRecordBlockHash == null || compareUint8Arrays(blockHash, inputRecordBlockHash) === 0) {
       return Promise.resolve(
         new VerificationResult(this, MerkleTreeBlockHashVerificationRule.MESSAGE, VerificationResultCode.OK),
       );

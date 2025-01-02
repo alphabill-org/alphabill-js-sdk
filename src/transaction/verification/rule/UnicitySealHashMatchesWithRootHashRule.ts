@@ -55,7 +55,8 @@ export class UnicitySealHashMatchesWithRootHashRule extends VerificationRule {
       }
     }
 
-    if (compareUint8Arrays(context.proof.transactionProof.unicityCertificate.unicitySeal.hash, result) !== 0) {
+    const unicitySealHash = context.proof.transactionProof.unicityCertificate.unicitySeal.hash;
+    if (unicitySealHash == null || compareUint8Arrays(unicitySealHash, result) !== 0) {
       return Promise.resolve(
         new VerificationResult(
           this,
@@ -75,7 +76,9 @@ export class UnicitySealHashMatchesWithRootHashRule extends VerificationRule {
     let rootHash = sha256
       .create()
       .update(unicityCertificate.inputRecord.encode())
-      .update(CborEncoder.encodeByteString(unicityCertificate.trHash))
+      .update(
+        unicityCertificate.trHash ? CborEncoder.encodeByteString(unicityCertificate.trHash) : CborEncoder.encodeNull(),
+      )
       .digest();
 
     const shardId = unicityCertificate.shardTreeCertificate.shard;

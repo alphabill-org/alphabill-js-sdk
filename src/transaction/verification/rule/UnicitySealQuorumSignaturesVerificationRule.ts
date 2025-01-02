@@ -86,8 +86,8 @@ export class UnicitySealQuorumSignaturesVerificationRule extends VerificationRul
         CborEncoder.encodeUnsignedInteger(unicitySeal.version),
         CborEncoder.encodeUnsignedInteger(unicitySeal.rootChainRoundNumber),
         CborEncoder.encodeUnsignedInteger(unicitySeal.timestamp),
-        CborEncoder.encodeByteString(unicitySeal.previousHash),
-        CborEncoder.encodeByteString(unicitySeal.hash),
+        unicitySeal.previousHash ? CborEncoder.encodeByteString(unicitySeal.previousHash) : CborEncoder.encodeNull(),
+        unicitySeal.hash ? CborEncoder.encodeByteString(unicitySeal.hash) : CborEncoder.encodeNull(),
         CborEncoder.encodeNull(),
       ]),
     );
