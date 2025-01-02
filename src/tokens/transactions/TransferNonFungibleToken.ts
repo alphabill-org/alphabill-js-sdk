@@ -18,8 +18,6 @@ export type TransferNonFungibleTokenTransactionOrder = TransactionOrder<
 interface ITransferNonFungibleTokenTransactionData extends ITransactionData {
   token: { unitId: IUnitId; counter: bigint };
   ownerPredicate: IPredicate;
-  nonce: Uint8Array | null;
-  counter: bigint;
   type: { unitId: IUnitId };
 }
 
