@@ -63,7 +63,7 @@ export class ServerMetadata {
    */
   public toString(): string {
     return dedent`
-      ServerMetadata
+      Server Metadata
         Actual Fee: ${this.actualFee}
         Target Unit IDs: [${this._targetUnitIds.length ? `\n${this._targetUnitIds.map((unitId) => unitId.toString()).join('\n')}\n` : ''}]
         Success Indicator: ${this.successIndicator}

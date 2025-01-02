@@ -329,9 +329,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Transferring non-fungible token...');
       const transferNonFungibleTokenTransactionOrder = await TransferNonFungibleToken.create({
         token: token!,
-        counter: token!.counter,
         ownerPredicate: ownerPredicate,
-        nonce: null,
         type: { unitId: tokenTypeUnitId },
         ...createTransactionData(round, feeCreditRecordId),
       }).sign(proofFactory, proofFactory, [alwaysTrueProofFactory]);
