@@ -395,7 +395,7 @@ export class UnicitySeal {
     public readonly rootChainRoundNumber: bigint,
     public readonly timestamp: bigint,
     private readonly _previousHash: Uint8Array | null,
-    private readonly _hash: Uint8Array | null,
+    private readonly _hash: Uint8Array,
     private readonly _signatures: Map<string, Uint8Array>,
   ) {
     this.version = BigInt(this.version);
@@ -404,9 +404,7 @@ export class UnicitySeal {
     if (this._previousHash) {
       this._previousHash = new Uint8Array(this._previousHash);
     }
-    if (this._hash) {
-      this._hash = new Uint8Array(this._hash);
-    }
+    this._hash = new Uint8Array(this._hash);
     this._signatures = new Map(Array.from(this._signatures).map(([id, signature]) => [id, new Uint8Array(signature)]));
   }
 
@@ -414,8 +412,8 @@ export class UnicitySeal {
     return this._previousHash ? new Uint8Array(this._previousHash) : null;
   }
 
-  public get hash(): Uint8Array | null {
-    return this._hash ? new Uint8Array(this._hash) : null;
+  public get hash(): Uint8Array {
+    return new Uint8Array(this._hash);
   }
 
   public get signatures(): Map<string, Uint8Array> {
@@ -438,7 +436,7 @@ export class UnicitySeal {
       CborDecoder.readUnsignedInteger(data[1]),
       CborDecoder.readUnsignedInteger(data[2]),
       CborDecoder.readOptional(data[3], CborDecoder.readByteString),
-      CborDecoder.readOptional(data[4], CborDecoder.readByteString),
+      CborDecoder.readByteString(data[4]),
       new Map(
         Array.from(CborDecoder.readMap(data[5]).entries()).map(([id, signature]) => [
           CborDecoder.readTextString(Base16Converter.decode(id)),
@@ -460,7 +458,7 @@ export class UnicitySeal {
         CborEncoder.encodeUnsignedInteger(this.rootChainRoundNumber),
         CborEncoder.encodeUnsignedInteger(this.timestamp),
         this._previousHash ? CborEncoder.encodeByteString(this._previousHash) : CborEncoder.encodeNull(),
-        this._hash ? CborEncoder.encodeByteString(this._hash) : CborEncoder.encodeNull(),
+        CborEncoder.encodeByteString(this._hash),
         CborEncoder.encodeMap(
           new Map(
             Array.from(this._signatures.entries()).map(([id, signature]) => [
@@ -484,7 +482,7 @@ export class UnicitySeal {
         Root Chain Round Number: ${this.rootChainRoundNumber}
         Timestamp: ${this.timestamp}
         Previous Hash: ${this._previousHash ? Base16Converter.encode(this._previousHash) : 'null'}
-        Hash: ${this._hash ? Base16Converter.encode(this._hash) : 'null'}
+        Hash: ${Base16Converter.encode(this._hash)}
         Signatures: [${
           this._signatures.entries()
             ? `\n${Array.from(this._signatures)
