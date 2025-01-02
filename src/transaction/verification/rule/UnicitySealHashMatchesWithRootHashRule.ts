@@ -56,7 +56,7 @@ export class UnicitySealHashMatchesWithRootHashRule extends VerificationRule {
     }
 
     const unicitySealHash = context.proof.transactionProof.unicityCertificate.unicitySeal.hash;
-    if (unicitySealHash == null || compareUint8Arrays(unicitySealHash, result) !== 0) {
+    if (compareUint8Arrays(unicitySealHash, result) !== 0) {
       return Promise.resolve(
         new VerificationResult(
           this,
