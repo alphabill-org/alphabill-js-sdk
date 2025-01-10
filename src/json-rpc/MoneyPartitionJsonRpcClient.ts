@@ -20,6 +20,7 @@ import {
 } from '../money/transactions/TransferBillToDustCollector.js';
 import { UnlockBill, UnlockBillTransactionOrder } from '../money/transactions/UnlockBill.js';
 import { RootTrustBase } from '../RootTrustBase.js';
+import { RoundInfo } from '../RoundInfo.js';
 import { IBillDataDto } from './IBillDataDto.js';
 import { IFeeCreditRecordDto } from './IFeeCreditRecordDto.js';
 import { TransactionFactory, CreateUnit, JsonRpcClient } from './JsonRpcClient.js';
@@ -68,10 +69,10 @@ export class MoneyPartitionJsonRpcClient {
   public constructor(private readonly client: JsonRpcClient) {}
 
   /**
-   * @see {JsonRpcClient.getRoundNumber}
+   * @see {JsonRpcClient.getRoundInfo}
    */
-  public getRoundNumber(): Promise<bigint> {
-    return this.client.getRoundNumber();
+  public getRoundInfo(): Promise<RoundInfo> {
+    return this.client.getRoundInfo();
   }
 
   /**

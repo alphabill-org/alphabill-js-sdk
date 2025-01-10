@@ -29,7 +29,7 @@ describe('Money Client Integration Tests', () => {
   let feeCreditRecordId: IUnitId; // can no longer be static as hash contains timeout
 
   it('Get round number, get block and get trust base', async () => {
-    const round = await moneyClient.getRoundNumber();
+    const round = (await moneyClient.getRoundInfo()).roundNumber;
     expect(round).not.toBeNull();
     const block = await moneyClient.getBlock(round);
     expect(block).not.toBeNull();
@@ -66,7 +66,7 @@ describe('Money Client Integration Tests', () => {
     const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
 
-    const round = await moneyClient.getRoundNumber();
+    const round = (await moneyClient.getRoundInfo()).roundNumber;
     const bill = (await moneyClient.getUnit(billUnitIds[0], false, Bill))!;
     expect(bill).not.toBeNull();
 
@@ -97,7 +97,7 @@ describe('Money Client Integration Tests', () => {
   }, 20000);
 
   it('Split and transfer bill', async () => {
-    const round = await moneyClient.getRoundNumber();
+    const round = (await moneyClient.getRoundInfo()).roundNumber;
     let billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
     const billUnitId = billUnitIds[0];
@@ -144,7 +144,7 @@ describe('Money Client Integration Tests', () => {
   }, 20000);
 
   it('Transfer and swap bill with dust collector', async () => {
-    const round = await moneyClient.getRoundNumber();
+    const round = (await moneyClient.getRoundInfo()).roundNumber;
     const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
     const bill = await moneyClient.getUnit(billUnitIds[0], false, Bill);

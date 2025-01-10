@@ -26,9 +26,10 @@ describe('Proof verification', () => {
       proofFactory,
     );
 
+    const roundInfo = await moneyClient.getRoundInfo();
     const context = {
       proof: await moneyClient.waitTransactionProof(addFeeCreditHash, AddFeeCredit),
-      trustBase: await moneyClient.getTrustBase(await moneyClient.getRoundNumber()),
+      trustBase: await moneyClient.getTrustBase(roundInfo.roundNumber),
     };
 
     const result = await new DefaultVerificationPolicy().verify(context);

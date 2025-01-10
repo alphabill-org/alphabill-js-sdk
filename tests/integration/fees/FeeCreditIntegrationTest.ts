@@ -60,7 +60,7 @@ describe('Fee Credit Integration Tests', () => {
   it('Lock and unlock fee credit', async () => {
     const feeCreditRecord = (await moneyClient.getUnit(feeCreditRecordId, false, FeeCreditRecord))!;
     expect(feeCreditRecord.locked).toBe(0n);
-    const round = await moneyClient.getRoundNumber();
+    const round = (await moneyClient.getRoundInfo()).roundNumber;
 
     console.log('Locking fee credit...');
     const lockStatus = 5n;
@@ -96,7 +96,7 @@ describe('Fee Credit Integration Tests', () => {
   }, 20000);
 
   it('Close and reclaim fee credit', async () => {
-    const round = await moneyClient.getRoundNumber();
+    const round = (await moneyClient.getRoundInfo()).roundNumber;
     const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
     expect(billUnitIds.length).toBeGreaterThan(0);
     const billUnitId = billUnitIds[0];

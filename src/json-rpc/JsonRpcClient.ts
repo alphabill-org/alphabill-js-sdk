@@ -1,6 +1,7 @@
 import { sha256 } from '@noble/hashes/sha256';
 import { IUnitId } from '../IUnitId.js';
 import { RootTrustBase } from '../RootTrustBase.js';
+import { RoundInfo } from '../RoundInfo.js';
 import { ITransactionPayloadAttributes } from '../transaction/ITransactionPayloadAttributes.js';
 import { ITransactionOrderProof } from '../transaction/proofs/ITransactionOrderProof.js';
 import { TransactionOrder } from '../transaction/TransactionOrder.js';
@@ -9,6 +10,7 @@ import { UnitId } from '../UnitId.js';
 import { Base16Converter } from '../util/Base16Converter.js';
 import { IJsonRpcService } from './IJsonRpcService.js';
 import { IRootTrustBaseDto } from './IRootTrustBaseDto.js';
+import { IRoundInfoDto } from './IRoundInfoDto.js';
 import { IStateProofDto } from './IStateProofDto.js';
 import { ITransactionProofDto } from './ITransactionProofDto.js';
 import { JsonRpcError } from './JsonRpcError.js';
@@ -42,11 +44,12 @@ export class JsonRpcClient {
   public constructor(private readonly service: IJsonRpcService) {}
 
   /**
-   * Get round number.
-   * @returns {Promise<bigint>} The round number.
+   * Get round info.
+   * @returns {Promise<RoundInfo>} Round info.
    */
-  public async getRoundNumber(): Promise<bigint> {
-    return BigInt(await this.request('state_getRoundNumber'));
+  public async getRoundInfo(): Promise<RoundInfo> {
+    const response = (await this.request('state_getRoundInfo')) as IRoundInfoDto;
+    return RoundInfo.create(response);
   }
 
   /**
