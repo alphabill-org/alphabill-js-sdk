@@ -49,7 +49,7 @@ export class JsonRpcClient {
    */
   public async getRoundInfo(): Promise<RoundInfo> {
     const response = (await this.request('state_getRoundInfo')) as IRoundInfoDto;
-    return new RoundInfo(response.roundNumber, response.epoch);
+    return RoundInfo.create(response);
   }
 
   /**
