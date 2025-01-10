@@ -7,6 +7,7 @@ import { SetFeeCredit, SetFeeCreditTransactionOrder } from '../fees/transactions
 import { UnlockFeeCredit, UnlockFeeCreditTransactionOrder } from '../fees/transactions/UnlockFeeCredit.js';
 import { IUnitId } from '../IUnitId.js';
 import { RootTrustBase } from '../RootTrustBase.js';
+import { RoundInfo } from '../RoundInfo.js';
 import { FungibleToken } from '../tokens/FungibleToken.js';
 import { FungibleTokenType } from '../tokens/FungibleTokenType.js';
 import { NonFungibleToken } from '../tokens/NonFungibleToken.js';
@@ -118,10 +119,10 @@ export class TokenPartitionJsonRpcClient {
   public constructor(private readonly client: JsonRpcClient) {}
 
   /**
-   * @see {JsonRpcClient.getRoundNumber}
+   * @see {JsonRpcClient.getRoundInfo}
    */
-  public getRoundNumber(): Promise<bigint> {
-    return this.client.getRoundNumber();
+  public getRoundInfo(): Promise<RoundInfo> {
+    return this.client.getRoundInfo();
   }
 
   /**

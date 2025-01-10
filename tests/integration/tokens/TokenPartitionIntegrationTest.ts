@@ -71,7 +71,7 @@ describe('Token Client Integration Tests', () => {
     let tokenUnitId: IUnitId;
 
     it('Create token type and token', async () => {
-      const round = await tokenClient.getRoundNumber();
+      const round = (await tokenClient.getRoundInfo()).roundNumber;
       console.log('Creating fungible token type...');
 
       const createFungibleTokenTypeTransactionOrder = await CreateFungibleTokenType.create({
@@ -126,7 +126,7 @@ describe('Token Client Integration Tests', () => {
     }, 20000);
 
     it('Split, burn and join', async () => {
-      const round = await tokenClient.getRoundNumber();
+      const round = (await tokenClient.getRoundInfo()).roundNumber;
       const token = await tokenClient.getUnit(tokenUnitId, false, FungibleToken);
       expect(token).not.toBeNull();
 
@@ -182,7 +182,7 @@ describe('Token Client Integration Tests', () => {
     }, 20000);
 
     it('Transfer', async () => {
-      const round = await tokenClient.getRoundNumber();
+      const round = (await tokenClient.getRoundInfo()).roundNumber;
       const token = await tokenClient.getUnit(tokenUnitId, false, FungibleToken);
       expect(token).not.toBeNull();
 
@@ -202,7 +202,7 @@ describe('Token Client Integration Tests', () => {
     }, 20000);
 
     it('Lock and unlock', async () => {
-      const round = await tokenClient.getRoundNumber();
+      const round = (await tokenClient.getRoundInfo()).roundNumber;
       const token = await tokenClient.getUnit(tokenUnitId, false, FungibleToken);
       expect(token).not.toBeNull();
 
@@ -241,7 +241,7 @@ describe('Token Client Integration Tests', () => {
     let tokenUnitId: IUnitId;
 
     it('Create token type and token', async () => {
-      const round = await tokenClient.getRoundNumber();
+      const round = (await tokenClient.getRoundInfo()).roundNumber;
       console.log('Creating non-fungible token type...');
       const createNonFungibleTokenTypeTransactionOrder = await CreateNonFungibleTokenType.create({
         type: { unitId: tokenTypeUnitId },
@@ -297,7 +297,7 @@ describe('Token Client Integration Tests', () => {
     }, 20000);
 
     it('Update', async () => {
-      const round = await tokenClient.getRoundNumber();
+      const round = (await tokenClient.getRoundInfo()).roundNumber;
       const token = await tokenClient.getUnit(tokenUnitId, false, NonFungibleToken);
       expect(token).not.toBeNull();
 
@@ -322,7 +322,7 @@ describe('Token Client Integration Tests', () => {
     }, 20000);
 
     it('Transfer', async () => {
-      const round = await tokenClient.getRoundNumber();
+      const round = (await tokenClient.getRoundInfo()).roundNumber;
       const token = await tokenClient.getUnit(tokenUnitId, false, NonFungibleToken);
       expect(token).not.toBeNull();
 

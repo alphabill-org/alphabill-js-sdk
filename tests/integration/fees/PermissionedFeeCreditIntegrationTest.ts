@@ -20,7 +20,7 @@ describe('Permissioned Fee Credit Integration Tests', () => {
 
   // Uncomment skip to run this test. Backend needs to be started in permissioned mode for this to succeed.
   it.skip('Set and delete fee credit', async () => {
-    const round = await tokenClient.getRoundNumber();
+    const round = (await tokenClient.getRoundInfo()).roundNumber;
     const ownerPredicate = PayToPublicKeyHashPredicate.create(signingService.publicKey);
 
     console.log('Setting fee credit...');

@@ -45,7 +45,7 @@ export async function addFeeCredit(
   const amountToFeeCredit = 100n;
   expect(bill.value).toBeGreaterThan(amountToFeeCredit);
 
-  const round = await clientToAddFeesTo.getRoundNumber();
+  const round = (await clientToAddFeesTo.getRoundInfo()).roundNumber;
 
   console.log('Transferring to fee credit...');
   const transferFeeCreditTransactionOrder = await TransferFeeCredit.create({
