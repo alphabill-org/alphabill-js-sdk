@@ -10,6 +10,6 @@ export class RoundInfo {
   }
 
   public static create(data: IRoundInfoDto): RoundInfo {
-    return new RoundInfo(data.roundNumber, data.epoch);
+    return new RoundInfo(data.roundNumber, data.epochNumber);
   }
 }
