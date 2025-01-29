@@ -2,7 +2,7 @@ export interface IRootTrustBaseDto {
   readonly version: bigint;
   readonly epoch: bigint;
   readonly epochStartRound: bigint;
-  readonly rootNodes: { [key: string]: INodeInfoDto };
+  readonly rootNodes: INodeInfoDto[];
   readonly quorumThreshold: bigint;
   readonly stateHash: string;
   readonly changeRecordHash: string;
@@ -12,6 +12,6 @@ export interface IRootTrustBaseDto {
 
 export interface INodeInfoDto {
   readonly nodeId: string;
-  readonly publicKey: string;
+  readonly sigKey: string;
   readonly stake: bigint;
 }

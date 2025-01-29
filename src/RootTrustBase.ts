@@ -6,7 +6,7 @@ export class RootTrustBase {
     public readonly version: bigint,
     public readonly epoch: bigint,
     public readonly epochStartRound: bigint,
-    public readonly rootNodes: Map<string, NodeInfo>,
+    public readonly rootNodes: NodeInfo[],
     public readonly quorumThreshold: bigint,
     private readonly _stateHash: Uint8Array,
     private readonly _changeRecordHash: Uint8Array,
@@ -44,7 +44,7 @@ export class RootTrustBase {
       data.version,
       data.epoch,
       data.epochStartRound,
-      new Map(Object.entries(data.rootNodes).map(([nodeId, nodeInfoDto]) => [nodeId, NodeInfo.create(nodeInfoDto)])),
+      data.rootNodes.map((nodeInfoDto) => NodeInfo.create(nodeInfoDto)),
       data.quorumThreshold,
       Base16Converter.decode(data.stateHash),
       Base16Converter.decode(data.changeRecordHash),
@@ -57,18 +57,18 @@ export class RootTrustBase {
 export class NodeInfo {
   public constructor(
     public readonly nodeId: string,
-    private readonly _publicKey: Uint8Array,
+    private readonly _sigKey: Uint8Array,
     public readonly stake: bigint,
   ) {
-    this._publicKey = new Uint8Array(_publicKey);
+    this._sigKey = new Uint8Array(_sigKey);
     this.stake = BigInt(this.stake);
   }
 
-  public get publicKey(): Uint8Array {
-    return new Uint8Array(this._publicKey);
+  public get sigKey(): Uint8Array {
+    return new Uint8Array(this._sigKey);
   }
 
   public static create(data: INodeInfoDto): NodeInfo {
-    return new NodeInfo(data.nodeId, Base16Converter.decode(data.publicKey), data.stake);
+    return new NodeInfo(data.nodeId, Base16Converter.decode(data.sigKey), data.stake);
   }
 }
