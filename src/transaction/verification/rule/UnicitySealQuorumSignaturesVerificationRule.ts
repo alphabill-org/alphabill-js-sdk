@@ -1,7 +1,7 @@
 import { sha256 } from '@noble/hashes/sha256';
 import { CborEncoder } from '../../../codec/cbor/CborEncoder.js';
 import { CborTag } from '../../../codec/cbor/CborTag.js';
-import { RootTrustBase } from '../../../RootTrustBase.js';
+import { NodeInfo, RootTrustBase } from '../../../RootTrustBase.js';
 import { DefaultSigningService } from '../../../signing/DefaultSigningService.js';
 import { UnicitySeal } from '../../../unit/UnicityCertificate.js';
 import { IVerificationContext } from '../IVerificationContext.js';
@@ -56,7 +56,7 @@ export class UnicitySealQuorumSignaturesVerificationRule extends VerificationRul
     signature: Uint8Array,
     hash: Uint8Array,
   ): VerificationResult {
-    const node = trustBase.rootNodes.get(nodeId);
+    const node = trustBase.rootNodes.find((node: NodeInfo) => node.nodeId === nodeId);
     if (!node) {
       return new VerificationResult(
         this,
@@ -67,7 +67,7 @@ export class UnicitySealQuorumSignaturesVerificationRule extends VerificationRul
     }
 
     const signatureWORecoveryByte = signature.subarray(0, -1);
-    if (!DefaultSigningService.verify(hash, signatureWORecoveryByte, node.publicKey)) {
+    if (!DefaultSigningService.verify(hash, signatureWORecoveryByte, node.sigKey)) {
       return new VerificationResult(
         this,
         `Is node '${nodeId}' signature valid`,
