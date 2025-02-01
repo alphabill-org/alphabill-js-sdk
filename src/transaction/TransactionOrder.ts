@@ -53,6 +53,9 @@ export class TransactionOrder<
     authProofFactory: { fromCbor: (bytes: Uint8Array) => AuthProof },
   ): TransactionOrder<Attributes, AuthProof> {
     const tag = CborDecoder.readTag(bytes);
+    if (Number(tag.tag) !== CborTag.TRANSACTION_ORDER) {
+      throw new Error(`Invalid tag, expected ${CborTag.TRANSACTION_ORDER}, was ` + tag.tag);
+    }
     const data = CborDecoder.readArray(tag.data);
     return new TransactionOrder(
       CborDecoder.readUnsignedInteger(data[0]),
