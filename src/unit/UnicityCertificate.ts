@@ -392,14 +392,18 @@ export class UnicityTreeCertificate {
 export class UnicitySeal {
   public constructor(
     public readonly version: bigint,
+    public readonly networkId: bigint,
     public readonly rootChainRoundNumber: bigint,
+    public readonly epoch: bigint,
     public readonly timestamp: bigint,
     private readonly _previousHash: Uint8Array | null,
     private readonly _hash: Uint8Array,
     private readonly _signatures: Map<string, Uint8Array>,
   ) {
     this.version = BigInt(this.version);
+    this.networkId = BigInt(this.networkId);
     this.rootChainRoundNumber = BigInt(this.rootChainRoundNumber);
+    this.epoch = BigInt(this.epoch);
     this.timestamp = BigInt(this.timestamp);
     if (this._previousHash) {
       this._previousHash = new Uint8Array(this._previousHash);
@@ -435,10 +439,12 @@ export class UnicitySeal {
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
       CborDecoder.readUnsignedInteger(data[2]),
-      CborDecoder.readOptional(data[3], CborDecoder.readByteString),
-      CborDecoder.readByteString(data[4]),
+      CborDecoder.readUnsignedInteger(data[3]),
+      CborDecoder.readUnsignedInteger(data[4]),
+      CborDecoder.readOptional(data[5], CborDecoder.readByteString),
+      CborDecoder.readByteString(data[6]),
       new Map(
-        Array.from(CborDecoder.readMap(data[5]).entries()).map(([id, signature]) => [
+        Array.from(CborDecoder.readMap(data[7]).entries()).map(([id, signature]) => [
           CborDecoder.readTextString(Base16Converter.decode(id)),
           CborDecoder.readByteString(signature),
         ]),
@@ -455,7 +461,9 @@ export class UnicitySeal {
       CborTag.UNICITY_SEAL,
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
+        CborEncoder.encodeUnsignedInteger(this.networkId),
         CborEncoder.encodeUnsignedInteger(this.rootChainRoundNumber),
+        CborEncoder.encodeUnsignedInteger(this.epoch),
         CborEncoder.encodeUnsignedInteger(this.timestamp),
         this._previousHash ? CborEncoder.encodeByteString(this._previousHash) : CborEncoder.encodeNull(),
         CborEncoder.encodeByteString(this._hash),
@@ -479,7 +487,9 @@ export class UnicitySeal {
     return dedent`
       Unicity Seal
         Version: ${this.version}
+        Network ID: ${this.networkId}
         Root Chain Round Number: ${this.rootChainRoundNumber}
+        Epoch: ${this.epoch}
         Timestamp: ${this.timestamp}
         Previous Hash: ${this._previousHash ? Base16Converter.encode(this._previousHash) : 'null'}
         Hash: ${Base16Converter.encode(this._hash)}

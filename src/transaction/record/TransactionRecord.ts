@@ -34,7 +34,11 @@ export class TransactionRecord<
     attributesFactory: { fromCbor: (bytes: Uint8Array) => Attributes },
     authProofFactory: { fromCbor: (bytes: Uint8Array) => AuthProof },
   ): TransactionRecord<TransactionOrder<Attributes, AuthProof>> {
-    const data = CborDecoder.readArray(CborDecoder.readTag(rawData).data);
+    const tag = CborDecoder.readTag(rawData);
+    if (Number(tag.tag) !== CborTag.TRANSACTION_RECORD) {
+      throw new Error(`Invalid tag, expected ${CborTag.TRANSACTION_RECORD}, was ` + tag.tag);
+    }
+    const data = CborDecoder.readArray(tag.data);
     return new TransactionRecord(
       CborDecoder.readUnsignedInteger(data[0]),
       TransactionOrder.fromCbor(data[1], attributesFactory, authProofFactory),
