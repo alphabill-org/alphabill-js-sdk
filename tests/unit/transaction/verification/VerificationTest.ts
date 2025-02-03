@@ -20,7 +20,7 @@ describe('Proof verification', () => {
     );
 
     const trustBaseDto = JSON.parse(
-      '{"version":1,"epoch":1,"epochStartRound":1,"rootNodes":[{"nodeId":"test","sigKey":"0x0396607dabe5ca98dc259220ec56f8967f52d79afe0e25677e541e2376d2e9ec1d","stake":1}],"quorumThreshold":1,"stateHash":"0x01","changeRecordHash":"","previousEntryHash":"","signatures":{}}'
+      '{"version":1,"epoch":1,"epochStartRound":1,"rootNodes":[{"nodeId":"test","sigKey":"0x0396607dabe5ca98dc259220ec56f8967f52d79afe0e25677e541e2376d2e9ec1d","stake":1}],"quorumThreshold":1,"stateHash":"0x01","changeRecordHash":"","previousEntryHash":"","signatures":{}}',
     );
 
     const result = await new DefaultVerificationPolicy().verify({
