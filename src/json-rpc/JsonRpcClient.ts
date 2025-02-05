@@ -176,8 +176,10 @@ export class JsonRpcClient {
     interval: number = 1000,
   ): Promise<TRP> {
     return new Promise((resolve, reject) => {
+      let timeoutId: unknown;
       const abortListener = () => {
         signal.removeEventListener('abort', abortListener);
+        clearTimeout(timeoutId as number);
         reject(signal.reason);
       };
 
@@ -187,10 +189,11 @@ export class JsonRpcClient {
         this.getTransactionProof(transactionHash, transactionFactory).then((proof) => {
           if (proof !== null) {
             signal.removeEventListener('abort', abortListener);
+            clearTimeout(timeoutId as number);
             return resolve(proof);
           }
 
-          setTimeout(fetchTransactionProof, interval);
+          timeoutId = setTimeout(fetchTransactionProof, interval);
         });
       };
 
