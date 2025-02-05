@@ -30,7 +30,7 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
   ) {
     this.amount = BigInt(this.amount);
     this.latestAdditionTime = BigInt(this.latestAdditionTime);
-    this.targetUnitCounter = this.targetUnitCounter ? BigInt(this.targetUnitCounter) : null;
+    this.targetUnitCounter = this.targetUnitCounter != null ? BigInt(this.targetUnitCounter) : null;
     this.counter = BigInt(this.counter);
   }
 
@@ -75,7 +75,9 @@ export class TransferFeeCreditAttributes implements ITransactionPayloadAttribute
       CborEncoder.encodeUnsignedInteger(this.targetPartitionIdentifier),
       CborEncoder.encodeByteString(this.targetUnitId.bytes),
       CborEncoder.encodeUnsignedInteger(this.latestAdditionTime),
-      this.targetUnitCounter ? CborEncoder.encodeUnsignedInteger(this.targetUnitCounter) : CborEncoder.encodeNull(),
+      this.targetUnitCounter != null
+        ? CborEncoder.encodeUnsignedInteger(this.targetUnitCounter)
+        : CborEncoder.encodeNull(),
       CborEncoder.encodeUnsignedInteger(this.counter),
     ]);
   }

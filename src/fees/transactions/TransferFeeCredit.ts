@@ -56,7 +56,7 @@ export class TransferFeeCredit {
           data.targetPartitionIdentifier,
           feeCreditRecordId,
           data.latestAdditionTime,
-          data.feeCreditRecord?.counter ?? 0n,
+          data.feeCreditRecord?.counter ?? null,
           data.bill.counter,
         ),
         data.stateLock,
