@@ -16,10 +16,9 @@ export type SplitFungibleTokenTransactionOrder = TransactionOrder<
   TypeOwnerProofsAuthProof
 >;
 interface ISplitFungibleTokenTransactionData extends ITransactionData {
-  token: { unitId: IUnitId; counter: bigint };
+  token: { unitId: IUnitId; counter: bigint; typeId: IUnitId };
   ownerPredicate: IPredicate;
   amount: bigint;
-  type: { unitId: IUnitId };
 }
 
 export class SplitFungibleToken {
@@ -33,7 +32,7 @@ export class SplitFungibleToken {
         PartitionIdentifier.TOKEN,
         data.token.unitId,
         TokenPartitionTransactionType.SplitFungibleToken,
-        new SplitFungibleTokenAttributes(data.type.unitId, data.amount, data.ownerPredicate, data.token.counter),
+        new SplitFungibleTokenAttributes(data.token.typeId, data.amount, data.ownerPredicate, data.token.counter),
         data.stateLock,
         ClientMetadata.create(data.metadata),
       ),

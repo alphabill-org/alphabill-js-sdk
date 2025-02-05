@@ -16,9 +16,8 @@ export type TransferNonFungibleTokenTransactionOrder = TransactionOrder<
   TypeOwnerProofsAuthProof
 >;
 interface ITransferNonFungibleTokenTransactionData extends ITransactionData {
-  token: { unitId: IUnitId; counter: bigint };
+  token: { unitId: IUnitId; counter: bigint; typeId: IUnitId };
   ownerPredicate: IPredicate;
-  type: { unitId: IUnitId };
 }
 
 export class TransferNonFungibleToken {
@@ -32,7 +31,7 @@ export class TransferNonFungibleToken {
         PartitionIdentifier.TOKEN,
         data.token.unitId,
         TokenPartitionTransactionType.TransferNonFungibleToken,
-        new TransferNonFungibleTokenAttributes(data.type.unitId, data.ownerPredicate, data.token.counter),
+        new TransferNonFungibleTokenAttributes(data.token.typeId, data.ownerPredicate, data.token.counter),
         data.stateLock,
         ClientMetadata.create(data.metadata),
       ),
