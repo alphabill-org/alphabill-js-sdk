@@ -12,8 +12,7 @@ import { TokenPartitionTransactionType } from '../TokenPartitionTransactionType.
 
 export type BurnFungibleTokenTransactionOrder = TransactionOrder<BurnFungibleTokenAttributes, TypeOwnerProofsAuthProof>;
 interface IBurnFungibleTokenTransactionData extends ITransactionData {
-  type: { unitId: IUnitId };
-  token: { unitId: IUnitId; counter: bigint; value: bigint };
+  token: { unitId: IUnitId; counter: bigint; value: bigint; typeId: IUnitId };
   targetToken: { unitId: IUnitId; counter: bigint };
 }
 
@@ -29,7 +28,7 @@ export class BurnFungibleToken {
         data.token.unitId,
         TokenPartitionTransactionType.BurnFungibleToken,
         new BurnFungibleTokenAttributes(
-          data.type.unitId,
+          data.token.typeId,
           data.token.value,
           data.targetToken.unitId,
           data.targetToken.counter,

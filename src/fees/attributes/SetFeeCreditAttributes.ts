@@ -23,7 +23,7 @@ export class SetFeeCreditAttributes implements ITransactionPayloadAttributes {
     public readonly counter: bigint | null,
   ) {
     this.amount = BigInt(this.amount);
-    this.counter = this.counter ?? null;
+    this.counter = this.counter != null ? BigInt(this.counter) : null;
   }
 
   /**
@@ -59,7 +59,7 @@ export class SetFeeCreditAttributes implements ITransactionPayloadAttributes {
     return CborEncoder.encodeArray([
       CborEncoder.encodeByteString(this.ownerPredicate.bytes),
       CborEncoder.encodeUnsignedInteger(this.amount),
-      this.counter ? CborEncoder.encodeUnsignedInteger(this.counter) : CborEncoder.encodeNull(),
+      this.counter != null ? CborEncoder.encodeUnsignedInteger(this.counter) : CborEncoder.encodeNull(),
     ]);
   }
 }

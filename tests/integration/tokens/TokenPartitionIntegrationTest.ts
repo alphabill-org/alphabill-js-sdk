@@ -104,7 +104,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Creating fungible token...');
       const createFungibleTokenTransactionOrder = await CreateFungibleToken.create({
         ownerPredicate: ownerPredicate,
-        type: { unitId: tokenTypeUnitId },
+        typeId: tokenTypeUnitId,
         value: 10n,
         nonce: 0n,
         ...createTransactionData(round, feeCreditRecordId),
@@ -135,7 +135,6 @@ describe('Token Client Integration Tests', () => {
         token: token!,
         ownerPredicate: ownerPredicate,
         amount: 3n,
-        type: { unitId: tokenTypeUnitId },
         ...createTransactionData(round, feeCreditRecordId),
       }).sign(proofFactory, proofFactory, [alwaysTrueProofFactory]);
 
@@ -148,7 +147,7 @@ describe('Token Client Integration Tests', () => {
       const splitTokenId = splitBillProof.transactionRecord.serverMetadata.targetUnitIds.find(
         (id: IUnitId) => !UnitId.equals(id, token!.unitId),
       );
-      expect(splitTokenId).not.toBeFalsy();
+      expect(splitTokenId).not.toBeNull();
 
       const splitToken = await tokenClient.getUnit(splitTokenId!, false, FungibleToken);
       const originalTokenAfterSplit = await tokenClient.getUnit(tokenUnitId, false, FungibleToken);
@@ -156,7 +155,6 @@ describe('Token Client Integration Tests', () => {
       console.log('Burning fungible token...');
       const burnFungibleTokenHash = await tokenClient.sendTransaction(
         await BurnFungibleToken.create({
-          type: { unitId: tokenTypeUnitId },
           token: splitToken!,
           targetToken: originalTokenAfterSplit!,
           ...createTransactionData(round, feeCreditRecordId),
@@ -190,7 +188,6 @@ describe('Token Client Integration Tests', () => {
       const transferFungibleTokenTransactionOrder = await TransferFungibleToken.create({
         token: token!,
         ownerPredicate: ownerPredicate,
-        type: { unitId: tokenTypeUnitId },
         ...createTransactionData(round, feeCreditRecordId),
       }).sign(proofFactory, proofFactory, [alwaysTrueProofFactory]);
 
@@ -330,7 +327,6 @@ describe('Token Client Integration Tests', () => {
       const transferNonFungibleTokenTransactionOrder = await TransferNonFungibleToken.create({
         token: token!,
         ownerPredicate: ownerPredicate,
-        type: { unitId: tokenTypeUnitId },
         ...createTransactionData(round, feeCreditRecordId),
       }).sign(proofFactory, proofFactory, [alwaysTrueProofFactory]);
 

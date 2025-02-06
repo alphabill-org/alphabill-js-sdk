@@ -16,9 +16,8 @@ export type TransferFungibleTokenTransactionOrder = TransactionOrder<
   TypeOwnerProofsAuthProof
 >;
 interface ITransferFungibleTokenTransactionData extends ITransactionData {
-  token: { unitId: IUnitId; counter: bigint; value: bigint };
+  token: { unitId: IUnitId; counter: bigint; value: bigint; typeId: IUnitId };
   ownerPredicate: IPredicate;
-  type: { unitId: IUnitId };
 }
 
 export class TransferFungibleToken {
@@ -33,7 +32,7 @@ export class TransferFungibleToken {
         data.token.unitId,
         TokenPartitionTransactionType.TransferFungibleToken,
         new TransferFungibleTokenAttributes(
-          data.type.unitId,
+          data.token.typeId,
           data.token.value,
           data.ownerPredicate,
           data.token.counter,

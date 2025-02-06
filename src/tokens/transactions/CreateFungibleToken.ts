@@ -16,7 +16,7 @@ import { TokenUnitId } from '../TokenUnitId.js';
 export type CreateFungibleTokenTransactionOrder = TransactionOrder<CreateFungibleTokenAttributes, OwnerProofAuthProof>;
 interface ICreateFungibleTokenTransactionData extends ITransactionData {
   ownerPredicate: IPredicate;
-  type: { unitId: IUnitId };
+  typeId: IUnitId;
   value: bigint;
   nonce: bigint;
 }
@@ -25,7 +25,7 @@ export class CreateFungibleToken {
   public static create(
     data: ICreateFungibleTokenTransactionData,
   ): OwnerProofUnsignedTransactionOrder<CreateFungibleTokenAttributes> {
-    const attributes = new CreateFungibleTokenAttributes(data.type.unitId, data.value, data.ownerPredicate, data.nonce);
+    const attributes = new CreateFungibleTokenAttributes(data.typeId, data.value, data.ownerPredicate, data.nonce);
     const metadata = ClientMetadata.create(data.metadata);
     const tokenUnitId = TokenUnitId.create(attributes, metadata, TokenPartitionUnitType.FUNGIBLE_TOKEN);
     return new OwnerProofUnsignedTransactionOrder(
