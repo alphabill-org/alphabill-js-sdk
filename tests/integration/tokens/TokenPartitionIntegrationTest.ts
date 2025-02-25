@@ -78,7 +78,12 @@ describe('Token Client Integration Tests', () => {
         type: { unitId: tokenTypeUnitId },
         symbol: 'E',
         name: 'Big money come',
-        icon: new TokenIcon('image/png', new Uint8Array()),
+        icon: new TokenIcon(
+          'image/png',
+          Uint8Array.from(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/edZ1a0AAAAASUVORK5CYII=',
+          ),
+        ),
         parentTypeId: null,
         decimalPlaces: 8,
         subTypeCreationPredicate: new AlwaysTruePredicate(),
