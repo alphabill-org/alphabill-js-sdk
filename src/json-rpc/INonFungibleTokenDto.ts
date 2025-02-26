@@ -4,9 +4,9 @@
  */
 export interface INonFungibleTokenDto {
   readonly typeId: string;
-  readonly name: string;
-  readonly uri: string;
-  readonly data: string;
+  readonly name: string | null;
+  readonly uri: string | null;
+  readonly data: string | null;
   readonly ownerPredicate: string;
   readonly dataUpdatePredicate: string;
   readonly locked: string;

@@ -20,9 +20,9 @@ export class FungibleTokenType extends Unit {
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
    * @param {string} symbol Symbol.
-   * @param {string} name Name.
-   * @param {TokenIcon} icon Icon.
-   * @param {IUnitId} parentTypeId Parent type ID.
+   * @param {string | null} name Name.
+   * @param {TokenIcon | null} icon Icon.
+   * @param {IUnitId | null} parentTypeId Parent type ID.
    * @param {number} decimalPlaces Decimal places.
    * @param {IPredicate} subTypeCreationPredicate Sub type creation predicate.
    * @param {IPredicate} tokenMintingPredicate Token minting predicate.
@@ -35,8 +35,8 @@ export class FungibleTokenType extends Unit {
     partitionIdentifier: number,
     stateProof: StateProof | null,
     public readonly symbol: string,
-    public readonly name: string,
-    public readonly icon: TokenIcon,
+    public readonly name: string | null,
+    public readonly icon: TokenIcon | null,
     public readonly parentTypeId: IUnitId | null,
     public readonly decimalPlaces: number,
     public readonly subTypeCreationPredicate: IPredicate,
@@ -69,8 +69,8 @@ export class FungibleTokenType extends Unit {
       stateProof,
       data.symbol,
       data.name,
-      new TokenIcon(data.icon.type, Base64Converter.decode(data.icon.data)),
-      UnitId.fromBytes(Base16Converter.decode(data.parentTypeId)),
+      data.icon ? new TokenIcon(data.icon.type, Base64Converter.decode(data.icon.data)) : null,
+      data.parentTypeId ? UnitId.fromBytes(Base16Converter.decode(data.parentTypeId)) : null,
       data.decimalPlaces,
       new PredicateBytes(Base16Converter.decode(data.subTypeCreationPredicate)),
       new PredicateBytes(Base16Converter.decode(data.tokenMintingPredicate)),
@@ -90,9 +90,9 @@ export class FungibleTokenType extends Unit {
         Partition ID: ${this.partitionIdentifier}
         Symbol: ${this.symbol}
         Name: ${this.name}
-        Icon: ${this.icon.toString()}
-        Decimal Places: ${this.decimalPlaces}
+        Icon: ${this.icon?.toString() ?? 'null'}
         Parent Type ID: ${this.parentTypeId?.toString() ?? 'null'}
+        Decimal Places: ${this.decimalPlaces}
         Sub Type Creation Predicate: ${this.subTypeCreationPredicate.toString()}
         Token Minting Predicate: ${this.tokenMintingPredicate.toString()}
         Token Type Owner Predicate: ${this.tokenTypeOwnerPredicate.toString()}`;

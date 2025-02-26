@@ -19,8 +19,8 @@ export type CreateFungibleTokenTypeTransactionOrder = TransactionOrder<
 interface ICreateFungibleTokenTypeTransactionData extends ITransactionData {
   type: { unitId: IUnitId };
   symbol: string;
-  name: string;
-  icon: { type: string; data: Uint8Array };
+  name: string | null;
+  icon: { type: string; data: Uint8Array } | null;
   parentTypeId: IUnitId | null;
   decimalPlaces: number;
   subTypeCreationPredicate: IPredicate;
@@ -42,7 +42,7 @@ export class CreateFungibleTokenType {
         new CreateFungibleTokenTypeAttributes(
           data.symbol,
           data.name,
-          new TokenIcon(data.icon.type, data.icon.data),
+          data.icon ? new TokenIcon(data.icon.type, data.icon.data) : null,
           data.parentTypeId,
           data.decimalPlaces,
           data.subTypeCreationPredicate,

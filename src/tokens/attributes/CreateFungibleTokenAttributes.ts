@@ -18,16 +18,16 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
    * @param {IPredicate} ownerPredicate Initial owner predicate of the new token.
    * @param {IUnitId} typeId Token type ID.
    * @param {bigint} value Token value.
-   * @param {bigint} nonce Optional nonce.
+   * @param {bigint | null} nonce Optional nonce.
    */
   public constructor(
     public readonly typeId: IUnitId,
     public readonly value: bigint,
     public readonly ownerPredicate: IPredicate,
-    public readonly nonce: bigint,
+    public readonly nonce: bigint | null,
   ) {
     this.value = BigInt(this.value);
-    this.nonce = BigInt(this.nonce);
+    this.nonce = this.nonce ? BigInt(this.nonce) : null;
   }
 
   /**
@@ -41,7 +41,7 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
       UnitId.fromBytes(CborDecoder.readByteString(data[0])),
       CborDecoder.readUnsignedInteger(data[1]),
       new PredicateBytes(CborDecoder.readByteString(data[2])),
-      CborDecoder.readUnsignedInteger(data[3]),
+      CborDecoder.readOptional(data[3], CborDecoder.readUnsignedInteger),
     );
   }
 
@@ -66,7 +66,7 @@ export class CreateFungibleTokenAttributes implements ITransactionPayloadAttribu
       CborEncoder.encodeByteString(this.typeId.bytes),
       CborEncoder.encodeUnsignedInteger(this.value),
       CborEncoder.encodeByteString(this.ownerPredicate.bytes),
-      CborEncoder.encodeUnsignedInteger(this.nonce),
+      this.nonce ? CborEncoder.encodeUnsignedInteger(this.nonce) : CborEncoder.encodeNull(),
     ]);
   }
 }

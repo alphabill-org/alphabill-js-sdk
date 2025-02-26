@@ -17,8 +17,8 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
   /**
    * Create fungible token type payload attributes constructor.
    * @param {string} symbol Symbol.
-   * @param {string} name Name.
-   * @param {TokenIcon} icon Icon.
+   * @param {string | null} name Name.
+   * @param {TokenIcon | null} icon Icon.
    * @param {IUnitId | null} parentTypeId Parent type ID.
    * @param {number} decimalPlaces Decimal places.
    * @param {IPredicate} subTypeCreationPredicate Predicate clause that controls defining new subtypes of this type.
@@ -27,8 +27,8 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
    */
   public constructor(
     public readonly symbol: string,
-    public readonly name: string,
-    public readonly icon: TokenIcon,
+    public readonly name: string | null,
+    public readonly icon: TokenIcon | null,
     public readonly parentTypeId: IUnitId | null,
     public readonly decimalPlaces: number,
     public readonly subTypeCreationPredicate: IPredicate,
@@ -45,8 +45,8 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
     const data = CborDecoder.readArray(rawData);
     return new CreateFungibleTokenTypeAttributes(
       CborDecoder.readTextString(data[0]),
-      CborDecoder.readTextString(data[1]),
-      TokenIcon.fromCbor(data[2]),
+      CborDecoder.readOptional(data[1], CborDecoder.readTextString),
+      CborDecoder.readOptional(data[2], TokenIcon.fromCbor),
       CborDecoder.readOptional(data[3], UnitId.fromCbor),
       Number(CborDecoder.readUnsignedInteger(data[4])),
       new PredicateBytes(CborDecoder.readByteString(data[5])),
@@ -64,7 +64,7 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
       CreateFungibleTokenTypeAttributes
         Symbol: ${this.symbol}
         Name: ${this.name}
-        Icon: ${this.icon.toString()}
+        Icon: ${this.icon?.toString() ?? 'null'}
         Parent Type ID: ${this.parentTypeId?.toString() ?? 'null'}
         Decimal Places: ${this.decimalPlaces}
         Sub Type Creation Predicate: ${this.subTypeCreationPredicate.toString()}
@@ -78,8 +78,8 @@ export class CreateFungibleTokenTypeAttributes implements ITransactionPayloadAtt
   public encode(): Uint8Array {
     return CborEncoder.encodeArray([
       CborEncoder.encodeTextString(this.symbol),
-      CborEncoder.encodeTextString(this.name),
-      this.icon.encode(),
+      this.name ? CborEncoder.encodeTextString(this.name) : CborEncoder.encodeNull(),
+      this.icon?.encode() ?? CborEncoder.encodeNull(),
       this.parentTypeId ? CborEncoder.encodeByteString(this.parentTypeId.bytes) : CborEncoder.encodeNull(),
       CborEncoder.encodeUnsignedInteger(this.decimalPlaces),
       CborEncoder.encodeByteString(this.subTypeCreationPredicate.bytes),

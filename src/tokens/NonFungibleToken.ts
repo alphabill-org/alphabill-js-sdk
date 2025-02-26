@@ -19,9 +19,9 @@ export class NonFungibleToken extends Unit {
    * @param {number} partitionIdentifier Partition ID.
    * @param {StateProof | null} stateProof State proof.
    * @param {IUnitId} typeId Token type ID.
-   * @param {string} name Token name.
-   * @param {string} uri Token URI.
-   * @param {Uint8Array} _data Token data.
+   * @param {string | null} name Token name.
+   * @param {string | null} uri Token URI.
+   * @param {Uint8Array | null} _data Token data.
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {IPredicate} dataUpdatePredicate Data update predicate.
    * @param {bigint} locked Is token locked.
@@ -33,26 +33,26 @@ export class NonFungibleToken extends Unit {
     partitionIdentifier: number,
     stateProof: StateProof | null,
     public readonly typeId: IUnitId,
-    public readonly name: string,
-    public readonly uri: string,
-    private readonly _data: Uint8Array,
+    public readonly name: string | null,
+    public readonly uri: string | null,
+    private readonly _data: Uint8Array | null,
     public readonly ownerPredicate: IPredicate,
     public readonly dataUpdatePredicate: IPredicate,
     public readonly locked: bigint,
     public readonly counter: bigint,
   ) {
     super(unitId, networkIdentifier, partitionIdentifier, stateProof);
-    this._data = new Uint8Array(this._data);
+    this._data = this._data ? new Uint8Array(this._data) : null;
     this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
   }
 
   /**
    * Get user data.
-   * @returns {Uint8Array} User data.
+   * @returns {Uint8Array | null} User data.
    */
-  public get data(): Uint8Array {
-    return new Uint8Array(this._data);
+  public get data(): Uint8Array | null {
+    return this._data ? new Uint8Array(this._data) : null;
   }
 
   /**
@@ -79,7 +79,7 @@ export class NonFungibleToken extends Unit {
       UnitId.fromBytes(Base16Converter.decode(data.typeId)),
       data.name,
       data.uri,
-      Base16Converter.decode(data.data),
+      data.data ? Base16Converter.decode(data.data) : null,
       new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
       new PredicateBytes(Base16Converter.decode(data.dataUpdatePredicate)),
       BigInt(data.locked),
@@ -100,7 +100,7 @@ export class NonFungibleToken extends Unit {
         Type ID: ${this.typeId.toString()}
         Name: ${this.name}
         URI: ${this.uri}
-        Data: ${Base16Converter.encode(this._data)}
+        Data: ${this._data ? Base16Converter.encode(this._data) : null}
         Owner Predicate: ${this.ownerPredicate.toString()}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
         Locked: ${this.locked}

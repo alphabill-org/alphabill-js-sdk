@@ -4,12 +4,12 @@
  */
 export interface IFungibleTokenTypeDto {
   readonly symbol: string;
-  readonly name: string;
+  readonly name: string | null;
   readonly icon: Readonly<{
     type: string;
     data: string;
-  }>;
-  readonly parentTypeId: string;
+  } | null>;
+  readonly parentTypeId: string | null;
   readonly decimalPlaces: number;
   readonly subTypeCreationPredicate: string;
   readonly tokenMintingPredicate: string;
