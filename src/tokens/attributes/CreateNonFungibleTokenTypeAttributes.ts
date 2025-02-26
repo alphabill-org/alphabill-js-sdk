@@ -17,8 +17,8 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
   /**
    * Create non-fungible token type payload attributes constructor.
    * @param {string} symbol Symbol.
-   * @param {string} name Name.
-   * @param {TokenIcon} icon Icon.
+   * @param {string | null} name Name.
+   * @param {TokenIcon | null} icon Icon.
    * @param {IUnitId | null} parentTypeId Parent type ID.
    * @param {IPredicate} subTypeCreationPredicate Predicate clause that controls defining new subtypes of this type.
    * @param {IPredicate} tokenMintingPredicate Predicate clause that controls minting new tokens of this type.
@@ -27,8 +27,8 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
    */
   public constructor(
     public readonly symbol: string,
-    public readonly name: string,
-    public readonly icon: TokenIcon,
+    public readonly name: string | null,
+    public readonly icon: TokenIcon | null,
     public readonly parentTypeId: IUnitId | null,
     public readonly subTypeCreationPredicate: IPredicate,
     public readonly tokenMintingPredicate: IPredicate,
@@ -45,8 +45,8 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
     const data = CborDecoder.readArray(rawData);
     return new CreateNonFungibleTokenTypeAttributes(
       CborDecoder.readTextString(data[0]),
-      CborDecoder.readTextString(data[1]),
-      TokenIcon.fromCbor(data[2]),
+      CborDecoder.readOptional(data[1], CborDecoder.readTextString),
+      CborDecoder.readOptional(data[2], TokenIcon.fromCbor),
       CborDecoder.readOptional(data[3], UnitId.fromCbor),
       new PredicateBytes(CborDecoder.readByteString(data[4])),
       new PredicateBytes(CborDecoder.readByteString(data[5])),
@@ -64,7 +64,7 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
       CreateNonFungibleTokenTypeAttributes
         Symbol: ${this.symbol}
         Name: ${this.name}
-        Icon: ${this.icon.toString()}
+        Icon: ${this.icon?.toString() ?? 'null'}
         Parent Type ID: ${this.parentTypeId?.toString() ?? 'null'}
         Sub Type Creation Predicate: ${this.subTypeCreationPredicate.toString()}
         Token Minting Predicate: ${this.tokenMintingPredicate.toString()}
@@ -78,8 +78,8 @@ export class CreateNonFungibleTokenTypeAttributes implements ITransactionPayload
   public encode(): Uint8Array {
     return CborEncoder.encodeArray([
       CborEncoder.encodeTextString(this.symbol),
-      CborEncoder.encodeTextString(this.name),
-      this.icon.encode(),
+      this.name ? CborEncoder.encodeTextString(this.name) : CborEncoder.encodeNull(),
+      this.icon?.encode() ?? CborEncoder.encodeNull(),
       this.parentTypeId ? CborEncoder.encodeByteString(this.parentTypeId.bytes) : CborEncoder.encodeNull(),
       CborEncoder.encodeByteString(this.subTypeCreationPredicate.bytes),
       CborEncoder.encodeByteString(this.tokenMintingPredicate.bytes),

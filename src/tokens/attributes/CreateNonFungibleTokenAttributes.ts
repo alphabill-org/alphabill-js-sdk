@@ -17,24 +17,24 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
 
   /**
    * Create non-fungible token payload attributes constructor.
-   * @param {IPredicate} ownerPredicate Initial owner predicate of the new token.
    * @param {IUnitId} typeId Token type ID.
-   * @param {string} name Name.
-   * @param {string} uri URI.
-   * @param {INonFungibleTokenData} data Data.
+   * @param {string | null} name Name.
+   * @param {string | null} uri URI.
+   * @param {INonFungibleTokenData | null} data Data.
+   * @param {IPredicate} ownerPredicate Initial owner predicate of the new token.
    * @param {IPredicate} dataUpdatePredicate Data update predicate of the new token.
-   * @param {bigint} nonce Optional nonce.
+   * @param {bigint | null} nonce Optional nonce.
    */
   public constructor(
     public readonly typeId: IUnitId,
-    public readonly name: string,
-    public readonly uri: string,
-    public readonly data: INonFungibleTokenData,
+    public readonly name: string | null,
+    public readonly uri: string | null,
+    public readonly data: INonFungibleTokenData | null,
     public readonly ownerPredicate: IPredicate,
     public readonly dataUpdatePredicate: IPredicate,
-    public readonly nonce: bigint,
+    public readonly nonce: bigint | null,
   ) {
-    this.nonce = BigInt(this.nonce);
+    this.nonce = this.nonce ? BigInt(this.nonce) : null;
   }
 
   /**
@@ -46,12 +46,12 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
     const data = CborDecoder.readArray(rawData);
     return new CreateNonFungibleTokenAttributes(
       UnitId.fromBytes(CborDecoder.readByteString(data[0])),
-      CborDecoder.readTextString(data[1]),
-      CborDecoder.readTextString(data[2]),
+      CborDecoder.readOptional(data[1], CborDecoder.readTextString),
+      CborDecoder.readOptional(data[2], CborDecoder.readTextString),
       NonFungibleTokenData.createFromBytes(CborDecoder.readByteString(data[3])),
       new PredicateBytes(CborDecoder.readByteString(data[4])),
       new PredicateBytes(CborDecoder.readByteString(data[5])),
-      CborDecoder.readUnsignedInteger(data[6]),
+      CborDecoder.readOptional(data[4], CborDecoder.readUnsignedInteger),
     );
   }
 
@@ -65,7 +65,7 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
         Type ID: ${this.typeId.toString()}
         Name: ${this.name}
         URI: ${this.uri}
-        Data: ${this.data.toString()}
+        Data: ${this.data?.toString() ?? 'null'}
         Owner Predicate: ${this.ownerPredicate.toString()}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
         Nonce: ${this.nonce}`;
@@ -77,12 +77,12 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
   public encode(): Uint8Array {
     return CborEncoder.encodeArray([
       CborEncoder.encodeByteString(this.typeId.bytes),
-      CborEncoder.encodeTextString(this.name),
-      CborEncoder.encodeTextString(this.uri),
-      CborEncoder.encodeByteString(this.data.bytes),
+      this.name ? CborEncoder.encodeTextString(this.name) : CborEncoder.encodeNull(),
+      this.uri ? CborEncoder.encodeTextString(this.uri) : CborEncoder.encodeNull(),
+      this.data ? CborEncoder.encodeByteString(this.data.bytes) : CborEncoder.encodeNull(),
       CborEncoder.encodeByteString(this.ownerPredicate.bytes),
       CborEncoder.encodeByteString(this.dataUpdatePredicate.bytes),
-      CborEncoder.encodeUnsignedInteger(this.nonce),
+      this.nonce ? CborEncoder.encodeUnsignedInteger(this.nonce) : CborEncoder.encodeNull(),
     ]);
   }
 }

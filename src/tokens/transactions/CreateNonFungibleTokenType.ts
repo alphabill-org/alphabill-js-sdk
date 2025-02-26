@@ -19,8 +19,8 @@ export type CreateNonFungibleTokenTypeTransactionOrder = TransactionOrder<
 interface ICreateNonFungibleTokenTypeTransactionData extends ITransactionData {
   type: { unitId: IUnitId };
   symbol: string;
-  name: string;
-  icon: { type: string; data: Uint8Array };
+  name: string | null;
+  icon: { type: string; data: Uint8Array } | null;
   parentTypeId: IUnitId | null;
   subTypeCreationPredicate: IPredicate;
   tokenMintingPredicate: IPredicate;
@@ -42,7 +42,7 @@ export class CreateNonFungibleTokenType {
         new CreateNonFungibleTokenTypeAttributes(
           data.symbol,
           data.name,
-          new TokenIcon(data.icon.type, data.icon.data),
+          data.icon ? new TokenIcon(data.icon.type, data.icon.data) : null,
           data.parentTypeId,
           data.subTypeCreationPredicate,
           data.tokenMintingPredicate,
