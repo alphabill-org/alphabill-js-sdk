@@ -51,7 +51,7 @@ export class CreateNonFungibleTokenAttributes implements ITransactionPayloadAttr
       NonFungibleTokenData.createFromBytes(CborDecoder.readByteString(data[3])),
       new PredicateBytes(CborDecoder.readByteString(data[4])),
       new PredicateBytes(CborDecoder.readByteString(data[5])),
-      CborDecoder.readOptional(data[4], CborDecoder.readUnsignedInteger),
+      CborDecoder.readOptional(data[6], CborDecoder.readUnsignedInteger),
     );
   }
 
