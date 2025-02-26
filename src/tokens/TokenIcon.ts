@@ -1,6 +1,6 @@
 import { CborDecoder } from '../codec/cbor/CborDecoder.js';
 import { CborEncoder } from '../codec/cbor/CborEncoder.js';
-import { Base16Converter } from '../util/Base16Converter.js';
+import { Base64Converter } from '../util/Base64Converter.js';
 
 /**
  * Token icon.
@@ -41,7 +41,7 @@ export class TokenIcon {
    * @returns {string} String representation.
    */
   public toString(): string {
-    return `TokenIcon: ${this.type}; ${Base16Converter.encode(this._data)}`;
+    return `TokenIcon: ${this.type}; ${Base64Converter.encode(this._data)}`;
   }
 
   /**

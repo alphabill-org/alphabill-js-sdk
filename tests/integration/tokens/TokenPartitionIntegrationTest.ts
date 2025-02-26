@@ -32,6 +32,7 @@ import { PayToPublicKeyHashProofFactory } from '../../../src/transaction/proofs/
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
 import { UnitId } from '../../../src/UnitId.js';
 import { Base16Converter } from '../../../src/util/Base16Converter.js';
+import { Base64Converter } from '../../../src/util/Base64Converter.js';
 import config from '../config/config.js';
 import { addFeeCredit, createTransactionData } from '../utils/TestUtils.js';
 
@@ -78,7 +79,12 @@ describe('Token Client Integration Tests', () => {
         type: { unitId: tokenTypeUnitId },
         symbol: 'E',
         name: 'Big money come',
-        icon: new TokenIcon('image/png', new Uint8Array()),
+        icon: new TokenIcon(
+          'image/png',
+          Base64Converter.decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/edZ1a0AAAAASUVORK5CYII=',
+          ),
+        ),
         parentTypeId: null,
         decimalPlaces: 8,
         subTypeCreationPredicate: new AlwaysTruePredicate(),
