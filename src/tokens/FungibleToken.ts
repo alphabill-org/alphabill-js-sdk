@@ -18,6 +18,7 @@ export class FungibleToken extends Unit {
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
    * @param {StateProof | null} stateProof State proof.
+   * @param {bigint} version Version.
    * @param {IUnitId} typeId Token type ID.
    * @param {bigint} value Token value.
    * @param {IPredicate} ownerPredicate Owner predicate.
@@ -30,6 +31,7 @@ export class FungibleToken extends Unit {
     networkIdentifier: number,
     partitionIdentifier: number,
     stateProof: StateProof | null,
+    public readonly version: bigint,
     public readonly typeId: IUnitId,
     public readonly value: bigint,
     public readonly ownerPredicate: IPredicate,
@@ -38,6 +40,7 @@ export class FungibleToken extends Unit {
     public readonly minLifetime: bigint,
   ) {
     super(unitId, networkIdentifier, partitionIdentifier, stateProof);
+    this.version = BigInt(this.version);
     this.value = BigInt(this.value);
     this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
@@ -65,6 +68,7 @@ export class FungibleToken extends Unit {
       networkIdentifier,
       partitionIdentifier,
       stateProof,
+      BigInt(data.version),
       UnitId.fromBytes(Base16Converter.decode(data.typeId)),
       BigInt(data.value),
       new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
@@ -84,6 +88,7 @@ export class FungibleToken extends Unit {
         Unit ID: ${this.unitId.toString()}
         Network ID: ${this.networkIdentifier}
         Partition ID: ${this.partitionIdentifier}
+        Version: ${this.version}
         Type ID: ${this.typeId.toString()}
         Value: ${this.value}
         Owner Predicate: ${this.ownerPredicate.toString()}

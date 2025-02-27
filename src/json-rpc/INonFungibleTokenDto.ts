@@ -3,6 +3,7 @@
  * @interface INonFungibleTokenDto
  */
 export interface INonFungibleTokenDto {
+  readonly version: bigint;
   readonly typeId: string;
   readonly name: string | null;
   readonly uri: string | null;
