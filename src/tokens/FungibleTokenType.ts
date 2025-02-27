@@ -19,6 +19,7 @@ export class FungibleTokenType extends Unit {
    * @param {IUnitId} unitId Unit ID.
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
+   * @param {bigint} version Version.
    * @param {string} symbol Symbol.
    * @param {string | null} name Name.
    * @param {TokenIcon | null} icon Icon.
@@ -34,6 +35,7 @@ export class FungibleTokenType extends Unit {
     networkIdentifier: number,
     partitionIdentifier: number,
     stateProof: StateProof | null,
+    public readonly version: bigint,
     public readonly symbol: string,
     public readonly name: string | null,
     public readonly icon: TokenIcon | null,
@@ -44,6 +46,7 @@ export class FungibleTokenType extends Unit {
     public readonly tokenTypeOwnerPredicate: IPredicate,
   ) {
     super(unitId, networkIdentifier, partitionIdentifier, stateProof);
+    this.version = BigInt(this.version);
   }
 
   /**
@@ -67,6 +70,7 @@ export class FungibleTokenType extends Unit {
       networkIdentifier,
       partitionIdentifier,
       stateProof,
+      data.version,
       data.symbol,
       data.name,
       data.icon ? new TokenIcon(data.icon.type, Base64Converter.decode(data.icon.data)) : null,
@@ -88,6 +92,7 @@ export class FungibleTokenType extends Unit {
         Unit ID: ${this.unitId.toString()}
         Network ID: ${this.networkIdentifier}
         Partition ID: ${this.partitionIdentifier}
+        Version: ${this.version}
         Symbol: ${this.symbol}
         Name: ${this.name}
         Icon: ${this.icon?.toString() ?? 'null'}

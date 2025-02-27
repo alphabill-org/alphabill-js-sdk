@@ -3,6 +3,7 @@
  * @interface IFungibleTokenTypeDto
  */
 export interface IFungibleTokenTypeDto {
+  readonly version: bigint;
   readonly symbol: string;
   readonly name: string | null;
   readonly icon: Readonly<{

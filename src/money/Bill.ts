@@ -17,6 +17,7 @@ export class Bill extends Unit {
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
    * @param {StateProof | null} stateProof State proof.
+   * @param {bigint} version Version.
    * @param {bigint} value Bill value.
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {boolean} locked Is locked.
@@ -27,12 +28,14 @@ export class Bill extends Unit {
     networkIdentifier: number,
     partitionIdentifier: number,
     stateProof: StateProof | null,
+    public readonly version: bigint,
     public readonly value: bigint,
     public readonly ownerPredicate: IPredicate,
     public readonly locked: bigint,
     public readonly counter: bigint,
   ) {
     super(unitId, networkIdentifier, partitionIdentifier, stateProof);
+    this.version = BigInt(this.version);
     this.value = BigInt(this.value);
     this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
@@ -59,6 +62,7 @@ export class Bill extends Unit {
       networkIdentifier,
       partitionIdentifier,
       stateProof,
+      BigInt(data.version),
       BigInt(data.value),
       new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
@@ -76,6 +80,7 @@ export class Bill extends Unit {
         Unit ID: ${this.unitId.toString()} 
         Network ID: ${this.networkIdentifier} 
         Partition ID: ${this.partitionIdentifier} 
+        Version: ${this.version}
         Owner Predicate: ${this.ownerPredicate.toString()}
         Value: ${this.value}
         Locked: ${this.locked}

@@ -17,6 +17,7 @@ export class FeeCreditRecord extends Unit {
    * @param {number} networkIdentifier Network ID.
    * @param {number} partitionIdentifier Partition ID.
    * @param {StateProof | null} stateProof State proof.
+   * @param {bigint} version Version.
    * @param {bigint} balance Fee credit balance.
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {bigint} locked Is fee credit locked.
@@ -28,6 +29,7 @@ export class FeeCreditRecord extends Unit {
     networkIdentifier: number,
     partitionIdentifier: number,
     stateProof: StateProof | null,
+    public readonly version: bigint,
     public readonly balance: bigint,
     public readonly ownerPredicate: IPredicate,
     public readonly locked: bigint,
@@ -35,6 +37,7 @@ export class FeeCreditRecord extends Unit {
     public readonly minLifetime: bigint,
   ) {
     super(unitId, networkIdentifier, partitionIdentifier, stateProof);
+    this.version = BigInt(this.version);
     this.balance = BigInt(this.balance);
     this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
@@ -63,6 +66,7 @@ export class FeeCreditRecord extends Unit {
       networkIdentifier,
       partitionIdentifier,
       stateProof,
+      BigInt(data.version),
       BigInt(data.balance),
       new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
       BigInt(data.locked),
@@ -81,6 +85,7 @@ export class FeeCreditRecord extends Unit {
         Unit ID: ${this.unitId.toString()} 
         Network ID: ${this.networkIdentifier}
         Partition ID: ${this.partitionIdentifier}
+        Version: ${this.version}
         Balance: ${this.balance}
         Owner Predicate: ${this.ownerPredicate.toString()}
         Locked: ${this.locked}

@@ -3,6 +3,7 @@
  * @interface IFungibleTokenDto
  */
 export interface IFungibleTokenDto {
+  readonly version: bigint;
   readonly typeId: string;
   readonly value: string;
   readonly locked: string;
