@@ -12,6 +12,7 @@ import { addFeeCredit } from '../../utils/TestUtils.js';
 describe('Proof verification', () => {
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const proofFactory = new PayToPublicKeyHashProofFactory(signingService);
+  const networkIdentifier = config.networkIdentifier;
 
   const moneyClient = createMoneyClient({
     transport: http(config.moneyPartitionUrl),
@@ -22,6 +23,7 @@ describe('Proof verification', () => {
       moneyClient,
       moneyClient,
       PartitionIdentifier.MONEY,
+      networkIdentifier,
       signingService.publicKey,
       proofFactory,
     );

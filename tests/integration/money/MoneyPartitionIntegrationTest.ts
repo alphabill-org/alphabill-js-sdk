@@ -21,6 +21,7 @@ import { addFeeCredit, createTransactionData } from '../utils/TestUtils.js';
 describe('Money Client Integration Tests', () => {
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const proofFactory = new PayToPublicKeyHashProofFactory(signingService);
+  const networkIdentifier = config.networkIdentifier;
 
   const moneyClient = createMoneyClient({
     transport: http(config.moneyPartitionUrl),
@@ -52,6 +53,7 @@ describe('Money Client Integration Tests', () => {
       moneyClient,
       moneyClient,
       PartitionIdentifier.MONEY,
+      networkIdentifier,
       signingService.publicKey,
       proofFactory,
     );
@@ -74,7 +76,7 @@ describe('Money Client Integration Tests', () => {
     const lockBillTransactionOrder = await LockBill.create({
       status: 5n,
       bill: bill,
-      ...createTransactionData(round, feeCreditRecordId),
+      ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
     }).sign(proofFactory, proofFactory);
 
     const lockBillHash = await moneyClient.sendTransaction(lockBillTransactionOrder);
@@ -88,7 +90,7 @@ describe('Money Client Integration Tests', () => {
     expect(lockedBill.counter).not.toEqual(bill.counter);
     const unlockBillTransactionOrder = await UnlockBill.create({
       bill: lockedBill,
-      ...createTransactionData(round, feeCreditRecordId),
+      ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
     }).sign(proofFactory, proofFactory);
     const unlockBillHash = await moneyClient.sendTransaction(unlockBillTransactionOrder);
     const unlockBillProof = await moneyClient.waitTransactionProof(unlockBillHash, UnlockBill);
@@ -113,7 +115,7 @@ describe('Money Client Integration Tests', () => {
         },
       ],
       bill: bill!,
-      ...createTransactionData(round, feeCreditRecordId),
+      ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
     }).sign(proofFactory, proofFactory);
     const splitBillHash = await moneyClient.sendTransaction(splitBillTransactionOrder);
     const splitBillProof = await moneyClient.waitTransactionProof(splitBillHash, SplitBill);
@@ -135,7 +137,7 @@ describe('Money Client Integration Tests', () => {
     const transferBillTransactionOrder = await TransferBill.create({
       ownerPredicate: PayToPublicKeyHashPredicate.create(signingService.publicKey),
       bill: targetBill!,
-      ...createTransactionData(round, feeCreditRecordId),
+      ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
     }).sign(proofFactory, proofFactory);
     const transferBillHash = await moneyClient.sendTransaction(transferBillTransactionOrder);
     const transferBillProof = await moneyClient.waitTransactionProof(transferBillHash, TransferBill);
@@ -157,7 +159,7 @@ describe('Money Client Integration Tests', () => {
     const transferBillToDcTransactionOrder = await TransferBillToDustCollector.create({
       bill: bill!,
       targetBill: targetBill!,
-      ...createTransactionData(round, feeCreditRecordId),
+      ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
     }).sign(proofFactory, proofFactory);
     const transferBillToDcHash = await moneyClient.sendTransaction(transferBillToDcTransactionOrder);
     const transferBillToDcProof = await moneyClient.waitTransactionProof(
@@ -173,7 +175,7 @@ describe('Money Client Integration Tests', () => {
     const swapBillWithDcTransactionOrder = await SwapBillsWithDustCollector.create({
       bill: targetBill!,
       proofs: [transferBillToDcProof],
-      ...createTransactionData(round, feeCreditRecordId),
+      ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
     }).sign(proofFactory, proofFactory);
     const swapBillsWithDcHash = await moneyClient.sendTransaction(swapBillWithDcTransactionOrder);
     const swapBillsWithDcProof = await moneyClient.waitTransactionProof(

@@ -5,7 +5,6 @@ import { IUnitId } from '../../../src/IUnitId.js';
 import { MoneyPartitionJsonRpcClient } from '../../../src/json-rpc/MoneyPartitionJsonRpcClient.js';
 import { TokenPartitionJsonRpcClient } from '../../../src/json-rpc/TokenPartitionJsonRpcClient.js';
 import { Bill } from '../../../src/money/Bill.js';
-import { NetworkIdentifier } from '../../../src/NetworkIdentifier.js';
 import { ClientMetadata } from '../../../src/transaction/ClientMetadata.js';
 import { ITransactionData } from '../../../src/transaction/ITransactionData.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
@@ -13,10 +12,14 @@ import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates
 import { IProofFactory } from '../../../src/transaction/proofs/IProofFactory.js';
 import { TransactionStatus } from '../../../src/transaction/record/TransactionStatus.js';
 
-export function createTransactionData(round: bigint, feeCreditRecordId?: IUnitId): ITransactionData {
+export function createTransactionData(
+  round: bigint,
+  networkIdentifier: number,
+  feeCreditRecordId?: IUnitId,
+): ITransactionData {
   return {
     version: 1n,
-    networkIdentifier: NetworkIdentifier.LOCAL,
+    networkIdentifier: networkIdentifier,
     stateLock: null,
     metadata: createMetadata(round, feeCreditRecordId),
     stateUnlock: new AlwaysTruePredicate(),
@@ -31,6 +34,7 @@ export async function addFeeCredit(
   moneyClient: MoneyPartitionJsonRpcClient,
   clientToAddFeesTo: MoneyPartitionJsonRpcClient | TokenPartitionJsonRpcClient,
   targetPartitionIdentifier: number,
+  networkIdentifier: number,
   publicKey: Uint8Array,
   proofFactory: IProofFactory,
 ): Promise<Uint8Array> {
@@ -56,7 +60,7 @@ export async function addFeeCredit(
       ownerPredicate: ownerPredicate,
     },
     bill,
-    ...createTransactionData(round),
+    ...createTransactionData(round, networkIdentifier),
   }).sign(proofFactory);
 
   const transferFeeCreditHash = await moneyClient.sendTransaction(transferFeeCreditTransactionOrder);
@@ -74,7 +78,7 @@ export async function addFeeCredit(
     ownerPredicate: ownerPredicate,
     proof: transferFeeCreditProof,
     feeCreditRecord: { unitId: feeCreditRecordId },
-    ...createTransactionData(round),
+    ...createTransactionData(round, networkIdentifier),
   }).sign(proofFactory);
 
   console.log('Adding fee credit probably successful');

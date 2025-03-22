@@ -41,6 +41,7 @@ describe('Token Client Integration Tests', () => {
   const proofFactory = new PayToPublicKeyHashProofFactory(signingService);
   const alwaysTrueProofFactory = new AlwaysTrueProofFactory();
   const ownerPredicate = PayToPublicKeyHashPredicate.create(signingService.publicKey);
+  const networkIdentifier = config.networkIdentifier;
 
   const tokenClient = createTokenClient({
     transport: http(config.tokenPartitionUrl),
@@ -57,6 +58,7 @@ describe('Token Client Integration Tests', () => {
       moneyClient,
       tokenClient,
       PartitionIdentifier.TOKEN,
+      networkIdentifier,
       signingService.publicKey,
       proofFactory,
     );
@@ -90,7 +92,7 @@ describe('Token Client Integration Tests', () => {
         subTypeCreationPredicate: new AlwaysTruePredicate(),
         tokenMintingPredicate: new AlwaysTruePredicate(),
         tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
-        ...createTransactionData(round, feeCreditRecordId),
+        ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
       }).sign(proofFactory, []);
 
       const createFungibleTokenTypeHash = await tokenClient.sendTransaction(createFungibleTokenTypeTransactionOrder);
@@ -113,7 +115,7 @@ describe('Token Client Integration Tests', () => {
         typeId: tokenTypeUnitId,
         value: 10n,
         nonce: 0n,
-        ...createTransactionData(round, feeCreditRecordId),
+        ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
       }).sign(alwaysTrueProofFactory, proofFactory);
 
       const createFungibleTokenHash = await tokenClient.sendTransaction(createFungibleTokenTransactionOrder);
@@ -141,7 +143,7 @@ describe('Token Client Integration Tests', () => {
         token: token!,
         ownerPredicate: ownerPredicate,
         amount: 3n,
-        ...createTransactionData(round, feeCreditRecordId),
+        ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
       }).sign(proofFactory, proofFactory, [alwaysTrueProofFactory]);
 
       const splitFungibleTokenHash = await tokenClient.sendTransaction(splitFungibleTokenTransactionOrder);
@@ -163,7 +165,7 @@ describe('Token Client Integration Tests', () => {
         await BurnFungibleToken.create({
           token: splitToken!,
           targetToken: originalTokenAfterSplit!,
-          ...createTransactionData(round, feeCreditRecordId),
+          ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
         }).sign(proofFactory, proofFactory, [alwaysTrueProofFactory]),
       );
 
@@ -175,7 +177,7 @@ describe('Token Client Integration Tests', () => {
       const joinFungibleTokenTransactionOrder = await JoinFungibleToken.create({
         token: originalTokenAfterSplit!,
         proofs: [burnProof],
-        ...createTransactionData(round, feeCreditRecordId),
+        ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
       }).sign(proofFactory, proofFactory, [alwaysTrueProofFactory]);
 
       const joinFungibleTokenHash = await tokenClient.sendTransaction(joinFungibleTokenTransactionOrder);
@@ -194,7 +196,7 @@ describe('Token Client Integration Tests', () => {
       const transferFungibleTokenTransactionOrder = await TransferFungibleToken.create({
         token: token!,
         ownerPredicate: ownerPredicate,
-        ...createTransactionData(round, feeCreditRecordId),
+        ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
       }).sign(proofFactory, proofFactory, [alwaysTrueProofFactory]);
 
       const transferFungibleTokenHash = await tokenClient.sendTransaction(transferFungibleTokenTransactionOrder);
@@ -213,7 +215,7 @@ describe('Token Client Integration Tests', () => {
       const lockFungibleTokenTransactionOrder = await LockToken.create({
         status: 5n,
         token: token!,
-        ...createTransactionData(round, feeCreditRecordId),
+        ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
       }).sign(proofFactory, proofFactory);
 
       const lockFungibleTokenHash = await tokenClient.sendTransaction(lockFungibleTokenTransactionOrder);
@@ -228,7 +230,7 @@ describe('Token Client Integration Tests', () => {
           unitId: token!.unitId,
           counter: token!.counter + 1n,
         },
-        ...createTransactionData(round, feeCreditRecordId),
+        ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
       }).sign(proofFactory, proofFactory);
 
       const unlockFungibleTokenHash = await tokenClient.sendTransaction(unlockFungibleTokenTransactionOrder);
@@ -256,7 +258,7 @@ describe('Token Client Integration Tests', () => {
         tokenMintingPredicate: new AlwaysTruePredicate(),
         tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
         dataUpdatePredicate: new AlwaysTruePredicate(),
-        ...createTransactionData(round, feeCreditRecordId),
+        ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
       }).sign(proofFactory, []);
 
       const createNonFungibleTokenTypeHash = await tokenClient.sendTransaction(
@@ -283,7 +285,7 @@ describe('Token Client Integration Tests', () => {
         data: NonFungibleTokenData.create(CborEncoder.encodeTextString('user variables')),
         dataUpdatePredicate: new AlwaysTruePredicate(),
         nonce: 0n,
-        ...createTransactionData(round, feeCreditRecordId),
+        ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
       }).sign(alwaysTrueProofFactory, proofFactory);
 
       const createNonFungibleTokenHash = await tokenClient.sendTransaction(createNonFungibleTokenTransactionOrder);
@@ -308,7 +310,7 @@ describe('Token Client Integration Tests', () => {
       const updateNonFungibleTokenTransactionOrder = await UpdateNonFungibleToken.create({
         token: token!,
         data: NonFungibleTokenData.create(new Uint8Array(32)),
-        ...createTransactionData(round, feeCreditRecordId),
+        ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
       }).sign(alwaysTrueProofFactory, proofFactory, [alwaysTrueProofFactory]);
 
       const updateNonFungibleTokenHash = await tokenClient.sendTransaction(updateNonFungibleTokenTransactionOrder);
@@ -333,7 +335,7 @@ describe('Token Client Integration Tests', () => {
       const transferNonFungibleTokenTransactionOrder = await TransferNonFungibleToken.create({
         token: token!,
         ownerPredicate: ownerPredicate,
-        ...createTransactionData(round, feeCreditRecordId),
+        ...createTransactionData(round, networkIdentifier, feeCreditRecordId),
       }).sign(proofFactory, proofFactory, [alwaysTrueProofFactory]);
 
       const transferNonFungibleTokenHash = await tokenClient.sendTransaction(transferNonFungibleTokenTransactionOrder);

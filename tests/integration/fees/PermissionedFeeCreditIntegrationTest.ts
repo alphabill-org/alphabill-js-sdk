@@ -13,6 +13,7 @@ import { createTransactionData } from '../utils/TestUtils.js';
 describe('Permissioned Fee Credit Integration Tests', () => {
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const proofFactory = new PayToPublicKeyHashProofFactory(signingService);
+  const networkIdentifier = config.networkIdentifier;
 
   const tokenClient = createTokenClient({
     transport: http(config.tokenPartitionUrl),
@@ -29,7 +30,7 @@ describe('Permissioned Fee Credit Integration Tests', () => {
       ownerPredicate: ownerPredicate,
       amount: 100n,
       feeCreditRecord: { unitId: null, counter: null },
-      ...createTransactionData(round),
+      ...createTransactionData(round, networkIdentifier),
     }).sign(proofFactory);
 
     const setFeeCreditHash = await tokenClient.sendTransaction(setFeeCreditTransactionOrder);
@@ -41,7 +42,7 @@ describe('Permissioned Fee Credit Integration Tests', () => {
     console.log('Deleting fee credit...');
     const deleteFeeCreditTransactionOrder = await DeleteFeeCredit.create({
       feeCredit: { unitId: feeCreditRecordId, counter: 0n },
-      ...createTransactionData(round),
+      ...createTransactionData(round, networkIdentifier),
     }).sign(proofFactory);
 
     const deleteFeeCreditHash = await tokenClient.sendTransaction(deleteFeeCreditTransactionOrder);

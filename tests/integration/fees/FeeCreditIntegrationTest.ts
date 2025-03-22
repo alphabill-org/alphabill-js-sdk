@@ -18,6 +18,7 @@ import { addFeeCredit, createTransactionData } from '../utils/TestUtils.js';
 describe('Fee Credit Integration Tests', () => {
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const proofFactory = new PayToPublicKeyHashProofFactory(signingService);
+  const networkIdentifier = config.networkIdentifier;
 
   const moneyClient = createMoneyClient({
     transport: http(config.moneyPartitionUrl),
@@ -33,6 +34,7 @@ describe('Fee Credit Integration Tests', () => {
       moneyClient,
       moneyClient,
       PartitionIdentifier.MONEY,
+      networkIdentifier,
       signingService.publicKey,
       proofFactory,
     );
@@ -48,6 +50,7 @@ describe('Fee Credit Integration Tests', () => {
       moneyClient,
       tokenClient,
       PartitionIdentifier.TOKEN,
+      networkIdentifier,
       signingService.publicKey,
       proofFactory,
     );
@@ -67,7 +70,7 @@ describe('Fee Credit Integration Tests', () => {
     const lockFeeCreditTransactionOrder = await LockFeeCredit.create({
       status: lockStatus,
       feeCredit: feeCreditRecord,
-      ...createTransactionData(round),
+      ...createTransactionData(round, networkIdentifier),
     }).sign(proofFactory);
 
     const lockFeeCreditHash = await moneyClient.sendTransaction(lockFeeCreditTransactionOrder);
@@ -81,7 +84,7 @@ describe('Fee Credit Integration Tests', () => {
     console.log('Unlocking fee credit...');
     const unlockFeeCreditTransactionOrder = await UnlockFeeCredit.create({
       feeCredit: feeCreditAfterLock,
-      ...createTransactionData(round),
+      ...createTransactionData(round, networkIdentifier),
     }).sign(proofFactory);
 
     const unlockFeeCreditHash = await moneyClient.sendTransaction(unlockFeeCreditTransactionOrder);
@@ -108,7 +111,7 @@ describe('Fee Credit Integration Tests', () => {
     const closeFeeCreditTransactionOrder = await CloseFeeCredit.create({
       bill: bill!,
       feeCreditRecord: feeCreditRecord!,
-      ...createTransactionData(round),
+      ...createTransactionData(round, networkIdentifier),
     }).sign(proofFactory);
     const closeFeeCreditHash = await moneyClient.sendTransaction(closeFeeCreditTransactionOrder);
     const closeFeeCreditProof = await moneyClient.waitTransactionProof(closeFeeCreditHash, CloseFeeCredit);
@@ -120,7 +123,7 @@ describe('Fee Credit Integration Tests', () => {
     const reclaimFeeCreditTransactionOrder = await ReclaimFeeCredit.create({
       proof: closeFeeCreditProof,
       bill: bill!,
-      ...createTransactionData(round),
+      ...createTransactionData(round, networkIdentifier),
     }).sign(proofFactory);
     const reclaimFeeCreditHash = await moneyClient.sendTransaction(reclaimFeeCreditTransactionOrder);
     const reclaimFeeCreditProof = await moneyClient.waitTransactionProof(reclaimFeeCreditHash, ReclaimFeeCredit);
