@@ -20,7 +20,7 @@ export type CreateNonFungibleTokenTransactionOrder = TransactionOrder<
 >;
 interface ICreateNonFungibleTokenTransactionData extends ITransactionData {
   ownerPredicate: IPredicate;
-  type: { unitId: IUnitId };
+  typeId: IUnitId;
   name: string;
   uri: string;
   data: INonFungibleTokenData;
@@ -33,7 +33,7 @@ export class CreateNonFungibleToken {
     data: ICreateNonFungibleTokenTransactionData,
   ): OwnerProofUnsignedTransactionOrder<CreateNonFungibleTokenAttributes> {
     const attributes = new CreateNonFungibleTokenAttributes(
-      data.type.unitId,
+      data.typeId,
       data.name,
       data.uri,
       data.data,

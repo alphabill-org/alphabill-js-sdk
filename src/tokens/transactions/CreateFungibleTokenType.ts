@@ -17,7 +17,7 @@ export type CreateFungibleTokenTypeTransactionOrder = TransactionOrder<
   SubTypeOwnerProofsAuthProof
 >;
 interface ICreateFungibleTokenTypeTransactionData extends ITransactionData {
-  type: { unitId: IUnitId };
+  typeId: IUnitId;
   symbol: string;
   name: string | null;
   icon: { type: string; data: Uint8Array } | null;
@@ -37,7 +37,7 @@ export class CreateFungibleTokenType {
       new TransactionPayload(
         data.networkIdentifier,
         PartitionIdentifier.TOKEN,
-        data.type.unitId,
+        data.typeId,
         TokenPartitionTransactionType.CreateFungibleTokenType,
         new CreateFungibleTokenTypeAttributes(
           data.symbol,

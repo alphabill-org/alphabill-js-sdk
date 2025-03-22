@@ -76,7 +76,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Creating fungible token type...');
 
       const createFungibleTokenTypeTransactionOrder = await CreateFungibleTokenType.create({
-        type: { unitId: tokenTypeUnitId },
+        typeId: tokenTypeUnitId,
         symbol: 'E',
         name: 'Big money come',
         icon: new TokenIcon(
@@ -247,7 +247,7 @@ describe('Token Client Integration Tests', () => {
       const round = (await tokenClient.getRoundInfo()).roundNumber;
       console.log('Creating non-fungible token type...');
       const createNonFungibleTokenTypeTransactionOrder = await CreateNonFungibleTokenType.create({
-        type: { unitId: tokenTypeUnitId },
+        typeId: tokenTypeUnitId,
         symbol: 'E',
         name: 'Token Name',
         icon: { type: 'image/png', data: new Uint8Array() },
@@ -277,7 +277,7 @@ describe('Token Client Integration Tests', () => {
       console.log('Creating non-fungible token...');
       const createNonFungibleTokenTransactionOrder = await CreateNonFungibleToken.create({
         ownerPredicate: ownerPredicate,
-        type: { unitId: tokenTypeUnitId },
+        typeId: tokenTypeUnitId,
         name: 'My token',
         uri: 'http://guardtime.com',
         data: NonFungibleTokenData.create(CborEncoder.encodeTextString('user variables')),
