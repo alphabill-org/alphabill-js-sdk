@@ -1,6 +1,5 @@
 import { DeleteFeeCredit } from '../../../src/fees/transactions/DeleteFeeCredit.js';
 import { SetFeeCredit } from '../../../src/fees/transactions/SetFeeCredit.js';
-import { PartitionIdentifier } from '../../../src/PartitionIdentifier.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createTokenClient, http } from '../../../src/StateApiClientFactory.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
@@ -14,6 +13,7 @@ describe('Permissioned Fee Credit Integration Tests', () => {
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const proofFactory = new PayToPublicKeyHashProofFactory(signingService);
   const networkIdentifier = config.networkIdentifier;
+  const partitionIdentifier = config.tokenPartitionIdentifier;
 
   const tokenClient = createTokenClient({
     transport: http(config.tokenPartitionUrl),
@@ -26,11 +26,11 @@ describe('Permissioned Fee Credit Integration Tests', () => {
 
     console.log('Setting fee credit...');
     const setFeeCreditTransactionOrder = await SetFeeCredit.create({
-      targetPartitionIdentifier: PartitionIdentifier.TOKEN,
+      targetPartitionIdentifier: partitionIdentifier,
       ownerPredicate: ownerPredicate,
       amount: 100n,
       feeCreditRecord: { unitId: null, counter: null },
-      ...createTransactionData(round, networkIdentifier),
+      ...createTransactionData(round, networkIdentifier, partitionIdentifier),
     }).sign(proofFactory);
 
     const setFeeCreditHash = await tokenClient.sendTransaction(setFeeCreditTransactionOrder);
@@ -42,7 +42,7 @@ describe('Permissioned Fee Credit Integration Tests', () => {
     console.log('Deleting fee credit...');
     const deleteFeeCreditTransactionOrder = await DeleteFeeCredit.create({
       feeCredit: { unitId: feeCreditRecordId, counter: 0n },
-      ...createTransactionData(round, networkIdentifier),
+      ...createTransactionData(round, networkIdentifier, partitionIdentifier),
     }).sign(proofFactory);
 
     const deleteFeeCreditHash = await tokenClient.sendTransaction(deleteFeeCreditTransactionOrder);

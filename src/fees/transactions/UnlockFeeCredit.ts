@@ -1,5 +1,4 @@
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/ITransactionData.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
@@ -26,7 +25,7 @@ export class UnlockFeeCredit {
       data.version,
       new TransactionPayload<UnlockFeeCreditAttributes>(
         data.networkIdentifier,
-        PartitionIdentifier.MONEY,
+        data.partitionIdentifier,
         data.feeCredit.unitId,
         FeeCreditTransactionType.UnlockFeeCredit,
         new UnlockFeeCreditAttributes(data.feeCredit.counter),

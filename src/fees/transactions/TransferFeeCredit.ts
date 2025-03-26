@@ -1,7 +1,6 @@
 import { sha256 } from '@noble/hashes/sha256';
 import { CborEncoder } from '../../codec/cbor/CborEncoder.js';
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { UnitIdWithType } from '../../tokens/UnitIdWithType.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/ITransactionData.js';
@@ -48,7 +47,7 @@ export class TransferFeeCredit {
       data.version,
       new TransactionPayload<TransferFeeCreditAttributes>(
         data.networkIdentifier,
-        PartitionIdentifier.MONEY,
+        data.partitionIdentifier,
         data.bill.unitId,
         FeeCreditTransactionType.TransferFeeCredit,
         new TransferFeeCreditAttributes(

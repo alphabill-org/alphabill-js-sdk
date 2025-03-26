@@ -1,5 +1,4 @@
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/ITransactionData.js';
 import { TypeDataUpdateProofsAuthProof } from '../../transaction/proofs/TypeDataUpdateProofsAuthProof.js';
@@ -28,7 +27,7 @@ export class UpdateNonFungibleToken {
       data.version,
       new TransactionPayload(
         data.networkIdentifier,
-        PartitionIdentifier.TOKEN,
+        data.partitionIdentifier,
         data.token.unitId,
         TokenPartitionTransactionType.UpdateNonFungibleToken,
         new UpdateNonFungibleTokenAttributes(data.data, data.token.counter),

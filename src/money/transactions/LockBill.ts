@@ -1,5 +1,4 @@
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/ITransactionData.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
@@ -25,7 +24,7 @@ export class LockBill {
       data.version,
       new TransactionPayload<LockBillAttributes>(
         data.networkIdentifier,
-        PartitionIdentifier.MONEY,
+        data.partitionIdentifier,
         data.bill.unitId,
         MoneyPartitionTransactionType.LockBill,
         new LockBillAttributes(data.status, data.bill.counter),

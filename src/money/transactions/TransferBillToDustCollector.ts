@@ -1,5 +1,4 @@
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/ITransactionData.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
@@ -35,7 +34,7 @@ export class TransferBillToDustCollector {
       data.version,
       new TransactionPayload<TransferBillToDustCollectorAttributes>(
         data.networkIdentifier,
-        PartitionIdentifier.MONEY,
+        data.partitionIdentifier,
         data.bill.unitId,
         MoneyPartitionTransactionType.TransferBillToDustCollector,
         new TransferBillToDustCollectorAttributes(

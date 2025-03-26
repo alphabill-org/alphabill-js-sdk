@@ -15,11 +15,13 @@ import { TransactionStatus } from '../../../src/transaction/record/TransactionSt
 export function createTransactionData(
   round: bigint,
   networkIdentifier: number,
+  partitionIdentifier: number,
   feeCreditRecordId?: IUnitId,
 ): ITransactionData {
   return {
     version: 1n,
     networkIdentifier: networkIdentifier,
+    partitionIdentifier: partitionIdentifier,
     stateLock: null,
     metadata: createMetadata(round, feeCreditRecordId),
     stateUnlock: new AlwaysTruePredicate(),
@@ -35,6 +37,7 @@ export async function addFeeCredit(
   clientToAddFeesTo: MoneyPartitionJsonRpcClient | TokenPartitionJsonRpcClient,
   targetPartitionIdentifier: number,
   networkIdentifier: number,
+  partitionIdentifier: number,
   publicKey: Uint8Array,
   proofFactory: IProofFactory,
 ): Promise<Uint8Array> {
@@ -60,7 +63,7 @@ export async function addFeeCredit(
       ownerPredicate: ownerPredicate,
     },
     bill,
-    ...createTransactionData(round, networkIdentifier),
+    ...createTransactionData(round, networkIdentifier, partitionIdentifier),
   }).sign(proofFactory);
 
   const transferFeeCreditHash = await moneyClient.sendTransaction(transferFeeCreditTransactionOrder);
@@ -78,7 +81,7 @@ export async function addFeeCredit(
     ownerPredicate: ownerPredicate,
     proof: transferFeeCreditProof,
     feeCreditRecord: { unitId: feeCreditRecordId },
-    ...createTransactionData(round, networkIdentifier),
+    ...createTransactionData(round, networkIdentifier, partitionIdentifier),
   }).sign(proofFactory);
 
   console.log('Adding fee credit probably successful');

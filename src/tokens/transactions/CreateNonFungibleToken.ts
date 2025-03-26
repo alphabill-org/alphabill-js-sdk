@@ -1,5 +1,4 @@
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -47,7 +46,7 @@ export class CreateNonFungibleToken {
       data.version,
       new TransactionPayload(
         data.networkIdentifier,
-        PartitionIdentifier.TOKEN,
+        data.partitionIdentifier,
         tokenUnitId,
         TokenPartitionTransactionType.CreateNonFungibleToken,
         attributes,

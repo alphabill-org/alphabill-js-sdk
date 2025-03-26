@@ -1,13 +1,13 @@
 import { TransferFeeCreditAttributes } from '../../../../src/fees/attributes/TransferFeeCreditAttributes.js';
-import { PartitionIdentifier } from '../../../../src/PartitionIdentifier.js';
 import { UnitId } from '../../../../src/UnitId.js';
 
 describe('Transfer Fee credit attributes', () => {
   it('is returning correct data from decode with 0 as counter', () => {
+    const partitionIdentifier = 2;
     const attributes = TransferFeeCreditAttributes.fromCbor(
       new TransferFeeCreditAttributes(
         1n,
-        PartitionIdentifier.TOKEN,
+        partitionIdentifier,
         UnitId.fromBytes(new Uint8Array(32)),
         2n,
         0n,
@@ -15,7 +15,7 @@ describe('Transfer Fee credit attributes', () => {
       ).encode(),
     );
     expect(attributes.amount).toStrictEqual(1n);
-    expect(attributes.targetPartitionIdentifier).toStrictEqual(PartitionIdentifier.TOKEN);
+    expect(attributes.targetPartitionIdentifier).toStrictEqual(partitionIdentifier);
     expect(attributes.targetUnitId).toStrictEqual(UnitId.fromBytes(new Uint8Array(32)));
     expect(attributes.latestAdditionTime).toStrictEqual(2n);
     expect(attributes.targetUnitCounter).toStrictEqual(0n);
@@ -23,10 +23,11 @@ describe('Transfer Fee credit attributes', () => {
   });
 
   it('is returning correct data from decode with null as counter', () => {
+    const partitionIdentifier = 2;
     const attributes = TransferFeeCreditAttributes.fromCbor(
       new TransferFeeCreditAttributes(
         1n,
-        PartitionIdentifier.TOKEN,
+        partitionIdentifier,
         UnitId.fromBytes(new Uint8Array(32)),
         2n,
         null,
@@ -34,7 +35,7 @@ describe('Transfer Fee credit attributes', () => {
       ).encode(),
     );
     expect(attributes.amount).toStrictEqual(1n);
-    expect(attributes.targetPartitionIdentifier).toStrictEqual(PartitionIdentifier.TOKEN);
+    expect(attributes.targetPartitionIdentifier).toStrictEqual(partitionIdentifier);
     expect(attributes.targetUnitId).toStrictEqual(UnitId.fromBytes(new Uint8Array(32)));
     expect(attributes.latestAdditionTime).toStrictEqual(2n);
     expect(attributes.targetUnitCounter).toBeNull();
