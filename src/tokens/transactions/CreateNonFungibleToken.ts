@@ -1,5 +1,4 @@
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -20,7 +19,7 @@ export type CreateNonFungibleTokenTransactionOrder = TransactionOrder<
 >;
 interface ICreateNonFungibleTokenTransactionData extends ITransactionData {
   ownerPredicate: IPredicate;
-  type: { unitId: IUnitId };
+  typeId: IUnitId;
   name: string;
   uri: string;
   data: INonFungibleTokenData;
@@ -33,7 +32,7 @@ export class CreateNonFungibleToken {
     data: ICreateNonFungibleTokenTransactionData,
   ): OwnerProofUnsignedTransactionOrder<CreateNonFungibleTokenAttributes> {
     const attributes = new CreateNonFungibleTokenAttributes(
-      data.type.unitId,
+      data.typeId,
       data.name,
       data.uri,
       data.data,
@@ -47,7 +46,7 @@ export class CreateNonFungibleToken {
       data.version,
       new TransactionPayload(
         data.networkIdentifier,
-        PartitionIdentifier.TOKEN,
+        data.partitionIdentifier,
         tokenUnitId,
         TokenPartitionTransactionType.CreateNonFungibleToken,
         attributes,

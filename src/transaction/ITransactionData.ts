@@ -8,4 +8,5 @@ export interface ITransactionData {
   stateLock: StateLock | null;
   stateUnlock: IPredicate | null;
   networkIdentifier: number;
+  partitionIdentifier: number;
 }

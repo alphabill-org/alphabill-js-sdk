@@ -1,5 +1,4 @@
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -17,7 +16,7 @@ export type CreateFungibleTokenTypeTransactionOrder = TransactionOrder<
   SubTypeOwnerProofsAuthProof
 >;
 interface ICreateFungibleTokenTypeTransactionData extends ITransactionData {
-  type: { unitId: IUnitId };
+  typeId: IUnitId;
   symbol: string;
   name: string | null;
   icon: { type: string; data: Uint8Array } | null;
@@ -36,8 +35,8 @@ export class CreateFungibleTokenType {
       data.version,
       new TransactionPayload(
         data.networkIdentifier,
-        PartitionIdentifier.TOKEN,
-        data.type.unitId,
+        data.partitionIdentifier,
+        data.typeId,
         TokenPartitionTransactionType.CreateFungibleTokenType,
         new CreateFungibleTokenTypeAttributes(
           data.symbol,

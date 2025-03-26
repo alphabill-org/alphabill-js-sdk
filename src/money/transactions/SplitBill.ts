@@ -1,5 +1,4 @@
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/ITransactionData.js';
 import { IPredicate } from '../../transaction/predicates/IPredicate.js';
@@ -30,7 +29,7 @@ export class SplitBill {
       data.version,
       new TransactionPayload<SplitBillAttributes>(
         data.networkIdentifier,
-        PartitionIdentifier.MONEY,
+        data.partitionIdentifier,
         data.bill.unitId,
         MoneyPartitionTransactionType.SplitBill,
         new SplitBillAttributes(

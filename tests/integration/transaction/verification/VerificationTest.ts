@@ -1,5 +1,4 @@
 import { AddFeeCredit } from '../../../../src/fees/transactions/AddFeeCredit.js';
-import { PartitionIdentifier } from '../../../../src/PartitionIdentifier.js';
 import { DefaultSigningService } from '../../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, http } from '../../../../src/StateApiClientFactory.js';
 import { PayToPublicKeyHashProofFactory } from '../../../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
@@ -12,6 +11,8 @@ import { addFeeCredit } from '../../utils/TestUtils.js';
 describe('Proof verification', () => {
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const proofFactory = new PayToPublicKeyHashProofFactory(signingService);
+  const networkIdentifier = config.networkIdentifier;
+  const partitionIdentifier = config.moneyPartitionIdentifier;
 
   const moneyClient = createMoneyClient({
     transport: http(config.moneyPartitionUrl),
@@ -21,7 +22,9 @@ describe('Proof verification', () => {
     const addFeeCreditHash = await addFeeCredit(
       moneyClient,
       moneyClient,
-      PartitionIdentifier.MONEY,
+      partitionIdentifier,
+      networkIdentifier,
+      partitionIdentifier,
       signingService.publicKey,
       proofFactory,
     );

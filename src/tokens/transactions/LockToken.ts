@@ -1,5 +1,4 @@
 import { IUnitId } from '../../IUnitId.js';
-import { PartitionIdentifier } from '../../PartitionIdentifier.js';
 import { ClientMetadata } from '../../transaction/ClientMetadata.js';
 import { ITransactionData } from '../../transaction/ITransactionData.js';
 import { OwnerProofAuthProof } from '../../transaction/proofs/OwnerProofAuthProof.js';
@@ -22,7 +21,7 @@ export class LockToken {
       data.version,
       new TransactionPayload(
         data.networkIdentifier,
-        PartitionIdentifier.TOKEN,
+        data.partitionIdentifier,
         data.token.unitId,
         TokenPartitionTransactionType.LockToken,
         new LockTokenAttributes(data.status, data.token.counter),
