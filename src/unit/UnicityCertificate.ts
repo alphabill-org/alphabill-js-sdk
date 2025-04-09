@@ -218,7 +218,8 @@ export class InputRecord {
         Summary Value: ${Base16Converter.encode(this._summaryValue)}
         Timestamp: ${this.timestamp}
         Block Hash: ${this._blockHash ? Base16Converter.encode(this._blockHash) : 'null'}
-        Sum Of Earned Fees: ${this.sumOfEarnedFees}`;
+        Sum Of Earned Fees: ${this.sumOfEarnedFees}
+        Executed Transactions Hash: ${this._etHash ? Base16Converter.encode(this._etHash) : 'null'}`;
   }
 }
 
