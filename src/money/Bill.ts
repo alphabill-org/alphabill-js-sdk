@@ -20,7 +20,6 @@ export class Bill extends Unit {
    * @param {bigint} version Version.
    * @param {bigint} value Bill value.
    * @param {IPredicate} ownerPredicate Owner predicate.
-   * @param {boolean} locked Is locked.
    * @param {bigint} counter Counter.
    */
   public constructor(
@@ -31,13 +30,11 @@ export class Bill extends Unit {
     public readonly version: bigint,
     public readonly value: bigint,
     public readonly ownerPredicate: IPredicate,
-    public readonly locked: bigint,
     public readonly counter: bigint,
   ) {
     super(unitId, networkIdentifier, partitionIdentifier, stateProof);
     this.version = BigInt(this.version);
     this.value = BigInt(this.value);
-    this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
   }
 
@@ -65,7 +62,6 @@ export class Bill extends Unit {
       BigInt(data.version),
       BigInt(data.value),
       new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
-      BigInt(data.locked),
       BigInt(data.counter),
     );
   }
@@ -83,7 +79,6 @@ export class Bill extends Unit {
         Version: ${this.version}
         Owner Predicate: ${this.ownerPredicate.toString()}
         Value: ${this.value}
-        Locked: ${this.locked}
         Counter: ${this.counter}`;
   }
 }

@@ -66,16 +66,16 @@ export class UnitTreeCertificate {
   /**
    * Unit tree certificate constructor.
    * @param {Uint8Array} _transactionRecordHash - transaction record hash.
-   * @param {Uint8Array} _unitDataHash - unit data hash.
+   * @param {Uint8Array} _unitStateHash - unit state hash.
    * @param {StateProofPathItem[] | null} path - path.
    */
   public constructor(
     private readonly _transactionRecordHash: Uint8Array,
-    private readonly _unitDataHash: Uint8Array,
+    private readonly _unitStateHash: Uint8Array,
     public readonly path: readonly StateProofPathItem[] | null,
   ) {
     this._transactionRecordHash = new Uint8Array(this._transactionRecordHash);
-    this._unitDataHash = new Uint8Array(this._unitDataHash);
+    this._unitStateHash = new Uint8Array(this._unitStateHash);
     this.path = this.path ? Object.freeze(Array.from(this.path)) : null;
   }
 
@@ -88,11 +88,11 @@ export class UnitTreeCertificate {
   }
 
   /**
-   * Get unit data hash.
-   * @returns {Uint8Array} unit data hash.
+   * Get unit state hash.
+   * @returns {Uint8Array} unit state hash.
    */
-  public get unitDataHash(): Uint8Array {
-    return new Uint8Array(this._unitDataHash);
+  public get unitStateHash(): Uint8Array {
+    return new Uint8Array(this._unitStateHash);
   }
 
   /**
@@ -103,7 +103,7 @@ export class UnitTreeCertificate {
   public static create(data: IUnitTreeCertificateDto): UnitTreeCertificate {
     return new UnitTreeCertificate(
       Base16Converter.decode(data.txrHash),
-      Base16Converter.decode(data.dataHash),
+      Base16Converter.decode(data.unitStateHash),
       data.path?.map((data) => StateProofPathItem.create(data)) || null,
     );
   }

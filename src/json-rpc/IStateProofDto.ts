@@ -13,7 +13,7 @@ export interface IStateProofDto {
 
 export interface IUnitTreeCertificateDto {
   readonly txrHash: string;
-  readonly dataHash: string;
+  readonly unitStateHash: string;
   readonly path: IPathItemDto[] | null;
 }
 
