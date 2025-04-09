@@ -17,11 +17,9 @@ import { CreateFungibleTokenType } from '../../../src/tokens/transactions/Create
 import { CreateNonFungibleToken } from '../../../src/tokens/transactions/CreateNonFungibleToken.js';
 import { CreateNonFungibleTokenType } from '../../../src/tokens/transactions/CreateNonFungibleTokenType.js';
 import { JoinFungibleToken } from '../../../src/tokens/transactions/JoinFungibleToken.js';
-import { LockToken } from '../../../src/tokens/transactions/LockToken.js';
 import { SplitFungibleToken } from '../../../src/tokens/transactions/SplitFungibleToken.js';
 import { TransferFungibleToken } from '../../../src/tokens/transactions/TransferFungibleToken.js';
 import { TransferNonFungibleToken } from '../../../src/tokens/transactions/TransferNonFungibleToken.js';
-import { UnlockToken } from '../../../src/tokens/transactions/UnlockToken.js';
 import { UpdateNonFungibleToken } from '../../../src/tokens/transactions/UpdateNonFungibleToken.js';
 import { UnitIdWithType } from '../../../src/tokens/UnitIdWithType.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
@@ -206,40 +204,6 @@ describe('Token Client Integration Tests', () => {
       const transferProof = await tokenClient.waitTransactionProof(transferFungibleTokenHash, TransferFungibleToken);
       expect(transferProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
       console.log('Fungible token transfer successful');
-    }, 20000);
-
-    it('Lock and unlock', async () => {
-      const round = (await tokenClient.getRoundInfo()).roundNumber;
-      const token = await tokenClient.getUnit(tokenUnitId, false, FungibleToken);
-      expect(token).not.toBeNull();
-
-      console.log('Locking fungible token...');
-      const lockFungibleTokenTransactionOrder = await LockToken.create({
-        status: 5n,
-        token: token!,
-        ...createTransactionData(round, networkIdentifier, partitionIdentifier, feeCreditRecordId),
-      }).sign(proofFactory, proofFactory);
-
-      const lockFungibleTokenHash = await tokenClient.sendTransaction(lockFungibleTokenTransactionOrder);
-
-      const lockProof = await tokenClient.waitTransactionProof(lockFungibleTokenHash, LockToken);
-      expect(lockProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
-      console.log('Fungible token lock successful');
-
-      console.log('Unlocking fungible token...');
-      const unlockFungibleTokenTransactionOrder = await UnlockToken.create({
-        token: {
-          unitId: token!.unitId,
-          counter: token!.counter + 1n,
-        },
-        ...createTransactionData(round, networkIdentifier, partitionIdentifier, feeCreditRecordId),
-      }).sign(proofFactory, proofFactory);
-
-      const unlockFungibleTokenHash = await tokenClient.sendTransaction(unlockFungibleTokenTransactionOrder);
-
-      const unlockProof = await tokenClient.waitTransactionProof(unlockFungibleTokenHash, UnlockToken);
-      expect(unlockProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
-      console.log('Fungible token unlock successful');
     }, 20000);
   });
 

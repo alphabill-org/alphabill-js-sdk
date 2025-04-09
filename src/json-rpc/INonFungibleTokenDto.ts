@@ -10,6 +10,5 @@ export interface INonFungibleTokenDto {
   readonly data: string | null;
   readonly ownerPredicate: string;
   readonly dataUpdatePredicate: string;
-  readonly locked: string;
   readonly counter: string;
 }

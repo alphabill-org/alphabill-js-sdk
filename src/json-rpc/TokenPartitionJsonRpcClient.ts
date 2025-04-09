@@ -2,9 +2,7 @@ import { FeeCreditRecord } from '../fees/FeeCreditRecord.js';
 import { AddFeeCredit, AddFeeCreditTransactionOrder } from '../fees/transactions/AddFeeCredit.js';
 import { CloseFeeCredit, CloseFeeCreditTransactionOrder } from '../fees/transactions/CloseFeeCredit.js';
 import { DeleteFeeCredit, DeleteFeeCreditTransactionOrder } from '../fees/transactions/DeleteFeeCredit.js';
-import { LockFeeCredit, LockFeeCreditTransactionOrder } from '../fees/transactions/LockFeeCredit.js';
 import { SetFeeCredit, SetFeeCreditTransactionOrder } from '../fees/transactions/SetFeeCredit.js';
-import { UnlockFeeCredit, UnlockFeeCreditTransactionOrder } from '../fees/transactions/UnlockFeeCredit.js';
 import { IUnitId } from '../IUnitId.js';
 import { RootTrustBase } from '../RootTrustBase.js';
 import { RoundInfo } from '../RoundInfo.js';
@@ -30,7 +28,6 @@ import {
   CreateNonFungibleTokenTypeTransactionOrder,
 } from '../tokens/transactions/CreateNonFungibleTokenType.js';
 import { JoinFungibleToken, JoinFungibleTokenTransactionOrder } from '../tokens/transactions/JoinFungibleToken.js';
-import { LockToken, LockTokenTransactionOrder } from '../tokens/transactions/LockToken.js';
 import { SplitFungibleToken, SplitFungibleTokenTransactionOrder } from '../tokens/transactions/SplitFungibleToken.js';
 import {
   TransferFungibleToken,
@@ -40,7 +37,6 @@ import {
   TransferNonFungibleToken,
   TransferNonFungibleTokenTransactionOrder,
 } from '../tokens/transactions/TransferNonFungibleToken.js';
-import { UnlockToken, UnlockTokenTransactionOrder } from '../tokens/transactions/UnlockToken.js';
 import {
   UpdateNonFungibleToken,
   UpdateNonFungibleTokenTransactionOrder,
@@ -82,14 +78,10 @@ export type TokenPartitionTransactionRecordWithProofTypes =
   | CreateNonFungibleTokenType
   | DeleteFeeCredit
   | JoinFungibleToken
-  | LockFeeCredit
-  | LockToken
   | SetFeeCredit
   | SplitFungibleToken
   | TransferFungibleToken
   | TransferNonFungibleToken
-  | UnlockFeeCredit
-  | UnlockToken
   | UpdateNonFungibleToken;
 
 type TokenPartitionTransactionOrderTypes =
@@ -102,14 +94,10 @@ type TokenPartitionTransactionOrderTypes =
   | CreateNonFungibleTokenTypeTransactionOrder
   | DeleteFeeCreditTransactionOrder
   | JoinFungibleTokenTransactionOrder
-  | LockFeeCreditTransactionOrder
-  | LockTokenTransactionOrder
   | SetFeeCreditTransactionOrder
   | SplitFungibleTokenTransactionOrder
   | TransferFungibleTokenTransactionOrder
   | TransferNonFungibleTokenTransactionOrder
-  | UnlockFeeCreditTransactionOrder
-  | UnlockTokenTransactionOrder
   | UpdateNonFungibleTokenTransactionOrder;
 
 /**

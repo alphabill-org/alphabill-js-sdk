@@ -1,13 +1,10 @@
 import { FeeCreditRecord } from '../fees/FeeCreditRecord.js';
 import { AddFeeCredit, AddFeeCreditTransactionOrder } from '../fees/transactions/AddFeeCredit.js';
 import { CloseFeeCredit, CloseFeeCreditTransactionOrder } from '../fees/transactions/CloseFeeCredit.js';
-import { LockFeeCredit, LockFeeCreditTransactionOrder } from '../fees/transactions/LockFeeCredit.js';
 import { ReclaimFeeCredit, ReclaimFeeCreditTransactionOrder } from '../fees/transactions/ReclaimFeeCredit.js';
 import { TransferFeeCredit, TransferFeeCreditTransactionOrder } from '../fees/transactions/TransferFeeCredit.js';
-import { UnlockFeeCredit, UnlockFeeCreditTransactionOrder } from '../fees/transactions/UnlockFeeCredit.js';
 import { IUnitId } from '../IUnitId.js';
 import { Bill } from '../money/Bill.js';
-import { LockBill, LockBillTransactionOrder } from '../money/transactions/LockBill.js';
 import { SplitBill, SplitBillTransactionOrder } from '../money/transactions/SplitBill.js';
 import {
   SwapBillsWithDustCollector,
@@ -18,7 +15,6 @@ import {
   TransferBillToDustCollector,
   TransferBillToDustCollectorTransactionOrder,
 } from '../money/transactions/TransferBillToDustCollector.js';
-import { UnlockBill, UnlockBillTransactionOrder } from '../money/transactions/UnlockBill.js';
 import { RootTrustBase } from '../RootTrustBase.js';
 import { RoundInfo } from '../RoundInfo.js';
 import { IBillDataDto } from './IBillDataDto.js';
@@ -37,30 +33,22 @@ type UnitDto<T extends MoneyPartitionUnitTypes> = T extends Bill
 export type MoneyPartitionTransactionRecordWithProofTypes =
   | AddFeeCredit
   | CloseFeeCredit
-  | LockBill
-  | LockFeeCredit
   | ReclaimFeeCredit
   | SplitBill
   | SwapBillsWithDustCollector
   | TransferBillToDustCollector
   | TransferBill
-  | TransferFeeCredit
-  | UnlockBill
-  | UnlockFeeCredit;
+  | TransferFeeCredit;
 
 type MoneyPartitionTransactionOrderTypes =
   | AddFeeCreditTransactionOrder
   | CloseFeeCreditTransactionOrder
-  | LockBillTransactionOrder
-  | LockFeeCreditTransactionOrder
   | ReclaimFeeCreditTransactionOrder
   | SplitBillTransactionOrder
   | SwapBillsWithDustCollectorTransactionOrder
   | TransferBillToDustCollectorTransactionOrder
   | TransferBillTransactionOrder
-  | TransferFeeCreditTransactionOrder
-  | UnlockBillTransactionOrder
-  | UnlockFeeCreditTransactionOrder;
+  | TransferFeeCreditTransactionOrder;
 
 /**
  * JSON-RPC money partition client.

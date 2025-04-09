@@ -1,12 +1,10 @@
 import { AddFeeCredit } from '../../../src/fees/transactions/AddFeeCredit.js';
 import { IUnitId } from '../../../src/IUnitId.js';
 import { Bill } from '../../../src/money/Bill.js';
-import { LockBill } from '../../../src/money/transactions/LockBill.js';
 import { SplitBill } from '../../../src/money/transactions/SplitBill.js';
 import { SwapBillsWithDustCollector } from '../../../src/money/transactions/SwapBillsWithDustCollector.js';
 import { TransferBill } from '../../../src/money/transactions/TransferBill.js';
 import { TransferBillToDustCollector } from '../../../src/money/transactions/TransferBillToDustCollector.js';
-import { UnlockBill } from '../../../src/money/transactions/UnlockBill.js';
 import { DefaultSigningService } from '../../../src/signing/DefaultSigningService.js';
 import { createMoneyClient, http } from '../../../src/StateApiClientFactory.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
@@ -63,40 +61,6 @@ describe('Money Client Integration Tests', () => {
     expect(addFeeCreditProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
     console.log('Adding fee credit successful');
     feeCreditRecordId = addFeeCreditProof.transactionRecord.transactionOrder.payload.unitId;
-  }, 20000);
-
-  it('Lock and unlock bill', async () => {
-    const billUnitIds = (await moneyClient.getUnitsByOwnerId(signingService.publicKey)).bills;
-    expect(billUnitIds.length).toBeGreaterThan(0);
-
-    const round = (await moneyClient.getRoundInfo()).roundNumber;
-    const bill = (await moneyClient.getUnit(billUnitIds[0], false, Bill))!;
-    expect(bill).not.toBeNull();
-
-    console.log('Locking bill...');
-    const lockBillTransactionOrder = await LockBill.create({
-      status: 5n,
-      bill: bill,
-      ...createTransactionData(round, networkIdentifier, partitionIdentifier, feeCreditRecordId),
-    }).sign(proofFactory, proofFactory);
-
-    const lockBillHash = await moneyClient.sendTransaction(lockBillTransactionOrder);
-    const lockBillProof = await moneyClient.waitTransactionProof(lockBillHash, LockBill);
-    expect(lockBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
-    console.log('Locking bill successful');
-
-    console.log('Unlocking bill...');
-    const lockedBill = (await moneyClient.getUnit(bill.unitId, false, Bill))!;
-    expect(lockedBill).not.toBeNull();
-    expect(lockedBill.counter).not.toEqual(bill.counter);
-    const unlockBillTransactionOrder = await UnlockBill.create({
-      bill: lockedBill,
-      ...createTransactionData(round, networkIdentifier, partitionIdentifier, feeCreditRecordId),
-    }).sign(proofFactory, proofFactory);
-    const unlockBillHash = await moneyClient.sendTransaction(unlockBillTransactionOrder);
-    const unlockBillProof = await moneyClient.waitTransactionProof(unlockBillHash, UnlockBill);
-    expect(unlockBillProof.transactionRecord.serverMetadata.successIndicator).toEqual(TransactionStatus.Successful);
-    console.log('Unlocking bill successful');
   }, 20000);
 
   it('Split and transfer bill', async () => {

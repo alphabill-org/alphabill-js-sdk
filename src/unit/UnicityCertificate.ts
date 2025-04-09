@@ -106,6 +106,7 @@ export class InputRecord {
    * @param {bigint} timestamp - reference time for transaction validation.
    * @param {Uint8Array | null} _blockHash - hash of the block.
    * @param {bigint} sumOfEarnedFees - sum of the actual fees over all transaction records in the block.
+   * @param {Uint8Array | null} _etHash - hash of executed transactions.
    */
   public constructor(
     public readonly version: bigint,
@@ -117,6 +118,7 @@ export class InputRecord {
     public readonly timestamp: bigint,
     private readonly _blockHash: Uint8Array | null,
     public readonly sumOfEarnedFees: bigint,
+    public readonly _etHash: Uint8Array | null,
   ) {
     this.version = BigInt(this.version);
     this.roundNumber = BigInt(this.roundNumber);
@@ -133,6 +135,9 @@ export class InputRecord {
       this._blockHash = new Uint8Array(this._blockHash);
     }
     this.sumOfEarnedFees = BigInt(this.sumOfEarnedFees);
+    if (this._etHash) {
+      this._etHash = new Uint8Array(this._etHash);
+    }
   }
 
   public get previousHash(): Uint8Array | null {
@@ -172,6 +177,7 @@ export class InputRecord {
       CborDecoder.readUnsignedInteger(data[6]),
       CborDecoder.readOptional(data[7], CborDecoder.readByteString),
       CborDecoder.readUnsignedInteger(data[8]),
+      CborDecoder.readOptional(data[9], CborDecoder.readByteString),
     );
   }
 
@@ -192,6 +198,7 @@ export class InputRecord {
         CborEncoder.encodeUnsignedInteger(this.timestamp),
         this._blockHash ? CborEncoder.encodeByteString(this._blockHash) : CborEncoder.encodeNull(),
         CborEncoder.encodeUnsignedInteger(this.sumOfEarnedFees),
+        this._etHash ? CborEncoder.encodeByteString(this._etHash) : CborEncoder.encodeNull(),
       ]),
     );
   }
@@ -211,7 +218,8 @@ export class InputRecord {
         Summary Value: ${Base16Converter.encode(this._summaryValue)}
         Timestamp: ${this.timestamp}
         Block Hash: ${this._blockHash ? Base16Converter.encode(this._blockHash) : 'null'}
-        Sum Of Earned Fees: ${this.sumOfEarnedFees}`;
+        Sum Of Earned Fees: ${this.sumOfEarnedFees}
+        Executed Transactions Hash: ${this._etHash ? Base16Converter.encode(this._etHash) : 'null'}`;
   }
 }
 

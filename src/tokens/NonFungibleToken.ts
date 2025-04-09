@@ -25,7 +25,6 @@ export class NonFungibleToken extends Unit {
    * @param {Uint8Array | null} _data Token data.
    * @param {IPredicate} ownerPredicate Owner predicate.
    * @param {IPredicate} dataUpdatePredicate Data update predicate.
-   * @param {bigint} locked Is token locked.
    * @param {bigint} counter Counter.
    */
   public constructor(
@@ -40,13 +39,11 @@ export class NonFungibleToken extends Unit {
     private readonly _data: Uint8Array | null,
     public readonly ownerPredicate: IPredicate,
     public readonly dataUpdatePredicate: IPredicate,
-    public readonly locked: bigint,
     public readonly counter: bigint,
   ) {
     super(unitId, networkIdentifier, partitionIdentifier, stateProof);
     this.version = BigInt(this.version);
     this._data = this._data ? new Uint8Array(this._data) : null;
-    this.locked = BigInt(this.locked);
     this.counter = BigInt(this.counter);
   }
 
@@ -86,7 +83,6 @@ export class NonFungibleToken extends Unit {
       data.data ? Base16Converter.decode(data.data) : null,
       new PredicateBytes(Base16Converter.decode(data.ownerPredicate)),
       new PredicateBytes(Base16Converter.decode(data.dataUpdatePredicate)),
-      BigInt(data.locked),
       BigInt(data.counter),
     );
   }
@@ -108,7 +104,6 @@ export class NonFungibleToken extends Unit {
         Data: ${this._data ? Base16Converter.encode(this._data) : null}
         Owner Predicate: ${this.ownerPredicate.toString()}
         Data Update Predicate: ${this.dataUpdatePredicate.toString()}
-        Locked: ${this.locked}
         Counter: ${this.counter}`;
   }
 }
