@@ -26,11 +26,7 @@ export class UnicitySealHashMatchesWithRootHashRule extends VerificationRule {
       .update(CborEncoder.encodeByteString(key))
       .update(
         CborEncoder.encodeByteString(
-          sha256
-            .create()
-            .update(CborEncoder.encodeByteString(shardTreeCertificateRootHash))
-            .update(CborEncoder.encodeByteString(unicityTreeCertificate.partitionDescriptionHash))
-            .digest(),
+          sha256.create().update(CborEncoder.encodeByteString(shardTreeCertificateRootHash)).digest(),
         ),
       )
       .digest();
@@ -79,6 +75,7 @@ export class UnicitySealHashMatchesWithRootHashRule extends VerificationRule {
       .update(
         unicityCertificate.trHash ? CborEncoder.encodeByteString(unicityCertificate.trHash) : CborEncoder.encodeNull(),
       )
+      .update(CborEncoder.encodeByteString(unicityCertificate.shardConfHash))
       .digest();
 
     const shardId = unicityCertificate.shardTreeCertificate.shard;

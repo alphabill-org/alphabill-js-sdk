@@ -14,6 +14,7 @@ export class UnicityCertificate {
    * @param {bigint} version - version.
    * @param {InputRecord} inputRecord - unit identifier.
    * @param {Uint8Array | null} _trHash - hash of the technical record.
+   * @param {Uint8Array | null} _shardConfHash - hash of the shard configuration.
    * @param {ShardTreeCertificate} shardTreeCertificate - shard tree certificate.
    * @param {UnicityTreeCertificate} unicityTreeCertificate - unicity tree certificate.
    * @param {UnicitySeal} unicitySeal - unicity seal.
@@ -22,6 +23,7 @@ export class UnicityCertificate {
     public readonly version: bigint,
     public readonly inputRecord: InputRecord,
     private readonly _trHash: Uint8Array | null,
+    private readonly _shardConfHash: Uint8Array,
     public readonly shardTreeCertificate: ShardTreeCertificate,
     public readonly unicityTreeCertificate: UnicityTreeCertificate,
     public readonly unicitySeal: UnicitySeal,
@@ -36,6 +38,10 @@ export class UnicityCertificate {
     return this._trHash ? new Uint8Array(this._trHash) : null;
   }
 
+  public get shardConfHash(): Uint8Array {
+    return this._shardConfHash;
+  }
+
   /**
    * Create unicity certificate from raw CBOR.
    * @param {Uint8Array} rawData - Unicity certificate as raw CBOR.
@@ -47,13 +53,15 @@ export class UnicityCertificate {
       throw new Error(`Invalid tag, expected ${CborTag.UNICITY_CERTIFICATE}, was ` + tag.tag);
     }
     const data = CborDecoder.readArray(tag.data);
+    let n = 0;
     return new UnicityCertificate(
-      CborDecoder.readUnsignedInteger(data[0]),
-      InputRecord.fromCbor(data[1]),
-      CborDecoder.readOptional(data[2], CborDecoder.readByteString),
-      ShardTreeCertificate.fromCbor(data[3]),
-      UnicityTreeCertificate.fromCbor(data[4]),
-      UnicitySeal.fromCbor(data[5]),
+      CborDecoder.readUnsignedInteger(data[n++]),
+      InputRecord.fromCbor(data[n++]),
+      CborDecoder.readOptional(data[n++], CborDecoder.readByteString),
+      CborDecoder.readByteString(data[n++]),
+      ShardTreeCertificate.fromCbor(data[n++]),
+      UnicityTreeCertificate.fromCbor(data[n++]),
+      UnicitySeal.fromCbor(data[n++]),
     );
   }
 
@@ -68,6 +76,7 @@ export class UnicityCertificate {
         CborEncoder.encodeUnsignedInteger(this.version),
         this.inputRecord.encode(),
         this._trHash ? CborEncoder.encodeByteString(this._trHash) : CborEncoder.encodeNull(),
+        this._shardConfHash ? CborEncoder.encodeByteString(this._shardConfHash) : CborEncoder.encodeNull(),
         this.shardTreeCertificate.encode(),
         this.unicityTreeCertificate.encode(),
         this.unicitySeal.encode(),
@@ -84,7 +93,8 @@ export class UnicityCertificate {
       Unicity Certificate
         Version: ${this.version}
         ${this.inputRecord.toString()}}
-        Transaction Record Hash: ${this._trHash ? Base16Converter.encode(this._trHash) : 'null'}
+        Technical Record Hash: ${this._trHash ? Base16Converter.encode(this._trHash) : 'null'}
+        Shard Conf Hash: ${Base16Converter.encode(this._shardConfHash)}
         ${this.shardTreeCertificate.toString()}
         ${this.unicityTreeCertificate.toString()}
         ${this.unicitySeal.toString()}`;
@@ -333,16 +343,10 @@ export class UnicityTreeCertificate {
   public constructor(
     public readonly version: bigint,
     public readonly partitionIdentifier: bigint,
-    public readonly _partitionDescriptionHash: Uint8Array,
     public readonly hashSteps: HashStep[],
   ) {
     this.version = BigInt(version);
     this.partitionIdentifier = BigInt(partitionIdentifier);
-    this._partitionDescriptionHash = new Uint8Array(_partitionDescriptionHash);
-  }
-
-  public get partitionDescriptionHash(): Uint8Array {
-    return new Uint8Array(this._partitionDescriptionHash);
   }
 
   /**
@@ -356,11 +360,11 @@ export class UnicityTreeCertificate {
       throw new Error(`Invalid tag, expected ${CborTag.UNICITY_TREE_CERTIFICATE}, was ` + tag.tag);
     }
     const data = CborDecoder.readArray(tag.data);
+    let n = 0;
     return new UnicityTreeCertificate(
-      CborDecoder.readUnsignedInteger(data[0]),
-      CborDecoder.readUnsignedInteger(data[1]),
-      CborDecoder.readByteString(data[2]),
-      CborDecoder.readArray(data[3]).map((hashStep) => HashStep.fromCbor(hashStep)),
+      CborDecoder.readUnsignedInteger(data[n++]),
+      CborDecoder.readUnsignedInteger(data[n++]),
+      CborDecoder.readArray(data[n++]).map((hashStep) => HashStep.fromCbor(hashStep)),
     );
   }
 
@@ -374,7 +378,6 @@ export class UnicityTreeCertificate {
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
         CborEncoder.encodeUnsignedInteger(this.partitionIdentifier),
-        CborEncoder.encodeByteString(this._partitionDescriptionHash),
         CborEncoder.encodeArray(this.hashSteps.map((hashStep) => hashStep.encode())),
       ]),
     );
@@ -389,7 +392,6 @@ export class UnicityTreeCertificate {
       Unicity Tree Certificate
         Version: ${this.version}
         Partition ID: ${this.partitionIdentifier}
-        Partition Description Hash: ${Base16Converter.encode(this._partitionDescriptionHash)}
         Hash Steps: [${`\n${this.hashSteps.map((unit: HashStep) => unit.toString()).join('\n')}\n`}]`;
   }
 }

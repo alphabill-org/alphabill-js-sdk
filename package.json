@@ -3,7 +3,7 @@
     "node": ">=18.0.0"
   },
   "name": "@alphabill/alphabill-js-sdk",
-  "version": "1.0.0-rc1",
+  "version": "1.0.0-b13f7ce",
   "type": "module",
   "exports": {
     ".": "./lib/main.js",
