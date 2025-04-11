@@ -5,7 +5,7 @@ name: Build
 
 on:
   push:
-    branches: [ main, "AB-1717-ShardConfHash" ]
+    branches: [ main ]
   release:
     types: [published]
 
