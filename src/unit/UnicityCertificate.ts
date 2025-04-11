@@ -53,14 +53,15 @@ export class UnicityCertificate {
       throw new Error(`Invalid tag, expected ${CborTag.UNICITY_CERTIFICATE}, was ` + tag.tag);
     }
     const data = CborDecoder.readArray(tag.data);
+    let n = 0;
     return new UnicityCertificate(
-      CborDecoder.readUnsignedInteger(data[0]),
-      InputRecord.fromCbor(data[1]),
-      CborDecoder.readOptional(data[2], CborDecoder.readByteString),
-      CborDecoder.readByteString(data[2]),
-      ShardTreeCertificate.fromCbor(data[3]),
-      UnicityTreeCertificate.fromCbor(data[4]),
-      UnicitySeal.fromCbor(data[5]),
+      CborDecoder.readUnsignedInteger(data[n++]),
+      InputRecord.fromCbor(data[n++]),
+      CborDecoder.readOptional(data[n++], CborDecoder.readByteString),
+      CborDecoder.readByteString(data[n++]),
+      ShardTreeCertificate.fromCbor(data[n++]),
+      UnicityTreeCertificate.fromCbor(data[n++]),
+      UnicitySeal.fromCbor(data[n++]),
     );
   }
 
@@ -358,10 +359,11 @@ export class UnicityTreeCertificate {
       throw new Error(`Invalid tag, expected ${CborTag.UNICITY_TREE_CERTIFICATE}, was ` + tag.tag);
     }
     const data = CborDecoder.readArray(tag.data);
+    let n = 0;
     return new UnicityTreeCertificate(
-      CborDecoder.readUnsignedInteger(data[0]),
-      CborDecoder.readUnsignedInteger(data[1]),
-      CborDecoder.readArray(data[3]).map((hashStep) => HashStep.fromCbor(hashStep)),
+      CborDecoder.readUnsignedInteger(data[n++]),
+      CborDecoder.readUnsignedInteger(data[n++]),
+      CborDecoder.readArray(data[n++]).map((hashStep) => HashStep.fromCbor(hashStep)),
     );
   }
 
