@@ -333,16 +333,10 @@ export class UnicityTreeCertificate {
   public constructor(
     public readonly version: bigint,
     public readonly partitionIdentifier: bigint,
-    public readonly _partitionDescriptionHash: Uint8Array,
     public readonly hashSteps: HashStep[],
   ) {
     this.version = BigInt(version);
     this.partitionIdentifier = BigInt(partitionIdentifier);
-    this._partitionDescriptionHash = new Uint8Array(_partitionDescriptionHash);
-  }
-
-  public get partitionDescriptionHash(): Uint8Array {
-    return new Uint8Array(this._partitionDescriptionHash);
   }
 
   /**
@@ -359,7 +353,6 @@ export class UnicityTreeCertificate {
     return new UnicityTreeCertificate(
       CborDecoder.readUnsignedInteger(data[0]),
       CborDecoder.readUnsignedInteger(data[1]),
-      CborDecoder.readByteString(data[2]),
       CborDecoder.readArray(data[3]).map((hashStep) => HashStep.fromCbor(hashStep)),
     );
   }
@@ -374,7 +367,6 @@ export class UnicityTreeCertificate {
       CborEncoder.encodeArray([
         CborEncoder.encodeUnsignedInteger(this.version),
         CborEncoder.encodeUnsignedInteger(this.partitionIdentifier),
-        CborEncoder.encodeByteString(this._partitionDescriptionHash),
         CborEncoder.encodeArray(this.hashSteps.map((hashStep) => hashStep.encode())),
       ]),
     );
@@ -389,7 +381,6 @@ export class UnicityTreeCertificate {
       Unicity Tree Certificate
         Version: ${this.version}
         Partition ID: ${this.partitionIdentifier}
-        Partition Description Hash: ${Base16Converter.encode(this._partitionDescriptionHash)}
         Hash Steps: [${`\n${this.hashSteps.map((unit: HashStep) => unit.toString()).join('\n')}\n`}]`;
   }
 }

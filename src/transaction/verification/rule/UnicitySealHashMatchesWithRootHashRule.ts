@@ -26,11 +26,7 @@ export class UnicitySealHashMatchesWithRootHashRule extends VerificationRule {
       .update(CborEncoder.encodeByteString(key))
       .update(
         CborEncoder.encodeByteString(
-          sha256
-            .create()
-            .update(CborEncoder.encodeByteString(shardTreeCertificateRootHash))
-            .update(CborEncoder.encodeByteString(unicityTreeCertificate.partitionDescriptionHash))
-            .digest(),
+          sha256.create().update(CborEncoder.encodeByteString(shardTreeCertificateRootHash)).digest(),
         ),
       )
       .digest();
