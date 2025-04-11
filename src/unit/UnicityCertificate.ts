@@ -14,6 +14,7 @@ export class UnicityCertificate {
    * @param {bigint} version - version.
    * @param {InputRecord} inputRecord - unit identifier.
    * @param {Uint8Array | null} _trHash - hash of the technical record.
+   * @param {Uint8Array | null} _shardConfHash - hash of the shard configuration.
    * @param {ShardTreeCertificate} shardTreeCertificate - shard tree certificate.
    * @param {UnicityTreeCertificate} unicityTreeCertificate - unicity tree certificate.
    * @param {UnicitySeal} unicitySeal - unicity seal.
@@ -22,6 +23,7 @@ export class UnicityCertificate {
     public readonly version: bigint,
     public readonly inputRecord: InputRecord,
     private readonly _trHash: Uint8Array | null,
+    private readonly _shardConfHash: Uint8Array,
     public readonly shardTreeCertificate: ShardTreeCertificate,
     public readonly unicityTreeCertificate: UnicityTreeCertificate,
     public readonly unicitySeal: UnicitySeal,
@@ -34,6 +36,10 @@ export class UnicityCertificate {
 
   public get trHash(): Uint8Array | null {
     return this._trHash ? new Uint8Array(this._trHash) : null;
+  }
+
+  public get shardConfHash(): Uint8Array {
+    return this._shardConfHash;
   }
 
   /**
@@ -51,6 +57,7 @@ export class UnicityCertificate {
       CborDecoder.readUnsignedInteger(data[0]),
       InputRecord.fromCbor(data[1]),
       CborDecoder.readOptional(data[2], CborDecoder.readByteString),
+      CborDecoder.readByteString(data[2]),
       ShardTreeCertificate.fromCbor(data[3]),
       UnicityTreeCertificate.fromCbor(data[4]),
       UnicitySeal.fromCbor(data[5]),
@@ -68,6 +75,7 @@ export class UnicityCertificate {
         CborEncoder.encodeUnsignedInteger(this.version),
         this.inputRecord.encode(),
         this._trHash ? CborEncoder.encodeByteString(this._trHash) : CborEncoder.encodeNull(),
+        this._shardConfHash ? CborEncoder.encodeByteString(this._shardConfHash) : CborEncoder.encodeNull(),
         this.shardTreeCertificate.encode(),
         this.unicityTreeCertificate.encode(),
         this.unicitySeal.encode(),
@@ -84,7 +92,7 @@ export class UnicityCertificate {
       Unicity Certificate
         Version: ${this.version}
         ${this.inputRecord.toString()}}
-        Transaction Record Hash: ${this._trHash ? Base16Converter.encode(this._trHash) : 'null'}
+        Technical Record Hash: ${this._trHash ? Base16Converter.encode(this._trHash) : 'null'}
         ${this.shardTreeCertificate.toString()}
         ${this.unicityTreeCertificate.toString()}
         ${this.unicitySeal.toString()}`;
