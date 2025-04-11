@@ -94,6 +94,7 @@ export class UnicityCertificate {
         Version: ${this.version}
         ${this.inputRecord.toString()}}
         Technical Record Hash: ${this._trHash ? Base16Converter.encode(this._trHash) : 'null'}
+        Shard Conf Hash: ${Base16Converter.encode(this._shardConfHash)}
         ${this.shardTreeCertificate.toString()}
         ${this.unicityTreeCertificate.toString()}
         ${this.unicitySeal.toString()}`;
