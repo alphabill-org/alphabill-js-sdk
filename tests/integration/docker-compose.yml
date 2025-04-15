@@ -1,0 +1,147 @@
+services:
+  alphabill:
+    platform: linux/amd64
+    # https://github.com/alphabill-org/alphabill/pkgs/container/alphabill
+    image: ghcr.io/alphabill-org/alphabill:4a074861e732c57b266503c00b0c6638f8d76c48
+
+  alphabill-root:
+    extends:
+      service: alphabill
+    volumes:
+      - ./genesis/root:/genesis/root
+      - ./genesis:/genesis
+    healthcheck:
+      test: [ "CMD", "nc", "-zv", "alphabill-root", "8000" ]
+      interval: 5s
+    networks:
+      - default
+    entrypoint: ["/busybox/sh", "-c"]
+    command:
+      - |
+        if [ -z "$(ls -A /genesis/root)" ]; then alphabill root-node init --home "/genesis/root" -g; else echo "Genesis exists"; fi &&
+        if [ ! -f /genesis/trust-base.json ]; then alphabill trust-base generate --home "/genesis" --network-id 3 --node-info /genesis/root/node-info.json; else echo "Root trust base exists"; fi && 
+        alphabill trust-base sign --home "/genesis/root" --trust-base /genesis/trust-base.json && 
+        alphabill root-node run --home "/genesis/root" --address "/ip4/$(hostname -i)/tcp/8000" --trust-base /genesis/trust-base.json --rpc-server-address "$(hostname -i):8002"
+
+  alphabill-money:
+    extends:
+      service: alphabill
+    volumes:
+      - ./genesis/money:/genesis
+      - ./genesis:/genesis
+    depends_on:
+      alphabill-root:
+        condition: service_healthy
+    ports:
+      - "9003:9003"
+    healthcheck:
+      test: [ "CMD", "nc", "-zv", "alphabill-money", "9001" ]
+      interval: 2s
+    networks:
+      - default
+    entrypoint: ["/busybox/sh", "-c"]
+    command:
+      - |
+        if [ -z "$(ls -A /genesis/money)" ]; then alphabill shard-node init --home "/genesis/money" --generate; else echo "Money shard initialized"; fi && 
+        if [ ! -f /genesis/shard-conf-1_0.json ]; then alphabill shard-conf generate --home "/genesis" --network-id 3 --partition-id 1 --partition-type-id 1 --epoch-start 10 --initial-bill-owner-predicate 0x830041025820786C9F82FCD2CFB4190A690725E85734F2D25B86DBC35186D85D08F3CFC2B7CA --node-info=/genesis/money/node-info.json; else echo "Money shard genesis exists"; fi &&
+        if [ ! -f  /genesis/money/state.cbor ]; then alphabill shard-conf genesis --home "/genesis/money" --shard-conf /genesis/shard-conf-1_0.json; else echo "Money shard state exists"; fi &&
+        alphabill shard-node run --home "/genesis/money" --trust-base /genesis/trust-base.json --shard-conf /genesis/shard-conf-1_0.json --address "/ip4/$(hostname -i)/tcp/9001" --bootnodes "/dns/alphabill-root/tcp/8000/p2p/$(alphabill node-id --home /genesis/root | tail -n1)" --rpc-server-address "$(hostname -i):9003"
+
+  alphabill-tokens:
+    extends:
+      service: alphabill
+    volumes:
+      - ./genesis/tokens:/genesis
+      - ./genesis:/genesis
+    depends_on:
+      alphabill-root:
+        condition: service_healthy
+    ports:
+      - "10003:10003"
+    healthcheck:
+      test: [ "CMD", "nc", "-zv", "alphabill-tokens", "10001" ]
+      interval: 2s
+    networks:
+      - default
+    entrypoint: ["/busybox/sh", "-c"]
+    command:
+      - |
+        if [ -z "$(ls -A /genesis/tokens)" ]; then alphabill shard-node init --home "/genesis/tokens" --generate; else echo "Token shard initialized"; fi && 
+        if [ ! -f /genesis/shard-conf-2_0.json ]; then alphabill shard-conf generate --home "/genesis" --network-id 3 --partition-id 2 --partition-type-id 2 --epoch-start 10 --node-info=/genesis/tokens/node-info.json; else echo "Tokens shard genesis exists"; fi &&
+        if [ ! -f  /genesis/tokens/state.cbor ]; then alphabill shard-conf genesis --home "/genesis/tokens" --shard-conf /genesis/shard-conf-2_0.json; else echo "Tokens shard state exists"; fi &&
+        alphabill shard-node run --home "/genesis/tokens" --trust-base /genesis/trust-base.json --shard-conf /genesis/shard-conf-2_0.json --address "/ip4/$(hostname -i)/tcp/10001" --bootnodes "/dns/alphabill-root/tcp/8000/p2p/$(alphabill node-id --home /genesis/root | tail -n1)" --rpc-server-address "$(hostname -i):10003"
+
+  alphabill-permissioned-tokens:
+    extends:
+      service: alphabill
+    volumes:
+      - ./genesis/permissioned-tokens:/genesis
+      - ./genesis:/genesis
+    depends_on:
+      alphabill-root:
+        condition: service_healthy
+    ports:
+      - "11003:11003"
+    healthcheck:
+      test: [ "CMD", "nc", "-zv", "alphabill-permissioned-tokens", "11001" ]
+      interval: 2s
+    networks:
+      - default
+    entrypoint: ["/busybox/sh", "-c"]
+    command:
+      - |
+        if [ -z "$(ls -A /genesis/permissioned-tokens)" ]; then alphabill shard-node init --home "/genesis/permissioned-tokens" --generate; else echo "Permissioned tokens shard initialized"; fi && 
+        if [ ! -f /genesis/shard-conf-5_0.json ]; then alphabill shard-conf generate --home "/genesis" --network-id 3 --partition-id 5 --partition-type-id 2 --epoch-start 10 --feeless-mode true --admin-owner-predicate 0x830041025820786C9F82FCD2CFB4190A690725E85734F2D25B86DBC35186D85D08F3CFC2B7CA --node-info=/genesis/permissioned-tokens/node-info.json; else echo "Permissioned tokens state exists"; fi &&
+        if [ ! -f  /genesis/permissioned-tokens/state.cbor ]; then alphabill shard-conf genesis --home "/genesis/permissioned-tokens" --shard-conf /genesis/shard-conf-5_0.json; else echo "Permissioned tokens shard genesis exists"; fi &&
+        alphabill shard-node run --home "/genesis/permissioned-tokens" --trust-base /genesis/trust-base.json --shard-conf /genesis/shard-conf-5_0.json --address "/ip4/$(hostname -i)/tcp/11001" --bootnodes "/dns/alphabill-root/tcp/8000/p2p/$(alphabill node-id --home /genesis/root | tail -n1)" --rpc-server-address "$(hostname -i):11003"
+
+  upload-money-shard-confs:
+    image: curlimages/curl
+    depends_on:
+      alphabill-root:
+        condition: service_healthy
+      alphabill-money:
+        condition: service_healthy
+    restart: on-failure
+    volumes:
+      - ./genesis:/genesis
+    command: >-
+      curl -X PUT
+      -H 'Content-Type: application/json'
+      -d '@/genesis/shard-conf-1_0.json'
+      'http://alphabill-root:8002/api/v1/configurations'
+
+  upload-tokens-shard-confs:
+    image: curlimages/curl
+    depends_on:
+      alphabill-root:
+        condition: service_healthy
+      alphabill-tokens:
+        condition: service_healthy
+    restart: on-failure
+    volumes:
+      - ./genesis:/genesis
+    command: >-
+      curl -X PUT
+      -H 'Content-Type: application/json'
+      -d '@/genesis/shard-conf-2_0.json'
+      'http://alphabill-root:8002/api/v1/configurations'
+
+  upload-permissioned-tokens-shard-confs:
+    image: curlimages/curl
+    depends_on:
+      alphabill-root:
+        condition: service_healthy
+      alphabill-permissioned-tokens:
+        condition: service_healthy
+    restart: on-failure
+    volumes:
+      - ./genesis:/genesis
+    command: >-
+      curl -X PUT
+      -H 'Content-Type: application/json'
+      -d '@/genesis/shard-conf-5_0.json'
+      'http://alphabill-root:8002/api/v1/configurations'
+
+networks:
+  default:
