@@ -13,6 +13,8 @@ import config from '../config/config.js';
 import { addFeeCredit, createTransactionData } from '../utils/TestUtils.js';
 
 describe('Fee Credit Integration Tests', () => {
+  jest.setTimeout(60000);
+
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const proofFactory = new PayToPublicKeyHashProofFactory(signingService);
   const networkIdentifier = config.networkIdentifier;

@@ -1,26 +1,35 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Build
 
 on:
   push:
     branches: [ main ]
   release:
-    types: [published]
+    types: [ published ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
-          registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm run test:ci
+          node-version: '22.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Alphabill via Docker Compose
+        run: npm run docker:alphabill
+
+      - name: Run tests
+        run: npm run test:ci
+
+      - name: Run integration tests
+        run: npm run integration-test:ci
+
       - if: github.event_name != 'release'
         run: |
           NPM_PACKAGE_VERSION=`node -e "const fs = require('fs'); console.log(JSON.parse(fs.readFileSync('package.json')).version);"`
@@ -32,6 +41,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_PUBLISH }}
           CI: true
           GITHUB_SHA: $${{github.sha}}
+
       - if: github.event_name == 'release'
         run: |
           npm run build

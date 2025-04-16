@@ -95,7 +95,7 @@ services:
         if [ ! -f  /genesis/permissioned-tokens/state.cbor ]; then alphabill shard-conf genesis --home "/genesis/permissioned-tokens" --shard-conf /genesis/shard-conf-5_0.json; else echo "Permissioned tokens shard genesis exists"; fi &&
         alphabill shard-node run --home "/genesis/permissioned-tokens" --trust-base /genesis/trust-base.json --shard-conf /genesis/shard-conf-5_0.json --address "/ip4/$(hostname -i)/tcp/11001" --bootnodes "/dns/alphabill-root/tcp/8000/p2p/$(alphabill node-id --home /genesis/root | tail -n1)" --rpc-server-address "$(hostname -i):11003"
 
-  upload-money-shard-confs:
+  upload-money-conf:
     image: curlimages/curl
     depends_on:
       alphabill-root:
@@ -111,7 +111,7 @@ services:
       -d '@/genesis/shard-conf-1_0.json'
       'http://alphabill-root:8002/api/v1/configurations'
 
-  upload-tokens-shard-confs:
+  upload-tokens-conf:
     image: curlimages/curl
     depends_on:
       alphabill-root:
@@ -127,7 +127,7 @@ services:
       -d '@/genesis/shard-conf-2_0.json'
       'http://alphabill-root:8002/api/v1/configurations'
 
-  upload-permissioned-tokens-shard-confs:
+  upload-permissioned-tokens-conf:
     image: curlimages/curl
     depends_on:
       alphabill-root:

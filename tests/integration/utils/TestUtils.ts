@@ -29,7 +29,7 @@ export function createTransactionData(
 }
 
 export function createMetadata(round: bigint, feeCreditRecordId?: IUnitId): ClientMetadata {
-  return new ClientMetadata(round + 60n, 10n, feeCreditRecordId ?? null, new Uint8Array());
+  return new ClientMetadata(round + 100n, 10n, feeCreditRecordId ?? null, new Uint8Array());
 }
 
 export async function addFeeCredit(
@@ -58,7 +58,7 @@ export async function addFeeCredit(
   const transferFeeCreditTransactionOrder = await TransferFeeCredit.create({
     amount: amountToFeeCredit,
     targetPartitionIdentifier: targetPartitionIdentifier,
-    latestAdditionTime: round + 60n,
+    latestAdditionTime: round + 100n,
     feeCreditRecord: {
       ownerPredicate: ownerPredicate,
     },

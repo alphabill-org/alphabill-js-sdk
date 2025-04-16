@@ -14,6 +14,8 @@
     "build": "tsc -d",
     "test": "jest tests/unit/",
     "test:ci": "jest tests/unit/ --ci --reporters=default --reporters=jest-junit",
+    "docker:alphabill": "docker compose -f tests/integration/docker-compose.yml up -d --wait",
+    "docker:alphabill:down": "docker compose -f tests/integration/docker-compose.yml down -v",
     "integration-test": "jest tests/integration/ --runInBand --detectOpenHandles",
     "integration-test:ci": "jest tests/integration/ --runInBand --ci --reporters=default --reporters=jest-junit",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",

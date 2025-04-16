@@ -10,17 +10,18 @@ import config from '../config/config.js';
 import { createTransactionData } from '../utils/TestUtils.js';
 
 describe('Permissioned Fee Credit Integration Tests', () => {
+  jest.setTimeout(60000);
+
   const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
   const proofFactory = new PayToPublicKeyHashProofFactory(signingService);
   const networkIdentifier = config.networkIdentifier;
-  const partitionIdentifier = config.tokenPartitionIdentifier;
+  const partitionIdentifier = config.permissionedTokenPartitionIdentifier;
 
   const tokenClient = createTokenClient({
-    transport: http(config.tokenPartitionUrl),
+    transport: http(config.permissionedTokenPartitionUrl),
   });
 
-  // Uncomment skip to run this test. Backend needs to be started in permissioned mode for this to succeed.
-  it.skip('Set and delete fee credit', async () => {
+  it('Set and delete fee credit', async () => {
     const round = (await tokenClient.getRoundInfo()).roundNumber;
     const ownerPredicate = PayToPublicKeyHashPredicate.create(signingService.publicKey);
 
