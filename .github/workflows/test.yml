@@ -1,0 +1,31 @@
+name: Test
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run Alphabill via Docker Compose
+        run: npm run docker:alphabill
+
+      - name: Run tests
+        run: npm run test:ci
+
+      - name: Run integration tests
+        run: npm run integration-test:ci
