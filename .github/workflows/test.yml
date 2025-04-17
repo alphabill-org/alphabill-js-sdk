@@ -35,7 +35,14 @@ jobs:
         run: npm run docker:alphabill:ci
 
       - name: Wait for Alphabill nodes to start up
-        run: sleep 15
+        run: sleep 30
+
+      - name: Dump logs on failure
+        if: failure()
+        run: |
+          echo "Logs from failed container:"
+          docker ps -a
+          docker logs $(docker ps -a -q --filter name=alphabill-root || true) || true         
 
       - name: Run integration tests
         run: npm run integration-test:ci
