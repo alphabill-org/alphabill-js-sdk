@@ -32,8 +32,8 @@ jobs:
       - name: Run tests
         run: npm run test:ci
 
-      - name: Run Alphabill via Docker Compose and then run integration tests
-        run: npm run docker:alphabill && npm run integration-test:ci
+      - name: Run Alphabill via Docker Compose
+        run: npm run docker:alphabill
 
       - name: Dump logs on failure
         if: failure()
@@ -41,3 +41,6 @@ jobs:
           echo "Logs from failed container:"
           docker ps -a
           docker logs $(docker ps -a -q --filter name=alphabill-root || true) || true          
+
+      - name: Run integration tests
+        run: npm run integration-test:ci
