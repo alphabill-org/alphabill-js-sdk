@@ -17,11 +17,6 @@ jobs:
 
       - name: Create genesis directories and make them writable
         run: |
-          mkdir -p ./genesis/root
-          mkdir -p ./genesis/money
-          mkdir -p ./genesis/tokens
-          mkdir -p ./genesis/permissioned-tokens
-          chmod -R 777 ./genesis
           mkdir -p ./tests/integration/genesis/root
           mkdir -p ./tests/integration/genesis/money
           mkdir -p ./tests/integration/genesis/tokens
@@ -34,8 +29,11 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-      - name: Run Alphabill via Docker Compose
-        run: npm run docker:alphabill
+      - name: Run tests
+        run: npm run test:ci
+
+      - name: Run Alphabill via Docker Compose and then run integration tests
+        run: npm run docker:alphabill && npm run integration-test:ci
 
       - name: Dump logs on failure
         if: failure()
@@ -43,9 +41,3 @@ jobs:
           echo "Logs from failed container:"
           docker ps -a
           docker logs $(docker ps -a -q --filter name=alphabill-root || true) || true          
-
-      - name: Run tests
-        run: npm run test:ci
-
-      - name: Run integration tests
-        run: npm run integration-test:ci
