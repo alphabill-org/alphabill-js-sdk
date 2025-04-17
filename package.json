@@ -15,6 +15,7 @@
     "test": "jest tests/unit/",
     "test:ci": "jest tests/unit/ --ci --reporters=default --reporters=jest-junit",
     "docker:alphabill": "docker compose -f tests/integration/docker-compose.yml up -d",
+    "docker:alphabill:ci": "docker compose -f tests/integration/docker-compose-ci.yml up -d",
     "docker:alphabill:down": "docker compose -f tests/integration/docker-compose.yml down -v",
     "integration-test": "jest tests/integration/ --runInBand --detectOpenHandles",
     "integration-test:ci": "jest tests/integration/ --runInBand --ci --reporters=default --reporters=jest-junit",
