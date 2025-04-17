@@ -15,6 +15,13 @@ jobs:
         with:
           node-version: '22.x'
 
+      - name: Create genesis directories
+        run: |
+          mkdir -p ./genesis/root
+          mkdir -p ./genesis/money
+          mkdir -p ./genesis/tokens
+          mkdir -p ./genesis/permissioned-tokens
+
       - name: Install dependencies
         run: npm ci
 
