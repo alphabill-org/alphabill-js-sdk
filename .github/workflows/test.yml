@@ -19,8 +19,8 @@ jobs:
         env:
           GENESIS_PATH: ./tests/integration/genesis
         run: |
-          mkdir -p {{ env.GENESIS_PATH }}/root {{ env.GENESIS_PATH }}/money {{ env.GENESIS_PATH }}/tokens {{ env.GENESIS_PATH }}/permissioned-tokens
-          chmod -R 777 {{ env.GENESIS_PATH }}
+          mkdir -p ${{ env.GENESIS_PATH }}/root ${{ env.GENESIS_PATH }}/money ${{ env.GENESIS_PATH }}/tokens ${{ env.GENESIS_PATH }}/permissioned-tokens
+          chmod -R 777 ${{ env.GENESIS_PATH }}
 
       - name: Install dependencies
         run: npm ci
