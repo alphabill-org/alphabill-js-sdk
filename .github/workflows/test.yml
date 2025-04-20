@@ -35,7 +35,7 @@ jobs:
         run: npm run docker:alphabill:ci
 
       - name: Wait for Alphabill nodes to start up
-        run: sleep 30
+        run: sleep 15
 
       - name: Run integration tests
         run: npm run integration-test:ci
@@ -55,6 +55,3 @@ jobs:
           echo "Logs from failed permissioned tokens container:"
           docker ps -a
           docker logs $(docker ps -a -q --filter name=alphabill-permissioned-tokens || true) || true
-          echo "Logs from failed upload configuration container:"
-          docker ps -a
-          docker logs $(docker ps -a -q --filter name=upload-configurations || true) || true    
