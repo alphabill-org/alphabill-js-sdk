@@ -15,13 +15,6 @@ jobs:
         with:
           node-version: '22.x'
 
-      - name: Create genesis directories and make them writable
-        env:
-          GENESIS_PATH: ./tests/integration/genesis
-        run: |
-          mkdir -p ${{ env.GENESIS_PATH }}/root ${{ env.GENESIS_PATH }}/money ${{ env.GENESIS_PATH }}/tokens ${{ env.GENESIS_PATH }}/permissioned-tokens
-          chmod -R 777 ${{ env.GENESIS_PATH }}
-
       - name: Install dependencies
         run: npm ci
 
@@ -34,27 +27,8 @@ jobs:
       - name: Run Alphabill using Docker Compose
         run: npm run docker:alphabill
 
-      - name: Wait for Alphabill nodes to start up
-        run: sleep 15
+      - name: Wait for Alphabill nodes to sync up
+        run: sleep 5
 
       - name: Run integration tests
         run: npm run integration-test:ci
-
-      - name: Dump logs on failure
-        if: failure()
-        run: |
-          echo "Logs from failed root container:"
-          docker ps -a
-          docker logs $(docker ps -a -q --filter name=alphabill-root || true) || true
-          echo "Logs from failed money container:"
-          docker ps -a
-          docker logs $(docker ps -a -q --filter name=alphabill-money || true) || true        
-          echo "Logs from failed tokens container:"
-          docker ps -a
-          docker logs $(docker ps -a -q --filter name=alphabill-tokens || true) || true
-          echo "Logs from failed permissioned tokens container:"
-          docker ps -a
-          docker logs $(docker ps -a -q --filter name=alphabill-permissioned-tokens || true) || true
-          echo "Logs from failed upload configuration container:"
-          docker ps -a
-          docker logs $(docker ps -a -q --filter name=upload-configurations || true) || true    
