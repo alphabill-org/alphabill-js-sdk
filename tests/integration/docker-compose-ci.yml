@@ -110,7 +110,9 @@ services:
     volumes:
       - ./genesis:/genesis
     command: >-
-      ls -al genesis &&
+      pwd &&
+      ls -al &&
+      ls -al ./genesis &&
       curl -X PUT
       -H 'Content-Type: application/json'
       -d '@/genesis/shard-conf-1_0.json'
