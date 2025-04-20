@@ -110,8 +110,6 @@ services:
     volumes:
       - ./genesis:/genesis
     command: >-
-      pwd &&
-      ls -al &&
       ls -al ./genesis &&
       curl -X PUT
       -H 'Content-Type: application/json'
