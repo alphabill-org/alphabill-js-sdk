@@ -1,6 +1,7 @@
 services:
   alphabill:
     platform: linux/amd64
+    user: root
     # https://github.com/alphabill-org/alphabill/pkgs/container/alphabill
     image: ghcr.io/alphabill-org/alphabill:4a074861e732c57b266503c00b0c6638f8d76c48
 
@@ -8,8 +9,8 @@ services:
     extends:
       service: alphabill
     volumes:
-      - ./genesis/root:/genesis/root
-      - ./genesis:/genesis
+      - genesis-root:/genesis/root
+      - genesis:/genesis
     healthcheck:
       test: [ "CMD", "nc", "-zv", "alphabill-root", "8000" ]
       interval: 5s
@@ -18,17 +19,22 @@ services:
     entrypoint: ["/busybox/sh", "-c"]
     command:
       - |
-        if [ -z "$(ls -A /genesis/root)" ]; then alphabill root-node init --home "/genesis/root" -g; else echo "Genesis exists"; fi &&
-        if [ ! -f /genesis/trust-base.json ]; then alphabill trust-base generate --home "/genesis" --network-id 3 --node-info /genesis/root/node-info.json; else echo "Root trust base exists"; fi && 
-        alphabill trust-base sign --home "/genesis/root" --trust-base /genesis/trust-base.json && 
-        alphabill root-node run --home "/genesis/root" --address "/ip4/$(hostname -i)/tcp/8000" --trust-base /genesis/trust-base.json --rpc-server-address "$(hostname -i):8002"
+        echo "Creating root genesis..." &&
+        alphabill root-node init --home /genesis/root -g &&
+        echo "Creating root trust base..." &&
+        if [ ! -f /genesis/trust-base.json ]; then alphabill trust-base generate --home /genesis --network-id 3 --node-info /genesis/root/node-info.json; else echo "Root trust base exists"; fi && 
+        echo "Signing root trust base..." &&
+        alphabill trust-base sign --home /genesis/root --trust-base /genesis/trust-base.json && 
+        echo "Starting root node..." &&
+        alphabill root-node run --home /genesis/root --address "/ip4/$(hostname -i)/tcp/8000" --trust-base /genesis/trust-base.json --rpc-server-address "$(hostname -i):8002"
 
   alphabill-money:
     extends:
       service: alphabill
     volumes:
-      - ./genesis/money:/genesis
-      - ./genesis:/genesis
+      - ./genesis/money:/genesis/money
+      - genesis-root:/genesis/root
+      - genesis:/genesis
     depends_on:
       alphabill-root:
         condition: service_healthy
@@ -42,17 +48,22 @@ services:
     entrypoint: ["/busybox/sh", "-c"]
     command:
       - |
-        if [ -z "$(ls -A /genesis/money)" ]; then alphabill shard-node init --home "/genesis/money" --generate; else echo "Money shard initialized"; fi && 
-        if [ ! -f /genesis/shard-conf-1_0.json ]; then alphabill shard-conf generate --home "/genesis" --network-id 3 --partition-id 1 --partition-type-id 1 --epoch-start 10 --initial-bill-owner-predicate 0x830041025820786C9F82FCD2CFB4190A690725E85734F2D25B86DBC35186D85D08F3CFC2B7CA --node-info=/genesis/money/node-info.json; else echo "Money shard genesis exists"; fi &&
-        if [ ! -f  /genesis/money/state.cbor ]; then alphabill shard-conf genesis --home "/genesis/money" --shard-conf /genesis/shard-conf-1_0.json; else echo "Money shard state exists"; fi &&
-        alphabill shard-node run --home "/genesis/money" --trust-base /genesis/trust-base.json --shard-conf /genesis/shard-conf-1_0.json --address "/ip4/$(hostname -i)/tcp/9001" --bootnodes "/dns/alphabill-root/tcp/8000/p2p/$(alphabill node-id --home /genesis/root | tail -n1)" --rpc-server-address "$(hostname -i):9003"
+        echo "Creating money genesis..." &&
+        if [ -z "$(ls -A /genesis/money)" ]; then alphabill shard-node init --home /genesis/money --generate; else echo "Money partition genesis files exist."; fi && 
+        echo "Creating money partition configuration..." &&
+        if [ ! -f /genesis/shard-conf-1_0.json ]; then alphabill shard-conf generate --home /genesis --network-id 3 --partition-id 1 --partition-type-id 1 --epoch-start 10 --initial-bill-owner-predicate 0x830041025820786C9F82FCD2CFB4190A690725E85734F2D25B86DBC35186D85D08F3CFC2B7CA --node-info=/genesis/money/node-info.json; else echo "Money partition configuration exists."; fi &&
+        echo "Creating money partition state..." &&
+        if [ ! -f  /genesis/money/state.cbor ]; then alphabill shard-conf genesis --home /genesis/money --shard-conf /genesis/shard-conf-1_0.json; else echo "Money partition state exists."; fi &&
+        echo "Starting money partition..." &&
+        alphabill shard-node run --home /genesis/money --trust-base /genesis/trust-base.json --shard-conf /genesis/shard-conf-1_0.json --address "/ip4/$(hostname -i)/tcp/9001" --bootnodes "/dns/alphabill-root/tcp/8000/p2p/$(alphabill node-id --home /genesis/root | tail -n1)" --rpc-server-address "$(hostname -i):9003"
 
   alphabill-tokens:
     extends:
       service: alphabill
     volumes:
-      - ./genesis/tokens:/genesis
-      - ./genesis:/genesis
+      - ./genesis/tokens:/genesis/tokens
+      - genesis-root:/genesis/root
+      - genesis:/genesis
     depends_on:
       alphabill-root:
         condition: service_healthy
@@ -66,17 +77,22 @@ services:
     entrypoint: ["/busybox/sh", "-c"]
     command:
       - |
-        if [ -z "$(ls -A /genesis/tokens)" ]; then alphabill shard-node init --home "/genesis/tokens" --generate; else echo "Token shard initialized"; fi && 
-        if [ ! -f /genesis/shard-conf-2_0.json ]; then alphabill shard-conf generate --home "/genesis" --network-id 3 --partition-id 2 --partition-type-id 2 --epoch-start 10 --node-info=/genesis/tokens/node-info.json; else echo "Tokens shard genesis exists"; fi &&
-        if [ ! -f  /genesis/tokens/state.cbor ]; then alphabill shard-conf genesis --home "/genesis/tokens" --shard-conf /genesis/shard-conf-2_0.json; else echo "Tokens shard state exists"; fi &&
+        echo "Creating tokens genesis..." &&
+        if [ -z "$(ls -A /genesis/tokens)" ]; then alphabill shard-node init --home /genesis/tokens --generate; else echo "Tokens partition genesis files exist."; fi && 
+        echo "Creating tokens partition configuration..." &&
+        if [ ! -f /genesis/shard-conf-2_0.json ]; then alphabill shard-conf generate --home /genesis --network-id 3 --partition-id 2 --partition-type-id 2 --epoch-start 10 --node-info=/genesis/tokens/node-info.json; else echo "Tokens partition configuration exists."; fi &&
+        echo "Creating tokens partition state..." &&
+        if [ ! -f /genesis/tokens/state.cbor ]; then alphabill shard-conf genesis --home /genesis/tokens --shard-conf /genesis/shard-conf-2_0.json; else echo "Tokens partition state exists."; fi &&
+        echo "Starting tokens partition..." &&
         alphabill shard-node run --home "/genesis/tokens" --trust-base /genesis/trust-base.json --shard-conf /genesis/shard-conf-2_0.json --address "/ip4/$(hostname -i)/tcp/10001" --bootnodes "/dns/alphabill-root/tcp/8000/p2p/$(alphabill node-id --home /genesis/root | tail -n1)" --rpc-server-address "$(hostname -i):10003"
 
   alphabill-permissioned-tokens:
     extends:
       service: alphabill
     volumes:
-      - ./genesis/permissioned-tokens:/genesis
-      - ./genesis:/genesis
+      - ./genesis/permissioned-tokens:/genesis/permissioned-tokens
+      - genesis-root:/genesis/root
+      - genesis:/genesis
     depends_on:
       alphabill-root:
         condition: service_healthy
@@ -90,13 +106,18 @@ services:
     entrypoint: ["/busybox/sh", "-c"]
     command:
       - |
-        if [ -z "$(ls -A /genesis/permissioned-tokens)" ]; then alphabill shard-node init --home "/genesis/permissioned-tokens" --generate; else echo "Permissioned tokens shard initialized"; fi && 
-        if [ ! -f /genesis/shard-conf-5_0.json ]; then alphabill shard-conf generate --home "/genesis" --network-id 3 --partition-id 5 --partition-type-id 2 --epoch-start 10 --feeless-mode true --admin-owner-predicate 0x830041025820786C9F82FCD2CFB4190A690725E85734F2D25B86DBC35186D85D08F3CFC2B7CA --node-info=/genesis/permissioned-tokens/node-info.json; else echo "Permissioned tokens state exists"; fi &&
-        if [ ! -f  /genesis/permissioned-tokens/state.cbor ]; then alphabill shard-conf genesis --home "/genesis/permissioned-tokens" --shard-conf /genesis/shard-conf-5_0.json; else echo "Permissioned tokens shard genesis exists"; fi &&
-        alphabill shard-node run --home "/genesis/permissioned-tokens" --trust-base /genesis/trust-base.json --shard-conf /genesis/shard-conf-5_0.json --address "/ip4/$(hostname -i)/tcp/11001" --bootnodes "/dns/alphabill-root/tcp/8000/p2p/$(alphabill node-id --home /genesis/root | tail -n1)" --rpc-server-address "$(hostname -i):11003"
+        echo "Creating permissioned tokens genesis..." &&
+        if [ -z "$(ls -A /genesis/permissioned-tokens)" ]; then alphabill shard-node init --home /genesis/permissioned-tokens --generate; else echo "Permissioned tokens partition genesis files exist."; fi && 
+        echo "Creating permissioned tokens partition configuration..." &&
+        if [ ! -f /genesis/shard-conf-5_0.json ]; then alphabill shard-conf generate --home /genesis --network-id 3 --partition-id 5 --partition-type-id 2 --epoch-start 10 --feeless-mode true --admin-owner-predicate 0x830041025820786C9F82FCD2CFB4190A690725E85734F2D25B86DBC35186D85D08F3CFC2B7CA --node-info=/genesis/permissioned-tokens/node-info.json; else echo "Permissioned tokens configuration exists."; fi &&
+        echo "Creating permissioned tokens partition state..." &&
+        if [ ! -f /genesis/permissioned-tokens/state.cbor ]; then alphabill shard-conf genesis --home "/genesis/permissioned-tokens" --shard-conf /genesis/shard-conf-5_0.json; else echo "Permissioned tokens partition state exists."; fi &&
+        echo "Starting permissioned tokens partition..." &&
+        alphabill shard-node run --home /genesis/permissioned-tokens --trust-base /genesis/trust-base.json --shard-conf /genesis/shard-conf-5_0.json --address "/ip4/$(hostname -i)/tcp/11001" --bootnodes "/dns/alphabill-root/tcp/8000/p2p/$(alphabill node-id --home /genesis/root | tail -n1)" --rpc-server-address "$(hostname -i):11003"
 
   upload-configurations:
     image: curlimages/curl:8.13.0
+    user: root
     depends_on:
       alphabill-root:
         condition: service_healthy
@@ -108,7 +129,7 @@ services:
         condition: service_healthy
     restart: on-failure
     volumes:
-      - ./genesis:/genesis
+      - genesis:/genesis
     command: |
       /bin/sh -c "
         echo Uploading money configuration &&
@@ -124,3 +145,4 @@ networks:
 
 volumes:
   genesis:
+  genesis-root:
