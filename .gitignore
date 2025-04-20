@@ -3,5 +3,4 @@ lib/
 node_modules/
 out/
 coverage/
-tests/integration/genesis
 .DS_Store
