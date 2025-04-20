@@ -51,4 +51,10 @@ jobs:
           docker logs $(docker ps -a -q --filter name=alphabill-money || true) || true        
           echo "Logs from failed tokens container:"
           docker ps -a
-          docker logs $(docker ps -a -q --filter name=alphabill-tokens || true) || true      
+          docker logs $(docker ps -a -q --filter name=alphabill-tokens || true) || true
+          echo "Logs from failed permissioned tokens container:"
+          docker ps -a
+          docker logs $(docker ps -a -q --filter name=alphabill-permissioned-tokens || true) || true
+          echo "Logs from failed upload configuration container:"
+          docker ps -a
+          docker logs $(docker ps -a -q --filter name=upload-configurations || true) || true    
