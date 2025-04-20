@@ -58,7 +58,7 @@ export async function addFeeCredit(
   const transferFeeCreditTransactionOrder = await TransferFeeCredit.create({
     amount: amountToFeeCredit,
     targetPartitionIdentifier: targetPartitionIdentifier,
-    latestAdditionTime: round + 100n,
+    latestAdditionTime: round + 60n,
     feeCreditRecord: {
       ownerPredicate: ownerPredicate,
     },
