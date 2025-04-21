@@ -35,8 +35,6 @@ describe('Money Client Integration Tests', () => {
     const rootTrustBase = await moneyClient.getTrustBase(round);
     expect(rootTrustBase).not.toBeNull();
     expect(rootTrustBase.epoch).toEqual(1n); // TODO after backend changes, this should be equal to round number, currently hardcoded to 1
-    expect(rootTrustBase.rootNodes.length).toEqual(3); // TODO could possibly be a different number, depending on backend
-    expect(rootTrustBase.signatures.size).toEqual(3); // TODO could possibly be a different number, depending on backend
   });
 
   it('Get units by owner ID and get unit', async () => {

@@ -3,5 +3,4 @@ lib/
 node_modules/
 out/
 coverage/
-tests/integration/config/config.ts
 .DS_Store
