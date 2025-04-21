@@ -29,7 +29,7 @@ export function createTransactionData(
 }
 
 export function createMetadata(round: bigint, feeCreditRecordId?: IUnitId): ClientMetadata {
-  return new ClientMetadata(round + 100n, 10n, feeCreditRecordId ?? null, new Uint8Array());
+  return new ClientMetadata(round + 60n, 10n, feeCreditRecordId ?? null, new Uint8Array());
 }
 
 export async function addFeeCredit(
