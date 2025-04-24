@@ -22,6 +22,7 @@ import { TransferFungibleToken } from '../../../src/tokens/transactions/Transfer
 import { TransferNonFungibleToken } from '../../../src/tokens/transactions/TransferNonFungibleToken.js';
 import { UpdateNonFungibleToken } from '../../../src/tokens/transactions/UpdateNonFungibleToken.js';
 import { UnitIdWithType } from '../../../src/tokens/UnitIdWithType.js';
+import { AlwaysFalsePredicate } from '../../../src/transaction/predicates/AlwaysFalsePredicate.js';
 import { AlwaysTruePredicate } from '../../../src/transaction/predicates/AlwaysTruePredicate.js';
 import { PayToPublicKeyHashPredicate } from '../../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
 import { AlwaysTrueProofFactory } from '../../../src/transaction/proofs/AlwaysTrueProofFactory.js';
@@ -89,7 +90,7 @@ describe('Token Client Integration Tests', () => {
         ),
         parentTypeId: null,
         decimalPlaces: 8,
-        subTypeCreationPredicate: new AlwaysTruePredicate(),
+        subTypeCreationPredicate: new AlwaysFalsePredicate(),
         tokenMintingPredicate: new AlwaysTruePredicate(),
         tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
         ...createTransactionData(round, networkIdentifier, partitionIdentifier, feeCreditRecordId),
@@ -220,7 +221,7 @@ describe('Token Client Integration Tests', () => {
         name: 'Token Name',
         icon: { type: 'image/png', data: new Uint8Array() },
         parentTypeId: null,
-        subTypeCreationPredicate: new AlwaysTruePredicate(),
+        subTypeCreationPredicate: new AlwaysFalsePredicate(),
         tokenMintingPredicate: new AlwaysTruePredicate(),
         tokenTypeOwnerPredicate: new AlwaysTruePredicate(),
         dataUpdatePredicate: new AlwaysTruePredicate(),
