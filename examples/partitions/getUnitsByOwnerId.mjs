@@ -1,6 +1,6 @@
-import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
-import { createMoneyClient, createTokenClient, http } from '../../lib/StateApiClientFactory.js';
-import { Base16Converter } from '../../lib/util/Base16Converter.js';
+import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
+import { createMoneyClient, createTokenClient, http } from '../../src/StateApiClientFactory.js';
+import { Base16Converter } from '../../src/util/Base16Converter.js';
 import config from '../config.js';
 
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));

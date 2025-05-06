@@ -1,14 +1,13 @@
-import { Bill } from '../../lib/money/Bill.js';
-import { TransferBill } from '../../lib/money/transactions/TransferBill.js';
-import { NetworkIdentifier } from '../../lib/NetworkIdentifier.js';
-import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
-import { createMoneyClient, http } from '../../lib/StateApiClientFactory.js';
-import { ClientMetadata } from '../../lib/transaction/ClientMetadata.js';
-import { AlwaysTruePredicate } from '../../lib/transaction/predicates/AlwaysTruePredicate.js';
-import { PayToPublicKeyHashPredicate } from '../../lib/transaction/predicates/PayToPublicKeyHashPredicate.js';
-import { PayToPublicKeyHashProofFactory } from '../../lib/transaction/proofs/PayToPublicKeyHashProofFactory.js';
-import { TransactionStatus } from '../../lib/transaction/record/TransactionStatus.js';
-import { Base16Converter } from '../../lib/util/Base16Converter.js';
+import { Bill } from '../../src/money/Bill.js';
+import { TransferBill } from '../../src/money/transactions/TransferBill.js';
+import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
+import { createMoneyClient, http } from '../../src/StateApiClientFactory.js';
+import { ClientMetadata } from '../../src/transaction/ClientMetadata.js';
+import { AlwaysTruePredicate } from '../../src/transaction/predicates/AlwaysTruePredicate.js';
+import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
+import { PayToPublicKeyHashProofFactory } from '../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
+import { TransactionStatus } from '../../src/transaction/record/TransactionStatus.js';
+import { Base16Converter } from '../../src/util/Base16Converter.js';
 
 import config from '../config.js';
 
@@ -34,7 +33,8 @@ const transferBillTransactionOrder = await TransferBill.create({
   ownerPredicate: newOwnerPredicate,
   bill: bill,
   version: 1n,
-  networkIdentifier: NetworkIdentifier.LOCAL,
+  networkIdentifier: config.networkIdentifier,
+  partitionIdentifier: config.moneyPartitionIdentifier,
   stateLock: null,
   metadata: new ClientMetadata(round + 60n, 5n, feeCreditRecordId, new Uint8Array()),
   stateUnlock: new AlwaysTruePredicate(),

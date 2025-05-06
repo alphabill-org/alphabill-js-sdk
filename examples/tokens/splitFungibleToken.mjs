@@ -1,15 +1,14 @@
-import { NetworkIdentifier } from '../../lib/NetworkIdentifier.js';
-import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
-import { createTokenClient, http } from '../../lib/StateApiClientFactory.js';
-import { FungibleToken } from '../../lib/tokens/FungibleToken.js';
-import { SplitFungibleToken } from '../../lib/tokens/transactions/SplitFungibleToken.js';
-import { ClientMetadata } from '../../lib/transaction/ClientMetadata.js';
-import { AlwaysTruePredicate } from '../../lib/transaction/predicates/AlwaysTruePredicate.js';
-import { PayToPublicKeyHashPredicate } from '../../lib/transaction/predicates/PayToPublicKeyHashPredicate.js';
-import { AlwaysTrueProofFactory } from '../../lib/transaction/proofs/AlwaysTrueProofFactory.js';
-import { PayToPublicKeyHashProofFactory } from '../../lib/transaction/proofs/PayToPublicKeyHashProofFactory.js';
-import { TransactionStatus } from '../../lib/transaction/record/TransactionStatus.js';
-import { Base16Converter } from '../../lib/util/Base16Converter.js';
+import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
+import { createTokenClient, http } from '../../src/StateApiClientFactory.js';
+import { FungibleToken } from '../../src/tokens/FungibleToken.js';
+import { SplitFungibleToken } from '../../src/tokens/transactions/SplitFungibleToken.js';
+import { ClientMetadata } from '../../src/transaction/ClientMetadata.js';
+import { AlwaysTruePredicate } from '../../src/transaction/predicates/AlwaysTruePredicate.js';
+import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
+import { AlwaysTrueProofFactory } from '../../src/transaction/proofs/AlwaysTrueProofFactory.js';
+import { PayToPublicKeyHashProofFactory } from '../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
+import { TransactionStatus } from '../../src/transaction/record/TransactionStatus.js';
+import { Base16Converter } from '../../src/util/Base16Converter.js';
 
 import config from '../config.js';
 
@@ -38,7 +37,8 @@ const splitFungibleTokenTransactionOrder = await SplitFungibleToken.create({
   amount: splitAmount,
   type: { unitId: token.typeId },
   version: 1n,
-  networkIdentifier: NetworkIdentifier.LOCAL,
+  networkIdentifier: config.networkIdentifier,
+  partitionIdentifier: config.tokenPartitionIdentifier,
   stateLock: null,
   metadata: new ClientMetadata(round + 60n, 5n, feeCreditRecordId, new Uint8Array()),
   stateUnlock: new AlwaysTruePredicate(),

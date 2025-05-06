@@ -1,18 +1,16 @@
-import { NetworkIdentifier } from '../../lib/NetworkIdentifier.js';
-import { PartitionTypeIdentifier } from '../../lib/PartitionTypeIdentifier.js';
-import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
-import { createTokenClient, http } from '../../lib/StateApiClientFactory.js';
-import { NonFungibleTokenData } from '../../lib/tokens/NonFungibleTokenData.js';
-import { TokenPartitionUnitType } from '../../lib/tokens/TokenPartitionUnitType.js';
-import { CreateNonFungibleToken } from '../../lib/tokens/transactions/CreateNonFungibleToken.js';
-import { UnitIdWithType } from '../../lib/tokens/UnitIdWithType.js';
-import { ClientMetadata } from '../../lib/transaction/ClientMetadata.js';
-import { AlwaysTruePredicate } from '../../lib/transaction/predicates/AlwaysTruePredicate.js';
-import { PayToPublicKeyHashPredicate } from '../../lib/transaction/predicates/PayToPublicKeyHashPredicate.js';
-import { AlwaysTrueProofFactory } from '../../lib/transaction/proofs/AlwaysTrueProofFactory.js';
-import { PayToPublicKeyHashProofFactory } from '../../lib/transaction/proofs/PayToPublicKeyHashProofFactory.js';
-import { TransactionStatus } from '../../lib/transaction/record/TransactionStatus.js';
-import { Base16Converter } from '../../lib/util/Base16Converter.js';
+import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
+import { createTokenClient, http } from '../../src/StateApiClientFactory.js';
+import { NonFungibleTokenData } from '../../src/tokens/NonFungibleTokenData.js';
+import { TokenPartitionUnitType } from '../../src/tokens/TokenPartitionUnitType.js';
+import { CreateNonFungibleToken } from '../../src/tokens/transactions/CreateNonFungibleToken.js';
+import { UnitIdWithType } from '../../src/tokens/UnitIdWithType.js';
+import { ClientMetadata } from '../../src/transaction/ClientMetadata.js';
+import { AlwaysTruePredicate } from '../../src/transaction/predicates/AlwaysTruePredicate.js';
+import { PayToPublicKeyHashPredicate } from '../../src/transaction/predicates/PayToPublicKeyHashPredicate.js';
+import { AlwaysTrueProofFactory } from '../../src/transaction/proofs/AlwaysTrueProofFactory.js';
+import { PayToPublicKeyHashProofFactory } from '../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
+import { TransactionStatus } from '../../src/transaction/record/TransactionStatus.js';
+import { Base16Converter } from '../../src/util/Base16Converter.js';
 
 import config from '../config.js';
 
@@ -40,8 +38,8 @@ const createNonFungibleTokenTransactionOrder = await CreateNonFungibleToken.crea
   dataUpdatePredicate: new AlwaysTruePredicate(),
   nonce: 0n,
   version: 1n,
-  networkIdentifier: NetworkIdentifier.LOCAL,
-  partitionIdentifier: PartitionTypeIdentifier.TOKEN,
+  networkIdentifier: config.networkIdentifier,
+  partitionIdentifier: config.tokenPartitionIdentifier,
   stateLock: null,
   metadata: new ClientMetadata(round + 60n, 5n, feeCreditRecordId, new Uint8Array()),
   stateUnlock: new AlwaysTruePredicate(),
