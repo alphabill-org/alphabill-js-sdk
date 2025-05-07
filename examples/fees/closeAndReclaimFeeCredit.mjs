@@ -1,14 +1,14 @@
-import { FeeCreditRecord } from '../../src/fees/FeeCreditRecord.js';
-import { CloseFeeCredit } from '../../src/fees/transactions/CloseFeeCredit.js';
-import { ReclaimFeeCredit } from '../../src/fees/transactions/ReclaimFeeCredit.js';
-import { Bill } from '../../src/money/Bill.js';
-import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
-import { createMoneyClient, http } from '../../src/StateApiClientFactory.js';
-import { ClientMetadata } from '../../src/transaction/ClientMetadata.js';
-import { AlwaysTruePredicate } from '../../src/transaction/predicates/AlwaysTruePredicate.js';
-import { PayToPublicKeyHashProofFactory } from '../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
-import { TransactionStatus } from '../../src/transaction/record/TransactionStatus.js';
-import { Base16Converter } from '../../src/util/Base16Converter.js';
+import { FeeCreditRecord } from '../../lib/fees/FeeCreditRecord.js';
+import { CloseFeeCredit } from '../../lib/fees/transactions/CloseFeeCredit.js';
+import { ReclaimFeeCredit } from '../../lib/fees/transactions/ReclaimFeeCredit.js';
+import { Bill } from '../../lib/money/Bill.js';
+import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
+import { createMoneyClient, http } from '../../lib/StateApiClientFactory.js';
+import { ClientMetadata } from '../../lib/transaction/ClientMetadata.js';
+import { AlwaysTruePredicate } from '../../lib/transaction/predicates/AlwaysTruePredicate.js';
+import { PayToPublicKeyHashProofFactory } from '../../lib/transaction/proofs/PayToPublicKeyHashProofFactory.js';
+import { TransactionStatus } from '../../lib/transaction/record/TransactionStatus.js';
+import { Base16Converter } from '../../lib/util/Base16Converter.js';
 import config from '../config.js';
 
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));

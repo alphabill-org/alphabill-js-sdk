@@ -1,13 +1,13 @@
-import { Bill } from '../../src/money/Bill.js';
-import { SwapBillsWithDustCollector } from '../../src/money/transactions/SwapBillsWithDustCollector.js';
-import { TransferBillToDustCollector } from '../../src/money/transactions/TransferBillToDustCollector.js';
-import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
-import { createMoneyClient, http } from '../../src/StateApiClientFactory.js';
-import { ClientMetadata } from '../../src/transaction/ClientMetadata.js';
-import { AlwaysTruePredicate } from '../../src/transaction/predicates/AlwaysTruePredicate.js';
-import { PayToPublicKeyHashProofFactory } from '../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
-import { TransactionStatus } from '../../src/transaction/record/TransactionStatus.js';
-import { Base16Converter } from '../../src/util/Base16Converter.js';
+import { Bill } from '../../lib/money/Bill.js';
+import { SwapBillsWithDustCollector } from '../../lib/money/transactions/SwapBillsWithDustCollector.js';
+import { TransferBillToDustCollector } from '../../lib/money/transactions/TransferBillToDustCollector.js';
+import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
+import { createMoneyClient, http } from '../../lib/StateApiClientFactory.js';
+import { ClientMetadata } from '../../lib/transaction/ClientMetadata.js';
+import { AlwaysTruePredicate } from '../../lib/transaction/predicates/AlwaysTruePredicate.js';
+import { PayToPublicKeyHashProofFactory } from '../../lib/transaction/proofs/PayToPublicKeyHashProofFactory.js';
+import { TransactionStatus } from '../../lib/transaction/record/TransactionStatus.js';
+import { Base16Converter } from '../../lib/util/Base16Converter.js';
 
 import config from '../config.js';
 

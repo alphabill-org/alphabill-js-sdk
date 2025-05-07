@@ -1,13 +1,13 @@
-import { DefaultSigningService } from '../../src/signing/DefaultSigningService.js';
-import { createTokenClient, http } from '../../src/StateApiClientFactory.js';
-import { TokenPartitionUnitType } from '../../src/tokens/TokenPartitionUnitType.js';
-import { CreateNonFungibleTokenType } from '../../src/tokens/transactions/CreateNonFungibleTokenType.js';
-import { UnitIdWithType } from '../../src/tokens/UnitIdWithType.js';
-import { ClientMetadata } from '../../src/transaction/ClientMetadata.js';
-import { AlwaysTruePredicate } from '../../src/transaction/predicates/AlwaysTruePredicate.js';
-import { PayToPublicKeyHashProofFactory } from '../../src/transaction/proofs/PayToPublicKeyHashProofFactory.js';
-import { TransactionStatus } from '../../src/transaction/record/TransactionStatus.js';
-import { Base16Converter } from '../../src/util/Base16Converter.js';
+import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
+import { createTokenClient, http } from '../../lib/StateApiClientFactory.js';
+import { TokenPartitionUnitType } from '../../lib/tokens/TokenPartitionUnitType.js';
+import { CreateNonFungibleTokenType } from '../../lib/tokens/transactions/CreateNonFungibleTokenType.js';
+import { UnitIdWithType } from '../../lib/tokens/UnitIdWithType.js';
+import { ClientMetadata } from '../../lib/transaction/ClientMetadata.js';
+import { AlwaysTruePredicate } from '../../lib/transaction/predicates/AlwaysTruePredicate.js';
+import { PayToPublicKeyHashProofFactory } from '../../lib/transaction/proofs/PayToPublicKeyHashProofFactory.js';
+import { TransactionStatus } from '../../lib/transaction/record/TransactionStatus.js';
+import { Base16Converter } from '../../lib/util/Base16Converter.js';
 
 import config from '../config.js';
 

@@ -1,5 +1,5 @@
-import { createMoneyClient, http } from '../../src/StateApiClientFactory.js';
-import { Base16Converter } from '../../src/util/Base16Converter.js';
+import { createMoneyClient, http } from '../../lib/StateApiClientFactory.js';
+import { Base16Converter } from '../../lib/util/Base16Converter.js';
 
 import config from '../config.js';
 
