@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
-    "baseUrl": ".",
     "outDir": "./lib/",
     "declaration": true,
     "moduleResolution": "node16",
