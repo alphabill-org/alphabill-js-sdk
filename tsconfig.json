@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "src",
+    "baseUrl": ".",
     "outDir": "./lib/",
+    "declaration": true,
     "moduleResolution": "node16",
     "module": "node16",
     "target": "es2020",
@@ -11,16 +13,15 @@
     "noEmitOnError": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "allowJs": true,
-//    "checkJs": true, // TODO
+    "allowJs": false,
   },
   "include": [
     "src/**/*",
-    "examples/**/*"
   ],
   "exclude": [
     "node_modules",
     "tests",
-    "lib"
+    "lib",
+    "examples"
   ]
 }
