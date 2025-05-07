@@ -1,12 +1,12 @@
-import { FeeCreditRecord } from '../../lib/fees/FeeCreditRecord.js';
-import { DeleteFeeCredit } from '../../lib/fees/transactions/DeleteFeeCredit.js';
-import { DefaultSigningService } from '../../lib/signing/DefaultSigningService.js';
-import { createTokenClient, http } from '../../lib/StateApiClientFactory.js';
-import { ClientMetadata } from '../../lib/transaction/ClientMetadata.js';
-import { AlwaysTruePredicate } from '../../lib/transaction/predicates/AlwaysTruePredicate.js';
-import { PayToPublicKeyHashProofFactory } from '../../lib/transaction/proofs/PayToPublicKeyHashProofFactory.js';
-import { TransactionStatus } from '../../lib/transaction/record/TransactionStatus.js';
-import { Base16Converter } from '../../lib/util/Base16Converter.js';
+import { FeeCreditRecord } from '../../../lib/fees/FeeCreditRecord.js';
+import { DeleteFeeCredit } from '../../../lib/fees/transactions/DeleteFeeCredit.js';
+import { DefaultSigningService } from '../../../lib/signing/DefaultSigningService.js';
+import { createTokenClient, http } from '../../../lib/StateApiClientFactory.js';
+import { ClientMetadata } from '../../../lib/transaction/ClientMetadata.js';
+import { AlwaysTruePredicate } from '../../../lib/transaction/predicates/AlwaysTruePredicate.js';
+import { PayToPublicKeyHashProofFactory } from '../../../lib/transaction/proofs/PayToPublicKeyHashProofFactory.js';
+import { TransactionStatus } from '../../../lib/transaction/record/TransactionStatus.js';
+import { Base16Converter } from '../../../lib/util/Base16Converter.js';
 import config from '../../config.js';
 
 const signingService = new DefaultSigningService(Base16Converter.decode(config.privateKey));
