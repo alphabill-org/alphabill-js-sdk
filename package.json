@@ -3,7 +3,7 @@
     "node": ">=18.0.0"
   },
   "name": "@alphabill/alphabill-js-sdk",
-  "version": "1.0.0-rc2",
+  "version": "1.0.1",
   "type": "module",
   "exports": {
     ".": "./lib/main.js",
@@ -11,7 +11,7 @@
   },
   "scripts": {
     "clean:docs": "node -e \"try { require('fs').rmSync('./docs', { recursive: true, force: true }); } catch(err) { console.log(err); }\"",
-    "build": "tsc -d",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.examples.json",
     "test": "jest tests/unit/",
     "test:ci": "jest tests/unit/ --ci --reporters=default --reporters=jest-junit",
     "docker:alphabill": "docker compose -f tests/integration/docker-compose.yml up -d",

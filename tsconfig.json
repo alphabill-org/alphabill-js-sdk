@@ -1,19 +1,25 @@
 {
   "compilerOptions": {
     "outDir": "./lib/",
-    "moduleResolution": "node",
-    "module": "es2020",
+    "declaration": true,
+    "moduleResolution": "node16",
+    "module": "node16",
     "target": "es2020",
     "sourceMap": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "noEmitOnError": true,
     "noImplicitAny": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "allowJs": false,
   },
+  "include": [
+    "src/**/*",
+  ],
   "exclude": [
     "node_modules",
     "tests",
-    "lib"
+    "lib",
+    "examples"
   ]
 }
